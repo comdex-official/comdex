@@ -24,8 +24,8 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	if !(netFeeData.NetFeesCollected.Sub(amount).GT(sdk.ZeroInt())) {
 		return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
 	}
-	asset, _ := k.GetAsset(ctx, assetID)
-	err := k.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
+	asset, _ := k.asset.GetAsset(ctx, assetID)
+	err := k.bank.SendCoinFromModuleToModule(ctx, types.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 	if err != nil {
 		return returnedFee, err
 	}
@@ -58,7 +58,7 @@ func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint
 
 // UpdateCollector update collector store.
 func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error {
-	if !k.HasAsset(ctx, assetID) {
+	if !k.asset.HasAsset(ctx, assetID) {
 		return types.ErrorAssetDoesNotExist
 	}
 
@@ -173,16 +173,16 @@ func (k Keeper) GetCollectorDataForAppIDAssetID(ctx sdk.Context, appID uint64, a
 
 // SetCollectorLookupTable updates the collector lookup store.
 func (k Keeper) SetCollectorLookupTable(ctx sdk.Context, records types.CollectorLookupTableData) error {
-	if !k.HasAsset(ctx, records.CollectorAssetId) {
+	if !k.asset.HasAsset(ctx, records.CollectorAssetId) {
 		return types.ErrorAssetDoesNotExist
 	}
-	if !k.HasAsset(ctx, records.SecondaryAssetId) {
+	if !k.asset.HasAsset(ctx, records.SecondaryAssetId) {
 		return types.ErrorAssetDoesNotExist
 	}
 	if records.CollectorAssetId == records.SecondaryAssetId {
 		return types.ErrorDuplicateAssetDenoms
 	}
-	_, found := k.GetMintGenesisTokenData(ctx, records.AppId, records.SecondaryAssetId)
+	_, found := k.asset.GetMintGenesisTokenData(ctx, records.AppId, records.SecondaryAssetId)
 	if !found {
 		return types.ErrorAssetNotAddedForGenesisMinting
 	}
@@ -344,15 +344,15 @@ func (k Keeper) GetAllAppToDenomsMapping(ctx sdk.Context) (appToDenomsMapping []
 
 // SetAuctionMappingForApp sets auction map data for app/product.
 func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, record types.AppAssetIdToAuctionLookupTable) error {
-	_, found := k.GetApp(ctx, record.AppId)
+	_, found := k.asset.GetApp(ctx, record.AppId)
 	if !found {
 		return types.ErrorAppDoesNotExist
 	}
-	_, found1 := k.GetAuctionParams(ctx, record.AppId)
+	_, found1 := k.auction.GetAuctionParams(ctx, record.AppId)
 	if !found1 {
 		return types.ErrorAuctionParamsNotSet
 	}
-	_, found2 := k.GetAsset(ctx, record.AssetId)
+	_, found2 := k.asset.GetAsset(ctx, record.AssetId)
 	if !found2 {
 		return types.ErrorAssetDoesNotExist
 	}
@@ -534,10 +534,10 @@ func (k Keeper) GetAllNetFeeCollectedData(ctx sdk.Context) (netFeeCollectedData 
 }
 
 func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *bindings.MsgSetCollectorLookupTable) error {
-	if !k.HasAsset(ctx, collectorBindings.CollectorAssetID) {
+	if !k.asset.HasAsset(ctx, collectorBindings.CollectorAssetID) {
 		return types.ErrorAssetDoesNotExist
 	}
-	if !k.HasAsset(ctx, collectorBindings.SecondaryAssetID) {
+	if !k.asset.HasAsset(ctx, collectorBindings.SecondaryAssetID) {
 		return types.ErrorAssetDoesNotExist
 	}
 	if collectorBindings.CollectorAssetID == collectorBindings.SecondaryAssetID {
@@ -596,10 +596,10 @@ func (k Keeper) WasmSetCollectorLookupTable(ctx sdk.Context, collectorBindings *
 }
 
 func (k Keeper) WasmSetCollectorLookupTableQuery(ctx sdk.Context, appID, collectorAssetID, secondaryAssetID uint64) (bool, string) {
-	if !k.HasAsset(ctx, collectorAssetID) {
+	if !k.asset.HasAsset(ctx, collectorAssetID) {
 		return false, types.ErrorAssetDoesNotExist.Error()
 	}
-	if !k.HasAsset(ctx, secondaryAssetID) {
+	if !k.asset.HasAsset(ctx, secondaryAssetID) {
 		return false, types.ErrorAssetDoesNotExist.Error()
 	}
 	if collectorAssetID == secondaryAssetID {
@@ -666,7 +666,7 @@ func (k Keeper) WasmSetAuctionMappingForApp(ctx sdk.Context, auctionMappingBindi
 }
 
 func (k Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	_, found := k.GetApp(ctx, appID)
+	_, found := k.asset.GetApp(ctx, appID)
 	if found {
 		return true, ""
 	}
@@ -675,7 +675,7 @@ func (k Keeper) WasmSetAuctionMappingForAppQuery(ctx sdk.Context, appID uint64) 
 
 func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
 	Collector, _ := k.GetCollectorLookupTable(ctx, updateColBinding.AppID, updateColBinding.AssetID)
-	_, found := k.GetReward(ctx, Collector.AppId, Collector.CollectorAssetId)
+	_, found := k.rewards.GetReward(ctx, Collector.AppId, Collector.CollectorAssetId)
 	if found {
 		if Collector.LockerSavingRate != updateColBinding.LSR {
 			if updateColBinding.LSR.IsZero() {
@@ -713,25 +713,25 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 }
 
 func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
-	lockers, found := k.GetLockerLookupTable(ctx, appID, assetID)
+	lockers, found := k.locker.GetLockerLookupTable(ctx, appID, assetID)
 	if found {
 		for _, lockID := range lockers.LockerIds {
-			lockerData, _ := k.GetLocker(ctx, lockID)
+			lockerData, _ := k.locker.GetLocker(ctx, lockID)
 			var rewards sdk.Dec
 			var err error
 			if lockerData.BlockHeight == 0 {
-				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
+				rewards, err = k.rewards.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
 				if err != nil {
 					return
 				}
 			} else {
-				rewards, err = k.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, lockerData.BlockTime.Unix())
+				rewards, err = k.rewards.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, lockerData.BlockTime.Unix())
 				if err != nil {
 					return
 				}
 			}
 
-			lockerRewardsTracker, found := k.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
+			lockerRewardsTracker, found := k.rewards.GetLockerRewardTracker(ctx, lockerData.LockerId, appID)
 			if !found {
 				lockerRewardsTracker = rewardstypes.LockerRewardsTracker{
 					LockerId:           lockerData.LockerId,
@@ -747,7 +747,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
 				newRewardDec := sdk.NewDec(newReward.Int64())
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
-				k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
+				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 				netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
 				if !found {
 					continue
@@ -756,27 +756,27 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				if err != nil {
 					continue
 				}
-				assetData, _ := k.GetAsset(ctx, assetID)
+				assetData, _ := k.asset.GetAsset(ctx, assetID)
 
 				if newReward.GT(sdk.ZeroInt()) {
-					err = k.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
+					err = k.bank.SendCoinFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 					if err != nil {
 						continue
 					}
 				}
-				lockerRewardsMapping, found := k.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
+				lockerRewardsMapping, found := k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
 				if !found {
 					var lockerReward lockertypes.LockerTotalRewardsByAssetAppWise
 					lockerReward.AppId = appID
 					lockerReward.AssetId = lockerData.AssetDepositId
 					lockerReward.TotalRewards = newReward
-					err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
+					err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
 					if err != nil {
 						continue
 					}
 				} else {
 					lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
-					err = k.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
+					err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 					if err != nil {
 						continue
 					}
@@ -791,12 +791,12 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 
 				lockerData.NetBalance = lockerData.NetBalance.Add(newReward)
 				lockerData.ReturnsAccumulated = lockerData.ReturnsAccumulated.Add(newReward)
-				k.SetLocker(ctx, lockerData)
+				k.locker.SetLocker(ctx, lockerData)
 				lockers.DepositedAmount = lockers.DepositedAmount.Add(newReward)
-				k.SetLockerLookupTable(ctx, lockers)
+				k.locker.SetLockerLookupTable(ctx, lockers)
 			} else {
 				//	set tracker rewards
-				k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
+				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 				// updating user rewards data
 				lockerData.BlockTime = ctx.BlockTime()
 				if changeTypes {
@@ -804,7 +804,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				} else {
 					lockerData.BlockHeight = 0
 				}
-				k.SetLocker(ctx, lockerData)
+				k.locker.SetLocker(ctx, lockerData)
 			}
 		}
 	}
@@ -819,7 +819,7 @@ func (k Keeper) WasmUpdateCollectorLookupTableQuery(ctx sdk.Context, appID, asse
 }
 
 func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint64) sdk.Coin {
-	asset, _ := k.GetAsset(ctx, assetID)
+	asset, _ := k.asset.GetAsset(ctx, assetID)
 	netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, appID, assetID)
 	auctionMapping, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
 	collectorLookup, _ := k.GetCollectorLookupTable(ctx, appID, assetID)
@@ -832,7 +832,7 @@ func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint
 }
 
 func (k Keeper) WasmMsgGetSurplusFund(ctx sdk.Context, appID, assetID uint64, addr sdk.AccAddress, amount sdk.Coin) error {
-	err := k.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoins(amount))
+	err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, sdk.NewCoins(amount))
 	if err != nil {
 		return err
 	}
