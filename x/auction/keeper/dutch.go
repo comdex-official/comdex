@@ -402,7 +402,7 @@ func (k Keeper) CloseDutchAuction(
 
 	// burning
 	if burnToken.Amount.GT(sdk.ZeroInt()) {
-		err := k.bank.BurnCoins(ctx, auctiontypes.ModuleName, burnToken)
+		err := k.bank.BurnCoins(ctx, auctiontypes.ModuleName, sdk.NewCoins(burnToken))
 		if err != nil {
 			return err
 		}
