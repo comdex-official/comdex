@@ -69,7 +69,7 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	}
 
 	var symbol []string
-	assets := k.GetAssets(ctx)
+	assets := k.assetKeeper.GetAssets(ctx)
 	for _, asset := range assets {
 		if asset.IsOraclePriceRequired {
 			symbol = append(symbol, asset.Name)
