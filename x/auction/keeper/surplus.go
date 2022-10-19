@@ -35,11 +35,11 @@ func (k Keeper) CreateSurplusAuction(ctx sdk.Context, appID, assetID uint64) err
 		return err
 	}
 
-	auctionLookupTable, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
+	auctionLookupTable, _ := k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 
 	if status == auctiontypes.StartedSurplusAuction {
 		auctionLookupTable.IsAuctionActive = true
-		err1 := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
 		if err1 != nil {
 			return err1
 		}
@@ -49,14 +49,14 @@ func (k Keeper) CreateSurplusAuction(ctx sdk.Context, appID, assetID uint64) err
 }
 
 func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Context, appID, assetID uint64) (status uint64, err error) {
-	collector, found := k.GetCollectorLookupTable(ctx, appID, assetID)
+	collector, found := k.collector.GetCollectorLookupTable(ctx, appID, assetID)
 	if !found {
 		return
 	}
 	// traverse this to access appId , collector asset id , surplus threshold
 	// collectorLookupTable has surplusThreshold for all assets
 
-	NetFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
+	NetFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
 
 	if !found {
 		return auctiontypes.NoAuction, nil
@@ -80,7 +80,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 		}
 		// Transfer balance from collector module to auction module
 
-		_, err := k.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
+		_, err := k.collector.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
 		if err != nil {
 			return status, err
 		}
@@ -96,8 +96,8 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 
 func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellID uint64, lotSize sdk.Int) (status uint64, sellToken, buyToken sdk.Coin) {
 	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
-	sellingAsset, found1 := k.GetAsset(ctx, AssetSellID)
-	buyingAsset, found2 := k.GetAsset(ctx, AssetBuyID)
+	sellingAsset, found1 := k.asset.GetAsset(ctx, AssetSellID)
+	buyingAsset, found2 := k.asset.GetAsset(ctx, AssetBuyID)
 	if !found1 || !found2 {
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
@@ -196,23 +196,23 @@ func (k Keeper) closeSurplusAuction(
 	statusEsm bool,
 ) error {
 	if statusEsm && surplusAuction.Bidder != nil {
-		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.Bid))
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.Bid))
 		if err != nil {
 			return err
 		}
 
-		err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
+		err1 := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
 		if err1 != nil {
 			return err1
 		}
-		err2 := k.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
+		err2 := k.collector.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
 		if err2 != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
 		}
 	} else if !statusEsm && surplusAuction.Bidder != nil {
 		highestBidReceived := surplusAuction.Bid
 
-		err := k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.SellToken))
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, surplusAuction.Bidder, sdk.NewCoins(surplusAuction.SellToken))
 		if err != nil {
 			return err
 		}
@@ -228,11 +228,11 @@ func (k Keeper) closeSurplusAuction(
 		}
 
 		// burn tokens by sending bid tokens from auction to tokenMint module and then call burn function
-		err = k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(highestBidReceived))
 		if err != nil {
 			return err
 		}
-		err = k.BurnTokensForApp(ctx, surplusAuction.AppId, surplusAuction.AssetInId, highestBidReceived.Amount)
+		err = k.tokenMint.BurnTokensForApp(ctx, surplusAuction.AppId, surplusAuction.AssetInId, highestBidReceived.Amount)
 		if err != nil {
 			return err
 		}
@@ -257,11 +257,11 @@ func (k Keeper) closeSurplusAuction(
 			}
 		}
 	} else {
-		err1 := k.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
+		err1 := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(surplusAuction.SellToken))
 		if err1 != nil {
 			return err1
 		}
-		err2 := k.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
+		err2 := k.collector.SetNetFeeCollectedData(ctx, surplusAuction.AppId, surplusAuction.AssetOutId, surplusAuction.SellToken.Amount)
 		if err2 != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
 		}
@@ -305,7 +305,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 			return auctiontypes.ErrorLowBidAmount
 		}
 	}
-	err = k.SendCoinsFromAccountToModule(ctx, bidder, auctiontypes.ModuleName, sdk.NewCoins(bid))
+	err = k.bank.SendCoinsFromAccountToModule(ctx, bidder, auctiontypes.ModuleName, sdk.NewCoins(bid))
 	if err != nil {
 		return err
 	}
@@ -315,7 +315,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 	}
 	if auction.AuctionStatus != auctiontypes.AuctionStartNoBids {
 		// auction.Bidder as previous bidder . refund previous bidder
-		err = k.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, auction.Bidder, sdk.NewCoins(auction.Bid))
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, auction.Bidder, sdk.NewCoins(auction.Bid))
 		if err != nil {
 			return err
 		}

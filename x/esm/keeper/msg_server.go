@@ -76,7 +76,7 @@ func (m msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 	if ctx.BlockTime().After(esmStatus.EndTime) && status {
 		esmDataAfterCoolOff, _ := m.keeper.GetDataAfterCoolOff(ctx, req.AppId)
 		for _, v := range esmDataAfterCoolOff.DebtAsset {
-			debtAsset, _ := m.keeper.GetAsset(ctx, v.AssetID)
+			debtAsset, _ := m.keeper.asset.GetAsset(ctx, v.AssetID)
 			if req.Amount.Denom == debtAsset.Denom {
 				if !req.Amount.Amount.LTE(v.Amount) {
 					return nil, types.ErrorInvalidAmount

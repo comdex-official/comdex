@@ -100,9 +100,16 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	accountKeeper expected.AccountKeeper
-	bankKeeper    expected.BankKeeper
+	keeper            keeper.Keeper
+	accountKeeper     expected.AccountKeeper
+	bankKeeper        expected.BankKeeper
+	collectKeeper     expected.CollectorKeeper
+	liquidationKeeper expected.LiquidationKeeper
+	assetKeeper       expected.AssetKeeper
+	marketKeeper      expected.MarketKeeper
+	esmKeeper         expected.EsmKeeper
+	vaultKeeper       expected.VaultKeeper
+	tokenMintKeeper   expected.TokenMintKeeper
 }
 
 func NewAppModule(
@@ -110,12 +117,26 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	collectorKeeper expected.CollectorKeeper,
+	liquidationKeeper expected.LiquidationKeeper,
+	assetKeeper expected.AssetKeeper,
+	marketKeeper expected.MarketKeeper,
+	esmKeeper expected.EsmKeeper,
+	vaultKeeper expected.VaultKeeper,
+	tokenMintKeeper expected.TokenMintKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic: NewAppModuleBasic(cdc),
-		keeper:         keeper,
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
+		AppModuleBasic:    NewAppModuleBasic(cdc),
+		keeper:            keeper,
+		accountKeeper:     accountKeeper,
+		bankKeeper:        bankKeeper,
+		collectKeeper:     collectorKeeper,
+		liquidationKeeper: liquidationKeeper,
+		assetKeeper:       assetKeeper,
+		marketKeeper:      marketKeeper,
+		esmKeeper:         esmKeeper,
+		vaultKeeper:       vaultKeeper,
+		tokenMintKeeper:   tokenMintKeeper,
 	}
 }
 
@@ -170,7 +191,7 @@ func (AppModule) ConsensusVersion() uint64 { return 2 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
+	BeginBlocker(ctx, am.keeper, am.assetKeeper, am.collectKeeper, am.esmKeeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It

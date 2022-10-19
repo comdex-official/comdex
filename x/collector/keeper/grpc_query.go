@@ -43,7 +43,7 @@ func (q QueryServer) QueryCollectorLookupByAppAndAsset(c context.Context, req *t
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	_, found := q.GetApp(ctx, req.AppId)
+	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
@@ -63,7 +63,7 @@ func (q QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *typ
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	_, found := q.GetApp(ctx, req.AppId)
+	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
@@ -79,7 +79,7 @@ func (q QueryServer) QueryAuctionMappingForAppAndAsset(c context.Context, req *t
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	_, found := q.GetApp(ctx, req.AppId)
+	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}
@@ -95,7 +95,7 @@ func (q QueryServer) QueryNetFeeCollectedForAppAndAsset(c context.Context, req *
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	ctx := sdk.UnwrapSDKContext(c)
-	_, found := q.GetApp(ctx, req.AppId)
+	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "product does not exist for id %d", req.AppId)
 	}

@@ -47,13 +47,13 @@ func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParamsBinding *bindings
 }
 
 func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error {
-	auctionLookupTable, found := k.GetAuctionMappingForApp(ctx, appID, assetID)
+	auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 	if !found {
 		return auctiontypes.ErrorInvalidAddress
 	}
 
 	auctionLookupTable.IsAuctionActive = false
-	err := k.SetAuctionMappingForApp(ctx, auctionLookupTable)
+	err := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (k Keeper) makeFalseForFlags(ctx sdk.Context, appID, assetID uint64) error 
 }
 
 func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
-	asset, found := k.GetAsset(ctx, id)
+	asset, found := k.asset.GetAsset(ctx, id)
 	if !found {
 		return sdk.ZeroDec(), assettypes.ErrorAssetDoesNotExist
 	}
@@ -72,11 +72,11 @@ func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec
 }
 
 func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec) (sdk.Dec, sdk.Int, error) {
-	asset1, found := k.GetAsset(ctx, id1)
+	asset1, found := k.asset.GetAsset(ctx, id1)
 	if !found {
 		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist
 	}
-	asset2, found := k.GetAsset(ctx, id2)
+	asset2, found := k.asset.GetAsset(ctx, id2)
 	if !found {
 		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist
 	}

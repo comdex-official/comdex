@@ -139,7 +139,7 @@ func (k Keeper) GetAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint
 }
 
 func (k Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint64) (string, error) {
-	params, found := k.GetAddAuctionParamsData(ctx, appID)
+	params, found := k.lend.GetAddAuctionParamsData(ctx, appID)
 
 	if !found {
 		return "", auctiontypes.ErrorInvalidAuctionParams
@@ -175,7 +175,7 @@ func (k Keeper) GetAllAuctions(ctx sdk.Context) (auctions []auctiontypes.Surplus
 }
 
 func (k Keeper) GetAllSurplusAuctions(ctx sdk.Context) (surplusAuction []auctiontypes.SurplusAuction) {
-	apps, _ := k.GetApps(ctx)
+	apps, _ := k.asset.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetSurplusAuctions(ctx, item.Id)
@@ -546,7 +546,7 @@ func (k Keeper) GetDebtAuctions(ctx sdk.Context, appID uint64) (auctions []aucti
 }
 
 func (k Keeper) GetAllDebtAuctions(ctx sdk.Context) (debtAuction []auctiontypes.DebtAuction) {
-	apps, _ := k.GetApps(ctx)
+	apps, _ := k.asset.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetDebtAuctions(ctx, item.Id)
@@ -816,7 +816,7 @@ func (k Keeper) GetDutchAuctions(ctx sdk.Context, appID uint64) (auctions []auct
 }
 
 func (k Keeper) GetAllDutchAuctions(ctx sdk.Context) (dutchAuction []auctiontypes.DutchAuction) {
-	apps, _ := k.GetApps(ctx)
+	apps, _ := k.asset.GetApps(ctx)
 
 	for _, item := range apps {
 		auction := k.GetDutchAuctions(ctx, item.Id)
