@@ -475,29 +475,25 @@ func (msg *MsgBorrowAlternate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCalculateBorrowInterest(borrower string, borrowID uint64) *MsgCalculateBorrowInterest {
-	return &MsgCalculateBorrowInterest{
+func NewMsgCalculateInterestAndRewards(borrower string) *MsgCalculateInterestAndRewards {
+	return &MsgCalculateInterestAndRewards{
 		Borrower: borrower,
-		BorrowId: borrowID,
 	}
 }
 
-func (msg MsgCalculateBorrowInterest) Route() string { return ModuleName }
-func (msg MsgCalculateBorrowInterest) Type() string  { return TypeCalculateBorrowInterestRequest }
+func (msg MsgCalculateInterestAndRewards) Route() string { return ModuleName }
+func (msg MsgCalculateInterestAndRewards) Type() string  { return TypeCalculateLendRewardsRequest }
 
-func (msg *MsgCalculateBorrowInterest) ValidateBasic() error {
+func (msg *MsgCalculateInterestAndRewards) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		return err
 	}
 
-	if msg.BorrowId <= 0 {
-		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
-	}
 	return nil
 }
 
-func (msg *MsgCalculateBorrowInterest) GetSigners() []sdk.AccAddress {
+func (msg *MsgCalculateInterestAndRewards) GetSigners() []sdk.AccAddress {
 	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		panic(err)
@@ -506,43 +502,7 @@ func (msg *MsgCalculateBorrowInterest) GetSigners() []sdk.AccAddress {
 }
 
 // GetSignBytes get the bytes for the message signer to sign on.
-func (msg *MsgCalculateBorrowInterest) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(msg)
-	return sdk.MustSortJSON(bz)
-}
-
-func NewMsgCalculateLendRewards(lender string, lendID uint64) *MsgCalculateLendRewards {
-	return &MsgCalculateLendRewards{
-		Lender: lender,
-		LendId: lendID,
-	}
-}
-
-func (msg MsgCalculateLendRewards) Route() string { return ModuleName }
-func (msg MsgCalculateLendRewards) Type() string  { return TypeCalculateLendRewardsRequest }
-
-func (msg *MsgCalculateLendRewards) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(msg.GetLender())
-	if err != nil {
-		return err
-	}
-
-	if msg.LendId <= 0 {
-		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
-	}
-	return nil
-}
-
-func (msg *MsgCalculateLendRewards) GetSigners() []sdk.AccAddress {
-	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{lender}
-}
-
-// GetSignBytes get the bytes for the message signer to sign on.
-func (msg *MsgCalculateLendRewards) GetSignBytes() []byte {
+func (msg *MsgCalculateInterestAndRewards) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
