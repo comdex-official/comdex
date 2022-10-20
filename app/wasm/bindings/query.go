@@ -26,6 +26,9 @@ type ComdexQuery struct {
 	ExtendedPairByApp                      *ExtendedPairByApp                      `json:"extended_pair_by_app,omitempty"`
 	CheckSurplusReward                     *CheckSurplusReward                     `json:"check_surplus_reward,omitempty"`
 	CheckWhitelistedAsset                  *CheckWhitelistedAsset                  `json:"check_whitelisted_asset,omitempty"`
+	CheckVaultCreated                      *CheckVaultCreated                      `json:"check_vault_created,omitempty"`
+	CheckBorrowed                          *CheckBorrowed                          `json:"check_borrowed,omitempty"`
+	CheckLiquidityProvided                 *CheckLiquidityProvided                 `json:"check_liquidity_provided,omitempty"`
 }
 
 type AppData struct {
@@ -250,4 +253,32 @@ type CheckWhitelistedAsset struct {
 
 type CheckWhitelistedAssetResponse struct {
 	Found bool `json:"found"`
+}
+
+type CheckVaultCreated struct {
+	Address string `json:"address"`
+	AppID   uint64 `json:"app_id"`
+}
+
+type VaultCreatedResponse struct {
+	IsCompleted bool `json:"is_completed"`
+}
+
+type CheckBorrowed struct {
+	AssetID uint64 `json:"asset_id"`
+	Address string `json:"address"`
+}
+
+type BorrowedResponse struct {
+	IsCompleted bool `json:"is_completed"`
+}
+
+type CheckLiquidityProvided struct {
+	AppID   uint64 `json:"app_id"`
+	PoolID  uint64 `json:"pool_id"`
+	Address string `json:"address"`
+}
+
+type LiquidityProvidedResponse struct {
+	IsCompleted bool `json:"is_completed"`
 }

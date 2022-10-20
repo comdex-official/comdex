@@ -6,7 +6,9 @@ import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
@@ -22,6 +24,8 @@ type QueryPlugin struct {
 	liquidationKeeper *liquidationKeeper.Keeper
 	esmKeeper         *esmKeeper.Keeper
 	vaultKeeper       *vaultKeeper.Keeper
+	lendKeeper        *lendKeeper.Keeper
+	liquidityKeeper   *liquidityKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -33,6 +37,9 @@ func NewQueryPlugin(
 	liquidation *liquidationKeeper.Keeper,
 	esmKeeper *esmKeeper.Keeper,
 	vaultKeeper *vaultKeeper.Keeper,
+	lendKeeper *lendKeeper.Keeper,
+	liquidityKeeper *liquidityKeeper.Keeper,
+
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:       assetKeeper,
@@ -43,6 +50,8 @@ func NewQueryPlugin(
 		liquidationKeeper: liquidation,
 		esmKeeper:         esmKeeper,
 		vaultKeeper:       vaultKeeper,
+		lendKeeper:        lendKeeper,
+		liquidityKeeper:   liquidityKeeper,
 	}
 }
 
@@ -162,5 +171,20 @@ func (qp QueryPlugin) WasmCheckSurplusReward(ctx sdk.Context, appID, assetID uin
 func (qp QueryPlugin) WasmCheckWhitelistedAsset(ctx sdk.Context, denom string) (found bool) {
 	// TO DO : add extended pair app query
 	found = qp.assetKeeper.WasmCheckWhitelistedAssetQuery(ctx, denom)
+	return found
+}
+
+func (qp QueryPlugin) WasmCheckVaultCreated(ctx sdk.Context, address string, appID uint64) (found bool) {
+	found = qp.vaultKeeper.WasmCheckVaultCreatedQuery(ctx, address, appID)
+	return found
+}
+
+func (qp QueryPlugin) WasmCheckBorrowed(ctx sdk.Context, assetID uint64, address string) (found bool) {
+	found = qp.lendKeeper.WasmHasBorrowForAddressAndAsset(ctx, assetID, address)
+	return found
+}
+
+func (qp QueryPlugin) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID uint64, address string) (found bool) {
+	found = qp.liquidityKeeper.WasmCheckLiquidityProvided(ctx, appID, poolID, address)
 	return found
 }

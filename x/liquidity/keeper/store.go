@@ -721,3 +721,12 @@ func (k Keeper) GetAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64) (queu
 	})
 	return queuedFarmers
 }
+
+func (k Keeper) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID uint64, farmer string) (found bool) {
+	address, err := sdk.AccAddressFromBech32(farmer)
+	if err != nil {
+		return false
+	}
+	_, found = k.GetActiveFarmer(ctx, appID, poolID, address)
+	return found
+}

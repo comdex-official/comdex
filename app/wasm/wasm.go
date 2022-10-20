@@ -13,6 +13,8 @@ import (
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 )
 
 func RegisterCustomPlugins(
@@ -25,8 +27,10 @@ func RegisterCustomPlugins(
 	auction *auctionKeeper.Keeper,
 	esm *esmKeeper.Keeper,
 	vault *vaultKeeper.Keeper,
+	lend *lendKeeper.Keeper,
+	liquidity *liquidityKeeper.Keeper,
 ) []wasmkeeper.Option {
-	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault)
+	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
 
 	appDataQueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(comdexQueryPlugin),
