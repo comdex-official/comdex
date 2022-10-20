@@ -482,7 +482,9 @@ func NewMsgCalculateInterestAndRewards(borrower string) *MsgCalculateInterestAnd
 }
 
 func (msg MsgCalculateInterestAndRewards) Route() string { return ModuleName }
-func (msg MsgCalculateInterestAndRewards) Type() string  { return TypeCalculateLendRewardsRequest }
+func (msg MsgCalculateInterestAndRewards) Type() string {
+	return TypeCalculateInterestAndRewardsRequest
+}
 
 func (msg *MsgCalculateInterestAndRewards) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())

@@ -991,8 +991,8 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 
 func txCalculateInterestAndRewards() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "calculate-borrow-interest",
-		Short: " calculate borrow interest for a borrow position",
+		Use:   "calculate-interest-rewards",
+		Short: " calculate interest and rewards for a user",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
