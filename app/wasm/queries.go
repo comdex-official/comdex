@@ -175,7 +175,7 @@ func (qp QueryPlugin) WasmCheckWhitelistedAsset(ctx sdk.Context, denom string) (
 }
 
 func (qp QueryPlugin) WasmCheckVaultCreated(ctx sdk.Context, address string, appID uint64) (found bool) {
-	found = qp.vaultKeeper.WasmCheckVaultCreatedQuery(ctx, address, appID)
+	_, found = qp.vaultKeeper.GetUserAppMappingData(ctx, address, appID)
 	return found
 }
 
@@ -185,6 +185,10 @@ func (qp QueryPlugin) WasmCheckBorrowed(ctx sdk.Context, assetID uint64, address
 }
 
 func (qp QueryPlugin) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID uint64, address string) (found bool) {
-	found = qp.liquidityKeeper.WasmCheckLiquidityProvided(ctx, appID, poolID, address)
+	farmer, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return false
+	}
+	_, found = qp.liquidityKeeper.GetActiveFarmer(ctx, appID, poolID, farmer)
 	return found
 }

@@ -657,8 +657,3 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 
 	return nil
 }
-
-func (k Keeper) WasmCheckVaultCreatedQuery(ctx sdk.Context, address string, appID uint64) (found bool) {
-	_, found = k.GetUserAppMappingData(ctx, address, appID)
-	return found
-}
