@@ -39,7 +39,6 @@ func NewQueryPlugin(
 	vaultKeeper *vaultKeeper.Keeper,
 	lendKeeper *lendKeeper.Keeper,
 	liquidityKeeper *liquidityKeeper.Keeper,
-
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:       assetKeeper,

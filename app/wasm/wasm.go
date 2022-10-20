@@ -8,13 +8,13 @@ import (
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 )
 
 func RegisterCustomPlugins(

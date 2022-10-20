@@ -130,7 +130,6 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, assetID)
 	s.Suite.NoError(err)
 
-
 	return assetID
 }
 
