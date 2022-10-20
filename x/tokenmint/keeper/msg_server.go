@@ -22,17 +22,17 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 
 func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewTokensRequest) (*types.MsgMintNewTokensResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	assetData, found := k.GetAsset(ctx, msg.AssetId)
+	assetData, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMappingData, found := k.GetApp(ctx, msg.AppId)
+	appMappingData, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExists
 	}
 	// Checking if asset exists in the app
 
-	assetDataInApp, found := k.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
+	assetDataInApp, found := k.asset.GetMintGenesisTokenData(ctx, appMappingData.Id, assetData.Id)
 	if !found {
 		return nil, types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
@@ -42,7 +42,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		var newTokenMintAppData types.MintedTokens
 		var appData types.TokenMint
 
-		if err := k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+		if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 			return nil, err
 		}
 		userAddress, err := sdk.AccAddressFromBech32(assetDataInApp.Recipient)
@@ -50,7 +50,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 			return nil, err
 		}
 		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
-			if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 				return nil, err
 			}
 		}
@@ -75,10 +75,10 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 			return nil, err
 		}
 		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
-			if err = k.MintCoin(ctx, types.ModuleName, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+			if err = k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 				return nil, err
 			}
-			if err = k.SendCoinFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply)); err != nil {
+			if err = k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 				return nil, err
 			}
 		}

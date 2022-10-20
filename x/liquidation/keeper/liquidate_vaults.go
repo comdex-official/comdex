@@ -14,12 +14,12 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	params := k.GetParams(ctx)
 
 	for i := range appIds {
-		esmStatus, found := k.GetESMStatus(ctx, appIds[i])
+		esmStatus, found := k.esm.GetESMStatus(ctx, appIds[i])
 		status := false
 		if found {
 			status = esmStatus.Status
 		}
-		klwsParams, _ := k.GetKillSwitchData(ctx, appIds[i])
+		klwsParams, _ := k.esm.GetKillSwitchData(ctx, appIds[i])
 		if klwsParams.BreakerEnable || status {
 			continue
 		}
@@ -28,8 +28,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		if !found {
 			liquidationOffsetHolder = types.NewLiquidationOffsetHolder(appIds[i], 0)
 		}
-		totalVaults := k.GetVaults(ctx)
-		lengthOfVaults := int(k.GetLengthOfVault(ctx))
+		totalVaults := k.vault.GetVaults(ctx)
+		lengthOfVaults := int(k.vault.GetLengthOfVault(ctx))
 		//// get all vaults
 		/// range over those vaults
 		//// for length of vaults use vault counter
@@ -46,13 +46,13 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			if vault.AppId != appIds[i] {
 				continue
 			}
-			extPair, _ := k.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-			pair, _ := k.GetPair(ctx, extPair.PairId)
-			assetIn, found := k.GetAsset(ctx, pair.AssetIn)
+			extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
+			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
+			assetIn, found := k.asset.GetAsset(ctx, pair.AssetIn)
 			if !found {
 				continue
 			}
-			totalRate, err := k.CalcAssetPrice(ctx, assetIn.Id, vault.AmountIn)
+			totalRate, err := k.market.CalcAssetPrice(ctx, assetIn.Id, vault.AmountIn)
 			if err != nil {
 				continue
 			}
@@ -60,20 +60,20 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 			liqRatio := extPair.MinCr
 			totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
-			collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
+			collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 			if err != nil {
 				continue
 			}
 			if collateralizationRatio.LT(liqRatio) {
 				// calculate interest and update vault
 				totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
-				err1 := k.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
+				err1 := k.rewards.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
 				if err1 != nil {
 					continue
 				}
-				vault, _ := k.GetVault(ctx, vault.Id)
+				vault, _ := k.vault.GetVault(ctx, vault.Id)
 				totalFees := vault.InterestAccumulated.Add(vault.ClosingFeeAccumulated)
-				collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
+				collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
 					continue
 				}
@@ -81,12 +81,12 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
-				k.DeleteVault(ctx, vault.Id)
+				k.vault.DeleteVault(ctx, vault.Id)
 				var rewards rewardstypes.VaultInterestTracker
 				rewards.AppMappingId = appIds[i]
 				rewards.VaultId = vault.Id
-				k.DeleteVaultInterestTracker(ctx, rewards)
-				k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
+				k.rewards.DeleteVaultInterestTracker(ctx, rewards)
+				k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, appIds[i])
 			}
 		}
 		liquidationOffsetHolder.CurrentOffset = uint64(end)
@@ -119,9 +119,9 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
-	length := k.GetLengthOfVault(ctx)
-	k.SetLengthOfVault(ctx, length-1)
-	err := k.DutchActivator(ctx, value)
+	length := k.vault.GetLengthOfVault(ctx)
+	k.vault.SetLengthOfVault(ctx, length-1)
+	err := k.auction.DutchActivator(ctx, value)
 	if err != nil {
 		ctx.Logger().Error("error in dutch activator")
 	}
@@ -129,8 +129,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 }
 
 func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
-	macc := k.GetModuleAccount(ctx, accountName)
-	return k.GetBalance(ctx, macc.GetAddress(), denom).Amount
+	macc := k.account.GetModuleAccount(ctx, accountName)
+	return k.bank.GetBalance(ctx, macc.GetAddress(), denom).Amount
 }
 
 // Locked vault history kv

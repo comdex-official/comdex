@@ -788,7 +788,7 @@ func New(
 		ibcRouter           = ibcporttypes.NewRouter()
 		transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
-		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper)
+		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
 	)
 
