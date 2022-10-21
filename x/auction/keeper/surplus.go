@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -82,7 +81,6 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 
 		_, err := k.collector.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
 		if err != nil {
-			fmt.Println("insidervgrerbg")
 			return status, err
 		}
 
