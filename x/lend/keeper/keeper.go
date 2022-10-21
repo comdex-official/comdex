@@ -361,6 +361,10 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	lendPos, _ = k.GetLend(ctx, lendID)
 	lendPos.GlobalIndex = indexGlobalCurrent
 	lendPos.LastInteractionTime = ctx.BlockTime()
+	// checking if the caller is the owner to Lend Position
+	if lendPos.Owner != addr {
+		return types.ErrLendAccessUnauthorized
+	}
 	getAsset, _ := k.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
 
