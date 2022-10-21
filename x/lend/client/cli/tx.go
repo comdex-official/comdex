@@ -425,10 +425,6 @@ func txFundModuleAccounts() *cobra.Command {
 			}
 
 			msg := types.NewMsgFundModuleAccounts(poolID, assetID, ctx.GetFromAddress().String(), amount)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
@@ -516,9 +512,6 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 		return txf, nil, err
 	}
 
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
 	return txf, msg, nil
 }
 
@@ -608,10 +601,6 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		return txf, nil, err
 	}
 
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
-
 	return txf, msg, nil
 }
 
@@ -673,10 +662,6 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -809,10 +794,6 @@ func NewCreateassetRatesParams(clientCtx client.Context, txf tx.Factory, fs *fla
 		return txf, nil, err
 	}
 
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
-
 	return txf, msg, nil
 }
 
@@ -898,10 +879,6 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 
