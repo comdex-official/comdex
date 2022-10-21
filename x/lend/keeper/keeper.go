@@ -22,15 +22,17 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-		bank       expected.BankKeeper
-		account    expected.AccountKeeper
-		asset      expected.AssetKeeper
-		market     expected.MarketKeeper
-		esm        expected.EsmKeeper
+		cdc         codec.BinaryCodec
+		storeKey    sdk.StoreKey
+		memKey      sdk.StoreKey
+		paramstore  paramtypes.Subspace
+		bank        expected.BankKeeper
+		account     expected.AccountKeeper
+		asset       expected.AssetKeeper
+		market      expected.MarketKeeper
+		esm         expected.EsmKeeper
+		liquidation expected.LiquidationKeeper
+		auction     expected.AuctionKeeper
 	}
 )
 
@@ -44,6 +46,8 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	market expected.MarketKeeper,
 	esm expected.EsmKeeper,
+	liquidation expected.LiquidationKeeper,
+	auction expected.AuctionKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -51,15 +55,17 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		bank:       bank,
-		account:    account,
-		asset:      asset,
-		market:     market,
-		esm:        esm,
+		cdc:         cdc,
+		storeKey:    storeKey,
+		memKey:      memKey,
+		paramstore:  ps,
+		bank:        bank,
+		account:     account,
+		asset:       asset,
+		market:      market,
+		esm:         esm,
+		liquidation: liquidation,
+		auction:     auction,
 	}
 }
 

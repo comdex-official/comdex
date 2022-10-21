@@ -1,6 +1,7 @@
 package expected
 
 import (
+	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -44,4 +45,12 @@ type AssetKeeper interface {
 
 type EsmKeeper interface {
 	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
+}
+
+type LiquidationKeeper interface {
+	GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault)
+}
+
+type AuctionKeeper interface {
+	LendDutchActivator(ctx sdk.Context, lockedVault types.LockedVault) error
 }
