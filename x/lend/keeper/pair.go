@@ -37,7 +37,7 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 
 func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	for _, v := range pool.AssetData {
-		_, found := k.GetAsset(ctx, v.AssetID)
+		_, found := k.asset.GetAsset(ctx, v.AssetID)
 		if !found {
 			return types.ErrorAssetDoesNotExist
 		}
@@ -76,7 +76,7 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 }
 
 func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) error {
-	_, found := k.GetAsset(ctx, assetToPair.AssetID)
+	_, found := k.asset.GetAsset(ctx, assetToPair.AssetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
