@@ -400,7 +400,7 @@ func txBorrowAssetAlternate() *cobra.Command {
 
 func txFundModuleAccounts() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fund-module [module-name] [asset_id] [amount]",
+		Use:   "fund-module [pool_id] [asset_id] [amount]",
 		Short: "Deposit amount to the respective module account",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -409,7 +409,10 @@ func txFundModuleAccounts() *cobra.Command {
 				return err
 			}
 
-			moduleName := args[0]
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
@@ -421,7 +424,7 @@ func txFundModuleAccounts() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgFundModuleAccounts(moduleName, assetID, ctx.GetFromAddress().String(), amount)
+			msg := types.NewMsgFundModuleAccounts(poolID, assetID, ctx.GetFromAddress().String(), amount)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

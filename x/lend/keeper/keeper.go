@@ -1414,9 +1414,13 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	return nil
 }
 
-func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
 	loanTokens := sdk.NewCoins(payment)
-	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, moduleName, loanTokens); err != nil {
+	pool, found := k.GetPool(ctx, poolID)
+	if !found {
+		return types.ErrPoolNotFound
+	}
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, pool.ModuleName, loanTokens); err != nil {
 		return err
 	}
 
@@ -1439,7 +1443,7 @@ func (k Keeper) FundModAcc(ctx sdk.Context, moduleName string, assetID uint64, l
 	}
 	cToken := sdk.NewCoin(cAsset.Denom, payment.Amount)
 
-	err := k.MintCoin(ctx, moduleName, cToken)
+	err := k.MintCoin(ctx, pool.ModuleName, cToken)
 	if err != nil {
 		return err
 	}

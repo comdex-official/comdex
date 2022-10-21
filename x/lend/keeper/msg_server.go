@@ -138,8 +138,7 @@ func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.Msg
 	if err != nil {
 		return nil, err
 	}
-
-	if err = m.keeper.FundModAcc(ctx, accounts.ModuleName, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
+	if err = m.keeper.FundModAcc(ctx, accounts.PoolId, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
 		return nil, err
 	}
 

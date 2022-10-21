@@ -180,12 +180,12 @@ func (msg *MsgRepay) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender string, amount sdk.Coin) *MsgFundModuleAccounts {
+func NewMsgFundModuleAccounts(poolID, assetID uint64, lender string, amount sdk.Coin) *MsgFundModuleAccounts {
 	return &MsgFundModuleAccounts{
-		ModuleName: moduleName,
-		AssetId:    assetID,
-		Lender:     lender,
-		Amount:     amount,
+		PoolId:  poolID,
+		AssetId: assetID,
+		Lender:  lender,
+		Amount:  amount,
 	}
 }
 
@@ -197,10 +197,9 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.ModuleName == "" {
-		return fmt.Errorf("module name can not be empty")
+	if msg.PoolId <= 0 {
+		return fmt.Errorf("pool id should be positive: %d > 0", msg.PoolId)
 	}
-
 	if msg.AssetId <= 0 {
 		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
 	}
