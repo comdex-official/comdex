@@ -24,13 +24,14 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 					id := bandKeeper.GetLastFetchPriceID(ctx)
 					data, _ := bandKeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
 					scriptID := bandKeeper.GetFetchPriceMsg(ctx).OracleScriptID
+					twaBatch := bandKeeper.GetFetchPriceMsg(ctx).TwaBatchSize
 					index := -1
 					length := len(data.Rates)
 					for _, asset := range assets {
 						if asset.IsOraclePriceRequired && data.Rates != nil {
 							index = index + 1
 							if length > index {
-								k.UpdatePriceList(ctx, asset.Id, scriptID, data.Rates[index])
+								k.UpdatePriceList(ctx, asset.Id, scriptID, data.Rates[index], twaBatch)
 							}
 						}
 					}

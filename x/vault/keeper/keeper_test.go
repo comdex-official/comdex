@@ -118,42 +118,17 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	}
 	s.Require().NotZero(assetID)
 
-	twa1 := markettypes.TimeWeightedAverage{
-		AssetID:       1,
-		ScriptID:      10,
-		Twa:           12000000,
-		CurrentIndex:  1,
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetID,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
 		IsPriceActive: true,
-		PriceValue:    nil,
+		PriceValue:    []uint64{price},
 	}
-	twa2 := markettypes.TimeWeightedAverage{
-		AssetID:       2,
-		ScriptID:      10,
-		Twa:           100000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	twa3 := markettypes.TimeWeightedAverage{
-		AssetID:       3,
-		ScriptID:      10,
-		Twa:           1000000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	twa4 := markettypes.TimeWeightedAverage{
-		AssetID:       4,
-		ScriptID:      10,
-		Twa:           2500000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	s.app.MarketKeeper.SetTwa(s.ctx, twa1)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, assetID)
+	s.Suite.NoError(err)
 
 	return assetID
 }

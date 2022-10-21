@@ -307,6 +307,43 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "CheckWhitelistedAssetResponse query response")
 			}
 			return bz, nil
+		} else if comdexQuery.CheckVaultCreated != nil {
+			Address := comdexQuery.CheckVaultCreated.Address
+			AppID := comdexQuery.CheckVaultCreated.AppID
+			found := queryPlugin.WasmCheckVaultCreated(ctx, Address, AppID)
+			res := bindings.VaultCreatedResponse{
+				IsCompleted: found,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "VaultCreatedResponse query response")
+			}
+			return bz, nil
+		} else if comdexQuery.CheckBorrowed != nil {
+			AssetID := comdexQuery.CheckBorrowed.AssetID
+			Address := comdexQuery.CheckBorrowed.Address
+			found := queryPlugin.WasmCheckBorrowed(ctx, AssetID, Address)
+			res := bindings.BorrowedResponse{
+				IsCompleted: found,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "BorrowedResponse query response")
+			}
+			return bz, nil
+		} else if comdexQuery.CheckLiquidityProvided != nil {
+			AppID := comdexQuery.CheckLiquidityProvided.AppID
+			PoolID := comdexQuery.CheckLiquidityProvided.PoolID
+			Address := comdexQuery.CheckLiquidityProvided.Address
+			found := queryPlugin.WasmCheckLiquidityProvided(ctx, AppID, PoolID, Address)
+			res := bindings.LiquidityProvidedResponse{
+				IsCompleted: found,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "LiquidityProvidedResponse query response")
+			}
+			return bz, nil
 		}
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}

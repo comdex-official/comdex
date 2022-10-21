@@ -411,7 +411,7 @@ WASM_CONTRACTS = [
         "name": "Vesting Contract",
         "contractAddressKey": "vesting_contract",
         "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/token_vesting.wasm",
-        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/token_vesting.wasm",
+        "contractPath": f"./token_vesting.wasm",
         "initator": {},
         "formatKeys": []
     },
@@ -419,7 +419,7 @@ WASM_CONTRACTS = [
         "name": "Locking Contract",
         "contractAddressKey": "locking_contract",
         "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/locking_contract.wasm",
-        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/locking_contract.wasm",
+        "contractPath": f"./locking_contract.wasm",
         "initator": {
             "t1": {"period": 500, "weight": "0.25"},
             "t2": {"period": 1000, "weight": "0.50"},
@@ -434,9 +434,11 @@ WASM_CONTRACTS = [
                 "app_id": 1,
                 "total_rewards": "10000000000000",
                 "rewards_pending": "10000000000000",
-                "emmission_rate": "0.01",
+                "emission_rate": "0.01",
                 "distributed_rewards": "0",
             },
+            "min_lock_amount" : "200",
+            "admin":"comdex1qaqxur3esruxdmxtyhxl4safu88l273dfkplk2"
         },
         "formatKeys": ['vesting_contract']
     },
@@ -444,7 +446,7 @@ WASM_CONTRACTS = [
         "name": "Governance Contract",
         "contractAddressKey": "governance_contract",
         "contractLink": "https://github.com/comdex-official/test-wasm-artifacts/raw/main/governance.wasm",
-        "contractPath": f"{COMDEX_DIR_PATH}/scripts/comdex_local_setup/governance.wasm",
+        "contractPath": f"./governance.wasm",
         "initator": {
             "threshold": {"threshold_quorum": {"threshold": "0.50", "quorum": "0.33"}},
             "target": "0.0.0.0:9090",

@@ -9,6 +9,7 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
+	var auctionID uint64
 
 	for _, item := range state.SurplusAuction {
 		err := k.SetSurplusAuction(ctx, item)
@@ -29,7 +30,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		if err != nil {
 			return
 		}
+		auctionID = item.AuctionId
 	}
+
+	k.SetAuctionID(ctx, auctionID)
+	k.SetUserBiddingID(ctx, state.UserBiddingID)
 
 	for _, item := range state.ProtocolStatistics {
 		k.SetProtocolStatistics(ctx, item.AppId, item.AssetId, sdk.Int(item.Loss))
@@ -48,5 +53,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllProtocolStat(ctx),
 		k.GetAllAuctionParams(ctx),
 		k.GetParams(ctx),
+		k.GetUserBiddingID(ctx),
 	)
 }

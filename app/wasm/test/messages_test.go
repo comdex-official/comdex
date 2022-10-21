@@ -20,7 +20,9 @@ func TestWhitelistAssetLocker(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhiteListAssetLocker
@@ -61,7 +63,9 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddExtendedPairsVault
@@ -116,7 +120,9 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetCollectorLookupTable
@@ -165,7 +171,9 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetAuctionMappingForApp
@@ -213,7 +221,9 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdateCollectorLookupTable
@@ -262,7 +272,9 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdatePairsVault
@@ -315,7 +327,9 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhitelistAppIDLiquidation
@@ -360,7 +374,9 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgRemoveWhitelistAppIDLiquidation
@@ -401,7 +417,9 @@ func TestMsgAddAuctionParams(t *testing.T) {
 		&comdex.CollectorKeeper,
 		&comdex.LiquidationKeeper,
 		&comdex.EsmKeeper,
-		&comdex.VaultKeeper)
+		&comdex.VaultKeeper,
+		&comdex.LendKeeper,
+		&comdex.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddAuctionParams

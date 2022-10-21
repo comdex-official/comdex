@@ -394,7 +394,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 		s.Run(tc.name, func() {
 			err := auctionKeeper.FundModule(*ctx, "auctionV1", tc.denom, tc.FundAmount)
 			s.Require().NoError(err)
-			err = auctionKeeper.SendCoinsFromModuleToModule(*ctx, "auctionV1", "collectorV1", sdk.NewCoins(sdk.NewCoin(tc.denom, sdk.NewIntFromUint64(tc.FundAmount))))
+			err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, "auctionV1", "collectorV1", sdk.NewCoins(sdk.NewCoin(tc.denom, sdk.NewIntFromUint64(tc.FundAmount))))
 			s.Require().NoError(err)
 			beforeCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collectorV1", tc.denom)
 			returnAmount, err := collectorKeeper.GetAmountFromCollector(*ctx, tc.appID, tc.assetID, tc.GetAmount)

@@ -20,4 +20,5 @@ message GenesisState {
   repeated AuctionParams auctionParams = 5
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
   Params params = 6 [(gogoproto.nullable) = false];
+  uint64 UserBiddingID  = 7 ;
 }
