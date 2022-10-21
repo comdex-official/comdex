@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction, dutchAuction []DutchAuction, protocolStatistics []ProtocolStatistics, auctionParams []AuctionParams, params Params) *GenesisState {
+func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction, dutchAuction []DutchAuction, protocolStatistics []ProtocolStatistics, auctionParams []AuctionParams, params Params, userBiddingID uint64) *GenesisState {
 	return &GenesisState{
 		SurplusAuction:     surplusAuction,
 		DebtAuction:        debtAuction,
@@ -8,10 +8,12 @@ func NewGenesisState(surplusAuction []SurplusAuction, debtAuction []DebtAuction,
 		ProtocolStatistics: protocolStatistics,
 		AuctionParams:      auctionParams,
 		Params:             params,
+		UserBiddingID:      userBiddingID,
 	}
 }
 
 func DefaultGenesisState() *GenesisState {
+	var UserBiddingID uint64
 	return NewGenesisState(
 		[]SurplusAuction{},
 		[]DebtAuction{},
@@ -19,6 +21,7 @@ func DefaultGenesisState() *GenesisState {
 		[]ProtocolStatistics{},
 		[]AuctionParams{},
 		DefaultParams(),
+		UserBiddingID,
 	)
 }
 

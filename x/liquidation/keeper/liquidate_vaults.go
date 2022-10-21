@@ -21,6 +21,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		}
 		klwsParams, _ := k.esm.GetKillSwitchData(ctx, appIds[i])
 		if klwsParams.BreakerEnable || status {
+			ctx.Logger().Info("Kill Switch Or ESM is enabled")
 			continue
 		}
 
@@ -77,7 +78,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
-				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalOut, totalFees)
+				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalFees)
 				if err != nil {
 					continue
 				}
@@ -95,7 +96,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalOut, totalFees sdk.Int) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalFees sdk.Int) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{

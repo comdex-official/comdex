@@ -119,6 +119,7 @@ func (k Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 			msg.FeeLimit,
 			msg.PrepareGas,
 			msg.ExecuteGas,
+			msg.TwaBatchSize,
 		)
 		value = k.cdc.MustMarshal(v)
 	)
@@ -157,6 +158,10 @@ func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceD
 	k.SetFetchPriceMsg(ctx, price)
 	k.SetLastBlockHeight(ctx, ctx.BlockHeight())
 	k.SetCheckFlag(ctx, false)
+	allTwa := k.market.GetAllTwa(ctx)
+	for _, data := range allTwa {
+		k.market.DeleteTwaData(ctx, data.AssetID)
+	}
 	return nil
 }
 

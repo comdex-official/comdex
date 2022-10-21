@@ -171,7 +171,7 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 
 	k, ctx := &s.keeper, &s.ctx
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	// s.Require().NoError(err)
 
 	appId := uint64(1)
@@ -193,7 +193,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(2)
@@ -202,16 +202,17 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
 	s.Require().True(found)
 
-	auctionMapData, auctionMappingFound := k.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
+	auctionMapData, auctionMappingFound := collectorKeeper.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
 	s.Require().True(auctionMappingFound)
 	klswData := esmtypes.KillSwitchParams{
 		1,
 		false,
 	}
+	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(4700000))
+	s.Require().NoError(err)
 	err1 := k.DebtActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
-
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
+	netFees, found := collectorKeeper.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)
 
 	debtAuction, err := k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
@@ -228,11 +229,11 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(debtAuction.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
 	s.Require().Equal(debtAuction.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.DebtLotSize)))
+	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
 
 	// Test restart debt auction
 	s.advanceseconds(301)
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	s.Require().NoError(err)
 	debtAuction1, err := k.GetDebtAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -248,7 +249,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction1.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(debtAuction1.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
 	s.Require().Equal(debtAuction1.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.DebtLotSize)))
+	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
 	s.Require().Equal(ctx.BlockTime().Add(time.Second*time.Duration(300)), debtAuction1.EndTime)
 }
 
@@ -464,7 +465,7 @@ func (s *KeeperTestSuite) TestCloseDebtAuction() {
 			s.Require().NoError(err)
 
 			s.advanceseconds(int64(tc.seconds))
-			auction.BeginBlocker(*ctx, s.keeper)
+			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			s.Require().NoError(err)
 
 			afterHarborBalance, err := s.getBalance(winnerAddress, "uharbor")

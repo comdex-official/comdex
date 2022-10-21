@@ -8,6 +8,8 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
+	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	tokenmintKeeper1 "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -39,7 +41,7 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 
 	k, ctx := &s.keeper, &s.ctx
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	// err := k.SurplusActivator(*ctx)
 	// s.Require().NoError(err)
 
@@ -56,24 +58,34 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
-	s.WasmUpdateCollectorLookupTable(1000, 19800, 100, 300)
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
-
-	auction.BeginBlocker(*ctx, s.keeper)
-	// s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
 	auctionId := uint64(1)
 
+	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(100000000))
+	s.Require().NoError(err)
+	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
+	s.Require().True(found)
+	auctionMapData, auctionMappingFound := collectorKeeper.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
+	s.Require().True(auctionMappingFound)
+	klswData := esmtypes.KillSwitchParams{
+		AppId:         1,
+		BreakerEnable: false,
+	}
+	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 1000000000)
+	s.Require().NoError(err2)
+	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
+	s.Require().NoError(err3)
+	err1 := k.SurplusActivator(*ctx, auctionMapData, klswData, false)
+	s.Require().NoError(err1)
+
 	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
-	s.Require().True(found)
-
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
+	netFees, found := collectorKeeper.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)
 
 	s.Require().Equal(surplusAuction.AppId, appId)
@@ -91,7 +103,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 
 	// Test restart surplus auction
 	s.advanceseconds(301)
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	s.Require().NoError(err)
 	surplusAuction1, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -303,7 +315,7 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 			s.Require().NoError(err)
 
 			s.advanceseconds(int64(tc.seconds))
-			auction.BeginBlocker(*ctx, s.keeper)
+			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			s.Require().NoError(err)
 
 			afterCmstBalance, err := s.getBalance(winnerAddress, "ucmst")

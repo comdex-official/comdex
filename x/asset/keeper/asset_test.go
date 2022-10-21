@@ -426,6 +426,7 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
 				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
 				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
+				IsVaultActive:      true,
 				DebtCeiling:        1000000000,
 				DebtFloor:          1000,
 				MinCr:              sdk.MustNewDecFromStr("1.8"),

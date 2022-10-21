@@ -37,6 +37,7 @@ func NewMsgFetchPriceData(
 	feeLimit sdk.Coins,
 	prepareGas uint64,
 	executeGas uint64,
+	twaBatch uint64,
 ) *MsgFetchPriceData {
 	return &MsgFetchPriceData{
 		ClientID:       FetchPriceClientIDKey,
@@ -49,6 +50,7 @@ func NewMsgFetchPriceData(
 		FeeLimit:       feeLimit,
 		PrepareGas:     prepareGas,
 		ExecuteGas:     executeGas,
+		TwaBatchSize:   twaBatch,
 	}
 }
 
@@ -85,6 +87,9 @@ func (m *MsgFetchPriceData) ValidateBasic() error {
 	}
 	if m.SourceChannel == "" {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid source channel")
+	}
+	if m.TwaBatchSize == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid batch size")
 	}
 	return nil
 }

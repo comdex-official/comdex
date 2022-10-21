@@ -160,7 +160,11 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	if !found {
 		return sdkerrors.Wrap(types.ErrorAssetRatesParamsNotFound, strconv.FormatUint(AssetID, 10))
 	}
-	cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
+	cAsset, found := k.GetAsset(ctx, assetRatesStat.CAssetID)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
 	cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
 
 	if err = k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, loanTokens); err != nil {
@@ -236,7 +240,8 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		return types.ErrLendNotFound
 	}
 
-	if withdrawal.Amount.Equal(lendPos.AvailableToBorrow) {
+	// if user wants to withdraw all amount then his position will be closed
+	if withdrawal.Amount.Equal(lendPos.AvailableToBorrow) && lendPos.AvailableToBorrow.GTE(lendPos.AmountIn.Amount) {
 		err = k.CloseLend(ctx, addr, lendID)
 		if err != nil {
 			return err
@@ -1581,5 +1586,39 @@ func (k Keeper) MsgCalculateLendRewards(ctx sdk.Context, addr string, lendID uin
 		return types.ErrLendAccessUnauthorized
 	}
 	k.SetLend(ctx, lendPos)
+	return nil
+}
+
+func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) error {
+	var (
+		lendIDs   []uint64
+		borrowIDs []uint64
+	)
+	mappingData := k.GetUserTotalMappingData(ctx, addr)
+
+	for _, data := range mappingData {
+		lendIDs = append(lendIDs, data.LendId)
+	}
+	if len(lendIDs) == 0 {
+		return types.ErrLendNotFound
+	}
+	for _, v := range lendIDs {
+		lendBorrowMappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, v)
+		borrowIDs = append(borrowIDs, lendBorrowMappingData.BorrowId...)
+	}
+	if len(borrowIDs) != 0 {
+		for _, borrowID := range borrowIDs {
+			err := k.MsgCalculateBorrowInterest(ctx, addr, borrowID)
+			if err != nil {
+				continue
+			}
+		}
+	}
+	for _, lendID := range lendIDs {
+		err := k.MsgCalculateLendRewards(ctx, addr, lendID)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

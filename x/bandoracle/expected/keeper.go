@@ -7,9 +7,13 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	marketttypes "github.com/comdex-official/comdex/x/market/types"
 )
 
-type MarketKeeper interface{}
+type MarketKeeper interface {
+	DeleteTwaData(ctx sdk.Context, assetID uint64)
+	GetAllTwa(ctx sdk.Context) (twa []marketttypes.TimeWeightedAverage)
+}
 
 type AssetKeeper interface {
 	GetAssets(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
