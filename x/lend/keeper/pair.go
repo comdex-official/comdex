@@ -177,7 +177,7 @@ func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRates
 	for _, msg := range records {
 		_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
 		if found {
-			return types.ErrorAssetRatesParamsNotFound
+			return types.ErrorAssetRatesParamsAlreadyExists
 		}
 
 		assetRatesParams := types.AssetRatesParams{
