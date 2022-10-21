@@ -164,30 +164,14 @@ func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.Msg
 	return &types.MsgFundModuleAccountsResponse{}, nil
 }
 
-func (m msgServer) CalculateBorrowInterest(goCtx context.Context, interest *types.MsgCalculateBorrowInterest) (*types.MsgCalculateBorrowInterestResponse, error) {
+func (m msgServer) CalculateInterestAndRewards(goCtx context.Context, rewards *types.MsgCalculateInterestAndRewards) (*types.MsgCalculateInterestAndRewardsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	borrowID := interest.BorrowId
-
-	if err := m.keeper.MsgCalculateBorrowInterest(ctx, interest.Borrower, borrowID); err != nil {
+	if err := m.keeper.MsgCalculateInterestAndRewards(ctx, rewards.Borrower); err != nil {
 		return nil, err
 	}
 
-	ctx.GasMeter().ConsumeGas(types.CalculateBorrowInterestGas, "CalculateBorrowInterestGas")
+	ctx.GasMeter().ConsumeGas(types.CalculateInterestAndRewardGas, "CalculateInterestAndRewardGas")
 
-	return &types.MsgCalculateBorrowInterestResponse{}, nil
-}
-
-func (m msgServer) CalculateLendRewards(goCtx context.Context, rewards *types.MsgCalculateLendRewards) (*types.MsgCalculateLendRewardsResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	borrowID := rewards.LendId
-
-	if err := m.keeper.MsgCalculateLendRewards(ctx, rewards.Lender, borrowID); err != nil {
-		return nil, err
-	}
-
-	ctx.GasMeter().ConsumeGas(types.CalculateLendRewardGas, "CalculateLendRewardGas")
-
-	return &types.MsgCalculateLendRewardsResponse{}, nil
+	return &types.MsgCalculateInterestAndRewardsResponse{}, nil
 }

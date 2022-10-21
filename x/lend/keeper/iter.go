@@ -67,7 +67,7 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		}
 		// subtracting newInterestPerInteraction from global lend and interest accumulated
 		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
-		poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Sub(newInterestPerInteraction)
+		// poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Sub(newInterestPerInteraction)
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 		k.SetLend(ctx, lend)
 	}

@@ -168,16 +168,16 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
-				AssetId: 3,
-				GenesisSupply :genesisSupply,
-				IsGovToken: true,
-				Recipient: userAddress1,
+				AssetId:       3,
+				GenesisSupply: genesisSupply,
+				IsGovToken:    true,
+				Recipient:     userAddress1,
 			},
 			{
-				AssetId: 2,
-				GenesisSupply :genesisSupply,
-				IsGovToken: true,
-				Recipient: userAddress1,
+				AssetId:       2,
+				GenesisSupply: genesisSupply,
+				IsGovToken:    true,
+				Recipient:     userAddress1,
 			},
 		},
 	}
