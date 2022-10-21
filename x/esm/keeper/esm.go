@@ -228,7 +228,7 @@ func (k Keeper) AddESMTriggerParamsForApp(ctx sdk.Context, addESMTriggerParams *
 }
 
 func (k Keeper) WasmAddESMTriggerParamsQuery(ctx sdk.Context, appID uint64) (bool, string) {
-	_, found := k.GetApp(ctx, appID)
+	_, found := k.asset.GetApp(ctx, appID)
 	if !found {
 		return false, types.ErrAppIDDoesNotExists.Error()
 	}
@@ -281,7 +281,7 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 }
 
 func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64) error {
-	totalVaults := k.GetVaults(ctx)
+	totalVaults := k.vault.GetVaults(ctx)
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
@@ -289,15 +289,15 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 	esmData, _ := k.GetESMTriggerParams(ctx, appID)
 	for _, data := range totalVaults {
 		if data.AppId == appID {
-			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
+			extendedPairVault, found := k.asset.GetPairsVault(ctx, data.ExtendedPairVaultID)
 			if !found {
 				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
 			}
-			pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+			pairData, found := k.asset.GetPair(ctx, extendedPairVault.PairId)
 			if !found {
 				return assettypes.ErrorPairDoesNotExist
 			}
-			assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+			assetInData, found := k.asset.GetAsset(ctx, pairData.AssetIn)
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
@@ -305,7 +305,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 			if !found {
 				continue
 			}
-			assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+			assetOutData, found := k.asset.GetAsset(ctx, pairData.AssetOut)
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
@@ -418,8 +418,8 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			}
 			k.SetESMStatus(ctx, esmStatus)
-			k.DeleteVault(ctx, data.Id)
-			k.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			k.vault.DeleteVault(ctx, data.Id)
+			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 		}
 	}
 	esmStatus.VaultRedemptionStatus = true
@@ -429,7 +429,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 }
 
 func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID uint64) error {
-	totalStableVaults := k.GetStableMintVaults(ctx)
+	totalStableVaults := k.vault.GetStableMintVaults(ctx)
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
@@ -437,15 +437,15 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 	esmData, _ := k.GetESMTriggerParams(ctx, appID)
 	for _, data := range totalStableVaults {
 		if data.AppId == appID {
-			extendedPairVault, found := k.GetPairsVault(ctx, data.ExtendedPairVaultID)
+			extendedPairVault, found := k.asset.GetPairsVault(ctx, data.ExtendedPairVaultID)
 			if !found {
 				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
 			}
-			pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+			pairData, found := k.asset.GetPair(ctx, extendedPairVault.PairId)
 			if !found {
 				return assettypes.ErrorPairDoesNotExist
 			}
-			assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+			assetInData, found := k.asset.GetAsset(ctx, pairData.AssetIn)
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
@@ -453,7 +453,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 			if !found {
 				continue
 			}
-			assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+			assetOutData, found := k.asset.GetAsset(ctx, pairData.AssetOut)
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
@@ -560,7 +560,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 			}
 		}
 	}
-	netFee, found1 := k.GetAppNetFeeCollectedData(ctx, appID)
+	netFee, found1 := k.collector.GetAppNetFeeCollectedData(ctx, appID)
 	coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 	if !found {
 		return nil
@@ -598,10 +598,10 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 }
 
 func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) error {
-	assets := k.GetAssets(ctx)
+	assets := k.asset.GetAssets(ctx)
 	for _, a := range assets {
 		if a.IsOraclePriceRequired {
-			price, found := k.GetTwa(ctx, a.Id)
+			price, found := k.market.GetTwa(ctx, a.Id)
 			// not checking is price active as this fn is called at the end of protocol and active relayer service is not certain
 			// so, we are not implementing is price active field.
 			if !found {
@@ -646,7 +646,7 @@ func (k Keeper) GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (pri
 }
 
 func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, id uint64, rate uint64, amt sdk.Int) (price sdk.Dec, err error) {
-	asset, found := k.GetAsset(ctx, id)
+	asset, found := k.asset.GetAsset(ctx, id)
 	if !found {
 		return sdk.ZeroDec(), assettypes.ErrorAssetDoesNotExist
 	}

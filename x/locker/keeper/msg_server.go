@@ -25,7 +25,7 @@ func NewMsgServer(keeper Keeper) types.MsgServer {
 
 func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLockerRequest) (*types.MsgCreateLockerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -33,15 +33,15 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	asset, found := k.GetAsset(ctx, msg.AssetId)
+	asset, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -50,7 +50,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	if userDataForLocker.LockerId != 0 {
 		return nil, types.ErrorUserLockerAlreadyExists
 	}
-	Collector, found := k.GetCollectorLookupTable(ctx, msg.AppId, msg.AssetId)
+	Collector, found := k.collector.GetCollectorLookupTable(ctx, msg.AppId, msg.AssetId)
 	if !found {
 		return nil, types.ErrorCollectorLookupDoesNotExists
 	}
@@ -73,7 +73,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 		return nil, err
 	}
 	if msg.Amount.GT(sdk.ZeroInt()) {
-		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
 	}
@@ -129,7 +129,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 // MsgDepositAsset Remove asset id from Deposit & Withdraw redundant.
 func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAssetRequest) (*types.MsgDepositAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -137,15 +137,15 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	asset, found := k.GetAsset(ctx, msg.AssetId)
+	asset, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -173,14 +173,14 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	if err != nil {
 		return nil, err
 	}
-	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	err1 := k.rewards.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
 	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
-		if err := k.SendCoinFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
 	}
@@ -215,11 +215,11 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 // MsgWithdrawAsset Remove asset id from Deposit & Withdraw-redundant.
 func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAssetRequest) (*types.MsgWithdrawAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetId)
+	asset, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -250,7 +250,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	if lockerData.NetBalance.LT(msg.Amount) {
 		return nil, types.ErrorRequestedAmountExceedsDepositAmount
 	}
-	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	err1 := k.rewards.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -259,7 +259,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, msg.Amount)); err != nil {
+		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
 	}
@@ -292,11 +292,11 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 
 func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRequest) (*types.MsgCloseLockerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	asset, found := k.GetAsset(ctx, msg.AssetId)
+	asset, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -325,7 +325,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 		return nil, err
 	}
 
-	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	err1 := k.rewards.CalculateLockerRewards(ctx, appMapping.Id, msg.AssetId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}
@@ -333,7 +333,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
 	if lockerData.NetBalance.GT(sdk.ZeroInt()) {
-		if err := k.SendCoinFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoin(asset.Denom, lockerData.NetBalance)); err != nil {
+		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(asset.Denom, lockerData.NetBalance))); err != nil {
 			return nil, err
 		}
 	}
@@ -364,7 +364,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 	var rewards rewardstypes.LockerRewardsTracker
 	rewards.AppMappingId = appMapping.Id
 	rewards.LockerId = lockerData.LockerId
-	k.DeleteLockerRewardTracker(ctx, rewards)
+	k.rewards.DeleteLockerRewardTracker(ctx, rewards)
 
 	ctx.GasMeter().ConsumeGas(types.CloseLockerGas, "CloseLockerGas")
 
@@ -374,7 +374,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRewardCalcRequest) (*types.MsgLockerRewardCalcResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
@@ -387,7 +387,7 @@ func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRe
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists
 	}
-	err1 := k.CalculateLockerRewards(ctx, appMapping.Id, lockerData.AssetDepositId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
+	err1 := k.rewards.CalculateLockerRewards(ctx, appMapping.Id, lockerData.AssetDepositId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
 	}

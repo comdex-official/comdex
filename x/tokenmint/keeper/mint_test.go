@@ -149,7 +149,7 @@ func (s *KeeperTestSuite) TestMsgMintNewTokens() {
 	} {
 		s.Run(tc.name, func() {
 			genesisSupply := sdk.NewIntFromUint64(9000000)
-			asset, found := tokenmintKeeper.GetAsset(*ctx, tc.msg.AssetId)
+			asset, found := s.assetKeeper.GetAsset(*ctx, tc.msg.AssetId)
 			s.Require().True(found)
 			previousCoin, err := s.getBalance(userAddress, asset.Denom)
 			_, err = server.MsgMintNewTokens(wctx, &tc.msg)
@@ -205,7 +205,7 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			asset, found := tokenmintKeeper.GetAsset(*ctx, tc.assetID)
+			asset, found := s.assetKeeper.GetAsset(*ctx, tc.assetID)
 			s.Require().True(found)
 			previousCoin, err := s.getBalance(userAddress, asset.Denom)
 			s.Require().NoError(err)
@@ -273,7 +273,7 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			asset, found := tokenmintKeeper.GetAsset(*ctx, tc.assetID)
+			asset, found := s.assetKeeper.GetAsset(*ctx, tc.assetID)
 			s.Require().True(found)
 			sender, err := sdk.AccAddressFromBech32(tc.address)
 			s.Require().NoError(err)
@@ -339,7 +339,7 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			asset, found := tokenmintKeeper.GetAsset(*ctx, tc.assetID)
+			asset, found := s.assetKeeper.GetAsset(*ctx, tc.assetID)
 			s.Require().True(found)
 			sender, err := sdk.AccAddressFromBech32(tc.address)
 			s.Require().NoError(err)

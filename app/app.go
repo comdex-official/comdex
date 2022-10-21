@@ -788,7 +788,7 @@ func New(
 		ibcRouter           = ibcporttypes.NewRouter()
 		transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
-		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper)
+		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
 	)
 
@@ -840,11 +840,14 @@ func New(
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.LiquidationKeeper, app.AccountKeeper, app.BankKeeper),
 		locker.NewAppModule(app.cdc, app.LockerKeeper, app.AccountKeeper, app.BankKeeper),
-		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper),
-		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper),
+		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper,
+			app.AuctionKeeper, app.LockerKeeper, app.Rewardskeeper),
+		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.VaultKeeper,
+			app.MarketKeeper, app.TokenmintKeeper, app.CollectorKeeper),
 		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper),
+		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper, app.CollectorKeeper,
+			app.LiquidationKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.VaultKeeper, app.TokenmintKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),

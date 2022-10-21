@@ -124,7 +124,7 @@ func (k Keeper) ActExternalRewardsLockers(
 	minLockupTimeSeconds int64,
 ) error {
 	id := k.GetExternalRewardsLockersID(ctx)
-	_, found := k.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
+	_, found := k.locker.GetLockerProductAssetMapping(ctx, appMappingID, assetID)
 	if !found {
 		return types.ErrAssetIDDoesNotExist
 	}
@@ -172,7 +172,7 @@ func (k Keeper) ActExternalRewardsVaults(
 ) error {
 	id := k.GetExternalRewardsVaultID(ctx)
 
-	appExtPairVaultData, found := k.GetAppMappingData(ctx, appMappingID)
+	appExtPairVaultData, found := k.vault.GetAppMappingData(ctx, appMappingID)
 	if !found {
 		return types.ErrAppIDDoesNotExists
 	}
@@ -219,11 +219,11 @@ func (k Keeper) ActExternalRewardsVaults(
 
 // WasmRemoveWhitelistAssetLocker tx and query binding functions
 func (k Keeper) WasmRemoveWhitelistAssetLocker(ctx sdk.Context, appMappingID uint64, assetID uint64) error {
-	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := k.GetESMStatus(ctx, appMappingID)
+	esmStatus, found := k.esm.GetESMStatus(ctx, appMappingID)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -249,11 +249,11 @@ func (k Keeper) WasmRemoveWhitelistAssetLockerQuery(ctx sdk.Context, appMappingI
 }
 
 func (k Keeper) WasmRemoveWhitelistAppIDVaultInterest(ctx sdk.Context, appMappingID uint64) error {
-	klwsParams, _ := k.GetKillSwitchData(ctx, appMappingID)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, appMappingID)
 	if klwsParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
-	esmStatus, found := k.GetESMStatus(ctx, appMappingID)
+	esmStatus, found := k.esm.GetESMStatus(ctx, appMappingID)
 	status := false
 	if found {
 		status = esmStatus.Status

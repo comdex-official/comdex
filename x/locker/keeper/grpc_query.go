@@ -75,7 +75,7 @@ func (q QueryServer) QueryLockerInfoByAppID(c context.Context, request *types.Qu
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	app, found := q.asset.GetApp(ctx, request.AppId)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
@@ -222,7 +222,7 @@ func (q QueryServer) QueryLockerCountByAppID(c context.Context, request *types.Q
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	app, found := q.GetApp(ctx, request.AppId)
+	app, found := q.asset.GetApp(ctx, request.AppId)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)
@@ -387,7 +387,7 @@ func (q QueryServer) QueryLockerTotalRewardsByAssetAppWise(c context.Context, re
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	_, found := q.GetApp(ctx, request.AppId)
+	_, found := q.asset.GetApp(ctx, request.AppId)
 
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "app does not exist for appID %d", request.AppId)

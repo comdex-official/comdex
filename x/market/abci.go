@@ -2,6 +2,8 @@ package market
 
 import (
 	utils "github.com/comdex-official/comdex/types"
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	bandkeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/comdex-official/comdex/x/market/keeper"
 	"github.com/comdex-official/comdex/x/market/types"
@@ -10,19 +12,19 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, bandKeeper bandkeeper.Keeper, assetKeeper assetkeeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		if k.GetOracleValidationResult(ctx) {
-			block := k.GetLastBlockheight(ctx)
+		if bandKeeper.GetOracleValidationResult(ctx) {
+			block := bandKeeper.GetLastBlockHeight(ctx)
 			if block != types.Int64Zero {
-				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && k.GetCheckFlag(ctx) {
-					assets := k.GetAssets(ctx)
-					id := k.GetLastFetchPriceID(ctx)
-					data, _ := k.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
-					scriptID := k.GetFetchPriceMsg(ctx).OracleScriptID
-					twaBatch := k.GetFetchPriceMsg(ctx).TwaBatchSize
+				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
+					assets := assetKeeper.GetAssets(ctx)
+					id := bandKeeper.GetLastFetchPriceID(ctx)
+					data, _ := bandKeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
+					scriptID := bandKeeper.GetFetchPriceMsg(ctx).OracleScriptID
+					twaBatch := bandKeeper.GetFetchPriceMsg(ctx).TwaBatchSize
 					index := -1
 					length := len(data.Rates)
 					for _, asset := range assets {
@@ -36,7 +38,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				}
 			}
 		} else {
-			assets := k.GetAssets(ctx)
+			assets := assetKeeper.GetAssets(ctx)
 			for _, asset := range assets {
 				twa, found := k.GetTwa(ctx, asset.Id)
 				if !found {

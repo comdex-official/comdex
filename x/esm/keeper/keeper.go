@@ -76,7 +76,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	// send tokens to tokenMint module and burn them
 	// update global deposit stats and user deposit stats checking if trigger params reached
 
-	appData, found := k.GetApp(ctx, AppID)
+	appData, found := k.asset.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound
 	}
@@ -86,7 +86,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 			govTokenID = v.AssetId
 		}
 	}
-	govAsset, found := k.GetAsset(ctx, govTokenID)
+	govAsset, found := k.asset.GetAsset(ctx, govTokenID)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
 	}
@@ -147,7 +147,7 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error {
 	// checking if target deposit amount is reached
 	// setting end time by adding coolOff period
-	_, found := k.GetApp(ctx, AppID)
+	_, found := k.asset.GetApp(ctx, AppID)
 	if !found {
 		return types.ErrAppDataNotFound
 	}
@@ -186,7 +186,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 	if err != nil {
 		return err
 	}
-	assetInID, _ := k.GetAssetForDenom(ctx, amount.Denom)
+	assetInID, _ := k.asset.GetAssetForDenom(ctx, amount.Denom)
 
 	// initializing userWorth
 	userWorth := sdk.ZeroDec()
@@ -198,7 +198,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 	}
 
 	for i, data := range esmDataAfterCoolOff.CollateralAsset {
-		collAsset, _ := k.GetAsset(ctx, data.AssetID)
+		collAsset, _ := k.asset.GetAsset(ctx, data.AssetID)
 		tokenDValue := data.Share.Mul(userWorth)
 		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID) // getting last saved prices
 		oldTokenQuant := tokenDValue.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))

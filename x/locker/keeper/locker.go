@@ -430,11 +430,11 @@ func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
 }
 
 func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, AssetID uint64) (bool, string) {
-	_, found := k.GetApp(ctx, appMappingID)
+	_, found := k.asset.GetApp(ctx, appMappingID)
 	if !found {
 		return false, types.ErrorAppMappingDoesNotExist.Error()
 	}
-	_, found = k.GetAsset(ctx, AssetID)
+	_, found = k.asset.GetAsset(ctx, AssetID)
 	if !found {
 		return false, types.ErrorAssetDoesNotExist.Error()
 	}
@@ -448,7 +448,7 @@ func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, Asse
 
 func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	esmStatus, found := k.GetESMStatus(ctx, msg.AppId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppId)
 	status := false
 	if found {
 		status = esmStatus.Status
@@ -456,15 +456,15 @@ func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteLis
 	if status {
 		return nil, esmtypes.ErrESMAlreadyExecuted
 	}
-	klwsParams, _ := k.GetKillSwitchData(ctx, msg.AppId)
+	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
 	}
-	appMapping, found := k.GetApp(ctx, msg.AppId)
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
 	if !found {
 		return nil, types.ErrorAppMappingDoesNotExist
 	}
-	asset, found := k.GetAsset(ctx, msg.AssetId)
+	asset, found := k.asset.GetAsset(ctx, msg.AssetId)
 	if !found {
 		return nil, types.ErrorAssetDoesNotExist
 	}

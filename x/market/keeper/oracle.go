@@ -103,7 +103,7 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 }
 
 func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
-	asset, found := k.GetAsset(ctx, id)
+	asset, found := k.assetKeeper.GetAsset(ctx, id)
 	if !found {
 		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
 	}
