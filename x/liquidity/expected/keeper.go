@@ -42,6 +42,7 @@ type AssetKeeper interface {
 
 type MarketKeeper interface {
 	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
 }
 
 type RewardsKeeper interface {

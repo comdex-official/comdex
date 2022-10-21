@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/comdex-official/comdex/x/collector/expected"
+
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -98,6 +100,10 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	assetKeeper   expected.AssetKeeper
+	auctionKeeper expected.AuctionKeeper
+	lockerKeeper  expected.LockerKeeper
+	rewardsKeeper expected.RewardsKeeper
 }
 
 func NewAppModule(
@@ -105,12 +111,20 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	assetKeeper expected.AssetKeeper,
+	auctionKeeper expected.AuctionKeeper,
+	lockerKeeper expected.LockerKeeper,
+	rewardsKeeper expected.RewardsKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		assetKeeper:    assetKeeper,
+		auctionKeeper:  auctionKeeper,
+		lockerKeeper:   lockerKeeper,
+		rewardsKeeper:  rewardsKeeper,
 	}
 }
 

@@ -297,28 +297,28 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(
 
 // CalculateCollateralizationRatio Calculate Collaterlization Ratio .
 func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
-	extendedPairVault, found := k.GetPairsVault(ctx, extendedPairVaultID)
+	extendedPairVault, found := k.asset.GetPairsVault(ctx, extendedPairVaultID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorExtendedPairVaultDoesNotExists
 	}
-	pairData, found := k.GetPair(ctx, extendedPairVault.PairId)
+	pairData, found := k.asset.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorPairDoesNotExist
 	}
-	assetInData, found := k.GetAsset(ctx, pairData.AssetIn)
+	assetInData, found := k.asset.GetAsset(ctx, pairData.AssetIn)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
 	}
-	assetOutData, found := k.GetAsset(ctx, pairData.AssetOut)
+	assetOutData, found := k.asset.GetAsset(ctx, pairData.AssetOut)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
 	}
 	// calculating price of the asset_in
-	assetInTotalPrice, err := k.CalcAssetPrice(ctx, assetInData.Id, amountIn)
+	assetInTotalPrice, err := k.oracle.CalcAssetPrice(ctx, assetInData.Id, amountIn)
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
-	esmStatus, found := k.GetESMStatus(ctx, extendedPairVault.AppId)
+	esmStatus, found := k.esm.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
 	if found {
 		statusEsm = esmStatus.Status
@@ -328,7 +328,7 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 	if statusEsm && esmStatus.SnapshotStatus {
 		// TODO: function update
 
-		price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
+		price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
@@ -340,13 +340,13 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 		// If oracle Price required for the assetOut
 		if statusEsm && esmStatus.SnapshotStatus {
 			// TODO: function update
-			price, found := k.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
+			price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
 			assetInTotalPrice = sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
 		} else {
-			assetOutTotalPrice, err = k.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
+			assetOutTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
 			if err != nil {
 				return sdk.ZeroDec(), err
 			}
@@ -566,8 +566,8 @@ func (k Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stabl
 }
 
 func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
-	appMapping, _ := k.GetApp(ctx, AppID)
-	extendedPairVault, _ := k.GetPairsVault(ctx, ExtendedPairVaultID)
+	appMapping, _ := k.asset.GetApp(ctx, AppID)
+	extendedPairVault, _ := k.asset.GetPairsVault(ctx, ExtendedPairVaultID)
 
 	zeroVal := sdk.ZeroInt()
 	oldID := k.GetIDForVault(ctx)
@@ -613,21 +613,21 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	var vaultsData types.AppExtendedPairVaultMappingData
 
 	totalVote := sdk.ZeroInt()
-	app, _ := k.GetApp(ctx, appID)
+	app, _ := k.asset.GetApp(ctx, appID)
 	govToken := app.GenesisToken
 	for _, v := range govToken {
 		if v.IsGovToken {
 			assetID = v.AssetId
 		}
 	}
-	asset, _ := k.GetAsset(ctx, assetID)
+	asset, _ := k.asset.GetAsset(ctx, assetID)
 	if amount.GT(sdk.ZeroInt()) {
-		err := k.MintCoin(ctx, tokenminttypes.ModuleName, sdk.NewCoin(asset.Denom, amount))
+		err := k.bank.MintCoins(ctx, tokenminttypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 		if err != nil {
 			return err
 		}
 	}
-	k.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
+	k.tokenmint.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
 	for i := range votingRatio {
 		totalVote = totalVote.Add(votingRatio[i])
 	}
@@ -647,7 +647,7 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 			amt := vault.AmountOut.Mul(perUserShareByAmt)
 			addr, _ := sdk.AccAddressFromBech32(vault.Owner)
 			if amt.GT(sdk.ZeroInt()) {
-				err := k.SendCoinFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoin(asset.Denom, amt))
+				err := k.bank.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt)))
 				if err != nil {
 					return err
 				}
