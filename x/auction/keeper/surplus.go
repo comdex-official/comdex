@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -66,7 +67,6 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 	if NetFeeCollectedData.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
 		// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
 		// calculate inflow token amount
-
 		assetBuyID := collector.SecondaryAssetId
 		assetSellID := collector.CollectorAssetId
 
@@ -82,6 +82,7 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 
 		_, err := k.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
 		if err != nil {
+			fmt.Println("insidervgrerbg")
 			return status, err
 		}
 

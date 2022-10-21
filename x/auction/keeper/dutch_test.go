@@ -6,6 +6,7 @@ import (
 	"github.com/comdex-official/comdex/x/auction"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
+	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
 	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaultKeeper1 "github.com/comdex-official/comdex/x/vault/keeper"
@@ -44,7 +45,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
-				MinUsdValueLeft:     1000000000000,
+				MinUsdValueLeft:     1000000,
 			},
 			1,
 			2,
@@ -514,10 +515,10 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	s.AddAppAsset()
-	s.AddPairAndExtendedPairVault1()
-	s.LiquidateVaults1()
-	s.AddAuctionParams()
+	// s.AddAppAsset()
+	// s.AddPairAndExtendedPairVault1()
+	// s.LiquidateVaults1()
+	// s.AddAuctionParams()
 	s.TestDutchBid()
 	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
 	// k, ctx := &s.keeper, &s.ctx
@@ -542,9 +543,9 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)*/
 
-	err1 := k.FundModule(*ctx, "auction", "ucmst", 10000000)
+	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 10000000)
 	s.Require().NoError(err1)
-	err = k.SendCoinsFromModuleToModule(*ctx, "auction", "collector", sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
+	err = k.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
 	s.Require().NoError(err)
 
 	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdk.NewInt(10000000))

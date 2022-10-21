@@ -33,20 +33,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 			}
 		}
 
-		// lockedVaults := k.GetLockedVaults(ctx)
-
-		//if len(lockedVaults) > 0 {
-		//	err3 := k.DutchActivator(ctx, lockedVaults)
-		//	if err3 != nil {
-		//		ctx.Logger().Error("error in dutch activator")
-		//	}
-		//
-		//	err5 := k.LendDutchActivator(ctx, lockedVaults)
-		//	if err5 != nil {
-		//		ctx.Logger().Error("error in lend dutch activator")
-		//	}
-		//}
-
 		apps, appsFound := k.GetApps(ctx)
 
 		if appsFound {

@@ -8,6 +8,8 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
+	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	tokenmintKeeper1 "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -56,22 +58,32 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
-	s.WasmUpdateCollectorLookupTable(1000, 19800, 100, 300)
 
 	k, collectorKeeper, ctx := &s.keeper, &s.collectorKeeper, &s.ctx
-
-	auction.BeginBlocker(*ctx, s.keeper)
-	// s.Require().NoError(err)
 
 	appId := uint64(1)
 	auctionMappingId := uint64(1)
 	auctionId := uint64(1)
 
-	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
+	err := k.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(100000000))
 	s.Require().NoError(err)
-
 	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
 	s.Require().True(found)
+	auctionMapData, auctionMappingFound := k.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
+	s.Require().True(auctionMappingFound)
+	klswData := esmtypes.KillSwitchParams{
+		AppId:         1,
+		BreakerEnable: false,
+	}
+	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 1000000000)
+	s.Require().NoError(err2)
+	err3 := k.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
+	s.Require().NoError(err3)
+	err1 := k.SurplusActivator(*ctx, auctionMapData, klswData, false)
+	s.Require().NoError(err1)
+
+	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
+	s.Require().NoError(err)
 
 	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)

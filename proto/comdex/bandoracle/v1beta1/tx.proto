@@ -25,6 +25,7 @@ message MsgFetchPriceData {
   uint64 prepare_gas = 9;
   uint64 execute_gas = 10;
   string client_id = 11 [(gogoproto.customname) = "ClientID"];
+  uint64 twa_batch_size = 12;
 }
 
 message MsgFetchPriceDataResponse {

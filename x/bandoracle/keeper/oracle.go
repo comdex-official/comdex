@@ -119,6 +119,7 @@ func (k Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 			msg.FeeLimit,
 			msg.PrepareGas,
 			msg.ExecuteGas,
+			msg.TwaBatchSize,
 		)
 		value = k.cdc.MustMarshal(v)
 	)

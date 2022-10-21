@@ -53,7 +53,7 @@ func (k Keeper) GetAllTwa(ctx sdk.Context) (twa []types.TimeWeightedAverage) {
 	return twa
 }
 
-func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate uint64) {
+func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch uint64) {
 	twa, found := k.GetTwa(ctx, id)
 	if !found {
 		twa.AssetID = id
@@ -67,30 +67,30 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate uint64) {
 		if twa.IsPriceActive {
 			twa.PriceValue[twa.CurrentIndex] = rate
 			twa.CurrentIndex = twa.CurrentIndex + 1
-			twa.Twa = k.CalculateTwa(ctx, twa)
-			if twa.CurrentIndex == 30 {
+			twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+			if twa.CurrentIndex == twaBatch {
 				twa.CurrentIndex = 0
 			}
 			k.SetTwa(ctx, twa)
 		} else {
 			twa.PriceValue = append(twa.PriceValue, rate)
 			twa.CurrentIndex = twa.CurrentIndex + 1
-			if twa.CurrentIndex == 30 {
+			if twa.CurrentIndex == twaBatch {
 				twa.IsPriceActive = true
 				twa.CurrentIndex = 0
-				twa.Twa = k.CalculateTwa(ctx, twa)
+				twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
 			}
 			k.SetTwa(ctx, twa)
 		}
 	}
 }
 
-func (k Keeper) CalculateTwa(ctx sdk.Context, twa types.TimeWeightedAverage) uint64 {
+func (k Keeper) CalculateTwa(ctx sdk.Context, twa types.TimeWeightedAverage, twaBatch uint64) uint64 {
 	var sum uint64
-	for _, price := range twa.PriceValue {
-		sum += price
+	for i := 0; i < int(twaBatch); i++ {
+		sum = sum + twa.PriceValue[i]
 	}
-	twa.Twa = sum / 30
+	twa.Twa = sum / twaBatch
 	return twa.Twa
 }
 

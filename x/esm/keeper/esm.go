@@ -330,9 +330,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 
 				itemc.AssetID = assetInData.Id
 				itemc.Amount = data.AmountIn
-				x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-				coolOffData.CollateralTotalAmount = sdk.NewDecFromInt(x)
-				itemc.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
+				x, _ := k.CalcDollarValueOfToken(ctx, assetInData.Id, rateIn, data.AmountIn)
+				// x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
+				coolOffData.CollateralTotalAmount = x
+				itemc.Share = x.Quo(coolOffData.CollateralTotalAmount)
 
 				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 				if err != nil {
@@ -342,9 +343,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 
 				itemd.AssetID = assetOutData.Id
 				itemd.Amount = data.AmountOut
-				y := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-				coolOffData.DebtTotalAmount = sdk.NewDecFromInt(y)
-				itemd.Share = sdk.NewDecFromInt(y).Quo(coolOffData.DebtTotalAmount)
+				y, _ := k.CalcDollarValueOfToken(ctx, assetOutData.Id, rateOut, data.AmountOut)
+				// y := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
+				coolOffData.DebtTotalAmount = y
+				itemd.Share = y.Quo(coolOffData.DebtTotalAmount)
 
 				itemd.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemd.Share).Quo(sdk.NewDecFromInt(itemd.Amount))
 
@@ -357,9 +359,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 					if indata.AssetID == assetInData.Id {
 						count++
 						indata.Amount = indata.Amount.Add(data.AmountIn)
-						x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-						coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(sdk.NewDecFromInt(x))
-						indata.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
+						x, _ := k.CalcDollarValueOfToken(ctx, assetInData.Id, rateIn, data.AmountIn)
+						// x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
+						coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(x)
+						indata.Share = x.Quo(coolOffData.CollateralTotalAmount)
 						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 						if err != nil {
 							return err
@@ -374,9 +377,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 
 					item.AssetID = assetInData.Id
 					item.Amount = data.AmountIn
-					x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-					coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(sdk.NewDecFromInt(x))
-					item.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
+					x, _ := k.CalcDollarValueOfToken(ctx, assetInData.Id, rateIn, data.AmountIn)
+					// x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
+					coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(x)
+					item.Share = x.Quo(coolOffData.CollateralTotalAmount)
 
 					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 					if err != nil {
@@ -389,9 +393,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 					if indatadebt.AssetID == assetOutData.Id {
 						count++
 						indatadebt.Amount = indatadebt.Amount.Add(data.AmountOut)
-						y := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-						coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(sdk.NewDecFromInt(y))
-						indatadebt.Share = sdk.NewDecFromInt(y).Quo(coolOffData.DebtTotalAmount)
+						y, _ := k.CalcDollarValueOfToken(ctx, assetOutData.Id, rateOut, data.AmountOut)
+						// y := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
+						coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(y)
+						indatadebt.Share = y.Quo(coolOffData.DebtTotalAmount)
 						indatadebt.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(indatadebt.Share).Quo(sdk.NewDecFromInt(indatadebt.Amount))
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatadebt)
@@ -403,9 +408,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64)
 
 					itemx.AssetID = assetOutData.Id
 					itemx.Amount = data.AmountOut
-					z := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(sdk.NewDecFromInt(z))
-					itemx.Share = sdk.NewDecFromInt(z).Quo(coolOffData.DebtTotalAmount)
+					z, _ := k.CalcDollarValueOfToken(ctx, assetOutData.Id, rateOut, data.AmountOut)
+					// z := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
+					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(z)
+					itemx.Share = z.Quo(coolOffData.DebtTotalAmount)
 					itemx.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemx.Share).Quo(sdk.NewDecFromInt(itemx.Amount))
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, itemx)
 				}
@@ -574,9 +580,10 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 						}
 					}
 					indatanet.Amount = indatanet.Amount.Sub(data.NetFeesCollected)
-					x := sdk.NewIntFromUint64(rateOut).Mul(indatanet.Amount)
-					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(sdk.NewDecFromInt(x))
-					indatanet.Share = sdk.NewDecFromInt(x).Quo(coolOffData.DebtTotalAmount)
+					x, _ := k.CalcDollarValueOfToken(ctx, data.AssetId, rateOut, indatanet.Amount)
+					// x := sdk.NewIntFromUint64(rateOut).Mul(indatanet.Amount)
+					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(x)
+					indatanet.Share = x.Quo(coolOffData.DebtTotalAmount)
 					indatanet.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(indatanet.Share).Quo(sdk.NewDecFromInt(indatanet.Amount))
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatanet)
@@ -636,4 +643,15 @@ func (k Keeper) GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (pri
 	var id protobuftypes.UInt64Value
 	k.cdc.MustUnmarshal(value, &id)
 	return id.GetValue(), true
+}
+
+func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, id uint64, rate uint64, amt sdk.Int) (price sdk.Dec, err error) {
+	asset, found := k.GetAsset(ctx, id)
+	if !found {
+		return sdk.ZeroDec(), assettypes.ErrorAssetDoesNotExist
+	}
+
+	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+	denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+	return numerator.Quo(denominator), nil
 }

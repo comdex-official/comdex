@@ -208,9 +208,10 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 		1,
 		false,
 	}
+	err := k.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(4700000))
+	s.Require().NoError(err)
 	err1 := k.DebtActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
-
 	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)
 
@@ -228,7 +229,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(debtAuction.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
 	s.Require().Equal(debtAuction.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.DebtLotSize)))
+	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
 
 	// Test restart debt auction
 	s.advanceseconds(301)
@@ -248,7 +249,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction1.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
 	s.Require().Equal(debtAuction1.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
 	s.Require().Equal(debtAuction1.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.DebtLotSize)))
+	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
 	s.Require().Equal(ctx.BlockTime().Add(time.Second*time.Duration(300)), debtAuction1.EndTime)
 }
 
