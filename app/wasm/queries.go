@@ -189,5 +189,9 @@ func (qp QueryPlugin) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID 
 		return false
 	}
 	_, found = qp.liquidityKeeper.GetActiveFarmer(ctx, appID, poolID, farmer)
-	return found
+	_, found2 := qp.liquidityKeeper.GetQueuedFarmer(ctx, appID, poolID, farmer)
+	if found || found2 {
+		return true
+	}
+	return false
 }

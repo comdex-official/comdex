@@ -25,6 +25,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 					}
 					k.SetTempFetchPriceID(ctx, 0)
 					k.SetCheckFlag(ctx, true)
+					k.SetOracleValidationResult(ctx, false)
 				} else {
 					msg := k.GetFetchPriceMsg(ctx)
 					_, err := k.FetchPrice(ctx, msg)
