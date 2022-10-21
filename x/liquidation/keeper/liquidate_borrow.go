@@ -43,7 +43,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		// calculating and updating the interest accumulated before checking for liquidations
 		err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
 		if err != nil {
-			continue
+			ctx.Logger().Error("error in calculating Borrow Interest before liquidation")
 		}
 		killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
 		if killSwitchParams.BreakerEnable {
