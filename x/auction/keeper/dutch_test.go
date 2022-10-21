@@ -226,12 +226,12 @@ func (s *KeeperTestSuite) AddAppAsset() {
 }
 
 func (s *KeeperTestSuite) LiquidateVaults1() {
-	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
+	liquidationKeeper, vaultKeeper, ctx := &s.liquidationKeeper, &s.vaultKeeper, &s.ctx
 	s.CreateVault()
 	currentVaultsCount := 2
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount)
 	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1), 1), currentVaultsCount)
-	beforeVault, found := liquidationKeeper.GetVault(*ctx, 1)
+	beforeVault, found := vaultKeeper.GetVault(*ctx, 1)
 	s.Require().True(found)
 
 	// Liquidation shouldn't happen as price not changed
@@ -293,7 +293,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.AddAuctionParams()
 	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	/*s.Require().NoError(err)
 	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)*/
@@ -418,7 +418,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 	} {
 		s.Run(tc.name, func() {
 			s.advanceseconds(tc.advanceSeconds)
-			auction.BeginBlocker(*ctx, s.keeper)
+			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			/*s.Require().NoError(err)
 			err = k.RestartDutch(*ctx)
 			s.Require().NoError(err)*/
@@ -433,7 +433,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.isErrorExpected {
 				s.advanceseconds(301 - tc.advanceSeconds)
-				auction.BeginBlocker(*ctx, s.keeper)
+				auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 				/*s.Require().NoError(err1)
 				err2 := k.RestartDutch(*ctx)
 				s.Require().NoError(err2)
@@ -538,14 +538,14 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	s.Require().NoError(err)
 	s.advanceseconds(250)
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	/*s.Require().NoError(err1)
 	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)*/
 
 	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 10000000)
 	s.Require().NoError(err1)
-	err = k.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
 	s.Require().NoError(err)
 
 	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdk.NewInt(10000000))
@@ -596,7 +596,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.advanceseconds(300)
 
 	startPrice := dutchAuction.OutflowTokenCurrentPrice
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	/*s.Require().NoError(err)
 	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)*/
@@ -611,9 +611,9 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	s.Require().NoError(err)
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	s.Require().NoError(err)
 
 	afterAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
@@ -640,7 +640,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	// half the auction duration
 	s.advanceseconds(150)
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	/*s.Require().NoError(err)
 	err = k.RestartDutch(*ctx)
 	s.Require().NoError(err)*/

@@ -41,7 +41,7 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 
 	k, ctx := &s.keeper, &s.ctx
 
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	// err := k.SurplusActivator(*ctx)
 	// s.Require().NoError(err)
 
@@ -65,11 +65,11 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	auctionMappingId := uint64(1)
 	auctionId := uint64(1)
 
-	err := k.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(100000000))
+	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(100000000))
 	s.Require().NoError(err)
 	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
 	s.Require().True(found)
-	auctionMapData, auctionMappingFound := k.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
+	auctionMapData, auctionMappingFound := collectorKeeper.GetAuctionMappingForApp(*ctx, appId, collectorLookUp.CollectorAssetId)
 	s.Require().True(auctionMappingFound)
 	klswData := esmtypes.KillSwitchParams{
 		AppId:         1,
@@ -77,7 +77,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	}
 	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 1000000000)
 	s.Require().NoError(err2)
-	err3 := k.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
+	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
 	s.Require().NoError(err3)
 	err1 := k.SurplusActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
@@ -85,7 +85,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	surplusAuction, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	netFees, found := k.GetNetFeeCollectedData(*ctx, uint64(1), 2)
+	netFees, found := collectorKeeper.GetNetFeeCollectedData(*ctx, uint64(1), 2)
 	s.Require().True(found)
 
 	s.Require().Equal(surplusAuction.AppId, appId)
@@ -103,7 +103,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 
 	// Test restart surplus auction
 	s.advanceseconds(301)
-	auction.BeginBlocker(*ctx, s.keeper)
+	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 	s.Require().NoError(err)
 	surplusAuction1, err := k.GetSurplusAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -315,7 +315,7 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 			s.Require().NoError(err)
 
 			s.advanceseconds(int64(tc.seconds))
-			auction.BeginBlocker(*ctx, s.keeper)
+			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			s.Require().NoError(err)
 
 			afterCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
