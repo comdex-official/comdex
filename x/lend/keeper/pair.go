@@ -125,7 +125,7 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 func (k Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendPairIDKey
+		key   = types.NewLendPairIDKey
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -139,7 +139,7 @@ func (k Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 func (k Keeper) SetLendPair(ctx sdk.Context, pair types.Extended_Pair) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendPairKey(pair.Id)
+		key   = types.NewLendPairKey(pair.Id)
 		value = k.cdc.MustMarshal(&pair)
 	)
 
@@ -149,7 +149,7 @@ func (k Keeper) SetLendPair(ctx sdk.Context, pair types.Extended_Pair) {
 func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pair, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendPairKey(id)
+		key   = types.NewLendPairKey(id)
 		value = store.Get(key)
 	)
 
@@ -164,7 +164,7 @@ func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pai
 func (k Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendPairKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewLendPairKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -186,7 +186,7 @@ func (k Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
 func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.LendPairIDKey
+		key   = types.NewLendPairIDKey
 		value = store.Get(key)
 	)
 
@@ -233,7 +233,7 @@ func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRates
 func (k Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams) error {
 	var (
 		store = k.Store(ctx)
-		key   = types.AuctionParamKey(param.AppId)
+		key   = types.NewAuctionParamKey(param.AppId)
 		value = k.cdc.MustMarshal(&param)
 	)
 
@@ -245,7 +245,7 @@ func (k Keeper) AddAuctionParamsData(ctx sdk.Context, param types.AuctionParams)
 func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams types.AuctionParams, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AuctionParamKey(appID)
+		key   = types.NewAuctionParamKey(appID)
 		value = store.Get(key)
 	)
 
@@ -260,7 +260,7 @@ func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionP
 func (k Keeper) GetAllAddAuctionParamsData(ctx sdk.Context) (auctionParams []types.AuctionParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AuctionParamPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewAuctionParamPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -281,7 +281,7 @@ func (k Keeper) GetAllAddAuctionParamsData(ctx sdk.Context) (auctionParams []typ
 func (k Keeper) SetAssetRatesParams(ctx sdk.Context, assetRatesParams types.AssetRatesParams) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesParamsKey(assetRatesParams.AssetID)
+		key   = types.NewAssetRatesParamsKey(assetRatesParams.AssetID)
 		value = k.cdc.MustMarshal(&assetRatesParams)
 	)
 
@@ -291,7 +291,7 @@ func (k Keeper) SetAssetRatesParams(ctx sdk.Context, assetRatesParams types.Asse
 func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesParams types.AssetRatesParams, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AssetRatesParamsKey(assetID)
+		key   = types.NewAssetRatesParamsKey(assetID)
 		value = store.Get(key)
 	)
 
@@ -306,7 +306,7 @@ func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRates
 func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []types.AssetRatesParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetRatesParamsKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewAssetRatesParamsKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
