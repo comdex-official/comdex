@@ -35,33 +35,6 @@ func (k Keeper) AddLendPairsRecords(ctx sdk.Context, records ...types.Extended_P
 	return nil
 }
 
-func (k Keeper) UpdateLendPairsRecords(ctx sdk.Context, msg types.Extended_Pair) error {
-	pair, found := k.GetLendPair(ctx, msg.Id)
-	if !found {
-		return types.ErrorPairNotFound
-	}
-
-	_, found = k.GetAsset(ctx, msg.AssetIn)
-	if !found {
-		return types.ErrorAssetDoesNotExist
-	}
-	_, found = k.GetAsset(ctx, msg.AssetOut)
-	if !found {
-		return types.ErrorAssetDoesNotExist
-	}
-
-	if msg.AssetIn == msg.AssetOut {
-		return types.ErrorAssetsCanNotBeSame
-	}
-
-	pair.AssetIn = msg.AssetIn
-	pair.AssetOut = msg.AssetOut
-	pair.MinUsdValueLeft = msg.MinUsdValueLeft
-
-	k.SetLendPair(ctx, pair)
-	return nil
-}
-
 func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	for _, v := range pool.AssetData {
 		_, found := k.GetAsset(ctx, v.AssetID)

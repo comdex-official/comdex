@@ -18,11 +18,6 @@ message AddPoolsProposal {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   Pool Pool = 3 [(gogoproto.nullable) = false];
 }
-message UpdateLendPairsProposal {
-  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
-  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
-}
 
 message AddAssetToPairProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
