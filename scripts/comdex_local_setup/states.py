@@ -438,7 +438,7 @@ WASM_CONTRACTS = [
                 "distributed_rewards": "0",
             },
             "min_lock_amount" : "200",
-            "admin":"comdex1rljg3wwgv6qezu3p05vxny9pwk3mdwl0ja407z"
+            "admin":"comdex1qaqxur3esruxdmxtyhxl4safu88l273dfkplk2"
         },
         "formatKeys": ['vesting_contract']
     },
