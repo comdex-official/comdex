@@ -49,7 +49,9 @@ func txLend() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "lend [asset-id] [amount] [pool-id] [app-id]",
 		Short: "lend a whitelisted asset",
-		Args:  cobra.ExactArgs(4),
+		Long: `Users can lend their IBC-Assets in any of the specified pools according to their choice and start earning lending rewards. 
+				A cToken representative of their IBC asset will be sent to the user's address which can be used to borrow Assets from any pool.`,
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -90,7 +92,9 @@ func txWithdraw() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "withdraw [lend-id] [amount]",
 		Short: "withdraw lent asset",
-		Args:  cobra.ExactArgs(2),
+		Long: `Users can withdraw their IBC-Assets from previously opened lend position. The cTokens are sent from the user's address
+				and desired amount is sent back to the user's address. If a user has no borrow position open, he can withdraw all amount to close his lend position.'`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -121,7 +125,9 @@ func txDeposit() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit [lend-id] [amount]",
 		Short: "deposit into a lent position",
-		Args:  cobra.ExactArgs(2),
+		Long: `Users can deposit more IBC-Assets into their previously opened lend position. The cTokens are then minted 
+				from the cPool's module and sent to the user's address and deposited amount is sent to the pool's module account'`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -151,8 +157,10 @@ func txDeposit() *cobra.Command {
 func txCloseLend() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "close-lend [lend-id]",
-		Short: "close a lent position",
-		Args:  cobra.ExactArgs(1),
+		Short: "close a previously opened lend position",
+		Long: `Users can close their lend position by this transaction. The cTokens will be transferred to the module 
+				account and user's IBC assets will be sent to his address.'`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -178,7 +186,9 @@ func txBorrowAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "borrow [lend-id] [pair-id] [is-stable-borrow] [amount-in] [amount-out]",
 		Short: "borrow a whitelisted asset",
-		Args:  cobra.ExactArgs(5),
+		Long: `This transaction only works after creating a lend position by depositing assets in any of the pool. 
+				After creating a lend position a user can use the cTokens to create a new borrow position.`,
+		Args: cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -225,7 +235,9 @@ func txRepayAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "repay [borrow-id] [amount]",
 		Short: "repay borrowed asset",
-		Args:  cobra.ExactArgs(2),
+		Long: `For an open borrow position a user can repay the borrowed amount back to protcol. While repaying the
+				interest is paid first then the principal borrowed amount. A user can repay all the amount to close it's borrow position.'`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -256,7 +268,9 @@ func txDrawAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "draw [borrow-id] [amount]",
 		Short: "draw borrowed asset",
-		Args:  cobra.ExactArgs(2),
+		Long: `If a user has to draw more assets from his borrow position, this transaction can be used. A user can draw 
+				max amount below the loan to value amount specified by the protocol for the borrowed asset`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -287,7 +301,9 @@ func txDepositBorrowAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposit-borrow [borrow-id] [amount]",
 		Short: "deposit borrowed asset",
-		Args:  cobra.ExactArgs(2),
+		Long: `If a user has to deposit more assets from to borrow position, this transaction can be used. A user can deposit 
+				cTokens to his borrow position to keep his position safe from being liquidated`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -318,7 +334,9 @@ func txCloseBorrowAsset() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "close-borrow [borrow-id] ",
 		Short: " close borrow position",
-		Args:  cobra.ExactArgs(1),
+		Long: `If a user has to close his borrow position then this transaction is used. All the repayment amount is
+				taken from the user and the previously locked cTokens are returned back to the user's address.'`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -344,7 +362,9 @@ func txBorrowAssetAlternate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "borrow-alternate [asset-id] [pool-id] [amount-in] [pair-id] [is-stable-borrow] [amount-out] [app-id]",
 		Short: "directly borrow from a whitelisted asset",
-		Args:  cobra.ExactArgs(7),
+		Long: `If a user has to borrow directly by depositing asset in a single go, then this transaction is used. 
+				The cTokens for the lend position will be directly used to create a borrow position against it.`,
+		Args: cobra.ExactArgs(7),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -402,7 +422,9 @@ func txFundModuleAccounts() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fund-module [pool_id] [asset_id] [amount]",
 		Short: "Deposit amount to the respective module account",
-		Args:  cobra.ExactArgs(3),
+		Long: `This is a liquidity bootstrapping function only for the protocol admins. 
+				No user should run this transaction as it will lead to loss of funds.`,
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -889,6 +911,7 @@ func txCalculateInterestAndRewards() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "calculate-interest-rewards",
 		Short: " calculate interest and rewards for a user",
+		Long:  `This function is used to calculate Rewards for lend as well as interest for all borrow positions for a user.`,
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
