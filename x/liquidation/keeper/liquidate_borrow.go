@@ -43,14 +43,20 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			ctx.Logger().Error("Lend Pos Not Found in Liquidation, liquidate_borrow.go for ID %d", borrowPos.LendingID)
 			continue
 		}
+
+		// calculating and updating the interest accumulated before checking for liquidations
+		err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+		if err != nil {
+			ctx.Logger().Error("error in calculating Borrow Interest before liquidation")
+		}
 		killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
 		if killSwitchParams.BreakerEnable {
 			ctx.Logger().Error("Kill Switch is enabled in Liquidation, liquidate_borrow.go for ID %d", lendPos.AppID)
 			continue
 		}
 		// calculating and updating the interest accumulated before checking for liquidations
-		err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
-		if err != nil {
+		err1 := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+		if err1 != nil {
 			ctx.Logger().Error("Error in calculating Borrow Interest before liquidation, liquidate_borrow.go for ID %d", borrowPos.ID)
 		}
 		pool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
