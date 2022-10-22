@@ -80,6 +80,7 @@ type LendKeeper interface {
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 	SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset)
+	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
 }
 
 type RewardsKeeper interface {

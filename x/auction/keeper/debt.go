@@ -170,6 +170,7 @@ func (k Keeper) RestartDebt(
 ) error {
 	status, _, inflowToken := k.getDebtSellTokenAmount(ctx, appID, debtAuction.AssetInId, debtAuction.AssetOutId, debtAuction.ExpectedUserToken.Amount)
 	if status == auctiontypes.NoAuction {
+		ctx.Logger().Error("auction types mismatch for debt restart")
 		return nil
 	}
 	auctionParams, found := k.GetAuctionParams(ctx, appID)

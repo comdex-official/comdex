@@ -8,104 +8,88 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
-	// k.SetParams(ctx, state.Params)
+	var (
+		borrowID       uint64
+		lendID         uint64
+		poolID         uint64
+		extendedPairID uint64
+	)
 
-	// for _, item := range state.BorrowAsset {
-	// 	k.SetBorrow(ctx, item)
-	// }
+	k.SetParams(ctx, state.Params)
 
-	// for _, item := range state.UserBorrowIdMapping {
-	// 	k.SetUserBorrows(ctx, item)
-	// }
+	for _, item := range state.BorrowAsset {
+		k.SetBorrow(ctx, item)
+		borrowID = item.ID
+	}
 
-	// for _, item := range state.BorrowIdByOwnerAndPoolMapping {
-	// 	k.SetBorrowIDByOwnerAndPool(ctx, item)
-	// }
+	for _, item := range state.BorrowInterestTracker {
+		k.SetBorrowInterestTracker(ctx, item)
+	}
 
-	// k.SetBorrows(ctx, state.BorrowMapping)
+	for _, item := range state.LendAsset {
+		k.SetLend(ctx, item)
+		lendID = item.ID
+	}
 
-	// for _, item := range state.LendAsset {
-	// 	k.SetLend(ctx, item)
-	// }
+	for _, item := range state.Pool {
+		k.SetPool(ctx, item)
+		poolID = item.PoolID
+	}
 
-	// for _, item := range state.Pool {
-	// 	k.SetPool(ctx, item)
-	// }
+	for _, item := range state.AssetToPairMapping {
+		k.SetAssetToPair(ctx, item)
+	}
 
-	// for _, item := range state.AssetToPairMapping {
-	// 	k.SetAssetToPair(ctx, item)
-	// }
+	for _, item := range state.PoolAssetLBMapping {
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, item)
+	}
 
-	// for _, item := range state.UserLendIdMapping {
-	// 	k.SetUserLends(ctx, item)
-	// }
+	for _, item := range state.LendRewardsTracker {
+		k.SetLendRewardTracker(ctx, item)
+	}
 
-	// for _, item := range state.LendIdByOwnerAndPoolMapping {
-	// 	k.SetLendIDByOwnerAndPool(ctx, item)
-	// }
+	for _, item := range state.UserAssetLendBorrowMapping {
+		k.SetUserLendBorrowMapping(ctx, item)
+	}
 
-	// for _, item := range state.LendIdToBorrowIdMapping {
-	// 	k.SetLendIDToBorrowIDMapping(ctx, item)
-	// }
+	for _, item := range state.ReserveBuybackAssetData {
+		k.SetReserveBuybackAssetData(ctx, item)
+	}
 
-	// for _, item := range state.AssetStats {
-	// 	k.SetAssetStatsByPoolIDAndAssetID(ctx, item)
-	// }
+	for _, item := range state.Extended_Pair {
+		k.SetLendPair(ctx, item)
+		extendedPairID = item.Id
+	}
 
-	// k.SetLends(ctx, state.LendMapping)
-
-	// k.SetUserDepositStats(ctx, state.UserDepositStats)
-
-	// k.SetReserveDepositStats(ctx, state.ReserveDepositStats)
-
-	// k.SetBuyBackDepositStats(ctx, state.BuyBackDepositStats)
-
-	// k.SetBorrowStats(ctx, state.BorrowDepositStats)
-
-	// for _, item := range state.Extended_Pair {
-	// 	k.SetLendPair(ctx, item)
-	// }
-
-	// for _, item := range state.AssetRatesStats {
-	// 	k.SetAssetRatesStats(ctx, item)
-	// }
-
-	// for _, item := range state.AuctionParams {
-	// 	err := k.AddAuctionParamsData(ctx, item)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// }
+	for _, item := range state.AuctionParams {
+		err := k.AddAuctionParamsData(ctx, item)
+		if err != nil {
+			continue
+		}
+	}
+	for _, item := range state.AssetRatesParams {
+		k.SetAssetRatesParams(ctx, item)
+	}
+	k.SetUserBorrowIDCounter(ctx, borrowID)
+	k.SetUserLendIDCounter(ctx, lendID)
+	k.SetPoolID(ctx, poolID)
+	k.SetLendPairID(ctx, extendedPairID)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	// borrowMap, _ := k.GetBorrows(ctx)
-	// lends, _ := k.GetLends(ctx)
-	// userDeposit, _ := k.GetUserDepositStats(ctx)
-	// reserveDeposit, _ := k.GetReserveDepositStats(ctx)
-	// buyBackDeposit, _ := k.GetBuyBackDepositStats(ctx)
-	// borrowDeposit, _ := k.GetBorrowStats(ctx)
-	// return types.NewGenesisState(
-	// 	k.GetAllBorrow(ctx),
-	// 	k.GetAllUserBorrows(ctx),
-	// 	k.GetAllBorrowIDByOwnerAndPool(ctx),
-	// 	borrowMap,
-	// 	k.GetAllLend(ctx),
-	// 	k.GetPools(ctx),
-	// 	k.GetAllAssetToPair(ctx),
-	// 	k.GetAllUserLends(ctx),
-	// 	k.GetAllLendIDByOwnerAndPool(ctx),
-	// 	k.GetAllLendIDToBorrowIDMapping(ctx),
-	// 	k.GetAllAssetStatsByPoolIDAndAssetID(ctx),
-	// 	lends,
-	// 	userDeposit,
-	// 	reserveDeposit,
-	// 	buyBackDeposit,
-	// 	borrowDeposit,
-	// 	k.GetLendPairs(ctx),
-	// 	k.GetAllAssetRatesStats(ctx),
-	// 	k.GetAllAddAuctionParamsData(ctx),
-	// 	k.GetParams(ctx),
-	// )
-	return nil
+	return types.NewGenesisState(
+		k.GetAllBorrow(ctx),
+		k.GetAllBorrowInterestTracker(ctx),
+		k.GetAllLend(ctx),
+		k.GetPools(ctx),
+		k.GetAllAssetToPair(ctx),
+		k.GetAllAssetStatsByPoolIDAndAssetID(ctx),
+		k.GetAllLendRewardTracker(ctx),
+		k.GetAllUserTotalMappingData(ctx),
+		k.GetAllReserveBuybackAssetData(ctx),
+		k.GetLendPairs(ctx),
+		k.GetAllAddAuctionParamsData(ctx),
+		k.GetAllAssetRatesParams(ctx),
+		k.GetParams(ctx),
+	)
 }

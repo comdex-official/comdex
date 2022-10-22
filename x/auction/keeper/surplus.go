@@ -172,6 +172,7 @@ func (k Keeper) RestartSurplus(
 ) error {
 	status, _, buyToken := k.getSurplusBuyTokenAmount(ctx, surplusAuction.AssetInId, surplusAuction.AssetOutId, surplusAuction.BuyToken.Amount)
 	if status == auctiontypes.NoAuction {
+		ctx.Logger().Error("auction types mismatch for surplus restart")
 		return nil
 	}
 	auctionParams, found := k.GetAuctionParams(ctx, appID)
