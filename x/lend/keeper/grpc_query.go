@@ -481,7 +481,7 @@ func (q QueryServer) QueryPoolAssetLBMapping(c context.Context, req *types.Query
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.AssetId, req.PoolId)
+	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.PoolId, req.AssetId)
 	if !found {
 		return &types.QueryPoolAssetLBMappingResponse{}, nil
 	}

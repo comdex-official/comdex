@@ -317,7 +317,6 @@ func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRe
 	return rewards
 }
 
-// only called while borrowing
 func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
