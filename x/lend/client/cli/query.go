@@ -647,7 +647,7 @@ func QueryAssetRatesParams() *cobra.Command {
 
 func QueryPoolAssetLBMapping() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "asset-stats [asset-id] [pool-id]",
+		Use:   "asset-stats [pool-id] [asset-id]",
 		Short: "Query asset stats for an asset-id and pool-id",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -658,12 +658,12 @@ func QueryPoolAssetLBMapping() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			assetID, err := strconv.ParseUint(args[0], 10, 64)
+			poolID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}

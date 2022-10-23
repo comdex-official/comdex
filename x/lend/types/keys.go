@@ -56,7 +56,7 @@ var (
 
 	NewAssetToPairMappingKeyPrefix           = []byte{0x20}
 	NewAssetStatsByPoolIDAndAssetIDKeyPrefix = []byte{0x73}
-	NewAssetRatesParamsKeyPrefix             = []byte{0x74}
+	NewAssetRatesParamsKeyPrefix             = []byte{0x30}
 	NewLendRewardsTrackerKeyPrefix           = []byte{0x75}
 	NewBorrowInterestTrackerKeyPrefix        = []byte{0x76}
 	NewUserLendBorrowMappingKeyPrefix        = []byte{0x77}
