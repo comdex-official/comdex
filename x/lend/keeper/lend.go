@@ -299,7 +299,7 @@ func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.
 func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRewardsTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendRewardsTrackerKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewLendRewardsTrackerKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -369,7 +369,7 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 func (k Keeper) GetAllUserTotalMappingData(ctx sdk.Context) (mappingData []types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.UserLendBorrowMappingKeyPrefix
+		key   = types.NewUserLendBorrowMappingKeyPrefix
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -462,7 +462,7 @@ func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve 
 func (k Keeper) GetAllReserveBuybackAssetData(ctx sdk.Context) (reserve []types.ReserveBuybackAssetData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ReserveBuybackAssetDataKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewReserveBuybackAssetDataKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {

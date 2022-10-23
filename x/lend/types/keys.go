@@ -44,21 +44,17 @@ var (
 )
 
 var (
-	NewKeyPrefixReserveAmount = []byte{0x60}
-
 	NewPoolKeyPrefix         = []byte{0x61}
 	NewLendUserPrefix        = []byte{0x62}
 	NewLendCounterIDPrefix   = []byte{0x63}
 	NewPoolIDPrefix          = []byte{0x64}
-	NewLendPairIDKey         = []byte{0x65}
-	NewLendPairKeyPrefix     = []byte{0x66}
+	NewLendPairIDKey         = []byte{0x18}
+	NewLendPairKeyPrefix     = []byte{0x19}
 	NewBorrowCounterIDPrefix = []byte{0x67}
 	NewBorrowPairKeyPrefix   = []byte{0x68}
 	NewAuctionParamPrefix    = []byte{0x69}
 
-	NewAssetToPairMappingKeyPrefix           = []byte{0x70}
-	NewLendForAddressByAssetKeyPrefix        = []byte{0x71}
-	NewBorrowForAddressByPairKeyPrefix       = []byte{0x72}
+	NewAssetToPairMappingKeyPrefix           = []byte{0x20}
 	NewAssetStatsByPoolIDAndAssetIDKeyPrefix = []byte{0x73}
 	NewAssetRatesParamsKeyPrefix             = []byte{0x74}
 	NewLendRewardsTrackerKeyPrefix           = []byte{0x75}

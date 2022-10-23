@@ -141,7 +141,7 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest t
 func (k Keeper) GetAllBorrowInterestTracker(ctx sdk.Context) (interest []types.BorrowInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.BorrowInterestTrackerKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.NewBorrowInterestTrackerKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {

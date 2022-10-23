@@ -198,8 +198,8 @@ func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 	for _, v := range liqBorrow {
 		borrowMetaData := v.GetBorrowMetaData()
 		pair, _ := k.GetLendPair(ctx, v.ExtendedPairId)
-		assetIn, _ := k.GetAsset(ctx, pair.AssetIn)
-		assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn)
+		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut)
 		amountIn := sdk.NewCoin(assetIn.Denom, v.AmountIn)
 		amountOut := sdk.NewCoin(assetOut.Denom, v.AmountOut)
 		pool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
