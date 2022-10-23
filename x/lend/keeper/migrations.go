@@ -126,6 +126,9 @@ func (k Keeper) FuncMigratePool(ctx sdk.Context) error {
 func (k Keeper) FuncMigrateLend(ctx sdk.Context) error {
 	allLends := k.OldGetAllLend(ctx)
 	for _, v := range allLends {
+		if v.AmountIn.Amount.LTE(sdk.ZeroInt()) || v.AvailableToBorrow.LT(sdk.ZeroInt()) {
+			continue
+		}
 		newLend := types.LendAsset{
 			ID:                  v.ID,
 			AssetID:             v.AssetID,
@@ -164,6 +167,9 @@ func (k Keeper) FuncMigrateLend(ctx sdk.Context) error {
 func (k Keeper) FuncMigrateBorrow(ctx sdk.Context) error {
 	oldBorrows := k.OldGetAllBorrow(ctx)
 	for _, v := range oldBorrows {
+		if v.AmountIn.Amount.LTE(sdk.ZeroInt()) || v.AmountOut.Amount.LT(sdk.ZeroInt()) {
+			continue
+		}
 		newBorrow := types.BorrowAsset{
 			ID:                  v.ID,
 			LendingID:           v.LendingID,
@@ -203,6 +209,9 @@ func (k Keeper) FuncMigrateBorrow(ctx sdk.Context) error {
 func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 	liqBorrow := k.liquidation.GetLockedVaultByApp(ctx, 3)
 	for _, v := range liqBorrow {
+		if v.AmountIn.LTE(sdk.ZeroInt()) || v.AmountOut.LT(sdk.ZeroInt()) {
+			continue
+		}
 		borrowMetaData := v.GetBorrowMetaData()
 		pair, _ := k.GetLendPair(ctx, v.ExtendedPairId)
 		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn)
