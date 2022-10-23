@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -82,7 +81,6 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 
 		_, err := k.collector.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
 		if err != nil {
-			fmt.Println("insidervgrerbg")
 			return status, err
 		}
 
@@ -174,6 +172,7 @@ func (k Keeper) RestartSurplus(
 ) error {
 	status, _, buyToken := k.getSurplusBuyTokenAmount(ctx, surplusAuction.AssetInId, surplusAuction.AssetOutId, surplusAuction.BuyToken.Amount)
 	if status == auctiontypes.NoAuction {
+		ctx.Logger().Error("auction types mismatch for surplus restart")
 		return nil
 	}
 	auctionParams, found := k.GetAuctionParams(ctx, appID)

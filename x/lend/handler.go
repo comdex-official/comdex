@@ -81,8 +81,6 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.LendPairsProposal:
 			return handleAddWhitelistedPairsProposal(ctx, k, c)
-		case *types.UpdateLendPairsProposal:
-			return handleUpdateWhitelistedPairsProposal(ctx, k, c)
 		case *types.AddPoolsProposal:
 			return handleAddPoolProposal(ctx, k, c)
 		case *types.AddAssetToPairProposal:
@@ -100,10 +98,6 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 
 func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.LendPairsProposal) error {
 	return k.HandleAddWhitelistedPairsRecords(ctx, p)
-}
-
-func handleUpdateWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateLendPairsProposal) error {
-	return k.HandleUpdateWhitelistedPairsRecords(ctx, p)
 }
 
 func handleAddPoolProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolsProposal) error {

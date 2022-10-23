@@ -108,7 +108,7 @@ message MsgBorrowAlternate {
 }
 
 message MsgFundModuleAccounts {
-  string                   moduleName = 1;
+  uint64                   poolId = 1;
   uint64                   assetId = 2;
   string                   lender = 3;
   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];

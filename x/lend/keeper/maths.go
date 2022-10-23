@@ -8,7 +8,7 @@ import (
 
 func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (sdk.Dec, error) {
 	pool, _ := k.GetPool(ctx, poolID)
-	asset, _ := k.GetAsset(ctx, assetID)
+	asset, _ := k.asset.GetAsset(ctx, assetID)
 	moduleBalance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
 	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	if !found {

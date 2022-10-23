@@ -53,21 +53,20 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
 
 		pool, _ := k.GetPool(ctx, lend.PoolID)
-		asset, _ := k.GetAsset(ctx, lend.AssetID)
+		asset, _ := k.asset.GetAsset(ctx, lend.AssetID)
 		Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)
 		assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
 
-		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
+		cAsset, _ := k.asset.GetAsset(ctx, assetRatesStat.CAssetID)
 		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
 
 		addr, _ := sdk.AccAddressFromBech32(lend.Owner)
-		err := k.SendCoinFromModuleToAccount(ctx, pool.ModuleName, addr, cToken)
+		err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, sdk.NewCoins(cToken))
 		if err != nil {
 			return sdk.Dec{}, err
 		}
 		// subtracting newInterestPerInteraction from global lend and interest accumulated
 		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
-		// poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Sub(newInterestPerInteraction)
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 		k.SetLend(ctx, lend)
 	}
@@ -219,12 +218,12 @@ func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
-				perc1, _ := sdk.NewDecFromStr(types.Perc1)
-				perc2, _ := sdk.NewDecFromStr(types.Perc2)
-				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
+				perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 //20%
+				perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 //90%
+				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%
 					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
 					k.SetBorrow(ctx, borrowPos)
-				} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
+				} else if (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) || utilizationRatio.GT(perc2) { // condition 2, 𝑆 + 20% ≤ 𝑆𝑡 ∨ 𝑢𝑡𝑖𝑙𝑖𝑧𝑎𝑡𝑖𝑜𝑛 ≥ 90%
 					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
 					k.SetBorrow(ctx, borrowPos)
 				}
