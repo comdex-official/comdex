@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.Pool) {
+func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.PoolOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
@@ -20,7 +20,7 @@ func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.Pool) {
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var pool migrationTypes.Pool
+		var pool migrationTypes.PoolOld
 		k.cdc.MustUnmarshal(iter.Value(), &pool)
 		pools = append(pools, pool)
 	}
@@ -28,7 +28,7 @@ func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.Pool) {
 	return pools
 }
 
-func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []migrationTypes.LendAsset) {
+func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []migrationTypes.LendAssetOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
@@ -42,14 +42,14 @@ func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []migrationTypes.LendA
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset migrationTypes.LendAsset
+		var asset migrationTypes.LendAssetOld
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
 		lendAsset = append(lendAsset, asset)
 	}
 	return lendAsset
 }
 
-func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []migrationTypes.BorrowAsset) {
+func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []migrationTypes.BorrowAssetOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
@@ -63,7 +63,7 @@ func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []migrationTypes.B
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset migrationTypes.BorrowAsset
+		var asset migrationTypes.BorrowAssetOld
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
 		borrowAsset = append(borrowAsset, asset)
 	}
