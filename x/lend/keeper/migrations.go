@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -47,6 +48,12 @@ func (k Keeper) MigrateData(ctx sdk.Context) error {
 		return err
 	}
 	fmt.Println("5")
+
+	err = k.FuncMigrateApp(ctx)
+	if err != nil {
+		return err
+	}
+	fmt.Println("6")
 
 	return nil
 }
@@ -280,5 +287,47 @@ func (k Keeper) FuncMigrateAuctionParams(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (k Keeper) FuncMigrateApp(ctx sdk.Context) error {
+	app1 := assettypes.AppData{
+		Id:               1,
+		Name:             "CSWAP",
+		ShortName:        "cswap",
+		MinGovDeposit:    sdk.ZeroInt(),
+		GovTimeInSeconds: 300,
+		GenesisToken:     nil,
+	}
+	k.asset.SetApp(ctx, app1)
+
+	genesisToken := assettypes.MintGenesisToken{
+		AssetId:       9,
+		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
+		IsGovToken:    true,
+		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
+	}
+	var gToken []assettypes.MintGenesisToken
+	gToken = append(gToken, genesisToken)
+	app2 := assettypes.AppData{
+		Id:               2,
+		Name:             "HARBOR",
+		ShortName:        "hbr",
+		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		GovTimeInSeconds: 300,
+		GenesisToken:     gToken,
+	}
+	k.asset.SetApp(ctx, app2)
+
+	app3 := assettypes.AppData{
+		Id:               3,
+		Name:             "commodo",
+		ShortName:        "cmdo",
+		MinGovDeposit:    sdk.ZeroInt(),
+		GovTimeInSeconds: 0,
+		GenesisToken:     nil,
+	}
+	k.asset.SetApp(ctx, app3)
+
 	return nil
 }

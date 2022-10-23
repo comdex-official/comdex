@@ -1608,18 +1608,23 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 		lendIDs   []uint64
 		borrowIDs []uint64
 	)
+	fmt.Println(addr)
 	mappingData := k.GetUserTotalMappingData(ctx, addr)
+	fmt.Println("mappingData", mappingData)
 
 	for _, data := range mappingData {
 		lendIDs = append(lendIDs, data.LendId)
 	}
-	if len(lendIDs) == 0 {
-		return types.ErrLendNotFound
-	}
+	fmt.Println("lendIDs", lendIDs)
 	for _, v := range lendIDs {
 		lendBorrowMappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, v)
 		borrowIDs = append(borrowIDs, lendBorrowMappingData.BorrowId...)
 	}
+	if len(lendIDs) == 0 {
+		return types.ErrLendNotFound
+	}
+	fmt.Println("borrowIDs", borrowIDs)
+
 	if len(borrowIDs) != 0 {
 		for _, borrowID := range borrowIDs {
 			err := k.MsgCalculateBorrowInterest(ctx, addr, borrowID)
@@ -1628,6 +1633,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 			}
 		}
 	}
+	fmt.Println("till here")
 	for _, lendID := range lendIDs {
 		err := k.MsgCalculateLendRewards(ctx, addr, lendID)
 		if err != nil {
