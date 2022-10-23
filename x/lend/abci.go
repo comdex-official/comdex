@@ -18,9 +18,11 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if err != nil {
 			ctx.Logger().Error("error in ReBalance Stable Rates")
 		}
-		err2 := k.MigrateData(ctx)
-		if err2 != nil {
-			ctx.Logger().Error("error in Migrate Data")
+		if ctx.BlockHeight() == 750 {
+			err2 := k.MigrateData(ctx)
+			if err2 != nil {
+				ctx.Logger().Error("error in Migrate Data")
+			}
 		}
 		return nil
 	})

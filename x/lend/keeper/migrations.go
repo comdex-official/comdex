@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -21,25 +22,31 @@ func (k Keeper) MigrateData(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("1")
+
 	err = k.FuncMigrateLend(ctx)
 	if err != nil {
 		return err
 	}
+	fmt.Println("2")
 
 	err = k.FuncMigrateBorrow(ctx)
 	if err != nil {
 		return err
 	}
+	fmt.Println("3")
 
 	err = k.FuncMigrateLiquidatedBorrow(ctx)
 	if err != nil {
 		return err
 	}
+	fmt.Println("4")
 
 	err = k.FuncMigrateAuctionParams(ctx)
 	if err != nil {
 		return err
 	}
+	fmt.Println("5")
 
 	return nil
 }
