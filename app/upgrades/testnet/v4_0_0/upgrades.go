@@ -11,6 +11,7 @@ import (
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 )
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_0_0
@@ -123,13 +124,29 @@ func CreateUpgradeHandlerV430(
 	}
 }
 
+func SetVaultLengthCounter(
+	ctx sdk.Context,
+	vaultkeeper vaultkeeper.Keeper,
+) {
+	var count uint64
+	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 2)
+	if found {
+		for _, data := range appExtendedPairVaultData {
+			count += uint64(len(data.VaultIds))
+		}
+	}
+	vaultkeeper.SetLengthOfVault(ctx, count)
+}
+
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_4_0
 func CreateUpgradeHandlerV440(
 	mm *module.Manager,
 	configurator module.Configurator,
+	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
+		SetVaultLengthCounter(ctx, vaultkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
