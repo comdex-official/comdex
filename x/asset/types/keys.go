@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName     = "assetv1"
+	ModuleName     = "assetV2"
 	ParamsSubspace = ModuleName
 	QuerierRoute   = ModuleName
 	RouterKey      = ModuleName
