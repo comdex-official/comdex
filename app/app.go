@@ -845,7 +845,7 @@ func New(
 			app.AuctionKeeper, app.LockerKeeper, app.Rewardskeeper),
 		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.VaultKeeper,
 			app.MarketKeeper, app.TokenmintKeeper, app.CollectorKeeper),
-		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
+		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.AuctionKeeper, app.LiquidationKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper, app.CollectorKeeper,
 			app.LiquidationKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.VaultKeeper, app.TokenmintKeeper),
