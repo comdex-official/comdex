@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -19,7 +20,13 @@ import (
 // TODO: while testing revert back kv stores for pair, Asset_rates_stats & asset_pair mapping, Also check all queries
 
 func (k Keeper) MigrateData(ctx sdk.Context) error {
-	err := k.FuncMigratePool(ctx)
+	err := k.FuncMigrateApp(ctx)
+	if err != nil {
+		return err
+	}
+	fmt.Println("aa")
+
+	err = k.FuncMigratePool(ctx)
 	if err != nil {
 		return err
 	}
@@ -37,23 +44,17 @@ func (k Keeper) MigrateData(ctx sdk.Context) error {
 	}
 	fmt.Println("3")
 
-	err = k.FuncMigrateLiquidatedBorrow(ctx)
+	err = k.FuncMigrateAuctionParams(ctx)
 	if err != nil {
 		return err
 	}
 	fmt.Println("4")
 
-	err = k.FuncMigrateAuctionParams(ctx)
+	err = k.FuncMigrateLiquidatedBorrow(ctx)
 	if err != nil {
 		return err
 	}
 	fmt.Println("5")
-
-	err = k.FuncMigrateApp(ctx)
-	if err != nil {
-		return err
-	}
-	fmt.Println("6")
 
 	return nil
 }
@@ -87,7 +88,7 @@ func (k Keeper) FuncMigratePool(ctx sdk.Context) error {
 		SupplyCap:        uint64(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
-	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
+	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
 	for _, j := range oldPools {
 
@@ -260,10 +261,39 @@ func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 		mappingData.BorrowId = append(mappingData.BorrowId, newBorrow.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 
-		// sending the locked vaults for auction after this
-		err := k.auction.LendDutchActivator(ctx, v)
+		assetInTwA, found := k.market.GetTwa(ctx, assetIn.Id)
+		if !found || !assetInTwA.IsPriceActive {
+			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
+			return nil
+		}
+		assetInPrice := assetInTwA.Twa
+
+		assetOutTwA, found := k.market.GetTwa(ctx, assetOut.Id)
+		if !found || !assetOutTwA.IsPriceActive {
+			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
+			return nil
+		}
+		assetOutPrice := assetOutTwA.Twa
+		//assetInPrice is the collateral price
+		////Here collateral to be auctioned is received in ucollateral*uusd so inorder to get back amount we divide with uusd of assetIn
+		AssetInPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice))
+		if AssetInPrice.Equal(sdk.ZeroDec()) {
+			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
+			return nil
+		}
+		AssetOutPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutPrice))
+		if AssetOutPrice.Equal(sdk.ZeroDec()) {
+			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
+			return nil
+		}
+
+		outflowToken := sdk.NewCoin(assetIn.Denom, v.CollateralToBeAuctioned.Quo(AssetInPrice).TruncateInt())
+		inflowToken := sdk.NewCoin(assetOut.Denom, v.CollateralToBeAuctioned.Quo(AssetOutPrice).TruncateInt())
+		liquidationPenalty, _ := sdk.NewDecFromStr("0.05")
+		fmt.Println("before k.auction.StartLendDutchAuction")
+		err := k.auction.StartLendDutchAuction(ctx, outflowToken, inflowToken, 3, assetOut.Id, assetIn.Id, v.LockedVaultId, v.Owner, liquidationPenalty)
 		if err != nil {
-			ctx.Logger().Error("error in dutch lend activator")
+			return err
 		}
 	}
 	return nil
