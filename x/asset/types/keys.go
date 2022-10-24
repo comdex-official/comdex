@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName     = "assetV2"
+	ModuleName     = "assetv1"
 	ParamsSubspace = ModuleName
 	QuerierRoute   = ModuleName
 	RouterKey      = ModuleName
@@ -20,7 +20,7 @@ var (
 
 	AssetKeyPrefix      = []byte{0x11}
 	PairKeyPrefix       = []byte{0x14}
-	AppKeyPrefix        = []byte{0x12}
+	AppKeyPrefix        = []byte{0x15}
 	PairsVaultKeyPrefix = []byte{0x16}
 
 	AssetForDenomKeyPrefix = []byte{0x21}
@@ -53,7 +53,6 @@ func AssetForNameKey(denom string) []byte {
 func AssetForShortNameKey(shortName string) []byte {
 	return append(AppForShortNamePrefix, []byte(shortName)...)
 }
-
 func AppAssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
 }
