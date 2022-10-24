@@ -1225,7 +1225,15 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{
+				assettypes.ModuleName,
+				lendtypes.ModuleName,
+				liquidationtypes.ModuleName,
+				markettypes.ModuleName,
+				rewardstypes.ModuleName,
+			},
+		}
 
 	// prepare store for main net upgrade v5.0.0
 	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
