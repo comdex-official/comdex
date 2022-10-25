@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -388,8 +386,7 @@ func (k Keeper) GetExternalVaultRewardsCheck(ctx sdk.Context, appMappingID uint6
 }
 
 // Whitelist an asset of an app for internal rewards
-func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k Keeper) Whitelist(ctx sdk.Context, msg *types.WhitelistAsset) (*types.MsgWhitelistAssetResponse, error) {
 	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled
@@ -409,8 +406,7 @@ func (k Keeper) Whitelist(goCtx context.Context, msg *types.WhitelistAsset) (*ty
 	return &types.MsgWhitelistAssetResponse{}, nil
 }
 
-func (k Keeper) WhitelistAppVault(goCtx context.Context, msg *types.WhitelistAppIdVault) (*types.MsgWhitelistAppIdVaultResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k Keeper) WhitelistAppVault(ctx sdk.Context, msg *types.WhitelistAppIdVault) (*types.MsgWhitelistAppIdVaultResponse, error) {
 	klwsParams, _ := k.esm.GetKillSwitchData(ctx, msg.AppMappingId)
 	if klwsParams.BreakerEnable {
 		return nil, esmtypes.ErrCircuitBreakerEnabled

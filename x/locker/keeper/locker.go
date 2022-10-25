@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -446,8 +444,7 @@ func (k Keeper) WasmAddWhiteListedAssetQuery(ctx sdk.Context, appMappingID, Asse
 	return true, ""
 }
 
-func (k Keeper) AddWhiteListedAsset(c context.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
+func (k Keeper) AddWhiteListedAsset(ctx sdk.Context, msg *types.MsgAddWhiteListedAssetRequest) (*types.MsgAddWhiteListedAssetResponse, error) {
 	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppId)
 	status := false
 	if found {
