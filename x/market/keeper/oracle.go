@@ -135,19 +135,19 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 	// twa, found := k.GetTwa(ctx, id)
 	var rate uint64
 	if id == 1 {
-		rate = 11632845
+		rate = 1000000
 	}
 	if id == 2 {
-		rate = 14053
+		rate = 1000000
 	}
 	if id == 3 {
 		rate = 1000000
 	}
 	if id == 4 {
-		rate = 2200000
+		rate = 1000000
 	}
 	if id == 10 {
-		rate = 1297119384
+		rate = 1000000
 	}
 	if found {
 		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
@@ -161,19 +161,19 @@ func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverag
 	twa.AssetID = id
 	twa.IsPriceActive = true
 	if id == 1 {
-		twa.Twa = 11632845
+		twa.Twa = 1000000
 	}
 	if id == 2 {
-		twa.Twa = 140530
+		twa.Twa = 1000000
 	}
 	if id == 3 {
 		twa.Twa = 1000000
 	}
 	if id == 4 {
-		twa.Twa = 2200000
+		twa.Twa = 1000000
 	}
 	if id == 10 {
-		twa.Twa = 1297119384
+		twa.Twa = 1000000
 	}
 
 	return twa, true
