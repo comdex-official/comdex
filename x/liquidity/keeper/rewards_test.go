@@ -453,9 +453,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	afs = s.keeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
 	qfs = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
 	s.Require().Len(qfs[0].QueudCoins, 0)
-	s.Require().Len(afs, 1)
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Denom, afs[0].FarmedPoolCoin.Denom)
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Amount, afs[0].FarmedPoolCoin.Amount)
+	s.Require().Len(afs, 0)
 
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
@@ -604,12 +602,12 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().Len(qfs, 2)
 	s.Require().Len(qfs[1].QueudCoins, 0)
 	s.Require().Len(qfs[0].QueudCoins, 0)
-	s.Require().Len(afs, 2)
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Denom, afs[0].FarmedPoolCoin.Denom)
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Amount, afs[0].FarmedPoolCoin.Amount)
+	s.Require().Len(afs, 0)
+	// s.Require().Equal(utils.ParseCoin("0pool1-1").Denom, afs[0].FarmedPoolCoin.Denom)
+	// s.Require().Equal(utils.ParseCoin("0pool1-1").Amount, afs[0].FarmedPoolCoin.Amount)
 
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Denom, afs[1].FarmedPoolCoin.Denom)
-	s.Require().Equal(utils.ParseCoin("0pool1-1").Amount, afs[1].FarmedPoolCoin.Amount)
+	// s.Require().Equal(utils.ParseCoin("0pool1-1").Denom, afs[1].FarmedPoolCoin.Denom)
+	// s.Require().Equal(utils.ParseCoin("0pool1-1").Amount, afs[1].FarmedPoolCoin.Amount)
 
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 	s.Require().True(utils.ParseCoins("9999999999pool1-1").IsEqual(s.getBalances(liquidityProvider2)))

@@ -401,7 +401,11 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 	}
 
 	if aFarmerUpdated {
-		k.SetActiveFarmer(ctx, activeFarmer)
+		if activeFarmer.FarmedPoolCoin.IsZero() {
+			k.DeleteActiveFarmer(ctx, activeFarmer)
+		} else {
+			k.SetActiveFarmer(ctx, activeFarmer)
+		}
 	}
 	k.SetQueuedFarmer(ctx, queuedFarmer)
 
