@@ -51,15 +51,15 @@ func InitializeStates(
 	}
 
 	assets := []assettypes.Asset{
-		{Name: "ATOM", Denom: "uatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "CMDX", Denom: "ucmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "CMST", Denom: "ucmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "OSMO", Denom: "uosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "cATOM", Denom: "ucatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "cCMDX", Denom: "uccmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "cCMST", Denom: "uccmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "cOSMO", Denom: "ucosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "HARBOR", Denom: "uharbor", Decimals: 1000000, IsOnChain: true, IsOraclePriceRequired: false},
+		{Name: "atom", Denom: "uatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "cmdx", Denom: "ucmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "cmst", Denom: "ucmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "osmo", Denom: "uosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "catom", Denom: "ucatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "ccmdx", Denom: "uccmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "ccmst", Denom: "uccmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "cosmo", Denom: "ucosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "harbor", Denom: "uharbor", Decimals: 1000000, IsOnChain: true, IsOraclePriceRequired: false},
 	}
 
 	for _, asset := range assets {
