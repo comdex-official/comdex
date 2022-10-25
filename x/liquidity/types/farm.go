@@ -29,10 +29,10 @@ func (activeFarmer ActiveFarmer) Validate() error {
 		return fmt.Errorf("invalid farmer address %s: %w", activeFarmer.Farmer, err)
 	}
 	if err := activeFarmer.FarmedPoolCoin.Validate(); err != nil {
-		return fmt.Errorf("invalid offer coin %s: %w", activeFarmer.FarmedPoolCoin, err)
+		return fmt.Errorf("invalid farmed-pool-coin %s: %w", activeFarmer.FarmedPoolCoin, err)
 	}
 	if activeFarmer.FarmedPoolCoin.IsZero() {
-		return fmt.Errorf("offer coin must not be 0")
+		return fmt.Errorf("farmed-pool-coin must not be 0")
 	}
 	return nil
 }
