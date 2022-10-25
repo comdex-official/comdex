@@ -31,10 +31,12 @@ var (
 	ErrorFeeShouldNotBeGTOne               = errors.Register(ModuleName, 215, "Fee Should Not Be Greater than One and less than zero")
 	ErrorExtendedPairDoesNotExistForTheApp = errors.Register(ModuleName, 216, "extended pair does not exist for the app")
 	ErrorMinGovDepositIsZero               = errors.Register(ModuleName, 217, "min gov deposit is zero")
-	ErrorShortNameDidNotMeetCriterion      = errors.Register(ModuleName, 218, "App ShortName did't meet the criterion")
-	ErrorNameDidNotMeetCriterion           = errors.Register(ModuleName, 219, "Asset Name did't meet the criterion")
+	ErrorShortNameDidNotMeetCriterion      = errors.Register(ModuleName, 218, "App ShortName didn't meet the criterion")
+	ErrorNameDidNotMeetCriterion           = errors.Register(ModuleName, 219, "Asset Name didn't meet the criterion")
 	ErrorReversePairAlreadyExist           = errors.Register(ModuleName, 220, "Reverse pair already exists")
 	ErrorValueCantBeNegative               = errors.Register(ModuleName, 221, "Value can't be negative")
+	ErrorAppNameDidNotMeetCriterion        = errors.Register(ModuleName, 222, "App Name didn't meet the criterion")
+	ErrorPairNameDidNotMeetCriterion       = errors.Register(ModuleName, 223, "Pair Name didn't meet the criterion")
 )
 
 var (
