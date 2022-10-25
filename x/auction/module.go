@@ -100,16 +100,12 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper            keeper.Keeper
-	accountKeeper     expected.AccountKeeper
-	bankKeeper        expected.BankKeeper
-	collectKeeper     expected.CollectorKeeper
-	liquidationKeeper expected.LiquidationKeeper
-	assetKeeper       expected.AssetKeeper
-	marketKeeper      expected.MarketKeeper
-	esmKeeper         expected.EsmKeeper
-	vaultKeeper       expected.VaultKeeper
-	tokenMintKeeper   expected.TokenMintKeeper
+	keeper        keeper.Keeper
+	accountKeeper expected.AccountKeeper
+	bankKeeper    expected.BankKeeper
+	collectKeeper expected.CollectorKeeper
+	assetKeeper   expected.AssetKeeper
+	esmKeeper     expected.EsmKeeper
 }
 
 func NewAppModule(
@@ -118,25 +114,17 @@ func NewAppModule(
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
 	collectorKeeper expected.CollectorKeeper,
-	liquidationKeeper expected.LiquidationKeeper,
 	assetKeeper expected.AssetKeeper,
-	marketKeeper expected.MarketKeeper,
 	esmKeeper expected.EsmKeeper,
-	vaultKeeper expected.VaultKeeper,
-	tokenMintKeeper expected.TokenMintKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic:    NewAppModuleBasic(cdc),
-		keeper:            keeper,
-		accountKeeper:     accountKeeper,
-		bankKeeper:        bankKeeper,
-		collectKeeper:     collectorKeeper,
-		liquidationKeeper: liquidationKeeper,
-		assetKeeper:       assetKeeper,
-		marketKeeper:      marketKeeper,
-		esmKeeper:         esmKeeper,
-		vaultKeeper:       vaultKeeper,
-		tokenMintKeeper:   tokenMintKeeper,
+		AppModuleBasic: NewAppModuleBasic(cdc),
+		keeper:         keeper,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		collectKeeper:  collectorKeeper,
+		assetKeeper:    assetKeeper,
+		esmKeeper:      esmKeeper,
 	}
 }
 
