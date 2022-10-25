@@ -101,14 +101,10 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper          keeper.Keeper
-	accountKeeper   types.AccountKeeper
-	bankKeeper      types.BankKeeper
-	assetKeeper     expected.AssetKeeper
-	vaultKeeper     expected.VaultKeeper
-	marketKeeper    expected.MarketKeeper
-	tokenMintKeeper expected.Tokenmint
-	collectKeeper   expected.Collector
+	keeper        keeper.Keeper
+	accountKeeper types.AccountKeeper
+	bankKeeper    types.BankKeeper
+	assetKeeper   expected.AssetKeeper
 }
 
 func NewAppModule(
@@ -117,21 +113,13 @@ func NewAppModule(
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	assetKeeper expected.AssetKeeper,
-	vaultKeeper expected.VaultKeeper,
-	marketKeeper expected.MarketKeeper,
-	tokenMintKeeper expected.Tokenmint,
-	collectKeeper expected.Collector,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic:  NewAppModuleBasic(cdc),
-		keeper:          keeper,
-		accountKeeper:   accountKeeper,
-		bankKeeper:      bankKeeper,
-		assetKeeper:     assetKeeper,
-		vaultKeeper:     vaultKeeper,
-		marketKeeper:    marketKeeper,
-		tokenMintKeeper: tokenMintKeeper,
-		collectKeeper:   collectKeeper,
+		AppModuleBasic: NewAppModuleBasic(cdc),
+		keeper:         keeper,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
+		assetKeeper:    assetKeeper,
 	}
 }
 

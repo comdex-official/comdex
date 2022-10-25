@@ -140,7 +140,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			_, err := lockerKeeper.AddWhiteListedAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
+			_, err := lockerKeeper.AddWhiteListedAsset(*ctx, &tc.msg)
 			s.Require().NoError(err)
 		})
 	}
