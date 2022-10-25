@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowInterestTracker, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, poolAssetLBMapping []PoolAssetLBMapping, lendRewardsTracker []LendRewardsTracker, userAssetLendBorrowMapping []UserAssetLendBorrowMapping, reserveBuybackAssetData []ReserveBuybackAssetData, extended_Pair []Extended_Pair, auctionParams []AuctionParams, assetRatesParams []AssetRatesParams, params Params) *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowInterestTracker, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, poolAssetLBMapping []PoolAssetLBMapping, lendRewardsTracker []LendRewardsTracker, userAssetLendBorrowMapping []UserAssetLendBorrowMapping, reserveBuybackAssetData []ReserveBuybackAssetData, extended_Pair []Extended_Pair, auctionParams []AuctionParams, assetRatesParams []AssetRatesParams, stableBorrowMapping StableBorrowMapping, params Params) *GenesisState {
 	return &GenesisState{
 		BorrowAsset:                borrowAsset,
 		BorrowInterestTracker:      borrowInterestTracker,
@@ -14,6 +14,7 @@ func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowIn
 		Extended_Pair:              extended_Pair,
 		AuctionParams:              auctionParams,
 		AssetRatesParams:           assetRatesParams,
+		StableBorrowMapping:        stableBorrowMapping,
 		Params:                     params,
 	}
 }
@@ -32,6 +33,7 @@ func DefaultGenesisState() *GenesisState {
 		[]Extended_Pair{},
 		[]AuctionParams{},
 		[]AssetRatesParams{},
+		StableBorrowMapping{},
 		DefaultParams(),
 	)
 }

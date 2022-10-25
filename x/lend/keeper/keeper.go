@@ -22,15 +22,17 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-		bank       expected.BankKeeper
-		account    expected.AccountKeeper
-		asset      expected.AssetKeeper
-		market     expected.MarketKeeper
-		esm        expected.EsmKeeper
+		cdc         codec.BinaryCodec
+		storeKey    sdk.StoreKey
+		memKey      sdk.StoreKey
+		paramstore  paramtypes.Subspace
+		bank        expected.BankKeeper
+		account     expected.AccountKeeper
+		asset       expected.AssetKeeper
+		market      expected.MarketKeeper
+		esm         expected.EsmKeeper
+		liquidation expected.LiquidationKeeper
+		auction     expected.AuctionKeeper
 	}
 )
 
@@ -44,6 +46,8 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	market expected.MarketKeeper,
 	esm expected.EsmKeeper,
+	liquidation expected.LiquidationKeeper,
+	auction expected.AuctionKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -51,15 +55,17 @@ func NewKeeper(
 	}
 
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		bank:       bank,
-		account:    account,
-		asset:      asset,
-		market:     market,
-		esm:        esm,
+		cdc:         cdc,
+		storeKey:    storeKey,
+		memKey:      memKey,
+		paramstore:  ps,
+		bank:        bank,
+		account:     account,
+		asset:       asset,
+		market:      market,
+		esm:         esm,
+		liquidation: liquidation,
+		auction:     auction,
 	}
 }
 
@@ -626,6 +632,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			CPoolName:           AssetOutPool.CPoolName,
 			IsLiquidated:        false,
 		}
+		if StableBorrowRate != sdk.ZeroDec() {
+			stableIds := k.GetStableBorrowIds(ctx)
+			stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+			k.SetStableBorrowIds(ctx, stableIds)
+		}
 		k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 		// err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 		// if err != nil {
@@ -730,6 +741,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				CPoolName:           AssetOutPool.CPoolName,
 				IsLiquidated:        false,
 			}
+			if StableBorrowRate != sdk.ZeroDec() {
+				stableIds := k.GetStableBorrowIds(ctx)
+				stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+				k.SetStableBorrowIds(ctx, stableIds)
+			}
 			k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 
 			poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
@@ -788,6 +804,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				LastInteractionTime: ctx.BlockTime(),
 				CPoolName:           AssetOutPool.CPoolName,
 				IsLiquidated:        false,
+			}
+			if StableBorrowRate != sdk.ZeroDec() {
+				stableIds := k.GetStableBorrowIds(ctx)
+				stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+				k.SetStableBorrowIds(ctx, stableIds)
 			}
 			k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 
@@ -1298,6 +1319,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Add(borrowPos.AmountIn.Amount)
 	k.SetLend(ctx, lendPos)
+	if borrowPos.IsStableBorrow {
+		k.DeleteIDFromStableBorrowMapping(ctx, borrowID)
+	}
 	k.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, borrowID, false)
 	k.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, borrowID)
 	k.DeleteBorrow(ctx, borrowID)
@@ -1602,18 +1626,23 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 		lendIDs   []uint64
 		borrowIDs []uint64
 	)
+	fmt.Println(addr)
 	mappingData := k.GetUserTotalMappingData(ctx, addr)
+	fmt.Println("mappingData", mappingData)
 
 	for _, data := range mappingData {
 		lendIDs = append(lendIDs, data.LendId)
 	}
-	if len(lendIDs) == 0 {
-		return types.ErrLendNotFound
-	}
+	fmt.Println("lendIDs", lendIDs)
 	for _, v := range lendIDs {
 		lendBorrowMappingData, _ := k.GetUserLendBorrowMapping(ctx, addr, v)
 		borrowIDs = append(borrowIDs, lendBorrowMappingData.BorrowId...)
 	}
+	if len(lendIDs) == 0 {
+		return types.ErrLendNotFound
+	}
+	fmt.Println("borrowIDs", borrowIDs)
+
 	if len(borrowIDs) != 0 {
 		for _, borrowID := range borrowIDs {
 			err := k.MsgCalculateBorrowInterest(ctx, addr, borrowID)
@@ -1622,6 +1651,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 			}
 		}
 	}
+	fmt.Println("till here")
 	for _, lendID := range lendIDs {
 		err := k.MsgCalculateLendRewards(ctx, addr, lendID)
 		if err != nil {

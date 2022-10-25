@@ -1,6 +1,7 @@
 package expected
 
 import (
+	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -40,8 +41,27 @@ type BandOracleKeeper interface {
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool)
+	SetApp(ctx sdk.Context, app assettypes.AppData)
 }
 
 type EsmKeeper interface {
 	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
+}
+
+type LiquidationKeeper interface {
+	GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault)
+}
+
+type AuctionKeeper interface {
+	LendDutchActivator(ctx sdk.Context, lockedVault types.LockedVault) error
+	StartLendDutchAuction(
+		ctx sdk.Context,
+		outFlowToken sdk.Coin,
+		inFlowToken sdk.Coin,
+		appID uint64,
+		assetInID, assetOutID uint64,
+		lockedVaultID uint64,
+		lockedVaultOwner string,
+		liquidationPenalty sdk.Dec,
+	) error
 }

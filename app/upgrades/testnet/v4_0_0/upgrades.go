@@ -1,9 +1,6 @@
 package v4_0_0 //nolint:revive,stylecheck
 
 import (
-	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -14,6 +11,7 @@ import (
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 )
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_0_0
@@ -126,34 +124,34 @@ func CreateUpgradeHandlerV430(
 	}
 }
 
-func UpdateDutchLendAuctions(
+func SetVaultLengthCounter(
 	ctx sdk.Context,
-	liquidationkeeper liquidationkeeper.Keeper,
-	auctionkeeper auctionkeeper.Keeper,
+	vaultkeeper vaultkeeper.Keeper,
 ) {
-	lockedVaults := liquidationkeeper.GetLockedVaults(ctx)
-	for _, v := range lockedVaults {
-		if v.Kind != nil {
-			err := auctionkeeper.LendDutchActivator(ctx, v)
-			if err != nil {
-				return
-			}
+	var count uint64
+	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 2)
+	if found {
+		for _, data := range appExtendedPairVaultData {
+			count += uint64(len(data.VaultIds))
 		}
 	}
+	vaultkeeper.SetLengthOfVault(ctx, count)
 }
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_4_0
 func CreateUpgradeHandlerV440(
 	mm *module.Manager,
 	configurator module.Configurator,
-	lendkeeper lendkeeper.Keeper,
-	liquidationkeeper liquidationkeeper.Keeper,
-	auctionkeeper auctionkeeper.Keeper,
+	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
-
-		UpdateDutchLendAuctions(ctx, liquidationkeeper, auctionkeeper)
+		SetVaultLengthCounter(ctx, vaultkeeper)
+		//delete(fromVM, "assetv1")
+		//delete(fromVM, "lendV1")
+		//delete(fromVM, "liquidationV1")
+		//delete(fromVM, "market")
+		//delete(fromVM, "rewardsV1")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err

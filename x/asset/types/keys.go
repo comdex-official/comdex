@@ -53,7 +53,6 @@ func AssetForNameKey(denom string) []byte {
 func AssetForShortNameKey(shortName string) []byte {
 	return append(AppForShortNamePrefix, []byte(shortName)...)
 }
-
 func AppAssetForNameKey(Name string) []byte {
 	return append(AppForNamePrefix, []byte(Name)...)
 }

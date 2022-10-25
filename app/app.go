@@ -566,6 +566,8 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
+		&app.LiquidationKeeper,
+		&app.AuctionKeeper,
 	)
 
 	app.EsmKeeper = esmkeeper.NewKeeper(
@@ -843,7 +845,7 @@ func New(
 			app.AuctionKeeper, app.LockerKeeper, app.Rewardskeeper),
 		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.VaultKeeper,
 			app.MarketKeeper, app.TokenmintKeeper, app.CollectorKeeper),
-		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
+		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.AuctionKeeper, app.LiquidationKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper, app.CollectorKeeper,
 			app.LiquidationKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.VaultKeeper, app.TokenmintKeeper),
@@ -1146,7 +1148,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.VaultKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1223,7 +1225,16 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
+		storeUpgrades = &storetypes.StoreUpgrades{
+			//Deleted: []string{"assetv1", "lendV1", "liquidationV1", "market", "rewardsV1"},
+			//Added: []string{
+			//	assettypes.ModuleName,
+			//	lendtypes.ModuleName,
+			//	liquidationtypes.ModuleName,
+			//	markettypes.ModuleName,
+			//	rewardstypes.ModuleName,
+			//},
+		}
 
 	// prepare store for main net upgrade v5.0.0
 	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
