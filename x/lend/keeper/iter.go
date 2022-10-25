@@ -197,9 +197,9 @@ func (k Keeper) CalculateBorrowInterest(ctx sdk.Context, amount string, rate, re
 }
 
 func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
-	borrows, _ := k.GetBorrows(ctx)
+	borrows := k.GetStableBorrowIds(ctx)
 
-	for _, v := range borrows {
+	for _, v := range borrows.StableBorrowIDs {
 		borrowPos, found := k.GetBorrow(ctx, v)
 		if !found {
 			continue

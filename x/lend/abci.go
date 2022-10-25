@@ -14,10 +14,10 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		//err := k.ReBalanceStableRates(ctx)
-		//if err != nil {
-		//	ctx.Logger().Error("error in ReBalance Stable Rates")
-		//}
+		// err := k.ReBalanceStableRates(ctx)
+		// if err != nil {
+		// 	ctx.Logger().Error("error in ReBalance Stable Rates")
+		// }
 		if ctx.BlockHeight() == 153 {
 			err2 := k.MigrateData(ctx)
 			if err2 != nil {

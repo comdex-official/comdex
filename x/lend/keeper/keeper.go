@@ -632,6 +632,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 			CPoolName:           AssetOutPool.CPoolName,
 			IsLiquidated:        false,
 		}
+		if StableBorrowRate != sdk.ZeroDec() {
+			stableIds := k.GetStableBorrowIds(ctx)
+			stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+			k.SetStableBorrowIds(ctx, stableIds)
+		}
 		k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 		// err = k.UpdateBorrowIdsMapping(ctx, borrowPos.ID, true)
 		// if err != nil {
@@ -736,6 +741,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				CPoolName:           AssetOutPool.CPoolName,
 				IsLiquidated:        false,
 			}
+			if StableBorrowRate != sdk.ZeroDec() {
+				stableIds := k.GetStableBorrowIds(ctx)
+				stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+				k.SetStableBorrowIds(ctx, stableIds)
+			}
 			k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 
 			poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
@@ -794,6 +804,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 				LastInteractionTime: ctx.BlockTime(),
 				CPoolName:           AssetOutPool.CPoolName,
 				IsLiquidated:        false,
+			}
+			if StableBorrowRate != sdk.ZeroDec() {
+				stableIds := k.GetStableBorrowIds(ctx)
+				stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs, borrowPos.ID)
+				k.SetStableBorrowIds(ctx, stableIds)
 			}
 			k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, AmountOut.Amount, true)
 
@@ -1304,6 +1319,9 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 
 	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Add(borrowPos.AmountIn.Amount)
 	k.SetLend(ctx, lendPos)
+	if borrowPos.IsStableBorrow {
+		k.DeleteIDFromStableBorrowMapping(ctx, borrowID)
+	}
 	k.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, borrowID, false)
 	k.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, borrowID)
 	k.DeleteBorrow(ctx, borrowID)

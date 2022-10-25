@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"sort"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -166,4 +167,36 @@ func (k Keeper) DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64) {
 	)
 
 	store.Delete(key)
+}
+
+func (k Keeper) SetStableBorrowIds(ctx sdk.Context, borrow types.StableBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NewStableBorrowIDsKeyPrefix
+		value = k.cdc.MustMarshal(&borrow)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetStableBorrowIds(ctx sdk.Context) (borrow types.StableBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NewStableBorrowIDsKeyPrefix
+		value = store.Get(key)
+	)
+
+	k.cdc.MustUnmarshal(value, &borrow)
+	return borrow
+}
+
+func (k Keeper) DeleteIDFromStableBorrowMapping(ctx sdk.Context, id uint64) {
+	stableIds := k.GetStableBorrowIds(ctx)
+		lengthOfIDs := len(stableIds.StableBorrowIDs)
+		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return stableIds.StableBorrowIDs[i] >= id })
+
+		if dataIndex < lengthOfIDs && stableIds.StableBorrowIDs[dataIndex] == id {
+			stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs[:dataIndex], stableIds.StableBorrowIDs[dataIndex+1:]...)
+			k.SetStableBorrowIds(ctx, stableIds)
+		}
 }

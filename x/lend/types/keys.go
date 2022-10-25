@@ -61,6 +61,7 @@ var (
 	NewBorrowInterestTrackerKeyPrefix        = []byte{0x76}
 	NewUserLendBorrowMappingKeyPrefix        = []byte{0x77}
 	NewReserveBuybackAssetDataKeyPrefix      = []byte{0x78}
+	NewStableBorrowIDsKeyPrefix              = []byte{0x79}
 )
 
 func NewLendUserKey(ID uint64) []byte {
