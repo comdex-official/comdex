@@ -203,7 +203,7 @@ func InitializeStates(
 		AppMappingId: 2,
 		AssetId:      3,
 	}
-	_, err = rewardsKeeper.Whitelist(sdk.Context{}, &reward)
+	_, err = rewardsKeeper.Whitelist(ctx, &reward)
 	if err != nil {
 		panic(err)
 	}
@@ -211,7 +211,7 @@ func InitializeStates(
 	vInterest := rewardstypes.WhitelistAppIdVault{
 		AppMappingId: 2,
 	}
-	_, err = rewardsKeeper.WhitelistAppVault(sdk.Context{}, &vInterest)
+	_, err = rewardsKeeper.WhitelistAppVault(ctx, &vInterest)
 	if err != nil {
 		panic(err)
 	}
