@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/comdex-official/comdex/x/lend/expected"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -99,14 +98,9 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper            keeper.Keeper
-	accountKeeper     types.AccountKeeper
-	bankKeeper        types.BankKeeper
-	assetKeeoer       expected.AssetKeeper
-	marketKeeper      expected.MarketKeeper
-	esmKeeper         expected.EsmKeeper
-	auctionKeeper     expected.AuctionKeeper
-	liquidationKeeper expected.LiquidationKeeper
+	keeper        keeper.Keeper
+	accountKeeper types.AccountKeeper
+	bankKeeper    types.BankKeeper
 }
 
 func NewAppModule(
@@ -114,22 +108,12 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
-	assetKeeper expected.AssetKeeper,
-	marketKeeper expected.MarketKeeper,
-	esmKeeper expected.EsmKeeper,
-	auctionKeeper expected.AuctionKeeper,
-	liquidationKeeper expected.LiquidationKeeper,
 ) AppModule {
 	return AppModule{
-		AppModuleBasic:    NewAppModuleBasic(cdc),
-		keeper:            keeper,
-		accountKeeper:     accountKeeper,
-		bankKeeper:        bankKeeper,
-		assetKeeoer:       assetKeeper,
-		marketKeeper:      marketKeeper,
-		esmKeeper:         esmKeeper,
-		auctionKeeper:     auctionKeeper,
-		liquidationKeeper: liquidationKeeper,
+		AppModuleBasic: NewAppModuleBasic(cdc),
+		keeper:         keeper,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
 	}
 }
 
