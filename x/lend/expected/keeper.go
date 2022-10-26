@@ -42,6 +42,7 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool)
 	SetApp(ctx sdk.Context, app assettypes.AppData)
+	SetAppID(ctx sdk.Context, id uint64)
 }
 
 type EsmKeeper interface {

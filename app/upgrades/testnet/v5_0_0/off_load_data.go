@@ -26,37 +26,31 @@ func MigrateData(ctx sdk.Context, k lendkeeper.Keeper) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("aa")
 
 	err = FuncMigratePool(ctx, k)
 	if err != nil {
 		return err
 	}
-	fmt.Println("1")
 
 	err = FuncMigrateLend(ctx, k)
 	if err != nil {
 		return err
 	}
-	fmt.Println("2")
 
 	err = FuncMigrateBorrow(ctx, k)
 	if err != nil {
 		return err
 	}
-	fmt.Println("3")
 
 	err = FuncMigrateAuctionParams(ctx, k)
 	if err != nil {
 		return err
 	}
-	fmt.Println("4")
 
 	err = FuncMigrateLiquidatedBorrow(ctx, k)
 	if err != nil {
 		return err
 	}
-	fmt.Println("5")
 
 	return nil
 }
@@ -359,6 +353,7 @@ func FuncMigrateApp(ctx sdk.Context, k lendkeeper.Keeper) error {
 		GenesisToken:     nil,
 	}
 	k.Asset.SetApp(ctx, app3)
+	k.Asset.SetAppID(ctx, 3)
 
 	return nil
 }
