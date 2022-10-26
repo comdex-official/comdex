@@ -951,7 +951,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
-		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
+		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
 		}
 		// Mint Tokens for user
@@ -1118,7 +1118,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	}
 	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
 		// Send Rest to user
-		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
+		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
 		}
 	} else {
