@@ -27,7 +27,6 @@ func CreateUpgradeHandlerV5Beta(
 		return fromVM, nil
 	}
 }
-
 func SetVaultLengthCounter(
 	ctx sdk.Context,
 	vaultkeeper vaultkeeper.Keeper,
