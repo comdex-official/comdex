@@ -128,19 +128,6 @@ func DeleteAndSetApp(
 	ctx sdk.Context,
 	assetkeeper assetkeeper.Keeper,
 ) {
-	assetkeeper.SetAppID(ctx, 0)
-	apps := []assettypes.AppData{
-		{Name: "CSWAP", ShortName: "cswap"},
-		{Name: "HARBOR", ShortName: "hbr"},
-		{Name: "commodo", ShortName: "cmdo"},
-	}
-	for _, app := range apps {
-		store := assetkeeper.Store(ctx)
-		key := assettypes.AssetForShortNameKey(app.ShortName)
-		store.Delete(key)
-		key = assettypes.AppAssetForNameKey(app.Name)
-		store.Delete(key)
-	}
 	genesisToken := []assettypes.MintGenesisToken{
 		{
 			AssetId:       3,
@@ -150,13 +137,14 @@ func DeleteAndSetApp(
 		},
 	}
 	newApps := []assettypes.AppData{
-		{Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
-		{Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000), GovTimeInSeconds: 300, GenesisToken: genesisToken},
-		{Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+		{Id: 1, Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+		{Id: 2, Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000), GovTimeInSeconds: 300, GenesisToken: genesisToken},
+		{Id: 3, Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
 	}
 	for _, app := range newApps {
-		_ = assetkeeper.AddAppRecords(ctx, app)
+		assetkeeper.SetApp(ctx, app)
 	}
+	assetkeeper.SetAppID(ctx, 3)
 }
 
 func SetVaultLengthCounter(
