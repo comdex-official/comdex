@@ -1,7 +1,8 @@
-package keeper
+package v5_0_0
 
 import (
 	"fmt"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -20,38 +21,38 @@ import (
 
 // TODO: while testing revert back kv stores for pair, Asset_rates_stats & asset_pair mapping, Also check all queries
 
-func (k Keeper) MigrateData(ctx sdk.Context) error {
-	err := k.FuncMigrateApp(ctx)
+func MigrateData(ctx sdk.Context, k lendkeeper.Keeper) error {
+	err := FuncMigrateApp(ctx, k)
 	if err != nil {
 		return err
 	}
 	fmt.Println("aa")
 
-	err = k.FuncMigratePool(ctx)
+	err = FuncMigratePool(ctx, k)
 	if err != nil {
 		return err
 	}
 	fmt.Println("1")
 
-	err = k.FuncMigrateLend(ctx)
+	err = FuncMigrateLend(ctx, k)
 	if err != nil {
 		return err
 	}
 	fmt.Println("2")
 
-	err = k.FuncMigrateBorrow(ctx)
+	err = FuncMigrateBorrow(ctx, k)
 	if err != nil {
 		return err
 	}
 	fmt.Println("3")
 
-	err = k.FuncMigrateAuctionParams(ctx)
+	err = FuncMigrateAuctionParams(ctx, k)
 	if err != nil {
 		return err
 	}
 	fmt.Println("4")
 
-	err = k.FuncMigrateLiquidatedBorrow(ctx)
+	err = FuncMigrateLiquidatedBorrow(ctx, k)
 	if err != nil {
 		return err
 	}
@@ -61,7 +62,7 @@ func (k Keeper) MigrateData(ctx sdk.Context) error {
 }
 
 // FuncMigratePool - First Step: Migrate all pools to new updated proto
-func (k Keeper) FuncMigratePool(ctx sdk.Context) error {
+func FuncMigratePool(ctx sdk.Context, k lendkeeper.Keeper) error {
 	oldPools := k.OldGetPools(ctx)
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
@@ -131,7 +132,7 @@ func (k Keeper) FuncMigratePool(ctx sdk.Context) error {
 }
 
 // FuncMigrateLend - Second Step: Migrate all lend positions, add up total lend by asset and update it in new proto, also append lendID in new struct
-func (k Keeper) FuncMigrateLend(ctx sdk.Context) error {
+func FuncMigrateLend(ctx sdk.Context, k lendkeeper.Keeper) error {
 	allLends := k.OldGetAllLend(ctx)
 	for _, v := range allLends {
 		if v.AmountIn.Amount.LTE(sdk.ZeroInt()) || v.AvailableToBorrow.LT(sdk.ZeroInt()) {
@@ -172,7 +173,7 @@ func (k Keeper) FuncMigrateLend(ctx sdk.Context) error {
 }
 
 // FuncMigrateBorrow - Third Step: Migrate all borrow to new proto and make is liquidated flag false
-func (k Keeper) FuncMigrateBorrow(ctx sdk.Context) error {
+func FuncMigrateBorrow(ctx sdk.Context, k lendkeeper.Keeper) error {
 	oldBorrows := k.OldGetAllBorrow(ctx)
 	for _, v := range oldBorrows {
 		if v.AmountIn.Amount.LTE(sdk.ZeroInt()) || v.AmountOut.Amount.LT(sdk.ZeroInt()) {
@@ -214,16 +215,16 @@ func (k Keeper) FuncMigrateBorrow(ctx sdk.Context) error {
 }
 
 // FuncMigrateLiquidatedBorrow - Fourth Step & Fifth Step : Migrate all liquidated borrow to new borrow struct and make is_liquidated field to true
-func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
-	liqBorrow := k.liquidation.GetLockedVaultByApp(ctx, 3)
+func FuncMigrateLiquidatedBorrow(ctx sdk.Context, k lendkeeper.Keeper) error {
+	liqBorrow := k.Liquidation.GetLockedVaultByApp(ctx, 3)
 	for _, v := range liqBorrow {
 		if v.AmountIn.LTE(sdk.ZeroInt()) || v.AmountOut.LT(sdk.ZeroInt()) {
 			continue
 		}
 		borrowMetaData := v.GetBorrowMetaData()
 		pair, _ := k.GetLendPair(ctx, v.ExtendedPairId)
-		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn)
-		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut)
+		assetIn, _ := k.Asset.GetAsset(ctx, pair.AssetIn)
+		assetOut, _ := k.Asset.GetAsset(ctx, pair.AssetOut)
 		amountIn := sdk.NewCoin(assetIn.Denom, v.AmountIn)
 		amountOut := sdk.NewCoin(assetOut.Denom, v.AmountOut)
 		pool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
@@ -261,14 +262,14 @@ func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 		mappingData.BorrowId = append(mappingData.BorrowId, newBorrow.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 
-		assetInTwA, found := k.market.GetTwa(ctx, assetIn.Id)
+		assetInTwA, found := k.Market.GetTwa(ctx, assetIn.Id)
 		if !found || !assetInTwA.IsPriceActive {
 			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
 			return nil
 		}
 		assetInPrice := assetInTwA.Twa
 
-		assetOutTwA, found := k.market.GetTwa(ctx, assetOut.Id)
+		assetOutTwA, found := k.Market.GetTwa(ctx, assetOut.Id)
 		if !found || !assetOutTwA.IsPriceActive {
 			ctx.Logger().Error(auctiontypes.ErrorPrices.Error(), v.LockedVaultId)
 			return nil
@@ -291,7 +292,7 @@ func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 		inflowToken := sdk.NewCoin(assetOut.Denom, v.CollateralToBeAuctioned.Quo(AssetOutPrice).TruncateInt())
 		liquidationPenalty, _ := sdk.NewDecFromStr("0.05")
 		fmt.Println("before k.auction.StartLendDutchAuction")
-		err := k.auction.StartLendDutchAuction(ctx, outflowToken, inflowToken, 3, assetOut.Id, assetIn.Id, v.LockedVaultId, v.Owner, liquidationPenalty)
+		err := k.Auction.StartLendDutchAuction(ctx, outflowToken, inflowToken, 3, assetOut.Id, assetIn.Id, v.LockedVaultId, v.Owner, liquidationPenalty)
 		if err != nil {
 			return err
 		}
@@ -300,7 +301,7 @@ func (k Keeper) FuncMigrateLiquidatedBorrow(ctx sdk.Context) error {
 }
 
 // FuncMigrateAuctionParams -  Sixth Step: Correct AppID in Auction Params
-func (k Keeper) FuncMigrateAuctionParams(ctx sdk.Context) error {
+func FuncMigrateAuctionParams(ctx sdk.Context, k lendkeeper.Keeper) error {
 	buffer, _ := sdk.NewDecFromStr("1.2")
 	cusp, _ := sdk.NewDecFromStr("0.4")
 	auctionParams := types.AuctionParams{
@@ -320,7 +321,7 @@ func (k Keeper) FuncMigrateAuctionParams(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) FuncMigrateApp(ctx sdk.Context) error {
+func FuncMigrateApp(ctx sdk.Context, k lendkeeper.Keeper) error {
 	app1 := assettypes.AppData{
 		Id:               1,
 		Name:             "CSWAP",
@@ -329,7 +330,7 @@ func (k Keeper) FuncMigrateApp(ctx sdk.Context) error {
 		GovTimeInSeconds: 300,
 		GenesisToken:     nil,
 	}
-	k.asset.SetApp(ctx, app1)
+	k.Asset.SetApp(ctx, app1)
 
 	genesisToken := assettypes.MintGenesisToken{
 		AssetId:       9,
@@ -347,7 +348,7 @@ func (k Keeper) FuncMigrateApp(ctx sdk.Context) error {
 		GovTimeInSeconds: 300,
 		GenesisToken:     gToken,
 	}
-	k.asset.SetApp(ctx, app2)
+	k.Asset.SetApp(ctx, app2)
 
 	app3 := assettypes.AppData{
 		Id:               3,
@@ -357,7 +358,7 @@ func (k Keeper) FuncMigrateApp(ctx sdk.Context) error {
 		GovTimeInSeconds: 0,
 		GenesisToken:     nil,
 	}
-	k.asset.SetApp(ctx, app3)
+	k.Asset.SetApp(ctx, app3)
 
 	return nil
 }

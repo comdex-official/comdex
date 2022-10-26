@@ -19,7 +19,7 @@ func CreateUpgradeHandlerV5Beta(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		err2 := lendKeeper.MigrateData(ctx)
+		err2 := MigrateData(ctx, lendKeeper)
 		if err2 != nil {
 			ctx.Logger().Error("error in Migrate Data")
 		}
