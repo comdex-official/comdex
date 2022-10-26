@@ -14,20 +14,20 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		//k.TriggerAndUpdateEpochInfos(ctx)
-		//
-		//err := k.DistributeExtRewardLocker(ctx)
-		//if err != nil {
-		//	ctx.Logger().Error("error in DistributeExtRewardLocker")
-		//}
-		//err = k.DistributeExtRewardVault(ctx)
-		//if err != nil {
-		//	ctx.Logger().Error("error in DistributeExtRewardVault")
-		//}
-		//err = k.DistributeExtRewardLend(ctx)
-		//if err != nil {
-		//	ctx.Logger().Error("error in DistributeExtRewardLend")
-		//}
+		k.TriggerAndUpdateEpochInfos(ctx)
+
+		err := k.DistributeExtRewardLocker(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardLocker")
+		}
+		err = k.DistributeExtRewardVault(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardVault")
+		}
+		err = k.DistributeExtRewardLend(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardLend")
+		}
 		return nil
 	})
 }
