@@ -1143,15 +1143,15 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	a.UpgradeKeeper.SetUpgradeHandler(
+	/*a.UpgradeKeeper.SetUpgradeHandler(
 		mv5.UpgradeName,
 		mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
-	)
-
-	/*a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
 	)*/
+
+	a.UpgradeKeeper.SetUpgradeHandler(
+		tv4_0_0.UpgradeNameV4_4_0,
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.VaultKeeper),
+	)
 
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1227,16 +1227,6 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			//Deleted: []string{"assetv1", "lendV1", "liquidationV1", "market", "rewardsV1"},
-			//Added: []string{
-			//	assettypes.ModuleName,
-			//	lendtypes.ModuleName,
-			//	liquidationtypes.ModuleName,
-			//	markettypes.ModuleName,
-			//	rewardstypes.ModuleName,
-			//},
-		}
 
 	// prepare store for main net upgrade v5.0.0
 	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):

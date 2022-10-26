@@ -154,7 +154,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
 	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
 	// s.Suite.Require().False(exists)
-	//s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
+	// s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
 
 	return assetID
 }

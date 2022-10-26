@@ -218,8 +218,8 @@ func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
 				if err != nil {
 					continue
 				}
-				perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 //20%
-				perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 //90%
+				perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 // 20%
+				perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 // 90%
 				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%
 					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
 					k.SetBorrow(ctx, borrowPos)

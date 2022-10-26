@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/lend/types"
@@ -91,7 +92,6 @@ func (k Keeper) FuncMigratePool(ctx sdk.Context) error {
 	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
 	for _, j := range oldPools {
-
 		if j.PoolID == 1 {
 			assetData = assetDataPoolOne
 		} else {

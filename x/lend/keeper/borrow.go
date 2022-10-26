@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"sort"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -192,11 +193,11 @@ func (k Keeper) GetStableBorrowIds(ctx sdk.Context) (borrow types.StableBorrowMa
 
 func (k Keeper) DeleteIDFromStableBorrowMapping(ctx sdk.Context, id uint64) {
 	stableIds := k.GetStableBorrowIds(ctx)
-		lengthOfIDs := len(stableIds.StableBorrowIDs)
-		dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return stableIds.StableBorrowIDs[i] >= id })
+	lengthOfIDs := len(stableIds.StableBorrowIDs)
+	dataIndex := sort.Search(lengthOfIDs, func(i int) bool { return stableIds.StableBorrowIDs[i] >= id })
 
-		if dataIndex < lengthOfIDs && stableIds.StableBorrowIDs[dataIndex] == id {
-			stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs[:dataIndex], stableIds.StableBorrowIDs[dataIndex+1:]...)
-			k.SetStableBorrowIds(ctx, stableIds)
-		}
+	if dataIndex < lengthOfIDs && stableIds.StableBorrowIDs[dataIndex] == id {
+		stableIds.StableBorrowIDs = append(stableIds.StableBorrowIDs[:dataIndex], stableIds.StableBorrowIDs[dataIndex+1:]...)
+		k.SetStableBorrowIds(ctx, stableIds)
+	}
 }

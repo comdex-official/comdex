@@ -76,7 +76,6 @@ func (s *KeeperTestSuite) SetOraclePrice(assetID uint64, price uint64) {
 		PriceValue:    []uint64{price},
 	}
 	s.app.MarketKeeper.SetTwa(s.ctx, market)
-
 }
 
 func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
