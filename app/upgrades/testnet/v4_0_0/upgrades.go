@@ -7,6 +7,7 @@ import (
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
@@ -143,12 +144,20 @@ func CreateUpgradeHandlerV440(
 	mm *module.Manager,
 	configurator module.Configurator,
 	vaultkeeper vaultkeeper.Keeper,
+	lendKeeper lendkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
+
+		delete(fromVM, "lendV1")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
+		}
+
+		err2 := lendKeeper.MigrateData(ctx)
+		if err2 != nil {
+			ctx.Logger().Error("error in Migrate Data")
 		}
 		SetVaultLengthCounter(ctx, vaultkeeper)
 		return newVM, err
