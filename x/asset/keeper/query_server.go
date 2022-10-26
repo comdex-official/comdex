@@ -173,7 +173,7 @@ func (q QueryServer) QueryApps(c context.Context, req *types.QueryAppsRequest) (
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.AppKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.NewAppKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.AppData

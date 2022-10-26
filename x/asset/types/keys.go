@@ -20,7 +20,7 @@ var (
 
 	AssetKeyPrefix      = []byte{0x11}
 	PairKeyPrefix       = []byte{0x14}
-	AppKeyPrefix        = []byte{0x26}
+	NewAppKeyPrefix        = []byte{0x26}
 	PairsVaultKeyPrefix = []byte{0x16}
 
 	AssetForDenomKeyPrefix = []byte{0x21}
@@ -31,7 +31,7 @@ var (
 )
 
 func AppKey(id uint64) []byte {
-	return append(AppKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	return append(NewAppKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func PairsKey(id uint64) []byte {
