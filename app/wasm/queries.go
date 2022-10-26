@@ -178,10 +178,10 @@ func (qp QueryPlugin) WasmCheckVaultCreated(ctx sdk.Context, address string, app
 	return found
 }
 
-func (qp QueryPlugin) WasmCheckBorrowed(ctx sdk.Context, assetID uint64, address string) (found bool) {
-	found = qp.lendKeeper.WasmHasBorrowForAddressAndAsset(ctx, assetID, address)
-	return found
-}
+// func (qp QueryPlugin) WasmCheckBorrowed(ctx sdk.Context, assetID uint64, address string) (found bool) {
+// 	found = qp.lendKeeper.WasmHasBorrowForAddressAndAsset(ctx, assetID, address)
+// 	return found
+// }
 
 func (qp QueryPlugin) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID uint64, address string) (found bool) {
 	farmer, err := sdk.AccAddressFromBech32(address)

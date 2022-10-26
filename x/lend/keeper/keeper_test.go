@@ -2,12 +2,12 @@ package keeper_test
 
 import (
 	"encoding/binary"
-	"testing"
-
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
+	protobuftypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"testing"
 
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/lend/keeper"
@@ -75,18 +75,18 @@ func newDec(i string) sdk.Dec {
 	return dec
 }
 
-//func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
-//	var (
-//		store = s.app.MarketKeeper.Store(s.ctx)
-//		key   = markettypes.PriceForMarketKey(symbol)
-//	)
-//	value := s.app.AppCodec().MustMarshal(
-//		&protobuftypes.UInt64Value{
-//			Value: price,
-//		},
-//	)
-//	store.Set(key, value)
-//}
+func (s *KeeperTestSuite) SetOraclePrice(symbol string, price uint64) {
+	var (
+		store = s.app.MarketKeeper.Store(s.ctx)
+		key   = markettypes.PriceForMarketKey(symbol)
+	)
+	value := s.app.AppCodec().MustMarshal(
+		&protobuftypes.UInt64Value{
+			Value: price,
+		},
+	)
+	store.Set(key, value)
+}
 
 func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
@@ -107,70 +107,42 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	}
 	s.Require().NotZero(assetID)
 
-	//market := markettypes.Market{
-	//	Symbol:   name,
-	//	ScriptID: 12,
-	//	Rates:    price,
-	//}
-	//s.app.MarketKeeper.SetMarket(s.ctx, market)
+	market := markettypes.Market{
+		Symbol:   name,
+		ScriptID: 12,
+		Rates:    price,
+	}
+	s.app.MarketKeeper.SetMarket(s.ctx, market)
 
-	// exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
+	exists := s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
+	s.Suite.Require().False(exists)
+	s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
+	exists = s.app.MarketKeeper.HasMarketForAsset(s.ctx, assetID)
+	s.Suite.Require().True(exists)
 
-	twa1 := markettypes.TimeWeightedAverage{
-		AssetID:       1,
-		ScriptID:      10,
-		Twa:           1000000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	twa2 := markettypes.TimeWeightedAverage{
-		AssetID:       2,
-		ScriptID:      10,
-		Twa:           1000000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	twa3 := markettypes.TimeWeightedAverage{
-		AssetID:       3,
-		ScriptID:      10,
-		Twa:           1000000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-	twa4 := markettypes.TimeWeightedAverage{
-		AssetID:       4,
-		ScriptID:      10,
-		Twa:           1000000,
-		CurrentIndex:  1,
-		IsPriceActive: true,
-		PriceValue:    nil,
-	}
-
-	s.app.MarketKeeper.SetTwa(s.ctx, twa1)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
-	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
-	// s.Suite.Require().False(exists)
-	//s.app.MarketKeeper.SetMarketForAsset(s.ctx, assetID, name)
+	s.SetOraclePrice(name, price)
 
 	return assetID
 }
 
-func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, assetData []*types.AssetDataPoolMapping) uint64 {
+func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, mainAssetID, firstBridgedAssetID, secondBridgedAssetID uint64, assetData []types.AssetDataPoolMapping) uint64 {
 	err := s.app.LendKeeper.AddPoolRecords(s.ctx, types.Pool{
-		ModuleName: moduleName,
-		CPoolName:  cPoolName,
-		AssetData:  assetData,
+		ModuleName:           moduleName,
+		MainAssetId:          mainAssetID,
+		FirstBridgedAssetID:  firstBridgedAssetID,
+		SecondBridgedAssetID: secondBridgedAssetID,
+		CPoolName:            cPoolName,
+		AssetData:            assetData,
 	})
 	s.Require().NoError(err)
 
 	pools := s.app.LendKeeper.GetPools(s.ctx)
 	var poolID uint64
 	for _, pool := range pools {
-		poolID = pool.PoolID
+		if pool.MainAssetId == mainAssetID {
+			poolID = pool.PoolID
+			break
+		}
 	}
 	s.Require().NotZero(poolID)
 
@@ -178,7 +150,7 @@ func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, assetData 
 }
 
 func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64) uint64 {
-	err := s.app.LendKeeper.AddAssetRatesParams(s.ctx, types.AssetRatesParams{
+	err := s.app.LendKeeper.AddAssetRatesStats(s.ctx, types.AssetRatesStats{
 		AssetID:              AssetID,
 		UOptimal:             UOptimal,
 		Base:                 Base,

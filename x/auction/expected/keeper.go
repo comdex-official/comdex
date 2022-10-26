@@ -91,14 +91,23 @@ type EsmKeeper interface {
 }
 
 type LendKeeper interface {
+	GetBorrows(ctx sdk.Context) (userBorrows lendtypes.BorrowMapping, found bool)
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
-	GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool)
+	GetAssetRatesStats(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesStats, found bool)
 	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
 	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
+	DeleteBorrow(ctx sdk.Context, id uint64)
+
+	DeleteBorrowForAddressByPair(ctx sdk.Context, address sdk.AccAddress, pairID uint64)
+	UpdateUserBorrowIDMapping(ctx sdk.Context, lendOwner string, borrowID uint64, isInsert bool) error
+	UpdateBorrowIDByOwnerAndPoolMapping(ctx sdk.Context, borrowOwner string, borrowID uint64, poolID uint64, isInsert bool) error
+	UpdateBorrowIdsMapping(ctx sdk.Context, borrowID uint64, isInsert bool) error
+	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
 	GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionParams lendtypes.AuctionParams, found bool)
+	GetReserveDepositStats(ctx sdk.Context) (depositStats lendtypes.DepositStats, found bool)
 	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)

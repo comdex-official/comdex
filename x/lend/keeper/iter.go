@@ -2,20 +2,12 @@ package keeper
 
 import (
 	"fmt"
-
+	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-// To calculate pending rewards from last interaction
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
-	// to calculate lend rewards on the amount lent
-	// check if the interest accumulated is sufficient for that assetID and poolID
-	// send the cTokens to the lenders address if less than interest accumulated
-	// if the user is claiming for the first time then a new lendRewardsTracker is created for that user
-
 	lend, _ := k.GetLend(ctx, ID)
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
 
@@ -28,34 +20,23 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 			RewardsAccumulated: sdk.ZeroDec(),
 		}
 	}
-
-	// Adding interest to existing rewards accumulated
 	lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Add(interestPerBlock)
-
-	// initializing new variable newInterestPerBlock
-	newInterestPerInteraction := sdk.ZeroInt()
-
-	// checking if the rewards accumulated is greater than equal to 1
+	newInterestPerBlock := sdk.ZeroInt()
 	if lendRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
-		newInterestPerInteraction = lendRewardsTracker.RewardsAccumulated.TruncateInt()
-		newRewardDec := sdk.NewDec(newInterestPerInteraction.Int64())
-		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec) // not losing decimal precision
+		newInterestPerBlock = lendRewardsTracker.RewardsAccumulated.TruncateInt()
+		newRewardDec := sdk.NewDec(newInterestPerBlock.Int64())
+		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 	}
-	k.SetLendRewardTracker(ctx, lendRewardsTracker) // setting the remaining decimal part
-
-	// checking if sufficient cTokens are there to give out as rewards to user
-	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
-	if newInterestPerInteraction.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
-		return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
-	}
-	if newInterestPerInteraction.GT(sdk.ZeroInt()) {
-		// updating user's balance
-		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
+	k.SetLendRewardTracker(ctx, lendRewardsTracker)
+	if newInterestPerBlock.GT(sdk.ZeroInt()) {
+		lend.UpdatedAmountIn = lend.UpdatedAmountIn.Add(newInterestPerBlock)
+		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerBlock)
+		lend.Reward_Accumulated = lend.Reward_Accumulated.Add(newInterestPerBlock)
 
 		pool, _ := k.GetPool(ctx, lend.PoolID)
 		asset, _ := k.GetAsset(ctx, lend.AssetID)
-		Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)
-		assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
+		Amount := sdk.NewCoin(asset.Denom, newInterestPerBlock)
+		assetRatesStat, _ := k.GetAssetRatesStats(ctx, lend.AssetID)
 
 		cAsset, _ := k.GetAsset(ctx, assetRatesStat.CAssetID)
 		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
@@ -65,10 +46,7 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		if err != nil {
 			return sdk.Dec{}, err
 		}
-		// subtracting newInterestPerInteraction from global lend and interest accumulated
-		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
-		// poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Sub(newInterestPerInteraction)
-		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+
 		k.SetLend(ctx, lend)
 	}
 
@@ -76,9 +54,6 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 }
 
 func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, error) {
-	// to calculate borrow interest on existing borrow positions
-	// also calculate the amount going to reserve pool for that borrow position
-
 	borrow, _ := k.GetBorrow(ctx, ID)
 	pair, _ := k.GetLendPair(ctx, borrow.PairID)
 	reserveRates, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
@@ -86,38 +61,55 @@ func (k Keeper) IterateBorrow(ctx sdk.Context, ID uint64) (sdk.Dec, sdk.Dec, err
 		return sdk.ZeroDec(), sdk.ZeroDec(), err
 	}
 	currBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
-	interestPerInteraction, indexGlobalCurrent, reservePoolAmountPerInteraction, reserveGlobalIndex, err := k.CalculateBorrowInterest(ctx, borrow.AmountOut.Amount.String(), currBorrowAPR, reserveRates, borrow)
+	interestPerBlock, indexGlobalCurrent, reservePoolAmountPerBlock, reserveGlobalIndex, err := k.CalculateBorrowInterest(ctx, borrow.AmountOut.Amount.String(), currBorrowAPR, reserveRates, borrow)
 	if err != nil {
 		return sdk.ZeroDec(), sdk.ZeroDec(), err
 	}
-
+	borrowInterestTracker, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
+	if !found {
+		borrowInterestTracker = types.BorrowInterestTracker{
+			BorrowingId:         borrow.ID,
+			InterestAccumulated: sdk.ZeroDec(),
+		}
+	}
 	if !borrow.IsStableBorrow {
-		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(interestPerInteraction)
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(interestPerBlock)
 	} else {
 		stableInterestPerBlock, err := k.CalculateStableInterest(ctx, borrow.AmountOut.Amount.String(), borrow)
 		if err != nil {
 			return sdk.ZeroDec(), sdk.ZeroDec(), err
 		}
-		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(stableInterestPerBlock)
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Add(stableInterestPerBlock)
 	}
+	newInterestPerBlock := sdk.ZeroInt()
+	if borrowInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+		newInterestPerBlock = borrowInterestTracker.InterestAccumulated.TruncateInt()
+		newRewardDec := sdk.NewDec(newInterestPerBlock.Int64())
+		borrowInterestTracker.InterestAccumulated = borrowInterestTracker.InterestAccumulated.Sub(newRewardDec)
+	}
+	k.SetBorrowInterestTracker(ctx, borrowInterestTracker)
 
-	// if reserve pool records are not found for the borrowId then a new reservePoolRecords is generated for that borrow ID (on first interaction)
-	reservePoolRecords, found := k.GetBorrowInterestTracker(ctx, borrow.ID)
+	reservePoolRecords, found := k.GetReservePoolRecordsForBorrow(ctx, borrow.ID)
 	if !found {
-		reservePoolRecords = types.BorrowInterestTracker{
-			BorrowingId:         borrow.ID,
-			ReservePoolInterest: sdk.ZeroDec(),
+		reservePoolRecords = types.ReservePoolRecordsForBorrow{
+			ID:                  borrow.ID,
+			InterestAccumulated: sdk.ZeroDec(),
 		}
 	}
-	if reservePoolAmountPerInteraction.GT(sdk.ZeroDec()) {
-		reservePoolRecords.ReservePoolInterest = reservePoolRecords.ReservePoolInterest.Add(reservePoolAmountPerInteraction)
+	if reservePoolAmountPerBlock.GT(sdk.ZeroDec()) {
+		reservePoolRecords.InterestAccumulated = reservePoolRecords.InterestAccumulated.Add(reservePoolAmountPerBlock)
 	}
-	k.SetBorrowInterestTracker(ctx, reservePoolRecords)
-	k.SetBorrow(ctx, borrow)
+	k.SetReservePoolRecordsForBorrow(ctx, reservePoolRecords)
+	if newInterestPerBlock.GT(sdk.ZeroInt()) {
+		borrow.UpdatedAmountOut = borrow.UpdatedAmountOut.Add(newInterestPerBlock)
+		borrow.Interest_Accumulated = borrow.Interest_Accumulated.Add(newInterestPerBlock)
+		k.SetBorrow(ctx, borrow)
+	}
 	return indexGlobalCurrent, reserveGlobalIndex, nil
 }
 
 func (k Keeper) CalculateStableInterest(ctx sdk.Context, amount string, borrow types.BorrowAsset) (sdk.Dec, error) {
+
 	currentTime := ctx.BlockTime().Unix()
 
 	prevInterestTime := borrow.LastInteractionTime.Unix()
@@ -200,34 +192,32 @@ func (k Keeper) CalculateBorrowInterest(ctx sdk.Context, amount string, rate, re
 func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
 	borrows, _ := k.GetBorrows(ctx)
 
-	for _, v := range borrows {
+	for _, v := range borrows.BorrowIDs {
 		borrowPos, found := k.GetBorrow(ctx, v)
 		if !found {
 			continue
 		}
-		if !borrowPos.IsLiquidated {
-			if borrowPos.IsStableBorrow {
-				pair, found := k.GetLendPair(ctx, borrowPos.PairID)
-				if !found {
-					continue
-				}
-				assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
-				if !found {
-					continue
-				}
-				utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-				if err != nil {
-					continue
-				}
-				perc1, _ := sdk.NewDecFromStr(types.Perc1)
-				perc2, _ := sdk.NewDecFromStr(types.Perc2)
-				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
-					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-					k.SetBorrow(ctx, borrowPos)
-				} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
-					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-					k.SetBorrow(ctx, borrowPos)
-				}
+		if borrowPos.IsStableBorrow {
+			pair, found := k.GetLendPair(ctx, borrowPos.PairID)
+			if !found {
+				continue
+			}
+			assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
+			if !found {
+				continue
+			}
+			utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+			if err != nil {
+				continue
+			}
+			perc1, _ := sdk.NewDecFromStr(types.Perc1)
+			perc2, _ := sdk.NewDecFromStr(types.Perc2)
+			if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) {
+				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+				k.SetBorrow(ctx, borrowPos)
+			} else if utilizationRatio.GT(perc2) && (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) {
+				borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+				k.SetBorrow(ctx, borrowPos)
 			}
 		}
 	}

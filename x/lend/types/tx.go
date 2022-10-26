@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -475,27 +474,29 @@ func (msg *MsgBorrowAlternate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCalculateInterestAndRewards(borrower string) *MsgCalculateInterestAndRewards {
-	return &MsgCalculateInterestAndRewards{
+func NewMsgCalculateBorrowInterest(borrower string, borrowID uint64) *MsgCalculateBorrowInterest {
+	return &MsgCalculateBorrowInterest{
 		Borrower: borrower,
+		BorrowId: borrowID,
 	}
 }
 
-func (msg MsgCalculateInterestAndRewards) Route() string { return ModuleName }
-func (msg MsgCalculateInterestAndRewards) Type() string {
-	return TypeCalculateInterestAndRewardsRequest
-}
+func (msg MsgCalculateBorrowInterest) Route() string { return ModuleName }
+func (msg MsgCalculateBorrowInterest) Type() string  { return TypeCalculateBorrowInterestRequest }
 
-func (msg *MsgCalculateInterestAndRewards) ValidateBasic() error {
+func (msg *MsgCalculateBorrowInterest) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		return err
 	}
 
+	if msg.BorrowId <= 0 {
+		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	}
 	return nil
 }
 
-func (msg *MsgCalculateInterestAndRewards) GetSigners() []sdk.AccAddress {
+func (msg *MsgCalculateBorrowInterest) GetSigners() []sdk.AccAddress {
 	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
 	if err != nil {
 		panic(err)
@@ -504,7 +505,43 @@ func (msg *MsgCalculateInterestAndRewards) GetSigners() []sdk.AccAddress {
 }
 
 // GetSignBytes get the bytes for the message signer to sign on.
-func (msg *MsgCalculateInterestAndRewards) GetSignBytes() []byte {
+func (msg *MsgCalculateBorrowInterest) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}
+
+func NewMsgCalculateLendRewards(lender string, lendID uint64) *MsgCalculateLendRewards {
+	return &MsgCalculateLendRewards{
+		Lender: lender,
+		LendId: lendID,
+	}
+}
+
+func (msg MsgCalculateLendRewards) Route() string { return ModuleName }
+func (msg MsgCalculateLendRewards) Type() string  { return TypeCalculateLendRewardsRequest }
+
+func (msg *MsgCalculateLendRewards) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		return err
+	}
+
+	if msg.LendId <= 0 {
+		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	}
+	return nil
+}
+
+func (msg *MsgCalculateLendRewards) GetSigners() []sdk.AccAddress {
+	lender, err := sdk.AccAddressFromBech32(msg.GetLender())
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{lender}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgCalculateLendRewards) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }

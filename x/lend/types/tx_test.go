@@ -1,11 +1,10 @@
 package types_test
 
 import (
-	"testing"
-
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestNewMsgLend(t *testing.T) {
@@ -79,6 +78,7 @@ func TestNewMsgLend(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeLendAssetRequest)
 
@@ -140,6 +140,7 @@ func TestNewMsgWithdraw(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeWithdrawAssetRequest)
 
@@ -201,6 +202,7 @@ func TestNewMsgDeposit(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeDepositAssetRequest)
 
@@ -250,6 +252,7 @@ func TestNewMsgCloseLend(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeCloseLendAssetRequest)
 
@@ -359,6 +362,7 @@ func TestNewMsgBorrow(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeBorrowAssetRequest)
 
@@ -420,6 +424,7 @@ func TestNewMsgRepay(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeRepayAssetRequest)
 
@@ -481,6 +486,7 @@ func TestNewMsgDraw(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeDrawAssetRequest)
 
@@ -542,6 +548,7 @@ func TestNewMsgDepositBorrow(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeDepositBorrowAssetRequest)
 
@@ -591,6 +598,7 @@ func TestNewMsgCloseBorrow(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeCloseBorrowAssetRequest)
 
@@ -742,6 +750,7 @@ func TestNewMsgBorrowAlternate(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeBorrowAlternateAssetRequest)
 
@@ -807,6 +816,7 @@ func TestNewMsgFundModuleAccounts(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+
 			require.Equal(t, tc.msg.Route(), types.RouterKey)
 			require.Equal(t, tc.msg.Type(), types.TypeFundModuleAccountRequest)
 

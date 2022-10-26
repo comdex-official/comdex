@@ -35,8 +35,9 @@ service Msg {
   // FundModuleAccounts funds an existing module account
   rpc FundModuleAccounts(MsgFundModuleAccounts) returns (MsgFundModuleAccountsResponse);
 
-  rpc CalculateInterestAndRewards(MsgCalculateInterestAndRewards) returns (MsgCalculateInterestAndRewardsResponse);
+  rpc CalculateBorrowInterest(MsgCalculateBorrowInterest) returns (MsgCalculateBorrowInterestResponse);
 
+  rpc CalculateLendRewards(MsgCalculateLendRewards) returns (MsgCalculateLendRewardsResponse);
 }
 
 message MsgLend {
@@ -114,10 +115,15 @@ message MsgFundModuleAccounts {
   cosmos.base.v1beta1.Coin amount = 4 [(gogoproto.nullable) = false];
 }
 
-message MsgCalculateInterestAndRewards {
+message MsgCalculateBorrowInterest {
   string                   borrower = 1;
+  uint64                   borrow_id = 2;
 }
 
+message    MsgCalculateLendRewards{
+  string                   lender = 1;
+  uint64                   lend_id = 2;
+}
 
 message MsgLendResponse {}
 
@@ -141,4 +147,6 @@ message MsgBorrowAlternateResponse {}
 
 message MsgFundModuleAccountsResponse {}
 
-message MsgCalculateInterestAndRewardsResponse {}
+message MsgCalculateBorrowInterestResponse {}
+
+message MsgCalculateLendRewardsResponse {}

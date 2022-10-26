@@ -1,16 +1,15 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/lend/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (sdk.Dec, error) {
 	pool, _ := k.GetPool(ctx, poolID)
 	asset, _ := k.GetAsset(ctx, assetID)
 	moduleBalance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
-	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrAssetStatsNotFound
 	}
@@ -22,7 +21,7 @@ func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, a
 }
 
 func (k Keeper) GetBorrowAPRByAssetID(ctx sdk.Context, poolID, assetID uint64, IsStableBorrow bool) (borrowAPY sdk.Dec, err error) {
-	assetRatesStats, found := k.GetAssetRatesParams(ctx, assetID)
+	assetRatesStats, found := k.GetAssetRatesStats(ctx, assetID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetStatsNotFound
 	}
@@ -59,7 +58,7 @@ func (k Keeper) GetBorrowAPRByAssetID(ctx sdk.Context, poolID, assetID uint64, I
 }
 
 func (k Keeper) GetLendAPRByAssetIDAndPoolID(ctx sdk.Context, poolID, assetID uint64) (lendAPY sdk.Dec, err error) {
-	assetRatesStats, found := k.GetAssetRatesParams(ctx, assetID)
+	assetRatesStats, found := k.GetAssetRatesStats(ctx, assetID)
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetStatsNotFound
 	}
@@ -87,15 +86,13 @@ func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (s
 	if denominator.GT(sdk.ZeroDec()) {
 		averageBorrowRate := numerator.Quo(denominator)
 		return averageBorrowRate, nil
+
 	}
 	return sdk.ZeroDec(), types.ErrAverageBorrowRate
 }
 
 func (k Keeper) GetSavingRate(ctx sdk.Context, poolID, assetID uint64) (savingRate sdk.Dec, err error) {
-	assetRatesStats, found := k.GetAssetRatesParams(ctx, assetID)
-	if !found {
-		return sdk.ZeroDec(), types.ErrorAssetRatesParamsNotFound
-	}
+	assetRatesStats, _ := k.GetAssetRatesStats(ctx, assetID)
 	averageBorrowRate, err := k.GetAverageBorrowRate(ctx, poolID, assetID)
 	if err != nil {
 		return sdk.Dec{}, err
@@ -125,28 +122,25 @@ func (k Keeper) GetReserveRate(ctx sdk.Context, poolID, assetID uint64) (reserve
 	return sdk.ZeroDec(), nil
 }
 
-func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBData types.PoolAssetLBMapping, found bool) {
-	poolAssetLBData, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
+func (k Keeper) UpdateAPR(ctx sdk.Context, poolID, assetID uint64) (AssetStats types.AssetStats, found bool) {
+	assetStats, found := k.GetAssetStatsByPoolIDAndAssetID(ctx, assetID, poolID)
 	if !found {
-		return poolAssetLBData, false
+		return assetStats, false
 	}
 	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, poolID, assetID)
 	borrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, false)
 	stableBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, poolID, assetID, true)
 	currentUtilisationRatio, _ := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, poolID, assetID)
-	PoolAssetLBData = types.PoolAssetLBMapping{
-		PoolID:                   poolAssetLBData.PoolID,
-		AssetID:                  poolAssetLBData.AssetID,
-		LendIds:                  poolAssetLBData.LendIds,
-		BorrowIds:                poolAssetLBData.BorrowIds,
-		TotalBorrowed:            poolAssetLBData.TotalBorrowed,
-		TotalStableBorrowed:      poolAssetLBData.TotalStableBorrowed,
-		TotalLend:                poolAssetLBData.TotalLend,
-		TotalInterestAccumulated: poolAssetLBData.TotalInterestAccumulated,
-		LendApr:                  lendAPR,
-		BorrowApr:                borrowAPR,
-		StableBorrowApr:          stableBorrowAPR,
-		UtilisationRatio:         currentUtilisationRatio,
+	AssetStats = types.AssetStats{
+		PoolID:              assetStats.PoolID,
+		AssetID:             assetStats.AssetID,
+		TotalBorrowed:       assetStats.TotalBorrowed,
+		TotalStableBorrowed: assetStats.TotalStableBorrowed,
+		TotalLend:           assetStats.TotalLend,
+		LendApr:             lendAPR,
+		BorrowApr:           borrowAPR,
+		StableBorrowApr:     stableBorrowAPR,
+		UtilisationRatio:    currentUtilisationRatio,
 	}
-	return PoolAssetLBData, true
+	return AssetStats, true
 }

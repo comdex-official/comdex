@@ -2,10 +2,8 @@ package keeper
 
 import (
 	"context"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/comdex-official/comdex/x/lend/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgServer struct {
@@ -157,21 +155,37 @@ func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.Msg
 		return nil, err
 	}
 
-	if err = m.keeper.FundModAcc(ctx, accounts.ModuleName, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
+	if err := m.keeper.FundModAcc(ctx, accounts.ModuleName, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
 		return nil, err
 	}
 
 	return &types.MsgFundModuleAccountsResponse{}, nil
 }
 
-func (m msgServer) CalculateInterestAndRewards(goCtx context.Context, rewards *types.MsgCalculateInterestAndRewards) (*types.MsgCalculateInterestAndRewardsResponse, error) {
+func (m msgServer) CalculateBorrowInterest(goCtx context.Context, interest *types.MsgCalculateBorrowInterest) (*types.MsgCalculateBorrowInterestResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.keeper.MsgCalculateInterestAndRewards(ctx, rewards.Borrower); err != nil {
+	borrowID := interest.BorrowId
+
+	if err := m.keeper.MsgCalculateBorrowInterest(ctx, interest.Borrower, borrowID); err != nil {
 		return nil, err
 	}
 
-	ctx.GasMeter().ConsumeGas(types.CalculateInterestAndRewardGas, "CalculateInterestAndRewardGas")
+	ctx.GasMeter().ConsumeGas(types.CalculateBorrowInterestGas, "CalculateBorrowInterestGas")
 
-	return &types.MsgCalculateInterestAndRewardsResponse{}, nil
+	return &types.MsgCalculateBorrowInterestResponse{}, nil
+}
+
+func (m msgServer) CalculateLendRewards(goCtx context.Context, rewards *types.MsgCalculateLendRewards) (*types.MsgCalculateLendRewardsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	borrowID := rewards.LendId
+
+	if err := m.keeper.MsgCalculateLendRewards(ctx, rewards.Lender, borrowID); err != nil {
+		return nil, err
+	}
+
+	ctx.GasMeter().ConsumeGas(types.CalculateLendRewardGas, "CalculateLendRewardGas")
+
+	return &types.MsgCalculateLendRewardsResponse{}, nil
 }

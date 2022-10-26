@@ -319,18 +319,18 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "VaultCreatedResponse query response")
 			}
 			return bz, nil
-		} else if comdexQuery.CheckBorrowed != nil {
-			AssetID := comdexQuery.CheckBorrowed.AssetID
-			Address := comdexQuery.CheckBorrowed.Address
-			found := queryPlugin.WasmCheckBorrowed(ctx, AssetID, Address)
-			res := bindings.BorrowedResponse{
-				IsCompleted: found,
-			}
-			bz, err := json.Marshal(res)
-			if err != nil {
-				return nil, sdkerrors.Wrap(err, "BorrowedResponse query response")
-			}
-			return bz, nil
+		// } else if comdexQuery.CheckBorrowed != nil {
+		// 	AssetID := comdexQuery.CheckBorrowed.AssetID
+		// 	Address := comdexQuery.CheckBorrowed.Address
+		// 	found := queryPlugin.WasmCheckBorrowed(ctx, AssetID, Address)
+		// 	res := bindings.BorrowedResponse{
+		// 		IsCompleted: found,
+		// 	}
+		// 	bz, err := json.Marshal(res)
+		// 	if err != nil {
+		// 		return nil, sdkerrors.Wrap(err, "BorrowedResponse query response")
+		// 	}
+		// 	return bz, nil
 		} else if comdexQuery.CheckLiquidityProvided != nil {
 			AppID := comdexQuery.CheckLiquidityProvided.AppID
 			PoolID := comdexQuery.CheckLiquidityProvided.PoolID

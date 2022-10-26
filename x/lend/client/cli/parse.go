@@ -4,17 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
-
 	"github.com/spf13/pflag"
+	"os"
 )
 
-type (
-	XAddNewLendPairsInputs     addNewLendPairsInputs
-	XAddLendPoolInputs         addLendPoolInputs
-	XAddAssetRatesParamsInputs addAssetRatesParamsInputs
-	XSetAuctionParamsInputs    addNewAuctionParamsInputs
-)
+type XAddNewLendPairsInputs addNewLendPairsInputs
+type XAddLendPoolInputs addLendPoolInputs
+type XAddAssetRatesStatsInputs addAssetRatesStatsInputs
+type XSetAuctionParamsInputs addNewAuctionParamsInputs
 
 type XAddNewLendPairsInputsExceptions struct {
 	XAddNewLendPairsInputs
@@ -25,8 +22,8 @@ type XAddPoolInputsExceptions struct {
 	XAddLendPoolInputs
 	Other *string // Other won't raise an error
 }
-type XAddAssetRatesParamsInputsExceptions struct {
-	XAddAssetRatesParamsInputs
+type XAddAssetRatesStatsInputsExceptions struct {
+	XAddAssetRatesStatsInputs
 	Other *string // Other won't raise an error
 }
 
@@ -63,16 +60,16 @@ func (release *addLendPoolInputs) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (release *addAssetRatesParamsInputs) UnmarshalJSON(data []byte) error {
-	var addAssetRatesParamsE XAddAssetRatesParamsInputsExceptions
+func (release *addAssetRatesStatsInputs) UnmarshalJSON(data []byte) error {
+	var addAssetRatesStatsE XAddAssetRatesStatsInputsExceptions
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields() // Force
 
-	if err := dec.Decode(&addAssetRatesParamsE); err != nil {
+	if err := dec.Decode(&addAssetRatesStatsE); err != nil {
 		return err
 	}
 
-	*release = addAssetRatesParamsInputs(addAssetRatesParamsE.XAddAssetRatesParamsInputs)
+	*release = addAssetRatesStatsInputs(addAssetRatesStatsE.XAddAssetRatesStatsInputs)
 	return nil
 }
 
@@ -134,26 +131,26 @@ func parseAddPoolFlags(fs *pflag.FlagSet) (*addLendPoolInputs, error) {
 	return addPoolParams, nil
 }
 
-func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesParamsInputs, error) {
-	addAssetRatesParams := &addAssetRatesParamsInputs{}
-	addAssetRatesParamsFile, _ := fs.GetString(FlagAddAssetRatesParamsFile)
+func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesStatsInputs, error) {
+	addAssetRatesStats := &addAssetRatesStatsInputs{}
+	addAssetRatesStatsFile, _ := fs.GetString(FlagAddAssetRatesStatsFile)
 
-	if addAssetRatesParamsFile == "" {
-		return nil, fmt.Errorf("must pass in a add asset rates stats json using the --%s flag", FlagAddAssetRatesParamsFile)
+	if addAssetRatesStatsFile == "" {
+		return nil, fmt.Errorf("must pass in a add asset rates stats json using the --%s flag", FlagAddAssetRatesStatsFile)
 	}
 
-	contents, err := os.ReadFile(addAssetRatesParamsFile)
+	contents, err := os.ReadFile(addAssetRatesStatsFile)
 	if err != nil {
 		return nil, err
 	}
 
 	// make exception if unknown field exists
-	err = addAssetRatesParams.UnmarshalJSON(contents)
+	err = addAssetRatesStats.UnmarshalJSON(contents)
 	if err != nil {
 		return nil, err
 	}
 
-	return addAssetRatesParams, nil
+	return addAssetRatesStats, nil
 }
 
 func parseAuctionPramsFlags(fs *pflag.FlagSet) (*addNewAuctionParamsInputs, error) {
