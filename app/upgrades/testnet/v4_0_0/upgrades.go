@@ -149,17 +149,11 @@ func CreateUpgradeHandlerV440(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		delete(fromVM, "lendV1")
-		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		if err != nil {
-			return newVM, err
-		}
-
 		err2 := lendKeeper.MigrateData(ctx)
 		if err2 != nil {
 			ctx.Logger().Error("error in Migrate Data")
 		}
 		SetVaultLengthCounter(ctx, vaultkeeper)
-		return newVM, err
+		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
