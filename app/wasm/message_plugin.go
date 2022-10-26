@@ -144,7 +144,7 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 		AppId:   whiteListAsset.AppID,
 		AssetId: whiteListAsset.AssetID,
 	}
-	_, err := lockerKeeper.AddWhiteListedAsset(sdk.WrapSDKContext(ctx), &msg)
+	_, err := lockerKeeper.AddWhiteListedAsset(ctx, &msg)
 	if err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 		AppMappingId: whiteListAsset.AppID,
 		AssetId:      whiteListAsset.AssetID,
 	}
-	_, err := rewardsKeeper.Whitelist(sdk.WrapSDKContext(ctx), &msg)
+	_, err := rewardsKeeper.Whitelist(ctx, &msg)
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func WhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 		From:         contractAddr,
 		AppMappingId: whiteListAsset.AppID,
 	}
-	_, err := rewardsKeeper.WhitelistAppVault(sdk.WrapSDKContext(ctx), &msg)
+	_, err := rewardsKeeper.WhitelistAppVault(ctx, &msg)
 	if err != nil {
 		return err
 	}

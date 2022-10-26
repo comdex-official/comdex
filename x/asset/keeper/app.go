@@ -218,7 +218,7 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 	}
 
 	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
-		return types.ErrorNameDidNotMeetCriterion
+		return types.ErrorAppNameDidNotMeetCriterion
 	}
 
 	if msg.MinGovDeposit.LT(sdk.ZeroInt()) {

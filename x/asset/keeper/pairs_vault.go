@@ -136,7 +136,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	IsLetter := regexp.MustCompile(`^[A-Z-]+$`).MatchString
 
 	if !IsLetter(pairVaultBinding.PairName) {
-		return types.ErrorNameDidNotMeetCriterion
+		return types.ErrorPairNameDidNotMeetCriterion
 	}
 
 	id := k.GetPairsVaultID(ctx)
