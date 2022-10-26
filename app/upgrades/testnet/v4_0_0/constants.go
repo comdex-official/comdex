@@ -55,17 +55,3 @@ const (
 		}
 	}'`
 )
-
-const (
-	UpgradeNameV4_4_0   = "v4.4.0.beta"
-	UpgradeHeightV4_4_0 = "" // replace this height
-	UpgradeInfoV4_4_0   = `'{
-		"binaries": {
-			"darwin/arm64":"",
-			"darwin/x86_64":"",
-			"linux/arm64":"",
-			"linux/x86_64":"",
-			"windows/x86_64":""
-		}
-	}'`
-)
