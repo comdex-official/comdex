@@ -1,12 +1,12 @@
 package keeper
 
 import (
-	migrationTypes "github.com/comdex-official/comdex/x/lend/migrations/types"
+	v5types "github.com/comdex-official/comdex/app/upgrades/testnet/v5_0_0/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.PoolOld) {
+func (k Keeper) OldGetPools(ctx sdk.Context) (pools []v5types.PoolOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
@@ -20,7 +20,7 @@ func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.PoolOld) {
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var pool migrationTypes.PoolOld
+		var pool v5types.PoolOld
 		k.cdc.MustUnmarshal(iter.Value(), &pool)
 		pools = append(pools, pool)
 	}
@@ -28,7 +28,7 @@ func (k Keeper) OldGetPools(ctx sdk.Context) (pools []migrationTypes.PoolOld) {
 	return pools
 }
 
-func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []migrationTypes.LendAssetOld) {
+func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []v5types.LendAssetOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
@@ -42,14 +42,14 @@ func (k Keeper) OldGetAllLend(ctx sdk.Context) (lendAsset []migrationTypes.LendA
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset migrationTypes.LendAssetOld
+		var asset v5types.LendAssetOld
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
 		lendAsset = append(lendAsset, asset)
 	}
 	return lendAsset
 }
 
-func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []migrationTypes.BorrowAssetOld) {
+func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []v5types.BorrowAssetOld) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
@@ -63,7 +63,7 @@ func (k Keeper) OldGetAllBorrow(ctx sdk.Context) (borrowAsset []migrationTypes.B
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var asset migrationTypes.BorrowAssetOld
+		var asset v5types.BorrowAssetOld
 		k.cdc.MustUnmarshal(iter.Value(), &asset)
 		borrowAsset = append(borrowAsset, asset)
 	}
