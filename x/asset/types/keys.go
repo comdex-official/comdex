@@ -20,7 +20,7 @@ var (
 
 	AssetKeyPrefix      = []byte{0x11}
 	PairKeyPrefix       = []byte{0x14}
-	AppKeyPrefix        = []byte{0x15}
+	AppKeyPrefix        = []byte{0x26}
 	PairsVaultKeyPrefix = []byte{0x16}
 
 	AssetForDenomKeyPrefix = []byte{0x21}
