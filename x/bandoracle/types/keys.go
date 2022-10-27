@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "bandoracle"
+	ModuleName = "bandoracleV1"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
