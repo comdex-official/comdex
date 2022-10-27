@@ -82,7 +82,7 @@ func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint6
 func (k Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewAppKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
