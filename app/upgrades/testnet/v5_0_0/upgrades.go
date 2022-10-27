@@ -24,7 +24,7 @@ func CreateUpgradeHandlerV5Beta(
 			ctx.Logger().Error("error in Migrate Data")
 		}
 		SetVaultLengthCounter(ctx, vaultkeeper)
-		return fromVM, nil
+		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
 func SetVaultLengthCounter(
