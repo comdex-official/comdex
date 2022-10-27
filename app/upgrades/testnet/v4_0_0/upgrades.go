@@ -170,6 +170,8 @@ func CreateUpgradeHandlerV440(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
+		delete(fromVM, "market")
+		delete(fromVM, "bandoracle")
 		SetVaultLengthCounter(ctx, vaultkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
