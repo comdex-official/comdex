@@ -99,7 +99,8 @@ func migrateValuesPool(store sdk.KVStore, cdc codec.BinaryCodec) error {
 				SetReserveBuybackAssetData(store, cdc, reserveBuybackStats)
 			}
 		}
-
+		key := types.PoolKey(j.PoolID)
+		store.Delete(key)
 		SetPool(store, cdc, newPool)
 		SetPoolID(store, cdc, newPool.PoolID)
 	}
