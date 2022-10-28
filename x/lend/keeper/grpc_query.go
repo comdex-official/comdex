@@ -35,7 +35,7 @@ func (q QueryServer) QueryLends(c context.Context, req *types.QueryLendsRequest)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewLendUserPrefix),
+		prefix.NewStore(q.Store(ctx), types.LendUserPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LendAsset
@@ -189,7 +189,7 @@ func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewLendPairKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.LendPairKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Extended_Pair
@@ -242,7 +242,7 @@ func (q QueryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewPoolKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.PoolKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Pool
@@ -295,7 +295,7 @@ func (q QueryServer) QueryAssetToPairMappings(c context.Context, req *types.Quer
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewAssetToPairMappingKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.AssetToPairMappingKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.AssetToPairMapping
@@ -348,7 +348,7 @@ func (q QueryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequ
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewBorrowPairKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.BorrowPairKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.BorrowAsset
@@ -433,7 +433,7 @@ func (q QueryServer) QueryAssetRatesParams(c context.Context, req *types.QueryAs
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.NewAssetRatesParamsKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.AssetRatesParamsKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.AssetRatesParams

@@ -12,7 +12,7 @@ import (
 func (k Keeper) SetUserLendIDCounter(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendCounterIDPrefix
+		key   = types.LendCounterIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -25,7 +25,7 @@ func (k Keeper) SetUserLendIDCounter(ctx sdk.Context, id uint64) {
 func (k Keeper) GetUserLendIDCounter(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendCounterIDPrefix
+		key   = types.LendCounterIDPrefix
 		value = store.Get(key)
 	)
 
@@ -42,7 +42,7 @@ func (k Keeper) GetUserLendIDCounter(ctx sdk.Context) uint64 {
 func (k Keeper) SetLend(ctx sdk.Context, lend types.LendAsset) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendUserKey(lend.ID)
+		key   = types.LendUserKey(lend.ID)
 		value = k.cdc.MustMarshal(&lend)
 	)
 
@@ -52,7 +52,7 @@ func (k Keeper) SetLend(ctx sdk.Context, lend types.LendAsset) {
 func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend types.LendAsset, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendUserKey(id)
+		key   = types.LendUserKey(id)
 		value = store.Get(key)
 	)
 
@@ -67,7 +67,7 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend types.LendAsset, found
 func (k Keeper) GetAllLend(ctx sdk.Context) (lendAsset []types.LendAsset) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewLendUserPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -88,7 +88,7 @@ func (k Keeper) GetAllLend(ctx sdk.Context) (lendAsset []types.LendAsset) {
 func (k Keeper) DeleteLend(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendUserKey(id)
+		key   = types.LendUserKey(id)
 	)
 
 	store.Delete(key)
@@ -97,7 +97,7 @@ func (k Keeper) DeleteLend(ctx sdk.Context, id uint64) {
 func (k Keeper) SetPoolID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewPoolIDPrefix
+		key   = types.PoolIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: id,
@@ -110,7 +110,7 @@ func (k Keeper) SetPoolID(ctx sdk.Context, id uint64) {
 func (k Keeper) GetPoolID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewPoolIDPrefix
+		key   = types.PoolIDPrefix
 		value = store.Get(key)
 	)
 
@@ -127,7 +127,7 @@ func (k Keeper) GetPoolID(ctx sdk.Context) uint64 {
 func (k Keeper) SetPool(ctx sdk.Context, pool types.Pool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewPoolKey(pool.PoolID)
+		key   = types.PoolKey(pool.PoolID)
 		value = k.cdc.MustMarshal(&pool)
 	)
 
@@ -137,7 +137,7 @@ func (k Keeper) SetPool(ctx sdk.Context, pool types.Pool) {
 func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewPoolKey(id)
+		key   = types.PoolKey(id)
 		value = store.Get(key)
 	)
 
@@ -152,7 +152,7 @@ func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found bool
 func (k Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewPoolKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -174,7 +174,7 @@ func (k Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
 func (k Keeper) SetAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewAssetToPairMappingKey(assetToPair.AssetID, assetToPair.PoolID)
+		key   = types.AssetToPairMappingKey(assetToPair.AssetID, assetToPair.PoolID)
 		value = k.cdc.MustMarshal(&assetToPair)
 	)
 
@@ -184,7 +184,7 @@ func (k Keeper) SetAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 func (k Keeper) GetAssetToPair(ctx sdk.Context, assetID, poolID uint64) (assetToPair types.AssetToPairMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewAssetToPairMappingKey(assetID, poolID)
+		key   = types.AssetToPairMappingKey(assetID, poolID)
 		value = store.Get(key)
 	)
 
@@ -199,7 +199,7 @@ func (k Keeper) GetAssetToPair(ctx sdk.Context, assetID, poolID uint64) (assetTo
 func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.AssetToPairMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewAssetToPairMappingKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetToPairMappingKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -220,7 +220,7 @@ func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.A
 func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, PoolAssetLBMapping types.PoolAssetLBMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewSetAssetStatsByPoolIDAndAssetID(PoolAssetLBMapping.PoolID, PoolAssetLBMapping.AssetID)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(PoolAssetLBMapping.PoolID, PoolAssetLBMapping.AssetID)
 		value = k.cdc.MustMarshal(&PoolAssetLBMapping)
 	)
 
@@ -230,7 +230,7 @@ func (k Keeper) SetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, PoolAssetLBMapp
 func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping types.PoolAssetLBMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewSetAssetStatsByPoolIDAndAssetID(poolID, assetID)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(poolID, assetID)
 		value = store.Get(key)
 	)
 
@@ -245,7 +245,7 @@ func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID
 func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats []types.PoolAssetLBMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewAssetStatsByPoolIDAndAssetIDKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -274,7 +274,7 @@ func (k Keeper) AssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID ui
 func (k Keeper) SetLendRewardTracker(ctx sdk.Context, rewards types.LendRewardsTracker) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendRewardsTrackerKey(rewards.LendingId)
+		key   = types.LendRewardsTrackerKey(rewards.LendingId)
 		value = k.cdc.MustMarshal(&rewards)
 	)
 
@@ -284,7 +284,7 @@ func (k Keeper) SetLendRewardTracker(ctx sdk.Context, rewards types.LendRewardsT
 func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.LendRewardsTracker, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewLendRewardsTrackerKey(id)
+		key   = types.LendRewardsTrackerKey(id)
 		value = store.Get(key)
 	)
 
@@ -299,7 +299,7 @@ func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.
 func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRewardsTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewLendRewardsTrackerKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendRewardsTrackerKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -320,7 +320,7 @@ func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRe
 func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewUserLendBorrowMappingKey(userMapping.Owner, userMapping.LendId)
+		key   = types.UserLendBorrowMappingKey(userMapping.Owner, userMapping.LendId)
 		value = k.cdc.MustMarshal(&userMapping)
 	)
 
@@ -330,7 +330,7 @@ func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.User
 func (k Keeper) GetUserLendBorrowMapping(ctx sdk.Context, owner string, lendID uint64) (userMapping types.UserAssetLendBorrowMapping, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewUserLendBorrowMappingKey(owner, lendID)
+		key   = types.UserLendBorrowMappingKey(owner, lendID)
 		value = store.Get(key)
 	)
 
@@ -345,7 +345,7 @@ func (k Keeper) GetUserLendBorrowMapping(ctx sdk.Context, owner string, lendID u
 func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappingData []types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewUserLendBorrowKey(address)
+		key   = types.UserLendBorrowKey(address)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -368,7 +368,7 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 func (k Keeper) GetAllUserTotalMappingData(ctx sdk.Context) (mappingData []types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewUserLendBorrowMappingKeyPrefix
+		key   = types.UserLendBorrowMappingKeyPrefix
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -404,7 +404,7 @@ func (k Keeper) HasLendForAddressByAsset(ctx sdk.Context, address string, assetI
 func (k Keeper) DeleteLendForAddressByAsset(ctx sdk.Context, address string, lendingID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewUserLendBorrowMappingKey(address, lendingID)
+		key   = types.UserLendBorrowMappingKey(address, lendingID)
 	)
 
 	store.Delete(key)
@@ -436,7 +436,7 @@ func (k Keeper) DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, 
 func (k Keeper) SetReserveBuybackAssetData(ctx sdk.Context, reserve types.ReserveBuybackAssetData) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewReserveBuybackAssetDataKey(reserve.AssetID)
+		key   = types.ReserveBuybackAssetDataKey(reserve.AssetID)
 		value = k.cdc.MustMarshal(&reserve)
 	)
 
@@ -446,7 +446,7 @@ func (k Keeper) SetReserveBuybackAssetData(ctx sdk.Context, reserve types.Reserv
 func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve types.ReserveBuybackAssetData, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewReserveBuybackAssetDataKey(id)
+		key   = types.ReserveBuybackAssetDataKey(id)
 		value = store.Get(key)
 	)
 
@@ -461,7 +461,7 @@ func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve 
 func (k Keeper) GetAllReserveBuybackAssetData(ctx sdk.Context) (reserve []types.ReserveBuybackAssetData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewReserveBuybackAssetDataKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.ReserveBuybackAssetDataKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {

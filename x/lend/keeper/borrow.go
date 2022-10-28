@@ -12,7 +12,7 @@ import (
 func (k Keeper) SetUserBorrowIDCounter(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowCounterIDPrefix
+		key   = types.BorrowCounterIDPrefix
 		value = k.cdc.MustMarshal(
 			&protobuftypes.UInt64Value{
 				Value: ID,
@@ -25,7 +25,7 @@ func (k Keeper) SetUserBorrowIDCounter(ctx sdk.Context, ID uint64) {
 func (k Keeper) GetUserBorrowIDCounter(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowCounterIDPrefix
+		key   = types.BorrowCounterIDPrefix
 		value = store.Get(key)
 	)
 
@@ -42,7 +42,7 @@ func (k Keeper) GetUserBorrowIDCounter(ctx sdk.Context) uint64 {
 func (k Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowUserKey(borrow.ID)
+		key   = types.BorrowUserKey(borrow.ID)
 		value = k.cdc.MustMarshal(&borrow)
 	)
 
@@ -52,7 +52,7 @@ func (k Keeper) SetBorrow(ctx sdk.Context, borrow types.BorrowAsset) {
 func (k Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowUserKey(ID)
+		key   = types.BorrowUserKey(ID)
 		value = store.Get(key)
 	)
 
@@ -67,7 +67,7 @@ func (k Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset,
 func (k Keeper) GetAllBorrow(ctx sdk.Context) (borrowAsset []types.BorrowAsset) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewBorrowPairKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -88,7 +88,7 @@ func (k Keeper) GetAllBorrow(ctx sdk.Context) (borrowAsset []types.BorrowAsset) 
 func (k Keeper) DeleteBorrow(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowUserKey(ID)
+		key   = types.BorrowUserKey(ID)
 	)
 
 	store.Delete(key)
@@ -118,7 +118,7 @@ func (k Keeper) GetBorrows(ctx sdk.Context) (borrowIds []uint64, found bool) {
 func (k Keeper) SetBorrowInterestTracker(ctx sdk.Context, interest types.BorrowInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowInterestTrackerKey(interest.BorrowingId)
+		key   = types.BorrowInterestTrackerKey(interest.BorrowingId)
 		value = k.cdc.MustMarshal(&interest)
 	)
 
@@ -128,7 +128,7 @@ func (k Keeper) SetBorrowInterestTracker(ctx sdk.Context, interest types.BorrowI
 func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest types.BorrowInterestTracker, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowInterestTrackerKey(ID)
+		key   = types.BorrowInterestTrackerKey(ID)
 		value = store.Get(key)
 	)
 
@@ -143,7 +143,7 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest t
 func (k Keeper) GetAllBorrowInterestTracker(ctx sdk.Context) (interest []types.BorrowInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.NewBorrowInterestTrackerKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.BorrowInterestTrackerKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -164,7 +164,7 @@ func (k Keeper) GetAllBorrowInterestTracker(ctx sdk.Context) (interest []types.B
 func (k Keeper) DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NewBorrowInterestTrackerKey(ID)
+		key   = types.BorrowInterestTrackerKey(ID)
 	)
 
 	store.Delete(key)
