@@ -97,36 +97,27 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	if !found {
 		return types.ErrESMTriggerParamsNotFound
 	}
-	currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
+	existingDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
 	if !found {
-		newCurrentDeposit := types.CurrentDepositStats{
+		existingDeposit = types.CurrentDepositStats{
 			AppId:   AppID,
 			Balance: Amount,
 		}
-		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
 	} else {
-		newCurrentDeposit := types.CurrentDepositStats{
-			AppId:   AppID,
-			Balance: currentDeposit.Balance.Add(Amount),
+		if existingDeposit.Balance.Amount.GT(esmTriggerParams.TargetValue.Amount) {
+			return types.ErrDepositForAppReached
 		}
-		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
-	}
-	newCurrentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
-
-	if newCurrentDeposit.Balance.Amount.GT(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrDepositForAppReached
-	}
-	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrAmtExceedsTargetValue
+		existingDeposit.Balance = existingDeposit.Balance.Add(Amount)
 	}
 	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
-
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, tokenminttypes.ModuleName, sdk.NewCoins(Amount)); err != nil {
 		return err
 	}
 	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount); err1 != nil {
 		return err1
 	}
+	k.SetCurrentDepositStats(ctx, existingDeposit)
+	// currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
 
 	userDeposits, found := k.GetUserDepositByApp(ctx, depositorAddr, AppID)
 	if !found {
@@ -181,56 +172,56 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	return nil
 }
 
-func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
-	userAddress, err := sdk.AccAddressFromBech32(from)
-	if err != nil {
-		return err
-	}
-	assetInID, _ := k.asset.GetAssetForDenom(ctx, amount.Denom)
+// func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+// 	userAddress, err := sdk.AccAddressFromBech32(from)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	assetInID, _ := k.asset.GetAssetForDenom(ctx, amount.Denom)
 
-	// initializing userWorth
-	userWorth := sdk.ZeroDec()
-	for _, v := range esmDataAfterCoolOff.DebtAsset {
-		if v.AssetID == assetInID.Id {
-			userWorth = v.DebtTokenWorth.Mul(sdk.NewDecFromInt(amount.Amount))
-			break
-		}
-	}
+// 	// initializing userWorth
+// 	userWorth := sdk.ZeroDec()
+// 	for _, v := range esmDataAfterCoolOff.DebtAsset {
+// 		if v.AssetID == assetInID.Id {
+// 			userWorth = v.DebtTokenWorth.Mul(sdk.NewDecFromInt(amount.Amount))
+// 			break
+// 		}
+// 	}
 
-	for i, data := range esmDataAfterCoolOff.CollateralAsset {
-		collAsset, _ := k.asset.GetAsset(ctx, data.AssetID)
-		tokenDValue := data.Share.Mul(userWorth)
-		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID) // getting last saved prices
-		oldTokenQuant := tokenDValue.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-		usd := 1000000
-		tokenQuant := oldTokenQuant.Quo(sdk.NewDec(int64(usd)))
-		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
-		if err1 != nil {
-			return err1
-		}
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant.TruncateInt())))
-		if err != nil {
-			return err
-		}
-		err2 := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(amount))
-		if err2 != nil {
-			return err2
-		}
-		data.Amount = data.Amount.Sub(tokenQuant.TruncateInt())
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
-		esmDataAfterCoolOff.CollateralAsset[i] = data
-		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
-	}
+// 	for i, data := range esmDataAfterCoolOff.CollateralAsset {
+// 		collAsset, _ := k.asset.GetAsset(ctx, data.AssetID)
+// 		tokenDValue := data.Share.Mul(userWorth)
+// 		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID) // getting last saved prices
+// 		oldTokenQuant := tokenDValue.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
+// 		usd := 1000000
+// 		tokenQuant := oldTokenQuant.Quo(sdk.NewDec(int64(usd)))
+// 		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
+// 		if err1 != nil {
+// 			return err1
+// 		}
+// 		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant.TruncateInt())))
+// 		if err != nil {
+// 			return err
+// 		}
+// 		err2 := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(amount))
+// 		if err2 != nil {
+// 			return err2
+// 		}
+// 		data.Amount = data.Amount.Sub(tokenQuant.TruncateInt())
+// 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
+// 		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
+// 		esmDataAfterCoolOff.CollateralAsset[i] = data
+// 		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+// 	}
 
-	for i, b := range esmDataAfterCoolOff.DebtAsset {
-		if b.AssetID == assetInID.Id {
-			b.Amount = b.Amount.Sub(amount.Amount)
-			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset[:i], esmDataAfterCoolOff.DebtAsset[i+1:]...)
-			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
-			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
-		}
-	}
+// 	for i, b := range esmDataAfterCoolOff.DebtAsset {
+// 		if b.AssetID == assetInID.Id {
+// 			b.Amount = b.Amount.Sub(amount.Amount)
+// 			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset[:i], esmDataAfterCoolOff.DebtAsset[i+1:]...)
+// 			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
+// 			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
