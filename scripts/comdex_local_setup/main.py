@@ -374,40 +374,40 @@ def CreateState():
             time.sleep(APPS[0][3]) # waiting for proposal duration
             ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
 
-    # for liquidityPair in LIQUIDITY_PAIRS:
-    #     if len(liquidityPair) != 3:
-    #         exit("Invalid liquidity pair configs")
-    #     CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
-    #     Vote("yes")
+    for liquidityPair in LIQUIDITY_PAIRS:
+        if len(liquidityPair) != 3:
+            exit("Invalid liquidity pair configs")
+        CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
+        Vote("yes")
 
-    # for liquidityPool in LIQUIDITY_POOLS:
-    #     if len(liquidityPool) != 3:
-    #         exit("Invalid liquidity pool configs")
-    #     CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
+    for liquidityPool in LIQUIDITY_POOLS:
+        if len(liquidityPool) != 3:
+            exit("Invalid liquidity pool configs")
+        CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
 
-    # for assetRate in ADD_ASSET_RATES:
-    #     if len(assetRate) != 2:
-    #         exit("Invalid add asset rate configs")
-    #     AddAssetRates(assetRate[0], assetRate[1])
-    #     Vote("yes")
+    for assetRate in ADD_ASSET_RATES:
+        if len(assetRate) != 2:
+            exit("Invalid add asset rate configs")
+        AddAssetRates(assetRate[0], assetRate[1])
+        Vote("yes")
     
-    # for lenPoolData in ADD_LEND_POOL:
-    #     AddLendPool(lenPoolData)
-    #     Vote("yes")
+    for lenPoolData in ADD_LEND_POOL:
+        AddLendPool(lenPoolData)
+        Vote("yes")
     
-    # for lendPair in ADD_LEND_PAIR:
-    #     if len(lendPair) != 2:
-    #         exit("Invalid lend pair configs")
-    #     AddLendPair(lendPair[0], lendPair[1])
-    #     Vote("yes")
+    for lendPair in ADD_LEND_PAIR:
+        if len(lendPair) != 2:
+            exit("Invalid lend pair configs")
+        AddLendPair(lendPair[0], lendPair[1])
+        Vote("yes")
     
-    # for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
-    #     if len(lenAssetPairMap) != 3:
-    #         exit("Invalid lend asset pair map configs")
-    #     AddLendAssetPairMapping(lenAssetPairMap[0], lenAssetPairMap[1], lenAssetPairMap[2])
-    #     Vote("yes")
+    for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
+        if len(lenAssetPairMap) != 3:
+            exit("Invalid lend asset pair map configs")
+        AddLendAssetPairMapping(lenAssetPairMap[0], lenAssetPairMap[1], lenAssetPairMap[2])
+        Vote("yes")
     
-    # AddLendAuctionParamsAndVote()
+    AddLendAuctionParamsAndVote()
 
 
 
