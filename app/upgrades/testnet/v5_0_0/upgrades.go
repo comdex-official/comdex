@@ -1,10 +1,6 @@
 package v5_0_0 //nolint:revive,stylecheck
 
 import (
-	"github.com/comdex-official/comdex/x/asset"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/lend"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -18,8 +14,8 @@ func CreateUpgradeHandlerV5Beta(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
-		fromVM[lendtypes.ModuleName] = lend.AppModule{}.ConsensusVersion()
-		fromVM[assettypes.ModuleName] = asset.AppModule{}.ConsensusVersion()
+		//fromVM[lendtypes.ModuleName] = lend.AppModule{}.ConsensusVersion()
+		//fromVM[assettypes.ModuleName] = asset.AppModule{}.ConsensusVersion()
 		//mm.Modules[lendtypes.ModuleName].InitGenesis(ctx, cdc, myCustomGenesisState)
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
