@@ -21,6 +21,10 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	if err != nil {
 		return err
 	}
+	err = migrateValueAuctionParams(store, cdc)
+	if err != nil {
+		return err
+	}
 	return err
 }
 
@@ -242,4 +246,30 @@ func migrateValueBorrow(v v5types.BorrowAssetOld) (newVal types.BorrowAsset, old
 		IsLiquidated:        false,
 	}
 	return newVal, types.LendUserKey(newVal.ID)
+}
+
+// for auction params migration
+
+func migrateValueAuctionParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
+	fmt.Println("migrateValueAuctionParams")
+	buffer, _ := sdk.NewDecFromStr("1.2")
+	cusp, _ := sdk.NewDecFromStr("0.4")
+	auctionParams := types.AuctionParams{
+		AppId:                  3,
+		AuctionDurationSeconds: 21600,
+		Buffer:                 buffer,
+		Cusp:                   cusp,
+		Step:                   sdk.NewIntFromUint64(360),
+		PriceFunctionType:      1,
+		DutchId:                3,
+		BidDurationSeconds:     10800,
+	}
+	var (
+		oldKey = types.AuctionParamKey(1)
+		key    = types.AuctionParamKey(auctionParams.AppId)
+		value  = cdc.MustMarshal(&auctionParams)
+	)
+	store.Delete(oldKey)
+	store.Set(key, value)
+	return nil
 }
