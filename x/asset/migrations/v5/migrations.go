@@ -25,6 +25,8 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		GovTimeInSeconds: 300,
 		GenesisToken:     nil,
 	}
+	key1 := assettypes.AppKey(app1.Id)
+	store.Delete(key1)
 	SetApp(store, cdc, app1)
 
 	genesisToken := assettypes.MintGenesisToken{
@@ -43,6 +45,8 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		GovTimeInSeconds: 300,
 		GenesisToken:     gToken,
 	}
+	key2 := assettypes.AppKey(app2.Id)
+	store.Delete(key2)
 	SetApp(store, cdc, app2)
 
 	app3 := assettypes.AppData{
@@ -53,6 +57,8 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		GovTimeInSeconds: 0,
 		GenesisToken:     nil,
 	}
+	key3 := assettypes.AppKey(app3.Id)
+	store.Delete(key3)
 	SetApp(store, cdc, app3)
 	SetAppID(store, cdc, 3)
 	return nil
