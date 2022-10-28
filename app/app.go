@@ -1151,7 +1151,7 @@ func (a *App) registerUpgradeHandlers() {
 
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv5_0_0.UpgradeNameBeta,
-		tv5_0_0.CreateUpgradeHandlerV5Beta(a.mm, a.configurator),
+		tv5_0_0.CreateUpgradeHandlerV5Beta(a.mm, a.configurator, a.cdc),
 	)
 
 	// When a planned update height is reached, the old binary will panic
