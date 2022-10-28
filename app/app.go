@@ -1166,10 +1166,10 @@ func (a *App) registerUpgradeHandlers() {
 
 	storeUpgrades = upgradeHandlers(upgradeInfo, a, storeUpgrades)
 
-	if storeUpgrades != nil {
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-	}
+	//if storeUpgrades != nil {
+	// configure store loader that checks if version == upgradeHeight and applies store upgrades
+	a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
+	//}
 }
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
@@ -1229,6 +1229,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 	case upgradeInfo.Name == tv5_0_0.UpgradeNameBeta && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
 
 	// prepare store for main net upgrade v5.0.0
 	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
