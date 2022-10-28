@@ -305,45 +305,45 @@ package v5_0_0
 //	return nil
 //}
 //
-//// func FuncMigrateApp(ctx sdk.Context, k lendkeeper.Keeper) error {
-//// 	app1 := assettypes.AppData{
-//// 		Id:               1,
-//// 		Name:             "CSWAP",
-//// 		ShortName:        "cswap",
-//// 		MinGovDeposit:    sdk.ZeroInt(),
-//// 		GovTimeInSeconds: 300,
-//// 		GenesisToken:     nil,
-//// 	}
-//// 	k.Asset.SetApp(ctx, app1)
-//
-//// 	genesisToken := assettypes.MintGenesisToken{
-//// 		AssetId:       9,
-//// 		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
-//// 		IsGovToken:    true,
-//// 		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
-//// 	}
-//// 	var gToken []assettypes.MintGenesisToken
-//// 	gToken = append(gToken, genesisToken)
-//// 	app2 := assettypes.AppData{
-//// 		Id:               2,
-//// 		Name:             "HARBOR",
-//// 		ShortName:        "hbr",
-//// 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-//// 		GovTimeInSeconds: 300,
-//// 		GenesisToken:     gToken,
-//// 	}
-//// 	k.Asset.SetApp(ctx, app2)
-//
-//// 	app3 := assettypes.AppData{
-//// 		Id:               3,
-//// 		Name:             "commodo",
-//// 		ShortName:        "cmdo",
-//// 		MinGovDeposit:    sdk.ZeroInt(),
-//// 		GovTimeInSeconds: 0,
-//// 		GenesisToken:     nil,
-//// 	}
-//// 	k.Asset.SetApp(ctx, app3)
-//// 	k.Asset.SetAppID(ctx, 3)
-//
-//// 	return nil
-//// }
+// func FuncMigrateApp(ctx sdk.Context, k lendkeeper.Keeper) error {
+// 	app1 := assettypes.AppData{
+// 		Id:               1,
+// 		Name:             "CSWAP",
+// 		ShortName:        "cswap",
+// 		MinGovDeposit:    sdk.ZeroInt(),
+// 		GovTimeInSeconds: 300,
+// 		GenesisToken:     nil,
+// 	}
+// 	k.Asset.SetApp(ctx, app1)
+
+// 	genesisToken := assettypes.MintGenesisToken{
+// 		AssetId:       9,
+// 		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
+// 		IsGovToken:    true,
+// 		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
+// 	}
+// 	var gToken []assettypes.MintGenesisToken
+// 	gToken = append(gToken, genesisToken)
+// 	app2 := assettypes.AppData{
+// 		Id:               2,
+// 		Name:             "HARBOR",
+// 		ShortName:        "hbr",
+// 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+// 		GovTimeInSeconds: 300,
+// 		GenesisToken:     gToken,
+// 	}
+// 	k.Asset.SetApp(ctx, app2)
+
+// 	app3 := assettypes.AppData{
+// 		Id:               3,
+// 		Name:             "commodo",
+// 		ShortName:        "cmdo",
+// 		MinGovDeposit:    sdk.ZeroInt(),
+// 		GovTimeInSeconds: 0,
+// 		GenesisToken:     nil,
+// 	}
+// 	k.Asset.SetApp(ctx, app3)
+// 	k.Asset.SetAppID(ctx, 3)
+
+// 	return nil
+// }

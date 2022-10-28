@@ -15,7 +15,11 @@ import (
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
 	fmt.Println("MigrateStore")
-	err := migrateValuesLend(store, cdc)
+	err := migrateValuesPool(store, cdc)
+	if err != nil {
+		return err
+	}
+	err = migrateValuesLend(store, cdc)
 	if err != nil {
 		return err
 	}
@@ -32,6 +36,140 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 		return err
 	}
 	return err
+}
+
+func migrateValuesPool(store sdk.KVStore, cdc codec.BinaryCodec) error {
+	oldPools := GetPools(store, cdc)
+	var (
+		assetDataPoolOne []*types.AssetDataPoolMapping
+		assetDataPoolTwo []*types.AssetDataPoolMapping
+		assetData        []*types.AssetDataPoolMapping
+	)
+	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
+		AssetID:          1,
+		AssetTransitType: 3,
+		SupplyCap:        uint64(5000000000000000000),
+	}
+	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
+		AssetID:          2,
+		AssetTransitType: 1,
+		SupplyCap:        uint64(1000000000000000000),
+	}
+	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
+		AssetID:          3,
+		AssetTransitType: 2,
+		SupplyCap:        uint64(5000000000000000000),
+	}
+	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
+		AssetID:          4,
+		AssetTransitType: 1,
+		SupplyCap:        uint64(3000000000000000000),
+	}
+	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
+	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
+
+	for _, j := range oldPools {
+		if j.PoolID == 1 {
+			assetData = assetDataPoolOne
+		} else {
+			assetData = assetDataPoolTwo
+		}
+		newPool := types.Pool{
+			PoolID:       j.PoolID,
+			ModuleName:   j.ModuleName,
+			CPoolName:    j.CPoolName,
+			ReserveFunds: j.ReserveFunds,
+			AssetData:    assetData,
+		}
+
+		for _, v := range newPool.AssetData {
+			var assetStats types.PoolAssetLBMapping
+			assetStats.PoolID = newPool.PoolID
+			assetStats.AssetID = v.AssetID
+			assetStats.TotalBorrowed = sdk.ZeroInt()
+			assetStats.TotalStableBorrowed = sdk.ZeroInt()
+			assetStats.TotalLend = sdk.ZeroInt()
+			assetStats.TotalInterestAccumulated = sdk.ZeroInt()
+			SetAssetStatsByPoolIDAndAssetID(store, cdc, assetStats)
+			reserveBuybackStats, found := GetReserveBuybackAssetData(store, cdc, v.AssetID)
+			if !found {
+				reserveBuybackStats.AssetID = v.AssetID
+				reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
+				reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
+				SetReserveBuybackAssetData(store, cdc, reserveBuybackStats)
+			}
+		}
+		key := types.PoolKey(j.PoolID)
+		store.Delete(key)
+		SetPool(store, cdc, newPool)
+		SetPoolID(store, cdc, newPool.PoolID)
+	}
+	return nil
+}
+
+func SetPoolID(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) {
+	var (
+		key   = types.PoolIDPrefix
+		value = cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+	store.Set(key, value)
+}
+
+func SetPool(store sdk.KVStore, cdc codec.BinaryCodec, pool types.Pool) {
+	var (
+		key   = types.PoolKey(pool.PoolID)
+		value = cdc.MustMarshal(&pool)
+	)
+
+	store.Set(key, value)
+}
+
+func SetReserveBuybackAssetData(store sdk.KVStore, cdc codec.BinaryCodec, reserve types.ReserveBuybackAssetData) {
+	var (
+		key   = types.ReserveBuybackAssetDataKey(reserve.AssetID)
+		value = cdc.MustMarshal(&reserve)
+	)
+
+	store.Set(key, value)
+}
+
+func GetReserveBuybackAssetData(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) (reserve types.ReserveBuybackAssetData, found bool) {
+	var (
+		key   = types.ReserveBuybackAssetDataKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return reserve, false
+	}
+
+	cdc.MustUnmarshal(value, &reserve)
+	return reserve, true
+}
+
+func GetPools(store sdk.KVStore, cdc codec.BinaryCodec) (pools []types.Pool) {
+	var (
+		iter = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var pool types.Pool
+		cdc.MustUnmarshal(iter.Value(), &pool)
+		pools = append(pools, pool)
+	}
+
+	return pools
 }
 
 func migrateValuesLend(store sdk.KVStore, cdc codec.BinaryCodec) error {
