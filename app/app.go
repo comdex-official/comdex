@@ -838,14 +838,11 @@ func New(
 		bandoracleModule,
 		liquidation.NewAppModule(app.cdc, app.LiquidationKeeper, app.AccountKeeper, app.BankKeeper),
 		locker.NewAppModule(app.cdc, app.LockerKeeper, app.AccountKeeper, app.BankKeeper),
-		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper,
-			app.AuctionKeeper, app.LockerKeeper, app.Rewardskeeper),
-		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper, app.VaultKeeper,
-			app.MarketKeeper, app.TokenmintKeeper, app.CollectorKeeper),
+		collector.NewAppModule(app.cdc, app.CollectorKeeper, app.AccountKeeper, app.BankKeeper),
+		esm.NewAppModule(app.cdc, app.EsmKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		lend.NewAppModule(app.cdc, app.LendKeeper, app.AccountKeeper, app.BankKeeper),
 		wasm.NewAppModule(app.cdc, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper, app.CollectorKeeper,
-			app.LiquidationKeeper, app.AssetKeeper, app.MarketKeeper, app.EsmKeeper, app.VaultKeeper, app.TokenmintKeeper),
+		auction.NewAppModule(app.cdc, app.AuctionKeeper, app.AccountKeeper, app.BankKeeper, app.CollectorKeeper, app.AssetKeeper, app.EsmKeeper),
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
@@ -1143,9 +1140,14 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
+	//a.UpgradeKeeper.SetUpgradeHandler(
+	//	mv5.UpgradeName,
+	//	mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
+	//)
+
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.AssetKeeper, a.VaultKeeper),
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.VaultKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic

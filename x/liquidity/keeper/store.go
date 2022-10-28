@@ -625,6 +625,12 @@ func (k Keeper) SetActiveFarmer(ctx sdk.Context, activeFarmer types.ActiveFarmer
 	store.Set(types.GetActiveFarmerKey(activeFarmer.AppId, activeFarmer.PoolId, sdk.MustAccAddressFromBech32(activeFarmer.Farmer)), bz)
 }
 
+// DeleteActiveFarmer deletes a Active farmer from store.
+func (k Keeper) DeleteActiveFarmer(ctx sdk.Context, activeFarmer types.ActiveFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetActiveFarmerKey(activeFarmer.AppId, activeFarmer.PoolId, sdk.MustAccAddressFromBech32(activeFarmer.Farmer)))
+}
+
 // GetActiveFarmer returns active farmer object for the given app id, pool id and farmer.
 func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer types.ActiveFarmer, found bool) {
 	store := ctx.KVStore(k.storeKey)

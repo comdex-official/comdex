@@ -136,16 +136,18 @@ func (genState GenesisState) Validate() error {
 		}
 		activeFarmerMap := map[string]ActiveFarmer{}
 		for i, activeFarmer := range appState.ActiveFarmers {
-			if err := activeFarmer.Validate(); err != nil {
-				return fmt.Errorf("invalid active farmer at index %d: %w", i, err)
+			if activeFarmer.FarmedPoolCoin.IsPositive() {
+				if err := activeFarmer.Validate(); err != nil {
+					return fmt.Errorf("invalid active farmer at index %d: %w", i, err)
+				}
+				if _, ok := poolMap[activeFarmer.PoolId]; !ok {
+					return fmt.Errorf("active farmer at index %d has unknown pool id: %d", i, activeFarmer.PoolId)
+				}
+				if _, ok := activeFarmerMap[activeFarmer.Farmer]; ok {
+					return fmt.Errorf("active farmer at index %d has a duplicate farmer : %s", i, activeFarmer.Farmer)
+				}
+				activeFarmerMap[activeFarmer.Farmer] = activeFarmer
 			}
-			if _, ok := poolMap[activeFarmer.PoolId]; !ok {
-				return fmt.Errorf("active farmer at index %d has unknown pool id: %d", i, activeFarmer.PoolId)
-			}
-			if _, ok := activeFarmerMap[activeFarmer.Farmer]; ok {
-				return fmt.Errorf("active farmer at index %d has a duplicate farmer : %s", i, activeFarmer.Farmer)
-			}
-			activeFarmerMap[activeFarmer.Farmer] = activeFarmer
 		}
 
 		for i, queuedFarmer := range appState.QueuedFarmers {

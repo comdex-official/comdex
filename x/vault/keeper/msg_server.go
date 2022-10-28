@@ -951,7 +951,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
-		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
+		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
 		}
 		// Mint Tokens for user
@@ -1118,7 +1118,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	}
 	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
 		// Send Rest to user
-		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
+		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
 		}
 	} else {
@@ -1153,8 +1153,8 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 
 	k.SetStableMintVault(ctx, stableVault)
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, true)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, true)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, true)
 
 	ctx.GasMeter().ConsumeGas(types.DepositStableVaultGas, "DepositStableVaultGas")
 	return &types.MsgDepositStableMintResponse{}, nil
@@ -1233,6 +1233,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	if stableAmountIn.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
+	// updated amount is the CMST amount
 	var updatedAmount sdk.Int
 	// Take amount from user
 	if msg.Amount.GT(sdk.ZeroInt()) {
@@ -1252,7 +1253,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		}
 
 		// Send Rest to user
-		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
+		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
 		}
 		updatedAmount = msg.Amount
@@ -1284,23 +1285,24 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 			}
 
 			// and send the rest to the user
+			_, newOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdk.OneDec(), updatedAmount, assetInData.Id, sdk.OneDec())
+			if err != nil {
+				return nil, err
+			}
+			tokenOutAmount = newOutAmount
 
-			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, updatedAmount))); err != nil {
+			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, newOutAmount))); err != nil {
 				return nil, err
 			}
 		}
 	}
-	_, newTokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdk.OneDec(), updatedAmount, assetInData.Id, sdk.OneDec())
-	if err != nil {
-		return nil, nil
-	}
 	// stableVault.AmountIn = stableVault.AmountIn.Sub(updatedAmount)
-	stableVault.AmountIn = stableVault.AmountIn.Sub(newTokenOutAmount)
+	stableVault.AmountIn = stableVault.AmountIn.Sub(tokenOutAmount)
 	stableVault.AmountOut = stableVault.AmountOut.Sub(updatedAmount)
 	k.SetStableMintVault(ctx, stableVault)
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
-	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountIn, false)
-	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, stableVault.AmountOut, false)
+	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, false)
+	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, updatedAmount, false)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")
 

@@ -161,17 +161,16 @@ func SetVaultLengthCounter(
 	vaultkeeper.SetLengthOfVault(ctx, count)
 }
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v4_4_0
+// CreateUpgradeHandlerV440 creates an SDK upgrade handler for v4_4_0
 func CreateUpgradeHandlerV440(
 	mm *module.Manager,
 	configurator module.Configurator,
-	assetkeeper assetkeeper.Keeper,
 	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
-		delete(fromVM, "market")
-		delete(fromVM, "bandoracle")
+		//delete(fromVM, "market")
+		//delete(fromVM, "bandoracle")
 		SetVaultLengthCounter(ctx, vaultkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
