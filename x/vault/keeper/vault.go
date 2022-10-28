@@ -327,25 +327,26 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 
 	// check to get calc asset price from esm
 	if statusEsm && esmStatus.SnapshotStatus {
-		// TODO: function update
-
 		price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
 		if !found {
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		assetInTotalPrice = sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
+		numerator := sdk.NewDecFromInt(amountIn).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
+		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetInData.Decimals)))
+		assetInTotalPrice = numerator.Quo(denominator)
 	}
 	var assetOutTotalPrice sdk.Dec
 
 	if extendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
 		if statusEsm && esmStatus.SnapshotStatus {
-			// TODO: function update
 			price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			assetInTotalPrice = sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
+			numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
+			denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+			assetOutTotalPrice = numerator.Quo(denominator)
 		} else {
 			assetOutTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
 			if err != nil {
@@ -354,7 +355,9 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 		}
 	} else {
 		// If oracle Price is not required for the assetOut
-		assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(amountOut))).Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))))
+		numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice)))
+		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+		assetOutTotalPrice = numerator.Quo(denominator)
 	}
 
 	if assetInTotalPrice.LTE(sdk.ZeroDec()) {

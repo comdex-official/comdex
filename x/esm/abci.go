@@ -31,12 +31,12 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 					continue
 				}
 			}
-			if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.StableVaultRedemptionStatus {
-				err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId)
-				if err != nil {
-					continue
-				}
-			}
+			// if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.StableVaultRedemptionStatus {
+			// 	err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId)
+			// 	if err != nil {
+			// 		continue
+			// 	}
+			// }
 			if !esmStatus.SnapshotStatus && esmStatus.Status {
 				err := k.SnapshotOfPrices(ctx, esmStatus)
 				if err != nil {
