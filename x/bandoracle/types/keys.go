@@ -20,7 +20,7 @@ const (
 	Version = "bandchain-1"
 
 	// PortID is the default port id that module binds to.
-	PortID = "bandoracle"
+	PortID = "bandoracleV1"
 )
 
 var (
