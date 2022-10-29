@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName   = "tokenmint"
+	ModuleName   = "tokenmintV1"
 	StoreKey     = ModuleName
 	RouterKey    = ModuleName
 	QuerierRoute = ModuleName

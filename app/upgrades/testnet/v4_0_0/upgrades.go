@@ -171,7 +171,7 @@ func CreateUpgradeHandlerV440(
 		// This change is only for testnet upgrade
 		//delete(fromVM, "market")
 		//delete(fromVM, "bandoracle")
-		SetVaultLengthCounter(ctx, vaultkeeper)
+		//SetVaultLengthCounter(ctx, vaultkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err

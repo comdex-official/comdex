@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModuleName   = "auctionV1"
+	ModuleName   = "auctionV2"
 	StoreKey     = ModuleName
 	RouterKey    = ModuleName
 	QuerierRoute = ModuleName
