@@ -75,7 +75,7 @@ func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collecte
 		newCollector.CollectedStabilityFee = collectedStabilityFee
 		newCollector.LiquidationRewardsCollected = liquidationRewardsCollected
 
-		collectorNewData.Collector = &newCollector
+		collectorNewData.Collector = newCollector
 
 		k.SetAppidToAssetCollectorMapping(ctx, collectorNewData)
 		err := k.SetNetFeeCollectedData(ctx, appID, assetID,
@@ -166,7 +166,7 @@ func (k Keeper) GetCollectorDataForAppIDAssetID(ctx sdk.Context, appID uint64, a
 		return collectorData, false
 	}
 	k.cdc.MustUnmarshal(value, &appAssetCollectorData)
-	collectorData = *appAssetCollectorData.Collector
+	collectorData = appAssetCollectorData.Collector
 
 	return collectorData, true
 }

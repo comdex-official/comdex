@@ -70,7 +70,7 @@ func (q QueryServer) QueryCollectorDataByAppAndAsset(c context.Context, req *typ
 	collectorMap, _ := q.GetAppidToAssetCollectorMapping(ctx, req.AppId, req.AssetId)
 
 	return &types.QueryCollectorDataByAppAndAssetResponse{
-		CollectorData: *collectorMap.Collector,
+		CollectorData: collectorMap.Collector,
 	}, nil
 }
 

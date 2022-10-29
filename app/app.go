@@ -1225,9 +1225,9 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Deleted: []string{"market", "bandoracle"},
+			Deleted: []string{"market", "bandoracle", "rewardsV1", "esmV1"},
 			Added: []string{
-				markettypes.ModuleName, bandoraclemoduletypes.ModuleName,
+				markettypes.ModuleName, bandoraclemoduletypes.ModuleName, rewardstypes.ModuleName, esmtypes.ModuleName,
 			},
 		}
 
