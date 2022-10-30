@@ -6,6 +6,7 @@ import (
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 )
@@ -318,7 +319,7 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 				value.Amount = value.Amount.Sub(data.NetFeesCollected)
 				coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(dollarVal)
 				burnCoin := sdk.NewCoin(assetData.Denom, data.NetFeesCollected)
-				if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
+				if err := k.bank.BurnCoins(ctx, collectortypes.ModuleName, sdk.NewCoins(burnCoin)); err != nil {
 					return err
 				}
 				k.SetDataAfterCoolOff(ctx, coolOffData)
@@ -340,12 +341,10 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 			return assettypes.ErrorAssetDoesNotExist
 		}
 		//TODO Refactor
-		rate, _ := k.GetSnapshotOfPrices(ctx, appID, amt.AssetID)
-		for _, data := range esmData.AssetsRates {
-			if amt.AssetID == data.AssetID {
-				rate = data.Rates
-				break
-			}
+		//Call Rate out function for debt asset
+		rate := k.GetRateOfAsset(ctx, appID, amt.AssetID)
+		if rate == 0 {
+			rate, _ = k.GetSnapshotOfPrices(ctx, appID, amt.AssetID)
 		}
 		amtDValue := k.CalcDollarValueOfToken(ctx, rate, amt.Amount, assetData.Decimals)
 		if amt.IsCollateral {
@@ -363,7 +362,6 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 
 	//5. esm setting data
 	esmStatus.VaultRedemptionStatus = true
-	esmStatus.StableVaultRedemptionStatus = true
 
 	k.SetESMStatus(ctx, esmStatus)
 
@@ -398,12 +396,10 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			rateOut, _ := k.GetSnapshotOfPrices(ctx, appID, pairData.AssetOut)
-			for _, data := range esmData.AssetsRates {
-				if pairData.AssetOut == data.AssetID {
-					rateOut = data.Rates
-					break
-				}
+			//Call Rate out function for debt asset
+			rateOut := k.GetRateOfAsset(ctx, appID, assetOutData.Id)
+			if rateOut == 0 {
+				rateOut, _ = k.GetSnapshotOfPrices(ctx, appID, assetOutData.Id)
 			}
 			coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
 			if !found {
@@ -431,10 +427,6 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 				coolOffData.DebtTotalAmount = k.CalcDollarValueOfToken(ctx, rateOut, data.AmountOut, assetOutData.Decimals)
 				itemd.Share = sdk.OneDec()
 				k.SetAssetToAmount(ctx, itemd)
-
-				// debt token worth ????
-				// itemd.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemd.Share).Quo(sdk.NewDecFromInt(itemd.Amount))
-
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
 				coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(k.CalcDollarValueOfToken(ctx, rateIn, data.AmountIn, assetInData.Decimals))
@@ -571,175 +563,6 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 
 	return nil
 }
-
-// func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID uint64) error {
-// 	totalStableVaults := k.vault.GetStableMintVaults(ctx)
-// 	esmStatus, found := k.GetESMStatus(ctx, appID)
-// 	if !found {
-// 		return types.ErrESMParamsNotFound
-// 	}
-// 	esmData, _ := k.GetESMTriggerParams(ctx, appID)
-// 	for _, data := range totalStableVaults {
-// 		if data.AppId == appID {
-// 			extendedPairVault, found := k.asset.GetPairsVault(ctx, data.ExtendedPairVaultID)
-// 			if !found {
-// 				return vaulttypes.ErrorExtendedPairVaultDoesNotExists
-// 			}
-// 			pairData, found := k.asset.GetPair(ctx, extendedPairVault.PairId)
-// 			if !found {
-// 				return assettypes.ErrorPairDoesNotExist
-// 			}
-// 			assetInData, found := k.asset.GetAsset(ctx, pairData.AssetIn)
-// 			if !found {
-// 				return assettypes.ErrorAssetDoesNotExist
-// 			}
-// 			rateIn, found := k.GetSnapshotOfPrices(ctx, appID, pairData.AssetIn)
-// 			if !found {
-// 				continue
-// 			}
-// 			assetOutData, found := k.asset.GetAsset(ctx, pairData.AssetOut)
-// 			if !found {
-// 				return assettypes.ErrorAssetDoesNotExist
-// 			}
-// 			rateOut, found := k.GetSnapshotOfPrices(ctx, appID, pairData.AssetOut)
-// 			if !found {
-// 				for _, data := range esmData.AssetsRates {
-// 					if pairData.AssetOut == data.AssetID {
-// 						rateOut = data.Rates
-// 						break
-// 					}
-// 					rateOut = 0
-// 				}
-// 			}
-// 			if rateOut == 0 {
-// 				continue
-// 			}
-// 			coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
-// 			if !found {
-// 				coolOffData.AppId = appID
-// 				var itemc types.AssetToAmount
-// 				var itemd types.AssetToAmount
-
-// 				itemc.AssetID = assetInData.Id
-// 				itemc.Amount = data.AmountIn
-// 				x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-// 				coolOffData.CollateralTotalAmount = sdk.NewDecFromInt(x)
-// 				itemc.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
-
-// 				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
-// 				if err != nil {
-// 					return err
-// 				}
-// 				coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, itemc)
-
-// 				itemd.AssetID = assetOutData.Id
-// 				itemd.Amount = data.AmountOut
-// 				y := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-// 				coolOffData.DebtTotalAmount = sdk.NewDecFromInt(y)
-// 				itemd.Share = sdk.NewDecFromInt(y).Quo(coolOffData.DebtTotalAmount)
-// 				itemd.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemd.Share).Quo(sdk.NewDecFromInt(itemd.Amount))
-// 				coolOffData.DebtAsset = append(coolOffData.DebtAsset, itemd)
-
-// 				k.SetDataAfterCoolOff(ctx, coolOffData)
-// 			} else {
-// 				count := 0
-// 				for i, indata := range coolOffData.CollateralAsset {
-// 					if indata.AssetID == assetInData.Id {
-// 						count++
-// 						indata.Amount = indata.Amount.Add(data.AmountIn)
-// 						x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-// 						coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(sdk.NewDecFromInt(x))
-// 						indata.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
-
-// 						err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
-// 						if err != nil {
-// 							return err
-// 						}
-// 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset[:i], coolOffData.CollateralAsset[i+1:]...)
-// 						coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, indata)
-// 						break
-// 					}
-// 				}
-// 				if count == 0 {
-// 					var item types.AssetToAmount
-
-// 					item.AssetID = assetInData.Id
-// 					item.Amount = data.AmountIn
-// 					x := sdk.NewIntFromUint64(rateIn).Mul(data.AmountIn)
-// 					coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Add(sdk.NewDecFromInt(x))
-// 					item.Share = sdk.NewDecFromInt(x).Quo(coolOffData.CollateralTotalAmount)
-
-// 					err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
-// 					if err != nil {
-// 						return err
-// 					}
-// 					coolOffData.CollateralAsset = append(coolOffData.CollateralAsset, item)
-// 				}
-// 				count = 0
-// 				for i, indatadebt := range coolOffData.DebtAsset {
-// 					if indatadebt.AssetID == assetOutData.Id {
-// 						count++
-// 						indatadebt.Amount = indatadebt.Amount.Add(data.AmountOut)
-// 						x := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-// 						coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(sdk.NewDecFromInt(x))
-// 						indatadebt.Share = sdk.NewDecFromInt(x).Quo(coolOffData.DebtTotalAmount)
-// 						indatadebt.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(indatadebt.Share).Quo(sdk.NewDecFromInt(indatadebt.Amount))
-// 						coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
-// 						coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatadebt)
-// 						break
-// 					}
-// 				}
-// 				if count == 0 {
-// 					var item types.AssetToAmount
-
-// 					item.AssetID = assetOutData.Id
-// 					item.Amount = data.AmountOut
-// 					x := sdk.NewIntFromUint64(rateOut).Mul(data.AmountOut)
-// 					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Add(sdk.NewDecFromInt(x))
-// 					item.Share = sdk.NewDecFromInt(x).Quo(coolOffData.DebtTotalAmount)
-// 					item.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(item.Share).Quo(sdk.NewDecFromInt(item.Amount))
-// 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, item)
-// 				}
-// 				k.SetDataAfterCoolOff(ctx, coolOffData)
-// 			}
-// 		}
-// 	}
-// 	netFee, found1 := k.collector.GetAppNetFeeCollectedData(ctx, appID)
-// 	coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
-// 	if !found {
-// 		return nil
-// 	}
-// 	if found1 {
-// 		for _, data := range netFee {
-// 			for i, indatanet := range coolOffData.DebtAsset {
-// 				if data.AssetId == indatanet.AssetID {
-// 					rateOut, found := k.GetSnapshotOfPrices(ctx, appID, data.AssetId)
-// 					if !found {
-// 						for _, datan := range esmData.AssetsRates {
-// 							if data.AssetId == datan.AssetID {
-// 								rateOut = datan.Rates
-// 								break
-// 							}
-// 							rateOut = 0
-// 						}
-// 					}
-// 					indatanet.Amount = indatanet.Amount.Sub(data.NetFeesCollected)
-// 					x, _ := k.CalcDollarValueOfToken(ctx, data.AssetId, rateOut, indatanet.Amount)
-// 					// x := sdk.NewIntFromUint64(rateOut).Mul(indatanet.Amount)
-// 					coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(x)
-// 					indatanet.Share = x.Quo(coolOffData.DebtTotalAmount)
-// 					indatanet.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(indatanet.Share).Quo(sdk.NewDecFromInt(indatanet.Amount))
-// 					coolOffData.DebtAsset = append(coolOffData.DebtAsset[:i], coolOffData.DebtAsset[i+1:]...)
-// 					coolOffData.DebtAsset = append(coolOffData.DebtAsset, indatanet)
-// 				}
-// 			}
-// 		}
-// 	}
-// 	esmStatus.StableVaultRedemptionStatus = true
-// 	k.SetESMStatus(ctx, esmStatus)
-// 	k.SetDataAfterCoolOff(ctx, coolOffData)
-// 	return nil
-// }
 
 func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) error {
 	assets := k.asset.GetAssets(ctx)
