@@ -1,11 +1,8 @@
 package v5
 
 import (
-	"fmt"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	v5types "github.com/comdex-official/comdex/x/lend/migrations/v5/types"
 	"github.com/comdex-official/comdex/x/lend/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +11,6 @@ import (
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
-	fmt.Println("MigrateStore")
 	err := migrateValuesPool(store, cdc)
 	if err != nil {
 		return err
@@ -31,16 +27,10 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	if err != nil {
 		return err
 	}
-	err = migrateValueLockedBorrows(store, cdc)
-	if err != nil {
-		return err
-	}
 	return err
 }
 
 func migrateValuesPool(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	fmt.Println("migrateValuesPool..............")
-
 	var (
 		assetDataPoolOne []*types.AssetDataPoolMapping
 		assetDataPoolTwo []*types.AssetDataPoolMapping
@@ -173,7 +163,6 @@ func GetPools(store sdk.KVStore, cdc codec.BinaryCodec) (pools []v5types.PoolOld
 }
 
 func migrateValuesLend(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	fmt.Println(" migrateValuesLend")
 	var (
 		iter = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
 	)
@@ -256,7 +245,6 @@ func GetAssetStatsByPoolIDAndAssetID(store sdk.KVStore, cdc codec.BinaryCodec, p
 }
 
 func migrateValueLend(oldVal v5types.LendAssetOld) (newVal types.LendAsset, oldKey []byte) {
-	fmt.Println("migrateValueLend")
 	newVal = types.LendAsset{
 		ID:                  oldVal.ID,
 		AssetID:             oldVal.AssetID,
@@ -276,7 +264,6 @@ func migrateValueLend(oldVal v5types.LendAssetOld) (newVal types.LendAsset, oldK
 // for borrow function migration
 
 func migrateValuesBorrow(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	fmt.Println(" migrateValuesBorrow")
 	var (
 		iter = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
 	)
@@ -371,7 +358,6 @@ func GetUserLendBorrowMapping(store sdk.KVStore, cdc codec.BinaryCodec, owner st
 }
 
 func migrateValueBorrow(v v5types.BorrowAssetOld) (newVal types.BorrowAsset, oldKey []byte) {
-	fmt.Println("migrateValueLend")
 	newVal = types.BorrowAsset{
 		ID:                  v.ID,
 		LendingID:           v.LendingID,
@@ -395,7 +381,6 @@ func migrateValueBorrow(v v5types.BorrowAssetOld) (newVal types.BorrowAsset, old
 // for auction params migration
 
 func migrateValueAuctionParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	fmt.Println("migrateValueAuctionParams")
 	buffer, _ := sdk.NewDecFromStr("1.2")
 	cusp, _ := sdk.NewDecFromStr("0.4")
 	auctionParams := types.AuctionParams{
@@ -420,121 +405,119 @@ func migrateValueAuctionParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 // for locked borrow to borrow
 
-func migrateValueLockedBorrows(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	fmt.Println("migrateValueAuctionParams")
-	var (
-		iter = sdk.KVStorePrefixIterator(store, liquidationtypes.LockedVaultKeyPrefix)
-	)
+//func migrateValueLockedBorrows(store sdk.KVStore, cdc codec.BinaryCodec) error {
+//	var (
+//		iter = sdk.KVStorePrefixIterator(store, liquidationtypes.LockedVaultKeyPrefix)
+//	)
+//	counterKey := types.BorrowCounterIDPrefix
+//	defer func(iter sdk.Iterator) {
+//		err := iter.Close()
+//		if err != nil {
+//			return
+//		}
+//	}(iter)
+//	for ; iter.Valid(); iter.Next() {
+//		var lockedVault liquidationtypes.LockedVault
+//		cdc.MustUnmarshal(iter.Value(), &lockedVault)
+//		fmt.Println("lockedVault", lockedVault)
+//		if lockedVault.GetBorrowMetaData() != nil {
+//
+//			fmt.Println("lockedVault.GetBorrowMetaData", lockedVault.GetBorrowMetaData())
+//
+//			if lockedVault.AmountIn.GT(sdk.ZeroInt()) && lockedVault.AmountOut.GT(sdk.ZeroInt()) {
+//				lockedVaultKey := liquidationtypes.LockedVaultKey(lockedVault.AppId, lockedVault.LockedVaultId)
+//				newVal, Key := migrateValueLockedBorrow(store, cdc, lockedVault)
+//				store.Delete(lockedVaultKey)
+//
+//				store.Delete(Key)
+//				value := cdc.MustMarshal(&newVal)
+//				idValue := cdc.MustMarshal(
+//					&protobuftypes.UInt64Value{
+//						Value: newVal.ID,
+//					},
+//				)
+//				store.Set(counterKey, idValue)
+//				store.Set(Key, value)
+//				// updating global borrow stats and borrowing IDs
+//				pair, found := GetLendPair(store, cdc, newVal.PairID)
+//				if !found {
+//					return types.ErrorPairNotFound
+//				}
+//				PoolAssetLBMapping := GetAssetStatsByPoolIDAndAssetID(store, cdc, pair.AssetOutPoolID, pair.AssetOut)
+//				PoolAssetLBMapping.TotalBorrowed = PoolAssetLBMapping.TotalBorrowed.Add(newVal.AmountOut.Amount)
+//				PoolAssetLBMapping.BorrowIds = append(PoolAssetLBMapping.BorrowIds, newVal.ID)
+//				SetAssetStatsByPoolIDAndAssetID(store, cdc, PoolAssetLBMapping)
+//
+//				// updating UserAssetLendBorrowMapping for user
+//				lend, found := GetLend(store, cdc, newVal.LendingID)
+//				mappingData, found := GetUserLendBorrowMapping(store, cdc, lend.Owner, lend.ID)
+//				mappingData.BorrowId = append(mappingData.BorrowId, newVal.ID)
+//				SetUserLendBorrowMapping(store, cdc, mappingData)
+//			} else {
+//				fmt.Println("in else part")
+//				key := liquidationtypes.LockedVaultKey(lockedVault.AppId, lockedVault.LockedVaultId)
+//				store.Delete(key)
+//			}
+//		}
+//	}
+//
+//	return nil
+//}
 
-	defer func(iter sdk.Iterator) {
-		err := iter.Close()
-		if err != nil {
-			return
-		}
-	}(iter)
-	var lockedVaults []liquidationtypes.LockedVault
-	for ; iter.Valid(); iter.Next() {
-		var lockedVault liquidationtypes.LockedVault
-		cdc.MustUnmarshal(iter.Value(), &lockedVault)
-		if lockedVault.GetBorrowMetaData() != nil {
-			if lockedVault.AmountIn.GT(sdk.ZeroInt()) && lockedVault.AmountOut.GT(sdk.ZeroInt()) {
-				lockedVaults = append(lockedVaults, lockedVault)
-			} else {
-				key := liquidationtypes.LockedVaultKey(lockedVault.AppId, lockedVault.LockedVaultId)
-				store.Delete(key)
-			}
-		}
-	}
-	counterKey := types.BorrowCounterIDPrefix
+//func GetAsset(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) (asset assettypes.Asset, found bool) {
+//	var (
+//		key   = assettypes.AssetKey(id)
+//		value = store.Get(key)
+//	)
+//
+//	if value == nil {
+//		return asset, false
+//	}
+//
+//	cdc.MustUnmarshal(value, &asset)
+//	return asset, true
+//}
+//
+//func GetPool(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) (pool types.Pool, found bool) {
+//	var (
+//		key   = types.PoolKey(id)
+//		value = store.Get(key)
+//	)
+//
+//	if value == nil {
+//		return pool, false
+//	}
+//
+//	cdc.MustUnmarshal(value, &pool)
+//	return pool, true
+//}
 
-	for _, v := range lockedVaults {
-		lockedVaultKey := liquidationtypes.LockedVaultKey(v.AppId, v.LockedVaultId)
-		newVal, Key := migrateValueLockedBorrow(store, cdc, v)
-		store.Delete(lockedVaultKey)
-
-		store.Delete(Key)
-		value := cdc.MustMarshal(&newVal)
-		idValue := cdc.MustMarshal(
-			&protobuftypes.UInt64Value{
-				Value: newVal.ID,
-			},
-		)
-		store.Set(counterKey, idValue)
-		store.Set(Key, value)
-		// updating global borrow stats and borrowing IDs
-		pair, found := GetLendPair(store, cdc, newVal.PairID)
-		if !found {
-			return types.ErrorPairNotFound
-		}
-		PoolAssetLBMapping := GetAssetStatsByPoolIDAndAssetID(store, cdc, pair.AssetOutPoolID, pair.AssetOut)
-		PoolAssetLBMapping.TotalBorrowed = PoolAssetLBMapping.TotalBorrowed.Add(newVal.AmountOut.Amount)
-		PoolAssetLBMapping.BorrowIds = append(PoolAssetLBMapping.BorrowIds, newVal.ID)
-		SetAssetStatsByPoolIDAndAssetID(store, cdc, PoolAssetLBMapping)
-
-		// updating UserAssetLendBorrowMapping for user
-		lend, found := GetLend(store, cdc, newVal.LendingID)
-		mappingData, found := GetUserLendBorrowMapping(store, cdc, lend.Owner, lend.ID)
-		mappingData.BorrowId = append(mappingData.BorrowId, newVal.ID)
-		SetUserLendBorrowMapping(store, cdc, mappingData)
-	}
-
-	return nil
-}
-
-func GetAsset(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) (asset assettypes.Asset, found bool) {
-	var (
-		key   = assettypes.AssetKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return asset, false
-	}
-
-	cdc.MustUnmarshal(value, &asset)
-	return asset, true
-}
-
-func GetPool(store sdk.KVStore, cdc codec.BinaryCodec, id uint64) (pool types.Pool, found bool) {
-	var (
-		key   = types.PoolKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return pool, false
-	}
-
-	cdc.MustUnmarshal(value, &pool)
-	return pool, true
-}
-
-func migrateValueLockedBorrow(store sdk.KVStore, cdc codec.BinaryCodec, v liquidationtypes.LockedVault) (newBorrow types.BorrowAsset, oldKey []byte) {
-	pair, _ := GetLendPair(store, cdc, v.ExtendedPairId)
-	assetIn, _ := GetAsset(store, cdc, pair.AssetIn)
-	assetOut, _ := GetAsset(store, cdc, pair.AssetOut)
-	amountIn := sdk.NewCoin(assetIn.Denom, v.AmountIn)
-	amountOut := sdk.NewCoin(assetOut.Denom, v.AmountOut)
-	pool, _ := GetPool(store, cdc, pair.AssetOutPoolID)
-
-	borrowMetaData := v.GetBorrowMetaData()
-	globalIndex, _ := sdk.NewDecFromStr("0.002")
-	newBorrow = types.BorrowAsset{
-		ID:                  v.OriginalVaultId,
-		LendingID:           borrowMetaData.LendingId,
-		IsStableBorrow:      borrowMetaData.IsStableBorrow,
-		PairID:              v.ExtendedPairId,
-		AmountIn:            amountIn,
-		AmountOut:           amountOut,
-		BridgedAssetAmount:  borrowMetaData.BridgedAssetAmount,
-		BorrowingTime:       v.LiquidationTimestamp,
-		StableBorrowRate:    borrowMetaData.StableBorrowRate,
-		InterestAccumulated: sdk.NewDecFromInt(v.InterestAccumulated),
-		GlobalIndex:         globalIndex,
-		ReserveGlobalIndex:  sdk.OneDec(),
-		LastInteractionTime: v.LiquidationTimestamp,
-		CPoolName:           pool.CPoolName,
-		IsLiquidated:        false,
-	}
-	return newBorrow, types.BorrowUserKey(newBorrow.ID)
-}
+//func migrateValueLockedBorrow(store sdk.KVStore, cdc codec.BinaryCodec, v liquidationtypes.LockedVault) (newBorrow types.BorrowAsset, oldKey []byte) {
+//	pair, _ := GetLendPair(store, cdc, v.ExtendedPairId)
+//	assetIn, _ := GetAsset(store, cdc, pair.AssetIn)
+//	assetOut, _ := GetAsset(store, cdc, pair.AssetOut)
+//	amountIn := sdk.NewCoin(assetIn.Denom, v.AmountIn)
+//	amountOut := sdk.NewCoin(assetOut.Denom, v.AmountOut)
+//	pool, _ := GetPool(store, cdc, pair.AssetOutPoolID)
+//
+//	borrowMetaData := v.GetBorrowMetaData()
+//	globalIndex, _ := sdk.NewDecFromStr("0.002")
+//	newBorrow = types.BorrowAsset{
+//		ID:                  v.OriginalVaultId,
+//		LendingID:           borrowMetaData.LendingId,
+//		IsStableBorrow:      borrowMetaData.IsStableBorrow,
+//		PairID:              v.ExtendedPairId,
+//		AmountIn:            amountIn,
+//		AmountOut:           amountOut,
+//		BridgedAssetAmount:  borrowMetaData.BridgedAssetAmount,
+//		BorrowingTime:       v.LiquidationTimestamp,
+//		StableBorrowRate:    borrowMetaData.StableBorrowRate,
+//		InterestAccumulated: sdk.NewDecFromInt(v.InterestAccumulated),
+//		GlobalIndex:         globalIndex,
+//		ReserveGlobalIndex:  sdk.OneDec(),
+//		LastInteractionTime: v.LiquidationTimestamp,
+//		CPoolName:           pool.CPoolName,
+//		IsLiquidated:        false,
+//	}
+//	return newBorrow, types.BorrowUserKey(newBorrow.ID)
+//}

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	v5types "github.com/comdex-official/comdex/x/lend/migrations/v5"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,6 +17,5 @@ func NewMigrator(keeper Keeper) Migrator {
 
 // Migrate2to3 migrates from version 2 to 3.
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	fmt.Println("Migrate2to3")
 	return v5types.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
