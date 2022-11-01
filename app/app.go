@@ -1161,20 +1161,15 @@ func (a *App) registerUpgradeHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == tv5_0_0.UpgradeNameBeta && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{}
 
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	storeUpgrades = upgradeHandlers(upgradeInfo, a, storeUpgrades)
+
+	if storeUpgrades != nil {
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+		a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
-	//var storeUpgrades *storetypes.StoreUpgrades
-	//
-	//storeUpgrades = upgradeHandlers(upgradeInfo, a, storeUpgrades)
-	//
-	//if storeUpgrades != nil {
-	//	// configure store loader that checks if version == upgradeHeight and applies store upgrades
-	//	a.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
-	//}
 }
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
