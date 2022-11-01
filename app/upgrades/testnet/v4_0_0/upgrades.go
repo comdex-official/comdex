@@ -124,28 +124,28 @@ func CreateUpgradeHandlerV430(
 	}
 }
 
-func DeleteAndSetApp(
-	ctx sdk.Context,
-	assetkeeper assetkeeper.Keeper,
-) {
-	genesisToken := []assettypes.MintGenesisToken{
-		{
-			AssetId:       3,
-			GenesisSupply: sdk.NewInt(1000000000000000),
-			IsGovToken:    true,
-			Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
-		},
-	}
-	newApps := []assettypes.AppData{
-		{Id: 1, Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
-		{Id: 2, Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000), GovTimeInSeconds: 300, GenesisToken: genesisToken},
-		{Id: 3, Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
-	}
-	for _, app := range newApps {
-		assetkeeper.SetApp(ctx, app)
-	}
-	assetkeeper.SetAppID(ctx, 3)
-}
+// func DeleteAndSetApp(
+// 	ctx sdk.Context,
+// 	assetkeeper assetkeeper.Keeper,
+// ) {
+// 	genesisToken := []assettypes.MintGenesisToken{
+// 		{
+// 			AssetId:       3,
+// 			GenesisSupply: sdk.NewInt(1000000000000000),
+// 			IsGovToken:    true,
+// 			Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
+// 		},
+// 	}
+// 	newApps := []assettypes.AppData{
+// 		{Id: 1, Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+// 		{Id: 2, Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000), GovTimeInSeconds: 300, GenesisToken: genesisToken},
+// 		{Id: 3, Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+// 	}
+// 	for _, app := range newApps {
+// 		assetkeeper.SetApp(ctx, app)
+// 	}
+// 	assetkeeper.SetAppID(ctx, 3)
+// }
 
 func SetVaultLengthCounter(
 	ctx sdk.Context,
@@ -165,11 +165,11 @@ func SetVaultLengthCounter(
 func CreateUpgradeHandlerV440(
 	mm *module.Manager,
 	configurator module.Configurator,
-	assetkeeper assetkeeper.Keeper,
+	// assetkeeper assetkeeper.Keeper,
 	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		DeleteAndSetApp(ctx, assetkeeper)
+		// DeleteAndSetApp(ctx, assetkeeper)
 		SetVaultLengthCounter(ctx, vaultkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
