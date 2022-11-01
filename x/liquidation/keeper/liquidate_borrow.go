@@ -262,8 +262,9 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 
 			// using this check as we want to deduct the liquidation penalty and auction bonus from the borrower position only once
 
-			// TODO: revisit
-			aip := sdk.NewDec(int64(1))
+			// TODO: revisit : DONE
+			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
+			aip := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInprice.Twa))
 			liquidationDeductionAmt := selloffAmount.Mul(penalty)
 			liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip)
 			bonusToBidderAmt := selloffAmount.Mul(assetRatesStats.LiquidationBonus)
