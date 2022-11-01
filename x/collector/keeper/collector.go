@@ -29,7 +29,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	if err != nil {
 		return returnedFee, err
 	}
-	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount, netFeeData)
+	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount)
 	if err != nil {
 		return sdk.Int{}, err
 	}
@@ -38,17 +38,21 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	return returnedFee, nil
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int, netCollected types.AppAssetIdToFeeCollectedData) error {
-	netCollectedFee := netCollected.NetFeesCollected.Sub(amount)
-	if netCollectedFee.IsNegative() {
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error {
+	netFeeData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
+	if !found {
+		return types.ErrorDataDoesNotExists
+	}
+	netFeeData.NetFeesCollected = netFeeData.NetFeesCollected.Sub(amount)
+
+	if netFeeData.NetFeesCollected.IsNegative() {
 		return types.ErrorNetFeesCanNotBeNegative
 	}
-	netCollected.NetFeesCollected = netCollectedFee
 
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.NetFeeCollectedDataKey(appID, assetID)
-		value = k.cdc.MustMarshal(&netCollected)
+		value = k.cdc.MustMarshal(&netFeeData)
 	)
 
 	store.Set(key, value)
@@ -748,11 +752,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				newRewardDec := sdk.NewDec(newReward.Int64())
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-				netFeeCollectedData, found := k.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
-				if !found {
-					continue
-				}
-				err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
+				err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)
 				if err != nil {
 					continue
 				}
@@ -836,7 +836,7 @@ func (k Keeper) WasmMsgGetSurplusFund(ctx sdk.Context, appID, assetID uint64, ad
 	if err != nil {
 		return err
 	}
-	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount.Amount, types.AppAssetIdToFeeCollectedData{})
+	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount.Amount)
 	if err != nil {
 		return err
 	}

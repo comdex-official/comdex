@@ -72,11 +72,7 @@ message ESMStatus{
     (gogoproto.moretags) = "yaml:\"vault_redemption_status\""
   ];
 
-  bool stable_vault_redemption_status = 7 [
-    (gogoproto.moretags) = "yaml:\"stable_vault_redemption_status\""
-  ];
-
-  bool snapshotStatus = 8 [
+  bool snapshotStatus = 7 [
     (gogoproto.moretags) = "yaml:\"snapshot_status\""
   ];
 }

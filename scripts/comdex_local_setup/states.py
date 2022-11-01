@@ -8,16 +8,17 @@ APPS = [
 ]
 
 ASSETS = [
-    # [name, denom, isOnChain, assetOraclePriceRequired]
-    ["ATOM", "uatom", 0, 1],  # ID - 1
-    ["CMDX", "ucmdx", 0, 1],  # ID - 2
-    ["CMST", "ucmst", 0, 0],  # ID - 3
-    ["OSMO", "uosmo", 0, 1],  # ID - 4
-    ["CATOM", "ucatom", 0, 0],  # ID - 5
-    ["CCMDX", "uccmdx", 0, 0],  # ID - 6
-    ["CCMST", "uccmst", 0, 0],  # ID - 7
-    ["COSMO", "ucosmo", 0, 0],  # ID - 8
-    ["HARBOR", "uharbor", 1, 0],  # ID - 9
+    # [name, denom, decimals, isOnChain, assetOraclePriceRequired]
+    ["ATOM", "uatom", 1000000, 0, 1],  # ID - 1
+    ["CMDX", "ucmdx",1000000, 0, 1],  # ID - 2
+    ["CMST", "ucmst",1000000, 0, 0],  # ID - 3
+    ["OSMO", "uosmo",1000000, 0, 1],  # ID - 4
+    ["CATOM", "ucatom",1000000, 0, 0],  # ID - 5
+    ["CCMDX", "uccmdx",1000000, 0, 0],  # ID - 6
+    ["CCMST", "uccmst",1000000, 0, 0],  # ID - 7
+    ["COSMO", "ucosmo",1000000, 0, 0],  # ID - 8
+    ["HARBOR", "uharbor",1000000, 1, 0],  # ID - 9
+    ["WETH", "weth-wei",1000000000000000000, 1, 1],  # ID - 10
 ]
 
 PAIRS = [
@@ -25,6 +26,7 @@ PAIRS = [
     [1, 3],  # ID - 1
     [2, 3],  # ID - 2
     [4, 3],  # ID - 3
+    [10, 3],  # ID - 3
 ]
 
 LIQUIDITY_PAIRS = [
@@ -702,6 +704,76 @@ WASM_PROPOSALS = [
                                 "is_stable_mint_vault": False,
                                 "min_cr": "1.7",
                                 "pair_name": "CMDX-A",
+                                "asset_out_oracle_price": False,
+                                "asset_out_price": 1000000,
+                                "min_usd_value_left": 100000,
+                            }
+                        }
+                    ],
+                    "app_id_param": 1,
+                }
+            }
+        },
+    },
+        {
+        "proposalID": 11,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
+            "propose": {
+                "propose": {
+                    "title": "New proposal for add vault pair for CMDX C - CMST",
+                    "description": "This is a base execution proposal to add CMDX C - CMST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 CMST f. Debt Floor : 100 CMST ",
+                    "msgs": [
+                        {
+                            "msg_add_extended_pairs_vault": {
+                                "app_id": 1,
+                                "pair_id": 4,
+                                "stability_fee": "0.025",
+                                "closing_fee": "0.00",
+                                "liquidation_penalty": "0.12",
+                                "draw_down_fee": "0.001",
+                                "is_vault_active": True,
+                                "debt_ceiling": 100000000000000,
+                                "debt_floor": 100000000,
+                                "is_stable_mint_vault": False,
+                                "min_cr": "1.7",
+                                "pair_name": "WETH-A",
+                                "asset_out_oracle_price": False,
+                                "asset_out_price": 1000000,
+                                "min_usd_value_left": 100000,
+                            }
+                        }
+                    ],
+                    "app_id_param": 1,
+                }
+            }
+        },
+    },
+    {
+        "proposalID": 12,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
+            "propose": {
+                "propose": {
+                    "title": "New proposal for add vault pair for CMDX C - CMST",
+                    "description": "This is a base execution proposal to add CMDX C - CMST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 CMST f. Debt Floor : 100 CMST ",
+                    "msgs": [
+                        {
+                            "msg_add_extended_pairs_vault": {
+                                "app_id": 1,
+                                "pair_id": 4,
+                                "stability_fee": "0.025",
+                                "closing_fee": "0.00",
+                                "liquidation_penalty": "0.12",
+                                "draw_down_fee": "0.001",
+                                "is_vault_active": True,
+                                "debt_ceiling": 100000000000000,
+                                "debt_floor": 100000000,
+                                "is_stable_mint_vault": True,
+                                "min_cr": "1.01",
+                                "pair_name": "WETH-B",
                                 "asset_out_oracle_price": False,
                                 "asset_out_price": 1000000,
                                 "min_usd_value_left": 100000,
