@@ -361,13 +361,6 @@ message AssetRatesParams{ //AssetRatesStats
 
 }
 
-message StableBorrowMapping{
-  repeated uint64 stable_borrow_ids = 1 [
-    (gogoproto.customname) = "StableBorrowIDs",
-    (gogoproto.moretags) = "yaml:\"stable_borrow_ids\""
-  ];
-}
-
 message ReserveBuybackAssetData{ // BalanceStats
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetID",

@@ -32,8 +32,4 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
   repeated AssetRatesParams assetRatesParams = 12
   [ (gogoproto.moretags) = "yaml:\"assetRatesParams\"", (gogoproto.nullable) = false ];
-  StableBorrowMapping stableBorrowMapping = 13
-  [ (gogoproto.moretags) = "yaml:\"stableBorrowMapping\"", (gogoproto.nullable) = false ];
-  Params params = 14 [(gogoproto.nullable) = false];
-
 }

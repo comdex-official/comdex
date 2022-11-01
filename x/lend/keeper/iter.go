@@ -196,39 +196,26 @@ func (k Keeper) CalculateBorrowInterest(ctx sdk.Context, amount string, rate, re
 	return newAmount, indexGlobalCurrent, newAmountReservePool, reserveIndexGlobalCurrent, nil
 }
 
-func (k Keeper) ReBalanceStableRates(ctx sdk.Context) error {
-	borrows := k.GetStableBorrowIds(ctx)
-
-	for _, v := range borrows.StableBorrowIDs {
-		borrowPos, found := k.GetBorrow(ctx, v)
-		if !found {
-			continue
-		}
-		if !borrowPos.IsLiquidated {
-			if borrowPos.IsStableBorrow {
-				pair, found := k.GetLendPair(ctx, borrowPos.PairID)
-				if !found {
-					continue
-				}
-				assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
-				if !found {
-					continue
-				}
-				utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-				if err != nil {
-					continue
-				}
-				perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 // 20%
-				perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 // 90%
-				if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%
-					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-					k.SetBorrow(ctx, borrowPos)
-				} else if (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) || utilizationRatio.GT(perc2) { // condition 2, 𝑆 + 20% ≤ 𝑆𝑡 ∨ 𝑢𝑡𝑖𝑙𝑖𝑧𝑎𝑡𝑖𝑜𝑛 ≥ 90%
-					borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-					k.SetBorrow(ctx, borrowPos)
-				}
-			}
-		}
+func (k Keeper) ReBalanceStableRates(ctx sdk.Context, borrowPos types.BorrowAsset) (types.BorrowAsset, error) {
+	pair, found := k.GetLendPair(ctx, borrowPos.PairID)
+	if !found {
+		return borrowPos, types.ErrorPairNotFound
 	}
-	return nil
+	assetStats, found := k.UpdateAPR(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	if !found {
+		return borrowPos, types.ErrorAssetRatesParamsNotFound
+	}
+	utilizationRatio, err := k.GetUtilisationRatioByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	if err != nil {
+		return borrowPos, err
+	}
+	perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 // 20%
+	perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 // 90%
+	if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%
+		borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+	} else if (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) || utilizationRatio.GT(perc2) { // condition 2, 𝑆 + 20% ≤ 𝑆𝑡 ∨ 𝑢𝑡𝑖𝑙𝑖𝑧𝑎𝑡𝑖𝑜𝑛 ≥ 90%
+		borrowPos.StableBorrowRate = assetStats.StableBorrowApr
+	}
+
+	return borrowPos, nil
 }

@@ -74,7 +74,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetUserLendIDCounter(ctx, lendID)
 	k.SetPoolID(ctx, poolID)
 	k.SetLendPairID(ctx, extendedPairID)
-	k.SetStableBorrowIds(ctx, state.StableBorrowMapping)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -91,7 +90,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetLendPairs(ctx),
 		k.GetAllAddAuctionParamsData(ctx),
 		k.GetAllAssetRatesParams(ctx),
-		k.GetStableBorrowIds(ctx),
 		k.GetParams(ctx),
 	)
 }

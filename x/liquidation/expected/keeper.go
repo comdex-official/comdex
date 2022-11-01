@@ -81,6 +81,7 @@ type LendKeeper interface {
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 	SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset)
 	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
+	ReBalanceStableRates(ctx sdk.Context, borrowPos lendtypes.BorrowAsset) (lendtypes.BorrowAsset, error)
 }
 
 type RewardsKeeper interface {
