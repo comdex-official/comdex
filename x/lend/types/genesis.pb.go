@@ -36,7 +36,6 @@ type GenesisState struct {
 	Extended_Pair              []Extended_Pair              `protobuf:"bytes,10,rep,name=extended_Pair,json=extendedPair,proto3" json:"extended_Pair" yaml:"extended_Pair"`
 	AuctionParams              []AuctionParams              `protobuf:"bytes,11,rep,name=auctionParams,proto3" json:"auctionParams" yaml:"auctionParams"`
 	AssetRatesParams           []AssetRatesParams           `protobuf:"bytes,12,rep,name=assetRatesParams,proto3" json:"assetRatesParams" yaml:"assetRatesParams"`
-	Params                     Params
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }

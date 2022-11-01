@@ -15,8 +15,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		extendedPairID uint64
 	)
 
-	k.SetParams(ctx, state.Params)
-
 	for _, item := range state.BorrowAsset {
 		k.SetBorrow(ctx, item)
 		borrowID = item.ID
@@ -90,6 +88,5 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetLendPairs(ctx),
 		k.GetAllAddAuctionParamsData(ctx),
 		k.GetAllAssetRatesParams(ctx),
-		k.GetParams(ctx),
 	)
 }
