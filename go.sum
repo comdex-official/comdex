@@ -212,6 +212,11 @@ github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE
 github.com/coinbase/rosetta-sdk-go v0.6.10/go.mod h1:J/JFMsfcePrjJZkwQFLh+hJErkAmdm9Iyy3D5Y0LfXo=
 github.com/coinbase/rosetta-sdk-go v0.7.0 h1:lmTO/JEpCvZgpbkOITL95rA80CPKb5CtMzLaqF2mCNg=
 github.com/coinbase/rosetta-sdk-go v0.7.0/go.mod h1:7nD3oBPIiHqhRprqvMgPoGxe/nyq3yftRmpsy29coWE=
+github.com/confio/ics23/go v0.0.0-20200817220745-f173e6211efb/go.mod h1:E45NqnlpxGnpfTWL/xauN7MRwEE28T4Dd4uraToOaKg=
+github.com/confio/ics23/go v0.6.3/go.mod h1:E45NqnlpxGnpfTWL/xauN7MRwEE28T4Dd4uraToOaKg=
+github.com/confio/ics23/go v0.6.6/go.mod h1:E45NqnlpxGnpfTWL/xauN7MRwEE28T4Dd4uraToOaKg=
+github.com/confio/ics23/go v0.7.0 h1:00d2kukk7sPoHWL4zZBZwzxnpA2pec1NPdwbSokJ5w8=
+github.com/confio/ics23/go v0.7.0/go.mod h1:E45NqnlpxGnpfTWL/xauN7MRwEE28T4Dd4uraToOaKg=
 github.com/containerd/continuity v0.3.0 h1:nisirsYROK15TAMVukJOUyGJjz4BNQJBVsNvAXZJ/eg=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
@@ -228,10 +233,8 @@ github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfc
 github.com/cosmos/btcutil v1.0.4 h1:n7C2ngKXo7UC9gNyMNLbzqz7Asuf+7Qv4gnX/rOdQ44=
 github.com/cosmos/btcutil v1.0.4/go.mod h1:Ffqc8Hn6TJUdDgHBwIZLtrLQC1KdJ9jGJl/TvgUaxbU=
 github.com/cosmos/cosmos-sdk v0.43.0/go.mod h1:ctcrTEAhei9s8O3KSNvL0dxe+fVQGp07QyRb/7H9JYE=
-github.com/cosmos/cosmos-sdk v0.45.10 h1:YRf1N6C7OFCc8FJ5wuhcnDDySJNDn5DxSscVgbeXgz4=
-github.com/cosmos/cosmos-sdk v0.45.10/go.mod h1:CbfWNs4PuxxsvRD/snQuSBDwIhtsD7rIDTVQyYMKTa0=
-github.com/cosmos/cosmos-sdk/ics23/go v0.8.0 h1:iKclrn3YEOwk4jQHT2ulgzuXyxmzmPczUalMwW4XH9k=
-github.com/cosmos/cosmos-sdk/ics23/go v0.8.0/go.mod h1:2a4dBq88TUoqoWAU5eu0lGvpFP3wWDPgdHPargtyw30=
+github.com/cosmos/cosmos-sdk v0.45.7 h1:5H9Ov04WIGoQAMJDdcSD4Vp5Lz6I17voHySH+vjJFCc=
+github.com/cosmos/cosmos-sdk v0.45.7/go.mod h1:l8DURPoMMkIEe/Gw59g9KIMDjlYyTsKOWdc3iSSBXvw=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
@@ -241,8 +244,8 @@ github.com/cosmos/iavl v0.15.0-rc3.0.20201009144442-230e9bdf52cd/go.mod h1:3xOIa
 github.com/cosmos/iavl v0.15.0-rc5/go.mod h1:WqoPL9yPTQ85QBMT45OOUzPxG/U/JcJoN7uMjgxke/I=
 github.com/cosmos/iavl v0.15.3/go.mod h1:OLjQiAQ4fGD2KDZooyJG9yz+p2ao2IAYSbke8mVvSA4=
 github.com/cosmos/iavl v0.16.0/go.mod h1:2A8O/Jz9YwtjqXMO0CjnnbTYEEaovE8jWcwrakH3PoE=
-github.com/cosmos/iavl v0.19.3 h1:cESO0OwTTxQm5rmyESKW+zESheDUYI7CcZDWWDwnuxg=
-github.com/cosmos/iavl v0.19.3/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONApkEPw=
+github.com/cosmos/iavl v0.19.1 h1:3gaq9b6SjiB0KBTygRnAvEGml2pQlu1TH8uma5g63Ys=
+github.com/cosmos/iavl v0.19.1/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONApkEPw=
 github.com/cosmos/ibc-go v1.0.0/go.mod h1:2wHKQUa+BLJMEyN635KrHfmTTwSNHBtXcqdY8JWGuXA=
 github.com/cosmos/ibc-go/v3 v3.0.0 h1:XUNplHVS51Q2gMnTFsFsH9QJ7flsovMamnltKbEgPQ4=
 github.com/cosmos/ibc-go/v3 v3.0.0/go.mod h1:Mb+1NXiPOLd+CPFlOC6BKeAUaxXlhuWenMmRiUiSmwY=
@@ -1254,8 +1257,6 @@ golang.org/x/exp v0.0.0-20200119233911-0405dc783f0a/go.mod h1:2RIsYlXP63K8oxa1u0
 golang.org/x/exp v0.0.0-20200207192155-f17229e696bd/go.mod h1:J/WKrq2StrnmMY6+EHIKF9dgMWnmCNThgcyBT1FY9mM=
 golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6/go.mod h1:3jZMyOhIsHpP37uCMkUooju7aAi5cS1Q23tOzKc+0MU=
 golang.org/x/exp v0.0.0-20200331195152-e8c3332aa8e5/go.mod h1:4M0jN8W1tt0AVLNr8HDosyJCDCDuyL9N9+3m7wDWgKw=
-golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e h1:+WEEuIdZHnUeJJmEUjyYC2gfUMj69yZXw17EnHg/otA=
-golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e/go.mod h1:Kr81I6Kryrl9sr8s2FK3vxD90NdsKWRuOIl2O4CvYbA=
 golang.org/x/exp/typeparams v0.0.0-20220428152302-39d4317da171/go.mod h1:AbB0pIl9nAr9wVwH+Z2ZpaocVmF5I4GyWCDIsVjR0bk=
 golang.org/x/exp/typeparams v0.0.0-20220613132600-b0d781184e0d h1:+W8Qf4iJtMGKkyAygcKohjxTk4JPsL9DpzApJ22m5Ic=
 golang.org/x/exp/typeparams v0.0.0-20220613132600-b0d781184e0d/go.mod h1:AbB0pIl9nAr9wVwH+Z2ZpaocVmF5I4GyWCDIsVjR0bk=
