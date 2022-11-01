@@ -8,7 +8,7 @@ import (
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "rewardsV2"
+	ModuleName = "rewardsV1"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName

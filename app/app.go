@@ -1199,7 +1199,7 @@ func (a *App) registerUpgradeHandlers() {
 
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.VaultKeeper),
+		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.AssetKeeper , a.VaultKeeper),
 	)
 
 	// When a planned update height is reached, the old binary will panic
@@ -1277,21 +1277,10 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Deleted: []string{"assetv1", "auctionV1", "bandoracle", "collectorV1", "esmV1", "lendV1", "liquidationV1", "liquidityV1", "lockerV1", "market", "rewardsV1", "tokenmint", "vaultV1"},
+			Deleted: []string{"bandoracle", "market"},
 			Added: []string{
-				assettypes.ModuleName,
-				auctiontypes.ModuleName,
 				bandoraclemoduletypes.ModuleName,
-				collectortypes.ModuleName,
-				esmtypes.ModuleName,
-				lendtypes.ModuleName,
-				liquidationtypes.ModuleName,
-				liquiditytypes.ModuleName,
-				lockertypes.ModuleName,
 				markettypes.ModuleName,
-				rewardstypes.ModuleName,
-				tokenminttypes.ModuleName,
-				vaulttypes.ModuleName,
 			}}
 
 	// prepare store for main net upgrade v5.0.0
