@@ -4,8 +4,24 @@ import (
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/lend/types"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
+
+// SetVaultLengthCounter - Set vault length for liquidation check
+func SetVaultLengthCounter(
+	ctx sdk.Context,
+	vaultkeeper vaultkeeper.Keeper,
+) {
+	var count uint64
+	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 2)
+	if found {
+		for _, data := range appExtendedPairVaultData {
+			count += uint64(len(data.VaultIds))
+		}
+	}
+	vaultkeeper.SetLengthOfVault(ctx, count)
+}
 
 // FuncMigrateLiquidatedBorrow -  Migrate all liquidated borrow to new borrow struct and make is_liquidated field to true
 func FuncMigrateLiquidatedBorrow(ctx sdk.Context, k lendkeeper.Keeper, liqK liquidationkeeper.Keeper) error {
