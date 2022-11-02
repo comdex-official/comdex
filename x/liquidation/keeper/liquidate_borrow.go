@@ -374,6 +374,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						return err
 					}
 				}
+				if lockedVault.AmountIn.IsZero() {
+					k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+					return nil
+				}
 				newCalculatedCollateralizationRatio, _ := k.lend.CalculateCollateralizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
 				if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
 					updatedLockedVault := lockedVault

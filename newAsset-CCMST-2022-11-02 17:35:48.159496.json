@@ -1,0 +1,1 @@
+{"name": "CCMST", "denom": "uccmst", "decimals": "1000000", "is_on_chain": "0", "asset_oracle_price": "0", "title": "Add assets for applications to be deployed on comdex chain", "description": "This proposal it to add asset CCMST to be then used on harbor, commodo and cswap apps", "deposit": "1000000000ucmdx"}
