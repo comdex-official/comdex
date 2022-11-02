@@ -66,6 +66,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		err1 := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
 		if err1 != nil {
 			ctx.Logger().Error("Error in calculating Borrow Interest before liquidation, liquidate_borrow.go for ID %d", borrowPos.ID)
+			continue
 		}
 		pool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
 		assetIn, _ := k.asset.GetAsset(ctx, lendPair.AssetIn)
