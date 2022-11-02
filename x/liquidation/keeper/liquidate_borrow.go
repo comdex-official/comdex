@@ -236,7 +236,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			collateralizationRatio, err := k.lend.CalculateCollateralizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
 			if err != nil {
 				ctx.Logger().Error("Error Calculating CR in Liquidation, liquidate_borrow.go for locked vault ID %d", lockedVault.LockedVaultId)
-				return nil
+				return err
 			}
 			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
 			assetOutprice, _ := k.market.GetTwa(ctx, assetOut.Id)
