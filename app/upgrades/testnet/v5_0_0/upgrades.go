@@ -17,11 +17,12 @@ func CreateUpgradeHandlerV5Beta(
 	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		SetVaultLengthCounter(ctx, vaultkeeper)
-		err := FuncMigrateLiquidatedBorrow(ctx, lk, liqk)
+		err = FuncMigrateLiquidatedBorrow(ctx, lk, liqk)
 		if err != nil {
 			return nil, err
 		}
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return vm, err
 	}
 }

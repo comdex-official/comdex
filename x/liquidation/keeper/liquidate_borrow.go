@@ -30,7 +30,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 	for l := range newBorrowIDs {
 		borrowPos, found := k.lend.GetBorrow(ctx, newBorrowIDs[l])
 		if !found {
-			ctx.Logger().Error("Borrow Pos Not Found in Liquidation, liquidate_borrow.go for ID %d", newBorrowIDs[l])
 			continue
 		}
 		if borrowPos.IsLiquidated {
