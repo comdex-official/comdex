@@ -234,9 +234,15 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 				ctx.Logger().Error("Error Calculating CR in Liquidation, liquidate_borrow.go for locked vault ID %d", lockedVault.LockedVaultId)
 				return nil
 			}
+			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
+			assetOutprice, _ := k.market.GetTwa(ctx, assetOut.Id)
 
-			assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
-			assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
+			//assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
+			//assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
+			assetInTotalUint := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInprice.Twa))
+			assetOutTotalUint := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutprice.Twa))
+			assetInTotal := sdk.NewDecFromInt(assetInTotalUint)
+			assetOutTotal := sdk.NewDecFromInt(assetOutTotalUint)
 			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 
 			var c sdk.Dec
@@ -263,7 +269,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			// using this check as we want to deduct the liquidation penalty and auction bonus from the borrower position only once
 
 			// TODO: revisit : DONE
-			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
 			aip := sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInprice.Twa))
 			liquidationDeductionAmt := selloffAmount.Mul(penalty)
 			liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip)
@@ -282,7 +287,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			}
 			cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 			// totalDeduction is the sum of liquidationDeductionAmount and selloffAmount
-			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(selloffAmount.TruncateInt())
+			sellOffAmt := selloffAmount.Quo(aip)
+			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(sellOffAmt.TruncateInt())
 			updatedLockedVault.AmountIn = updatedLockedVault.AmountIn.Sub(totalDeduction)
 			lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(totalDeduction)
 			if totalDeduction.GTE(updatedLockedVault.AmountIn) { // rare case only
