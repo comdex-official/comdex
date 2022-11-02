@@ -410,17 +410,11 @@ func (k Keeper) CloseDutchLendAuction(
 		return auctiontypes.ErrorVaultNotFound
 	}
 
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
 	// set sell of history in locked vault
 	err := k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
 	if err != nil {
 		return err
 	}
-	borrowMetaData := lockedVault.GetBorrowMetaData()
-	lendPos, _ := k.lend.GetLend(ctx, borrowMetaData.LendingId)
-	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	lendPos.AvailableToBorrow = lendPos.AvailableToBorrow.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	k.lend.SetLend(ctx, lendPos)
 
 	lockedVault.AmountOut = lockedVault.AmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
 	lockedVault.UpdatedAmountOut = lockedVault.UpdatedAmountOut.Sub(dutchAuction.InflowTokenTargetAmount.Amount)

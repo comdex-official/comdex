@@ -334,8 +334,14 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 	lockedVault, _ := k.GetLockedVault(ctx, appID, id)
 	borrowMetadata := lockedVault.GetBorrowMetaData()
 	if borrowMetadata != nil {
-		lendPos, _ := k.lend.GetLend(ctx, borrowMetadata.LendingId)
-		assetInPool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
+		lendPos, found := k.lend.GetLend(ctx, borrowMetadata.LendingId)
+		if !found {
+			return lendtypes.ErrLendNotFound
+		}
+		assetInPool, found := k.lend.GetPool(ctx, lendPos.PoolID)
+		if !found {
+			return lendtypes.ErrPoolNotFound
+		}
 		var firstTransitAssetID, secondTransitAssetID uint64
 		for _, data := range assetInPool.AssetData {
 			if data.AssetTransitType == 2 {
