@@ -98,7 +98,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Denom:                 "ucmst",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
-		IsOraclePriceRequired: false,
+		IsOraclePriceRequired: true,
 	}
 	key3 := assettypes.AssetKey(asset3.Id)
 	store.Delete(key3)
