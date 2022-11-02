@@ -21,17 +21,6 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 }
 
 func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	app1 := assettypes.AppData{
-		Id:               1,
-		Name:             "CSWAP",
-		ShortName:        "cswap",
-		MinGovDeposit:    sdk.ZeroInt(),
-		GovTimeInSeconds: 300,
-		GenesisToken:     nil,
-	}
-	key1 := assettypes.AppKey(app1.Id)
-	store.Delete(key1)
-	SetApp(store, cdc, app1)
 
 	genesisToken := assettypes.MintGenesisToken{
 		AssetId:       9,
@@ -42,7 +31,7 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	var gToken []assettypes.MintGenesisToken
 	gToken = append(gToken, genesisToken)
 	app2 := assettypes.AppData{
-		Id:               2,
+		Id:               1,
 		Name:             "HARBOR",
 		ShortName:        "hbr",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -52,6 +41,18 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	key2 := assettypes.AppKey(app2.Id)
 	store.Delete(key2)
 	SetApp(store, cdc, app2)
+
+	app1 := assettypes.AppData{
+		Id:               2,
+		Name:             "CSWAP",
+		ShortName:        "cswap",
+		MinGovDeposit:    sdk.ZeroInt(),
+		GovTimeInSeconds: 300,
+		GenesisToken:     nil,
+	}
+	key1 := assettypes.AppKey(app1.Id)
+	store.Delete(key1)
+	SetApp(store, cdc, app1)
 
 	app3 := assettypes.AppData{
 		Id:               3,
@@ -71,7 +72,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	asset1 := assettypes.Asset{
 		Id:                    1,
 		Name:                  "ATOM",
-		Denom:                 "ibc/2E5D0AC026AC1AFA65A23023BA4F24BB8DDF94F118EDC0BAD6F625BFC557CDED",
+		Denom:                 "uatom",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
@@ -107,7 +108,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	asset4 := assettypes.Asset{
 		Id:                    4,
 		Name:                  "OSMO",
-		Denom:                 "ibc/868AF0A32D53849B6093348F5A47BB969A98E71A3F0CD2D3BE406EA25DA7F836",
+		Denom:                 "uosmo",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
@@ -175,30 +176,6 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	key9 := assettypes.AssetKey(asset9.Id)
 	store.Delete(key9)
 	SetAsset(store, cdc, asset9)
-
-	asset10 := assettypes.Asset{
-		Id:                    10,
-		Name:                  "USDC",
-		Denom:                 "ibc/EF8A76D0FD3F3F45D8DB7FEBFCF921206DF58CA41493ED16D69BF7B4E061C60C",
-		Decimals:              sdk.NewInt(1000000),
-		IsOnChain:             false,
-		IsOraclePriceRequired: true,
-	}
-	key10 := assettypes.AssetKey(asset10.Id)
-	store.Delete(key10)
-	SetAsset(store, cdc, asset10)
-
-	asset11 := assettypes.Asset{
-		Id:                    11,
-		Name:                  "WETH",
-		Denom:                 "ibc/A99459944FD67B5711735B4B4D3FE30BA45328E94D437C78E47CA8DEFA781E49",
-		Decimals:              sdk.NewInt(1000000000000000000),
-		IsOnChain:             false,
-		IsOraclePriceRequired: true,
-	}
-	key11 := assettypes.AssetKey(asset11.Id)
-	store.Delete(key11)
-	SetAsset(store, cdc, asset11)
 
 	return nil
 }

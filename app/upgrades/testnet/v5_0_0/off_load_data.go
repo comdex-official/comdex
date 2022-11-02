@@ -14,7 +14,7 @@ func SetVaultLengthCounter(
 	vaultkeeper vaultkeeper.Keeper,
 ) {
 	var count uint64
-	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 2)
+	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 1)
 	if found {
 		for _, data := range appExtendedPairVaultData {
 			count += uint64(len(data.VaultIds))
