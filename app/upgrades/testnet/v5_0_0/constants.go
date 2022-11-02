@@ -1,7 +1,7 @@
 package v5_0_0 //nolint:revive,stylecheck
 
 const (
-	UpgradeNameBeta = "v5.0.0.beta"
+	UpgradeNameBeta = "v5.0.0.dev"
 	UpgradeHeight   = "" // replace this height
 	UpgradeInfo     = `'{
 		"binaries": {
