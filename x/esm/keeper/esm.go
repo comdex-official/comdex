@@ -460,6 +460,9 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			k.vault.DeleteVault(ctx, data.Id)
 			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 			//Delete User Data
+			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountIn, false)
+			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountOut, false)
+			k.vault.DeleteUserVaultExtendedPairMapping(ctx, data.Owner, appID, data.ExtendedPairVaultID)
 		}
 	}
 
@@ -558,6 +561,8 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 				k.SetAssetToAmount(ctx, assetToAmtOutData)
 			}
 			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountIn, false)
+			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountOut, false)
 		}
 	}
 
