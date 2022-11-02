@@ -501,3 +501,22 @@ func (k Keeper) WasmHasBorrowForAddressAndAsset(ctx sdk.Context, assetID uint64,
 	}
 	return false
 }
+
+func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (ModuleBalance types.ModuleBalance, found bool) {
+	pool, found := k.GetPool(ctx, poolID)
+	if !found {
+		return ModuleBalance, false
+	}
+	for _, v := range pool.AssetData {
+		asset, _ := k.Asset.GetAsset(ctx, v.AssetID)
+		balance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
+		tokenBal := sdk.NewCoin(asset.Denom, balance)
+		modBalStats := types.ModuleBalanceStats{
+			AssetID: asset.Id,
+			Balance: tokenBal,
+		}
+		ModuleBalance.PoolID = poolID
+		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
+	}
+	return ModuleBalance, true
+}
