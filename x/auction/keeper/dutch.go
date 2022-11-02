@@ -182,7 +182,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 
 	// owe is $cmdx to be given to user
 
-	owe, inFlowTokenAmount, err := k.GetAmountOfOtherToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, slice, auction.AssetInId, inFlowTokenCurrentPrice)
+	owe, inFlowTokenAmount, err := k.vault.GetAmountOfOtherToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, slice, auction.AssetInId, inFlowTokenCurrentPrice)
 	if err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		TargetReachedFlag = true
 		inFlowTokenAmount = tab // with precision
 
-		owe, slice, err = k.GetAmountOfOtherToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, inFlowTokenAmount, auction.AssetOutId, outFlowTokenCurrentPrice)
+		owe, slice, err = k.vault.GetAmountOfOtherToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, inFlowTokenAmount, auction.AssetOutId, outFlowTokenCurrentPrice)
 		if err != nil {
 			return err
 		}

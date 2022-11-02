@@ -65,10 +65,7 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 	denoms := assetsMapping.Denom
 
-	decimals, err := strconv.ParseInt(assetsMapping.Decimals, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
+	decimals := assetsMapping.Decimals
 
 	isOnChain := ParseBoolFromString(assetsMapping.IsOnChain)
 	if err != nil {
@@ -82,10 +79,14 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 	from := clientCtx.GetFromAddress()
 
+	newDecimals, ok := sdk.NewIntFromString(decimals)
+	if !ok {
+		return txf, nil, types.ErrorInvalidDecimals
+	}
 	assets := types.Asset{
 		Name:                  names,
 		Denom:                 denoms,
-		Decimals:              decimals,
+		Decimals:              newDecimals,
 		IsOnChain:             isOnChain,
 		IsOraclePriceRequired: assetOraclePrice,
 	}
@@ -135,7 +136,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				return err
 			}
 
-			decimals, err := cmd.Flags().GetInt64(flagDecimals)
+			decimals, err := cmd.Flags().GetString(flagDecimals)
 			if err != nil {
 				return err
 			}
@@ -158,12 +159,16 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			}
 
 			from := clientCtx.GetFromAddress()
+			newDecimals, ok := sdk.NewIntFromString(decimals)
+			if !ok {
+				return types.ErrorInvalidDecimals
+			}
 
 			asset := types.Asset{
 				Id:                    id,
 				Name:                  name,
 				Denom:                 denom,
-				Decimals:              decimals,
+				Decimals:              newDecimals,
 				IsOraclePriceRequired: newAssetOraclePrice,
 			}
 

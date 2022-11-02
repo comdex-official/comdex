@@ -361,13 +361,6 @@ message AssetRatesParams{ //AssetRatesStats
 
 }
 
-message StableBorrowMapping{
-  repeated uint64 stable_borrow_ids = 1 [
-    (gogoproto.customname) = "StableBorrowIDs",
-    (gogoproto.moretags) = "yaml:\"stable_borrow_ids\""
-  ];
-}
-
 message ReserveBuybackAssetData{ // BalanceStats
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetID",
@@ -437,5 +430,28 @@ message Lend_rewards_tracker{
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"interest_accumulated\""
+  ];
+}
+
+message ModuleBalance{
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated ModuleBalanceStats module_balance_stats = 2[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"module_balance_stats\""
+  ];
+}
+
+message ModuleBalanceStats{
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"balance\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }

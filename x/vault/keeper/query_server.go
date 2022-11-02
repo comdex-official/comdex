@@ -663,7 +663,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		if extPairVault.AssetOutOraclePrice {
 			assetOutTotalPrice, _ = q.oracle.CalcAssetPrice(ctx, pairID.AssetOut, vault.AmountOut)
 		} else {
-			assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(vault.AmountOut))).Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals))))
+			assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(vault.AmountOut))).Quo(sdk.NewDecFromInt(assetOutData.Decimals))
 		}
 		totalDue = assetOutTotalPrice.Add(totalDue)
 

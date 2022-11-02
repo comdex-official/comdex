@@ -106,9 +106,27 @@ func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address string, pairI
 }
 
 func (k Keeper) GetBorrows(ctx sdk.Context) (borrowIds []uint64, found bool) {
-	assetStats := k.GetAllAssetStatsByPoolIDAndAssetID(ctx)
-	for _, data := range assetStats {
-		borrowIds = append(borrowIds, data.BorrowIds...)
+	// assetStats := k.GetAllAssetStatsByPoolIDAndAssetID(ctx)
+	// for _, data := range assetStats {
+	// 	borrowIds = append(borrowIds, data.BorrowIds...)
+	// }
+	// return borrowIds, true
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var asset types.PoolAssetLBMapping
+		k.cdc.MustUnmarshal(iter.Value(), &asset)
+		borrowIds = append(borrowIds, asset.BorrowIds...)
 	}
 	return borrowIds, true
 }
@@ -136,6 +154,27 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest t
 
 	k.cdc.MustUnmarshal(value, &interest)
 	return interest, true
+}
+
+func (k Keeper) GetAllBorrowInterestTracker(ctx sdk.Context) (interest []types.BorrowInterestTracker) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.BorrowInterestTrackerKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var tracker types.BorrowInterestTracker
+		k.cdc.MustUnmarshal(iter.Value(), &tracker)
+		interest = append(interest, tracker)
+	}
+	return interest
 }
 
 func (k Keeper) DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64) {

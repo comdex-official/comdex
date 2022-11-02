@@ -21,7 +21,7 @@ func (m *Asset) Validate() error {
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
 		return errors.Wrapf(err, "invalid denom %s", m.Denom)
 	}
-	if m.Decimals < 0 {
+	if m.Decimals.LT(sdk.ZeroInt()) {
 		return fmt.Errorf("decimals cannot be less than zero")
 	}
 
@@ -37,7 +37,7 @@ func (m *Asset) UpdateValidate() error {
 			return errors.Wrapf(err, "invalid denom %s", m.Denom)
 		}
 	}
-	if m.Decimals < 0 {
+	if m.Decimals.LT(sdk.ZeroInt()) {
 		return fmt.Errorf("decimals cannot be less than zero")
 	}
 

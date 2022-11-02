@@ -153,6 +153,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -164,11 +165,11 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
 	tv4_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v4_0_0"
+	tv5_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v5_0_0"
 )
 
 const (
@@ -198,7 +199,6 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.AddPoolHandler,
-		lendclient.UpdateLendPairsHandler,
 		lendclient.AddAssetToPairHandler,
 		lendclient.AddAssetRatesParamsHandler,
 		lendclient.AddAuctionParamsHandler,
@@ -567,6 +567,8 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
+		&app.LiquidationKeeper,
+		&app.AuctionKeeper,
 	)
 
 	app.EsmKeeper = esmkeeper.NewKeeper(
@@ -855,24 +857,75 @@ func New(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
-		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, ibctransfertypes.ModuleName, icatypes.ModuleName,
-		bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
-		crisistypes.ModuleName, genutiltypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
-		authz.ModuleName, transferModule.Name(), assettypes.ModuleName, collectortypes.ModuleName, vaulttypes.ModuleName,
-		liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
-		vesting.AppModuleBasic{}.Name(), paramstypes.ModuleName, wasmtypes.ModuleName, banktypes.ModuleName,
-		govtypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, lendtypes.ModuleName, esmtypes.ModuleName,
+		upgradetypes.ModuleName,
+		minttypes.ModuleName,
+		distrtypes.ModuleName,
+		slashingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		stakingtypes.ModuleName,
+		ibchost.ModuleName,
+		ibctransfertypes.ModuleName,
+		icatypes.ModuleName,
+		govtypes.ModuleName,
+		crisistypes.ModuleName,
+		genutiltypes.ModuleName,
+		feegrant.ModuleName,
+		authtypes.ModuleName,
+		capabilitytypes.ModuleName,
+		authz.ModuleName,
+		assettypes.ModuleName,
+		collectortypes.ModuleName,
+		vaulttypes.ModuleName,
+		bandoraclemoduletypes.ModuleName,
+		markettypes.ModuleName,
+		lockertypes.ModuleName,
+		liquidationtypes.ModuleName,
+		auctiontypes.ModuleName,
+		tokenminttypes.ModuleName,
+		vestingtypes.ModuleName,
+		paramstypes.ModuleName,
+		wasmtypes.ModuleName,
+		banktypes.ModuleName,
+		rewardstypes.ModuleName,
+		liquiditytypes.ModuleName,
+		lendtypes.ModuleName,
+		esmtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		minttypes.ModuleName, bandoraclemoduletypes.ModuleName, markettypes.ModuleName, lockertypes.ModuleName,
-		distrtypes.ModuleName, genutiltypes.ModuleName, vesting.AppModuleBasic{}.Name(), evidencetypes.ModuleName, ibchost.ModuleName,
-		icatypes.ModuleName, vaulttypes.ModuleName, liquidationtypes.ModuleName, auctiontypes.ModuleName, tokenminttypes.ModuleName,
-		wasmtypes.ModuleName, authtypes.ModuleName, slashingtypes.ModuleName, authz.ModuleName,
-		paramstypes.ModuleName, capabilitytypes.ModuleName, upgradetypes.ModuleName, transferModule.Name(), lendtypes.ModuleName,
-		assettypes.ModuleName, collectortypes.ModuleName, banktypes.ModuleName, rewardstypes.ModuleName, liquiditytypes.ModuleName, esmtypes.ModuleName,
+		crisistypes.ModuleName,
+		govtypes.ModuleName,
+		stakingtypes.ModuleName,
+		minttypes.ModuleName,
+		distrtypes.ModuleName,
+		genutiltypes.ModuleName,
+		feegrant.ModuleName,
+		vestingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		ibchost.ModuleName,
+		icatypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		authtypes.ModuleName,
+		slashingtypes.ModuleName,
+		authz.ModuleName,
+		paramstypes.ModuleName,
+		capabilitytypes.ModuleName,
+		upgradetypes.ModuleName,
+		bandoraclemoduletypes.ModuleName,
+		markettypes.ModuleName,
+		lockertypes.ModuleName,
+		vaulttypes.ModuleName,
+		liquidationtypes.ModuleName,
+		auctiontypes.ModuleName,
+		tokenminttypes.ModuleName,
+		wasmtypes.ModuleName,
+		lendtypes.ModuleName,
+		assettypes.ModuleName,
+		collectortypes.ModuleName,
+		banktypes.ModuleName,
+		rewardstypes.ModuleName,
+		liquiditytypes.ModuleName,
+		esmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -889,12 +942,16 @@ func New(
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		minttypes.ModuleName,
-		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		wasmtypes.ModuleName,
+		authz.ModuleName,
+		vestingtypes.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
 		assettypes.ModuleName,
 		collectortypes.ModuleName,
 		esmtypes.ModuleName,
@@ -906,13 +963,9 @@ func New(
 		liquidationtypes.ModuleName,
 		auctiontypes.ModuleName,
 		lockertypes.StoreKey,
-		wasmtypes.ModuleName,
-		authz.ModuleName,
-		vesting.AppModuleBasic{}.Name(),
-		upgradetypes.ModuleName,
-		paramstypes.ModuleName,
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
+		crisistypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -1142,15 +1195,15 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	a.UpgradeKeeper.SetUpgradeHandler(
+	/*a.UpgradeKeeper.SetUpgradeHandler(
 		mv5.UpgradeName,
 		mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
-	)
-
-	/*a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
 	)*/
+
+	a.UpgradeKeeper.SetUpgradeHandler(
+		tv5_0_0.UpgradeNameBeta,
+		tv5_0_0.CreateUpgradeHandlerV5Beta(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.VaultKeeper),
+	)
 
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1225,11 +1278,17 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
-	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
+	case upgradeInfo.Name == tv5_0_0.UpgradeNameBeta && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Deleted: []string{"bandoracle", "market"},
+			Added: []string{
+				bandoraclemoduletypes.ModuleName,
+				markettypes.ModuleName,
+			},
+		}
 
-	// prepare store for main net upgrade v5.0.0
-	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for main net upgrade v5.0.0
+		/*case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				assettypes.ModuleName,
@@ -1249,7 +1308,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				icahosttypes.StoreKey,
 				authz.ModuleName,
 			},
-		}
+		}*/
 	}
 
 	return storeUpgrades

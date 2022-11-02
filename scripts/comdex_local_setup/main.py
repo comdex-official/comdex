@@ -106,11 +106,11 @@ def AddApp(name, shortName, minGovDeposit=0, govTimeInSeconds=0):
         exit("error in add app prop")
     print(f"New App {name} Proposal  Submitted ✔️")
 
-def AddAsset(name, denom, isOnChain=1, assetOraclePriceRequired=1):
+def AddAsset(name, denom, decimals=1, isOnChain=1, assetOraclePriceRequired=1):
     jsonData = {
         "name" : name,
         "denom" : denom,
-        "decimals" :"1000000",
+        "decimals" :str(decimals),
         "is_on_chain" :str(isOnChain),
         "asset_oracle_price" :str(assetOraclePriceRequired),
         "title" :"Add assets for applications to be deployed on comdex chain",
@@ -353,7 +353,7 @@ def CreateState():
         Vote("yes")
     
     for asset in ASSETS:
-        if len(asset) != 4:
+        if len(asset) != 5:
             exit("Invalid asset configs")
         AddAsset(asset[0], asset[1], asset[2], asset[3])
         Vote("yes")

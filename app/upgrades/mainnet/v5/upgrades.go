@@ -51,15 +51,15 @@ func InitializeStates(
 	}
 
 	assets := []assettypes.Asset{
-		{Name: "ATOM", Denom: "uatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "CMDX", Denom: "ucmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "CMST", Denom: "ucmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "OSMO", Denom: "uosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: true},
-		{Name: "CATOM", Denom: "ucatom", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "CCMDX", Denom: "uccmdx", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "CCMST", Denom: "uccmst", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "COSMO", Denom: "ucosmo", Decimals: 1000000, IsOnChain: false, IsOraclePriceRequired: false},
-		{Name: "HARBOR", Denom: "uharbor", Decimals: 1000000, IsOnChain: true, IsOraclePriceRequired: false},
+		{Name: "ATOM", Denom: "uatom", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "CMDX", Denom: "ucmdx", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "CMST", Denom: "ucmst", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "OSMO", Denom: "uosmo", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true},
+		{Name: "CATOM", Denom: "ucatom", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "CCMDX", Denom: "uccmdx", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "CCMST", Denom: "uccmst", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "COSMO", Denom: "ucosmo", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: false},
+		{Name: "HARBOR", Denom: "uharbor", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false},
 	}
 
 	for _, asset := range assets {

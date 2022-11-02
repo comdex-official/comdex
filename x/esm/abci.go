@@ -1,13 +1,13 @@
 package esm
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/expected"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	utils "github.com/comdex-official/comdex/types"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/keeper"
 	"github.com/comdex-official/comdex/x/esm/types"
 )
@@ -26,17 +26,12 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 				continue
 			}
 			if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.VaultRedemptionStatus {
-				err := k.SetUpCollateralRedemptionForVault(ctx, esmStatus.AppId)
+				err := k.EsmStepStateTrigger(ctx, esmStatus.AppId)
 				if err != nil {
 					continue
 				}
 			}
-			if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.Status && !esmStatus.StableVaultRedemptionStatus {
-				err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId)
-				if err != nil {
-					continue
-				}
-			}
+
 			if !esmStatus.SnapshotStatus && esmStatus.Status {
 				err := k.SnapshotOfPrices(ctx, esmStatus)
 				if err != nil {

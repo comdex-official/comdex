@@ -24,17 +24,17 @@ func (msg *MsgLend) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.AssetId <= 0 {
-		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	if msg.AssetId == 0 {
+		return fmt.Errorf("asset id should not be 0: %d ", msg.AssetId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
 	}
-	if msg.PoolId <= 0 {
-		return fmt.Errorf("pool id should be positive: %d > 0", msg.AssetId)
+	if msg.PoolId == 0 {
+		return fmt.Errorf("pool id should not be 0: %d ", msg.AssetId)
 	}
-	if msg.AppId <= 0 {
-		return fmt.Errorf("app id should be positive: %d > 0", msg.AppId)
+	if msg.AppId == 0 {
+		return fmt.Errorf("app id should not be 0: %d ", msg.AppId)
 	}
 
 	return nil
@@ -68,8 +68,8 @@ func (msg *MsgWithdraw) ValidateBasic() error {
 		return err
 	}
 
-	if msg.LendId <= 0 {
-		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	if msg.LendId == 0 {
+		return fmt.Errorf("lend id should not be 0: %d ", msg.LendId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -109,11 +109,11 @@ func (msg *MsgBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if msg.LendId <= 0 {
-		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	if msg.LendId == 0 {
+		return fmt.Errorf("lend id should not be 0: %d ", msg.LendId)
 	}
-	if msg.PairId <= 0 {
-		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	if msg.PairId == 0 {
+		return fmt.Errorf("pair id should not be 0: %d ", msg.PairId)
 	}
 	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)
@@ -156,8 +156,8 @@ func (msg *MsgRepay) ValidateBasic() error {
 		return err
 	}
 
-	if msg.BorrowId <= 0 {
-		return fmt.Errorf("borrower id should be positive: %d > 0", msg.BorrowId)
+	if msg.BorrowId == 0 {
+		return fmt.Errorf("borrower id should not be 0: %d ", msg.BorrowId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -180,12 +180,12 @@ func (msg *MsgRepay) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgFundModuleAccounts(moduleName string, assetID uint64, lender string, amount sdk.Coin) *MsgFundModuleAccounts {
+func NewMsgFundModuleAccounts(poolID, assetID uint64, lender string, amount sdk.Coin) *MsgFundModuleAccounts {
 	return &MsgFundModuleAccounts{
-		ModuleName: moduleName,
-		AssetId:    assetID,
-		Lender:     lender,
-		Amount:     amount,
+		PoolId:  poolID,
+		AssetId: assetID,
+		Lender:  lender,
+		Amount:  amount,
 	}
 }
 
@@ -197,12 +197,11 @@ func (msg *MsgFundModuleAccounts) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.ModuleName == "" {
-		return fmt.Errorf("module name can not be empty")
+	if msg.PoolId == 0 {
+		return fmt.Errorf("pool id should not be 0: %d ", msg.PoolId)
 	}
-
-	if msg.AssetId <= 0 {
-		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	if msg.AssetId == 0 {
+		return fmt.Errorf("asset id should not be 0: %d ", msg.AssetId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -242,8 +241,8 @@ func (msg *MsgDeposit) ValidateBasic() error {
 		return err
 	}
 
-	if msg.LendId <= 0 {
-		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	if msg.LendId == 0 {
+		return fmt.Errorf("lend id should not be 0: %d ", msg.LendId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -281,8 +280,8 @@ func (msg *MsgCloseLend) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.LendId <= 0 {
-		return fmt.Errorf("lend id should be positive: %d > 0", msg.LendId)
+	if msg.LendId == 0 {
+		return fmt.Errorf("lend id should not be 0: %d ", msg.LendId)
 	}
 
 	return nil
@@ -318,8 +317,8 @@ func (msg *MsgDraw) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.BorrowId <= 0 {
-		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	if msg.BorrowId == 0 {
+		return fmt.Errorf("borrow id should not be 0: %d ", msg.BorrowId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -358,8 +357,8 @@ func (msg *MsgDepositBorrow) ValidateBasic() error {
 		return err
 	}
 
-	if msg.BorrowId <= 0 {
-		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	if msg.BorrowId == 0 {
+		return fmt.Errorf("borrow id should not be 0: %d ", msg.BorrowId)
 	}
 	if msg.Amount.Amount.IsNegative() || msg.Amount.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.Amount.Amount)
@@ -396,8 +395,8 @@ func (msg *MsgCloseBorrow) ValidateBasic() error {
 	if err != nil {
 		return err
 	}
-	if msg.BorrowId <= 0 {
-		return fmt.Errorf("borrow id should be positive: %d > 0", msg.BorrowId)
+	if msg.BorrowId == 0 {
+		return fmt.Errorf("borrow id should not be 0: %d ", msg.BorrowId)
 	}
 
 	return nil
@@ -439,17 +438,17 @@ func (msg *MsgBorrowAlternate) ValidateBasic() error {
 		return err
 	}
 
-	if msg.AssetId <= 0 {
-		return fmt.Errorf("asset id should be positive: %d > 0", msg.AssetId)
+	if msg.AssetId == 0 {
+		return fmt.Errorf("asset id should not be 0: %d ", msg.AssetId)
 	}
-	if msg.PoolId <= 0 {
-		return fmt.Errorf("pool id should be positive: %d > 0", msg.PoolId)
+	if msg.PoolId == 0 {
+		return fmt.Errorf("pool id should not be 0: %d ", msg.PoolId)
 	}
-	if msg.PairId <= 0 {
-		return fmt.Errorf("pair id should be positive: %d > 0", msg.PairId)
+	if msg.PairId == 0 {
+		return fmt.Errorf("pair id should not be 0: %d ", msg.PairId)
 	}
-	if msg.AppId <= 0 {
-		return fmt.Errorf("pair id should be positive: %d > 0", msg.AppId)
+	if msg.AppId == 0 {
+		return fmt.Errorf("pair id should not be 0: %d ", msg.AppId)
 	}
 	if msg.AmountIn.Amount.IsNegative() || msg.AmountIn.Amount.IsZero() {
 		return fmt.Errorf("invalid coin amount: %s < 0", msg.AmountIn.Amount)

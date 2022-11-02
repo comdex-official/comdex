@@ -93,7 +93,7 @@ func (s *VaultIntegrationTestSuite) CreateNewAsset(name, denom string, price uin
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              1000000,
+		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})

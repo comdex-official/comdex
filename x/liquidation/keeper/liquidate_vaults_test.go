@@ -72,7 +72,6 @@ func (s *KeeperTestSuite) SetOraclePrice(assetID uint64, price uint64) {
 		PriceValue:    []uint64{price},
 	}
 	s.app.MarketKeeper.SetTwa(s.ctx, market)
-
 }
 
 func (s *KeeperTestSuite) SetInitialOraclePriceForID(asset1 uint64, asset2 uint64) {
@@ -190,7 +189,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "CMDX",
 				Denom:     "ucmdx",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},
@@ -199,7 +198,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "CMST",
 				Denom:     "ucmst",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},
@@ -208,7 +207,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "HARBOR",
 				Denom:     "uharbor",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},

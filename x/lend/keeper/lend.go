@@ -296,7 +296,27 @@ func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.
 	return rewards, true
 }
 
-// only called while borrowing
+func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRewardsTracker) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.LendRewardsTrackerKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var tracker types.LendRewardsTracker
+		k.cdc.MustUnmarshal(iter.Value(), &tracker)
+		rewards = append(rewards, tracker)
+	}
+	return rewards
+}
+
 func (k Keeper) SetUserLendBorrowMapping(ctx sdk.Context, userMapping types.UserAssetLendBorrowMapping) {
 	var (
 		store = k.Store(ctx)
@@ -326,6 +346,29 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLendBorrowKey(address)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.UserAssetLendBorrowMapping
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		mappingData = append(mappingData, mapData)
+	}
+
+	return mappingData
+}
+
+func (k Keeper) GetAllUserTotalMappingData(ctx sdk.Context) (mappingData []types.UserAssetLendBorrowMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLendBorrowMappingKeyPrefix
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -415,6 +458,27 @@ func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve 
 	return reserve, true
 }
 
+func (k Keeper) GetAllReserveBuybackAssetData(ctx sdk.Context) (reserve []types.ReserveBuybackAssetData) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ReserveBuybackAssetDataKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var tracker types.ReserveBuybackAssetData
+		k.cdc.MustUnmarshal(iter.Value(), &tracker)
+		reserve = append(reserve, tracker)
+	}
+	return reserve
+}
+
 func (k Keeper) DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64) {
 	userData, _ := k.GetUserLendBorrowMapping(ctx, owner, lendID)
 	lengthOfIDs := len(userData.BorrowId)
@@ -436,4 +500,23 @@ func (k Keeper) WasmHasBorrowForAddressAndAsset(ctx sdk.Context, assetID uint64,
 		}
 	}
 	return false
+}
+
+func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (ModuleBalance types.ModuleBalance, found bool) {
+	pool, found := k.GetPool(ctx, poolID)
+	if !found {
+		return ModuleBalance, false
+	}
+	for _, v := range pool.AssetData {
+		asset, _ := k.Asset.GetAsset(ctx, v.AssetID)
+		balance := k.ModuleBalance(ctx, pool.ModuleName, asset.Denom)
+		tokenBal := sdk.NewCoin(asset.Denom, balance)
+		modBalStats := types.ModuleBalanceStats{
+			AssetID: asset.Id,
+			Balance: tokenBal,
+		}
+		ModuleBalance.PoolID = poolID
+		ModuleBalance.ModuleBalanceStats = append(ModuleBalance.ModuleBalanceStats, modBalStats)
+	}
+	return ModuleBalance, true
 }

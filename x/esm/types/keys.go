@@ -27,6 +27,7 @@ var (
 	UserDepositByAppPrefix    = []byte{0x05}
 	ESMDataAfterCoolOffPrefix = []byte{0x07}
 	SnapshotKeyPrefix         = []byte{0x10}
+	AssetToAmountKeyPrefix    = []byte{0x11}
 )
 
 func ESMTriggerParamsKey(id uint64) []byte {
@@ -55,4 +56,12 @@ func UserDepositByAppKey(owner string, id uint64) []byte {
 
 func SnapshotTypeKey(appID uint64, assetID uint64) []byte {
 	return append(append(SnapshotKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func AssetToAmountKey(appID uint64, assetID uint64) []byte {
+	return append(append(AssetToAmountKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func AppAssetToAmountKey(appID uint64) []byte {
+	return append(AssetToAmountKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
