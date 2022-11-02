@@ -842,7 +842,6 @@ func QueryModuleBalance() *cobra.Command {
 			res, err := queryClient.QueryModuleBalance(cmd.Context(), &types.QueryModuleBalanceRequest{
 				PoolId: poolID,
 			})
-
 			if err != nil {
 				return err
 			}

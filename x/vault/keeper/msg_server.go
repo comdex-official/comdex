@@ -377,8 +377,8 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 	totalDebtCalculation = totalDebtCalculation.Add(userVault.ClosingFeeAccumulated)
 
 	// Calculate CR - make necessary changes to the calculate collateralization function
-	if esmStatus.Status{
-		totalDebtCalculation=userVault.AmountOut
+	if esmStatus.Status {
+		totalDebtCalculation = userVault.AmountOut
 	}
 	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebtCalculation, extendedPairVault.MinCr, status); err != nil {
 		return nil, err

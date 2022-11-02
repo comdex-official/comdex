@@ -1,4 +1,4 @@
-package v5_0_0
+package v5_0_0 //nolint:revive,stylecheck
 
 import (
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"

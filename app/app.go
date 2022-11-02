@@ -1233,7 +1233,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 			Added: []string{
 				bandoraclemoduletypes.ModuleName,
 				markettypes.ModuleName,
-			}}
+			},
+		}
 
 	// prepare store for main net upgrade v5.0.0
 	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):

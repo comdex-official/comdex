@@ -143,9 +143,7 @@ func GetReserveBuybackAssetData(store sdk.KVStore, cdc codec.BinaryCodec, id uin
 }
 
 func GetPools(store sdk.KVStore, cdc codec.BinaryCodec) (pools []v5types.PoolOld) {
-	var (
-		iter = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
-	)
+	iter := sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
 
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
@@ -163,9 +161,7 @@ func GetPools(store sdk.KVStore, cdc codec.BinaryCodec) (pools []v5types.PoolOld
 }
 
 func migrateValuesLend(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	var (
-		iter = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
-	)
+	iter := sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
 
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
@@ -207,7 +203,6 @@ func migrateValuesLend(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		mappingData.PoolId = v.PoolID
 		mappingData.BorrowId = nil
 		SetUserLendBorrowMapping(store, cdc, mappingData)
-
 	}
 	return nil
 }
@@ -264,9 +259,7 @@ func migrateValueLend(oldVal v5types.LendAssetOld) (newVal types.LendAsset, oldK
 // for borrow function migration
 
 func migrateValuesBorrow(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	var (
-		iter = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
-	)
+	iter := sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
 
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
@@ -307,8 +300,8 @@ func migrateValuesBorrow(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		SetAssetStatsByPoolIDAndAssetID(store, cdc, PoolAssetLBMapping)
 
 		// updating UserAssetLendBorrowMapping for user
-		lend, found := GetLend(store, cdc, v.LendingID)
-		mappingData, found := GetUserLendBorrowMapping(store, cdc, lend.Owner, lend.ID)
+		lend, _ := GetLend(store, cdc, v.LendingID)
+		mappingData, _ := GetUserLendBorrowMapping(store, cdc, lend.Owner, lend.ID)
 		mappingData.BorrowId = append(mappingData.BorrowId, v.ID)
 		SetUserLendBorrowMapping(store, cdc, mappingData)
 	}

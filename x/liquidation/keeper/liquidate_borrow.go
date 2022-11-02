@@ -236,8 +236,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
 			assetOutprice, _ := k.market.GetTwa(ctx, assetOut.Id)
 
-			//assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
-			//assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
+			// assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
+			// assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
 			assetInTotalUint := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInprice.Twa))
 			assetOutTotalUint := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutprice.Twa))
 			assetInTotal := sdk.NewDecFromInt(assetInTotalUint)
