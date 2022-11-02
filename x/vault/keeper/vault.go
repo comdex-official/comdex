@@ -332,7 +332,7 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 		}
 		numerator := sdk.NewDecFromInt(amountIn).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetInData.Decimals)))
+		denominator := sdk.NewDecFromInt(assetInData.Decimals)
 		assetInTotalPrice = numerator.Quo(denominator)
 	}
 	var assetOutTotalPrice sdk.Dec
@@ -345,7 +345,7 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
 			}
 			numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-			denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+			denominator := sdk.NewDecFromInt(assetOutData.Decimals)
 			assetOutTotalPrice = numerator.Quo(denominator)
 		} else {
 			assetOutTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
@@ -356,7 +356,7 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 	} else {
 		// If oracle Price is not required for the assetOut
 		numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice)))
-		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetOutData.Decimals)))
+		denominator := sdk.NewDecFromInt(assetOutData.Decimals)
 		assetOutTotalPrice = numerator.Quo(denominator)
 	}
 
@@ -673,11 +673,11 @@ func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec
 	}
 
 	numerator := sdk.NewDecFromInt(amt1).Mul(rate1)
-	denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset1.Decimals)))
+	denominator := sdk.NewDecFromInt(asset1.Decimals)
 	t1dAmount := numerator.Quo(denominator)
 
 	newAmount := t1dAmount.Quo(rate2)
-	tokenAmount := newAmount.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset2.Decimals))))
+	tokenAmount := newAmount.Mul(sdk.NewDecFromInt(asset2.Decimals))
 	// return sdk.Int(tokenAmount), nil
 	return t1dAmount, tokenAmount.TruncateInt(), nil
 }

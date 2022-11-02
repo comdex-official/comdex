@@ -67,6 +67,6 @@ func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec
 	}
 
 	numerator := sdk.NewDecFromInt(amt).Mul(rate)
-	denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+	denominator := sdk.NewDecFromInt(asset.Decimals)
 	return numerator.Quo(denominator), nil
 }

@@ -353,7 +353,7 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 			amt.Share = amtDValue.Quo(coolOffData.DebtTotalAmount)
 			debtDValue := amt.Share.Mul(coolOffData.CollateralTotalAmount)
 			// amt.DebtTokenWorth = debtDValue.Quo(sdk.Dec(amt.Amount))
-			denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetData.Decimals)))
+			denominator := sdk.NewDecFromInt(assetData.Decimals)
 			numerator := sdk.NewDecFromInt(amt.Amount).Quo(denominator)
 			amt.DebtTokenWorth = debtDValue.Quo(numerator)
 		}
@@ -658,9 +658,9 @@ func (k Keeper) GetAllAssetToAmount(ctx sdk.Context, appID uint64) (assetToAmoun
 	return assetToAmount
 }
 
-func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, rate uint64, amt sdk.Int, decimals int64) (price sdk.Dec) {
+func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, rate uint64, amt sdk.Int, decimals sdk.Int) (price sdk.Dec) {
 	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
-	denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(decimals)))
+	denominator := sdk.NewDecFromInt(decimals)
 	return numerator.Quo(denominator)
 }
 
