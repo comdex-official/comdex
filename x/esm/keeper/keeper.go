@@ -189,12 +189,13 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		return types.ErrAppDataNotFound
 	}
 	assetESMData, found := k.GetAssetToAmount(ctx, appID, assetID.Id)
-	if !found  || assetESMData.IsCollateral || assetESMData.Amount.IsZero() || amount.Amount.GT(assetESMData.Amount) {
+	if !found || assetESMData.IsCollateral || assetESMData.Amount.IsZero() || amount.Amount.GT(assetESMData.Amount) {
 		return types.ErrInvalidAsset
 	}
 	unitWorth := assetESMData.DebtTokenWorth
 	//Total worth of debt asset brought by user
-	totalDebtAssetWorth := unitWorth.Mul(amount.Amount.ToDec())
+	//totalDebtAssetWorth := unitWorth.Mul(amount.Amount.ToDec())
+	totalDebtAssetWorth := k.CalcDollarValueOfToken(ctx, unitWorth.TruncateInt().Uint64(), amount.Amount, assetID.Decimals)
 	err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
 	if err1 != nil {
 		return err1
@@ -218,13 +219,14 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 			unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
 			tokenShare := totalDebtAssetWorth.Mul(tokenData.Share) //$CMST Multiplied with Share of collateral give $share of collateral
 			//To calculate quantity of collateral token from the $share of tokenShare
-			collateralQuantitiy := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
-			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, collateralQuantitiy.TruncateInt())))
+			collateralQuantity := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
+			collateralQuantity = collateralQuantity.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(assetData.Decimals))))
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, collateralQuantity.TruncateInt())))
 			if err != nil {
 				return err
 			}
 			//Reducing quantity of token in collateral
-			tokenData.Amount = tokenData.Amount.Sub(collateralQuantitiy.TruncateInt())
+			tokenData.Amount = tokenData.Amount.Sub(collateralQuantity.TruncateInt())
 		}
 		k.SetAssetToAmount(ctx, tokenData)
 	}
