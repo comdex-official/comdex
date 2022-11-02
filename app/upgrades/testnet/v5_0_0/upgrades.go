@@ -9,20 +9,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func SetVaultLengthCounter(
-	ctx sdk.Context,
-	vaultkeeper vaultkeeper.Keeper,
-) {
-	var count uint64
-	appExtendedPairVaultData, found := vaultkeeper.GetAppMappingData(ctx, 2)
-	if found {
-		for _, data := range appExtendedPairVaultData {
-			count += uint64(len(data.VaultIds))
-		}
-	}
-	vaultkeeper.SetLengthOfVault(ctx, count)
-}
-
 func CreateUpgradeHandlerV5Beta(
 	mm *module.Manager,
 	configurator module.Configurator,
