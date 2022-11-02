@@ -92,7 +92,11 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 		//  b. if borrow is from first transit asset
 		//  c. if borrow is from second transit asset
 		if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) { // first condition
-			currentCollateralizationRatio, _ = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+			currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+			if err != nil {
+				ctx.Logger().Error("Error in CalculateCollateralizationRatio for borrow pos ")
+				continue
+			}
 			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 				// after checking the currentCollateralizationRatio with LiquidationThreshold if borrow is to be liquidated then
 				// CreateLockedBorrow function is called
@@ -105,7 +109,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				k.lend.SetBorrow(ctx, borrowPos)
 				err = k.UpdateLockedBorrows(ctx, lockedVault)
 				if err != nil {
-					ctx.Logger().Error("Error in first condition UpdateLockedBorrows in Liquidation, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
+					ctx.Logger().Error("Error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 					continue
 				}
 			}
@@ -122,7 +126,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					k.lend.SetBorrow(ctx, borrowPos)
 					err = k.UpdateLockedBorrows(ctx, lockedVault)
 					if err != nil {
-						ctx.Logger().Error("Error in second condition UpdateLockedBorrows in Liquidation, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
+						ctx.Logger().Error("Error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						continue
 					}
 				}
@@ -139,7 +143,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					k.lend.SetBorrow(ctx, borrowPos)
 					err = k.UpdateLockedBorrows(ctx, lockedVault)
 					if err != nil {
-						ctx.Logger().Error("Error in third condition UpdateLockedBorrows in Liquidation, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
+						ctx.Logger().Error("Error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						continue
 					}
 				}
@@ -236,8 +240,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			assetInprice, _ := k.market.GetTwa(ctx, assetIn.Id)
 			assetOutprice, _ := k.market.GetTwa(ctx, assetOut.Id)
 
-			// assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, lockedVault.AmountIn)
-			// assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, lockedVault.AmountOut)
 			assetInTotalUint := lockedVault.AmountIn.Mul(sdk.NewIntFromUint64(assetInprice.Twa))
 			assetOutTotalUint := lockedVault.AmountOut.Mul(sdk.NewIntFromUint64(assetOutprice.Twa))
 			assetInTotal := sdk.NewDecFromInt(assetInTotalUint)
