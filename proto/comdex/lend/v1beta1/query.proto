@@ -290,6 +290,16 @@ message QueryAuctionParamResponse {
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\""];
 }
 
+message QueryModuleBalanceRequest {
+  uint64 pool_id = 1 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+}
+
+message QueryModuleBalanceResponse {
+  ModuleBalance ModuleBalance = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"module_balance\""];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -384,6 +394,8 @@ service Query {
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
   }
-
+  rpc QueryModuleBalance(QueryModuleBalanceRequest) returns (QueryModuleBalanceResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/module_balance/{pool_id}";
+  };
 }
 

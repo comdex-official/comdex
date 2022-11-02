@@ -523,3 +523,19 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 		AuctionParams: item,
 	}, nil
 }
+
+func (q QueryServer) QueryModuleBalance(c context.Context, req *types.QueryModuleBalanceRequest) (*types.QueryModuleBalanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetModuleBalanceByPoolID(ctx, req.PoolId)
+	if !found {
+		return &types.QueryModuleBalanceResponse{}, nil
+	}
+
+	return &types.QueryModuleBalanceResponse{
+		ModuleBalance: modBal,
+	}, nil
+}

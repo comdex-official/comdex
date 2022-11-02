@@ -18,6 +18,9 @@ func CreateUpgradeHandlerV5Beta(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return nil, err
+		}
 		SetVaultLengthCounter(ctx, vaultkeeper)
 		err = FuncMigrateLiquidatedBorrow(ctx, lk, liqk)
 		if err != nil {

@@ -264,13 +264,13 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 	return dataAfterCoolOff
 }
 
-//A top level function gets called from the abci
+// A top level function gets called from the abci
 // It internally calls the following functions
-//1. Vault
-//2, stable Vault  (code for vault and stabel vault can be reused
-//3. collector
-//4. share calc.
-//5. esm setting data
+// 1. Vault
+// 2, stable Vault  (code for vault and stabel vault can be reused
+// 3. collector
+// 4. share calc.
+// 5. esm setting data
 
 func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 	esmStatus, found := k.GetESMStatus(ctx, appID)
@@ -278,34 +278,34 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 		return types.ErrESMParamsNotFound
 	}
 	esmData, _ := k.GetESMTriggerParams(ctx, appID)
-	//1. Vault Calling
+	// 1. Vault Calling
 
 	err := k.SetUpCollateralRedemptionForVault(ctx, appID, esmData)
 	if err != nil {
 		return err
 	}
-	//2, stable Vault  (code for vault and stabel vault can be reused)
+	// 2, stable Vault  (code for vault and stabel vault can be reused)
 
 	err = k.SetUpCollateralRedemptionForStableVault(ctx, appID, esmData)
 	if err != nil {
 		return err
 	}
 
-	//3. collector
-	//Used to reduce debt tokens from the debt pool.
-	//Call collector. for each debt token, substract it from debt pool, burn it.
+	// 3. collector
+	// Used to reduce debt tokens from the debt pool.
+	// Call collector. for each debt token, subtract it from debt pool, burn it.
 
 	netFee, found1 := k.collector.GetAppNetFeeCollectedData(ctx, appID)
 	if found1 {
 		for _, data := range netFee {
 			coolOffData, _ := k.GetDataAfterCoolOff(ctx, appID)
-			//Call AssetToAmount for the debt asset
+			// Call AssetToAmount for the debt asset
 			value, _ := k.GetAssetToAmount(ctx, data.AppId, data.AssetId)
 
 			if !value.IsCollateral && !data.NetFeesCollected.IsZero() {
-				//substract dollar value
-				//burn token
-				//update collector data
+				// subtract dollar value
+				// burn token
+				// update collector data
 				assetData, found := k.asset.GetAsset(ctx, value.AssetID)
 				if !found {
 					return assettypes.ErrorAssetDoesNotExist
@@ -332,7 +332,7 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 		}
 	}
 
-	//4. share calc.
+	// 4. share calc.
 	coolOffData, _ := k.GetDataAfterCoolOff(ctx, appID)
 	allAssetToAmtData := k.GetAllAssetToAmount(ctx, appID)
 	for _, amt := range allAssetToAmtData {
@@ -340,8 +340,8 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 		if !found {
 			return assettypes.ErrorAssetDoesNotExist
 		}
-		//TODO Refactor
-		//Call Rate out function for debt asset
+		// TODO Refactor
+		// Call Rate out function for debt asset
 		rate := k.GetRateOfAsset(ctx, appID, amt.AssetID)
 		if rate == 0 {
 			rate, _ = k.GetSnapshotOfPrices(ctx, appID, amt.AssetID)
@@ -360,13 +360,12 @@ func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
 		k.SetAssetToAmount(ctx, amt)
 	}
 
-	//5. esm setting data
+	// 5. esm setting data
 	esmStatus.VaultRedemptionStatus = true
 
 	k.SetESMStatus(ctx, esmStatus)
 
 	return nil
-
 }
 
 func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64, esmData types.ESMTriggerParams) error {
@@ -396,7 +395,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			//Call Rate out function for debt asset
+			// Call Rate out function for debt asset
 			rateOut := k.GetRateOfAsset(ctx, appID, assetOutData.Id)
 			if rateOut == 0 {
 				rateOut, _ = k.GetSnapshotOfPrices(ctx, appID, assetOutData.Id)
@@ -469,7 +468,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 	return nil
 }
 
-//StableMintVault Function
+// StableMintVault Function
 
 func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID uint64, esmData types.ESMTriggerParams) error {
 	// var totalVaults []vaulttypes.Vault;
@@ -495,9 +494,9 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			//Call Rate in function for collateral
+			// Call Rate in function for collateral
 			rateIn := k.GetRateOfAsset(ctx, appID, assetInData.Id)
-			//Call Rate out function for debt asset
+			// Call Rate out function for debt asset
 			rateOut := k.GetRateOfAsset(ctx, appID, assetOutData.Id)
 
 			coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)

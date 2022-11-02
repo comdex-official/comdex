@@ -193,8 +193,8 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		return types.ErrInvalidAsset
 	}
 	unitWorth := assetESMData.DebtTokenWorth
-	//Total worth of debt asset brought by user
-	//totalDebtAssetWorth := unitWorth.Mul(amount.Amount.ToDec())
+	// Total worth of debt asset brought by user
+	// totalDebtAssetWorth := unitWorth.Mul(amount.Amount.ToDec())
 	totalDebtAssetWorth := k.CalcDollarValueOfToken(ctx, unitWorth.TruncateInt().Uint64(), amount.Amount, assetID.Decimals)
 	err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
 	if err1 != nil {
@@ -205,9 +205,9 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		return err2
 	}
 
-	//Calculating share of all collateral asset that needs to be paid to the user upto the $ value of totalDebtAssetWorth
-	//Eg. If user brought $20 of CMST (totalDebtAssetWorth) and if 2 collateral exist as CMDX(80%) and ATOM(20%) then 20% of tokens that
-	//will be paid will be in terms of ATOM tokens , rest CMDX.
+	// Calculating share of all collateral asset that needs to be paid to the user upto the $ value of totalDebtAssetWorth
+	// Eg. If user brought $20 of CMST (totalDebtAssetWorth) and if 2 collateral exist as CMDX(80%) and ATOM(20%) then 20% of tokens that
+	// will be paid will be in terms of ATOM tokens , rest CMDX.
 	allAssetToAmtData := k.GetAllAssetToAmount(ctx, appID)
 	for _, tokenData := range allAssetToAmtData {
 		assetData, found := k.asset.GetAsset(ctx, tokenData.AssetID)
@@ -218,36 +218,35 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		if tokenData.IsCollateral && !tokenData.Amount.IsZero() {
 			unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
 			tokenShare := totalDebtAssetWorth.Mul(tokenData.Share) //$CMST Multiplied with Share of collateral give $share of collateral
-			//To calculate quantity of collateral token from the $share of tokenShare
+			// To calculate quantity of collateral token from the $share of tokenShare
 			collateralQuantity := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
 			collateralQuantity = collateralQuantity.Mul(sdk.NewDecFromInt(assetData.Decimals))
 			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, collateralQuantity.TruncateInt())))
 			if err != nil {
 				return err
 			}
-			//Reducing quantity of token in collateral
+			// Reducing quantity of token in collateral
 			tokenData.Amount = tokenData.Amount.Sub(collateralQuantity.TruncateInt())
 		}
 		k.SetAssetToAmount(ctx, tokenData)
 	}
 
-	//To reduce collateral token dollar quantity
+	// To reduce collateral token dollar quantity
 
-	//As the worth was calculated against collateral asset - totalDebtAssetWorth so we use it to subtract collateral dollar value
+	// As the worth was calculated against collateral asset - totalDebtAssetWorth so we use it to subtract collateral dollar value
 	coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Sub(totalDebtAssetWorth)
 
-	//To reduce Debt token dollar quantity
-	//We need to now find the debt token worth,to subtract it
+	// To reduce Debt token dollar quantity
+	// We need to now find the debt token worth,to subtract it
 	rate, found := k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
 	if !found {
 		rate = k.GetRateOfAsset(ctx, appID, assetID.Id)
-
 	}
 	totalAmount := sdk.NewDecFromInt(amount.Amount)
 	totalPrice := totalAmount.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
 	coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(totalPrice)
 
-	//To reduce the debt token amount from asset data.
+	// To reduce the debt token amount from asset data.
 
 	assetESMData.Amount = assetESMData.Amount.Sub(amount.Amount)
 	k.SetAssetToAmount(ctx, assetESMData)

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -36,7 +37,6 @@ func (m *Pool) Validate() error {
 }
 
 func (m *AssetToPairMapping) Validate() error {
-
 	if m.AssetID == 0 {
 		return fmt.Errorf("assetID cannot be zero")
 	}
