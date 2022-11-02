@@ -481,7 +481,7 @@ func (q QueryServer) QueryPoolAssetLBMapping(c context.Context, req *types.Query
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.AssetId, req.PoolId)
+	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.PoolId, req.AssetId)
 	if !found {
 		return &types.QueryPoolAssetLBMappingResponse{}, nil
 	}
@@ -521,5 +521,21 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 
 	return &types.QueryAuctionParamResponse{
 		AuctionParams: item,
+	}, nil
+}
+
+func (q QueryServer) QueryModuleBalance(c context.Context, req *types.QueryModuleBalanceRequest) (*types.QueryModuleBalanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetModuleBalanceByPoolID(ctx, req.PoolId)
+	if !found {
+		return &types.QueryModuleBalanceResponse{}, nil
+	}
+
+	return &types.QueryModuleBalanceResponse{
+		ModuleBalance: modBal,
 	}, nil
 }

@@ -52,7 +52,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2 := assetTypes.Asset{
 		Name:      "CMDX",
 		Denom:     "ucmdx",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2)
@@ -60,7 +60,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg3 := assetTypes.Asset{
 		Name:      "CMST",
 		Denom:     "ucmst",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
@@ -68,7 +68,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg4 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
@@ -345,7 +345,7 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		s.Run(tc.name, func() {
 			netFeesData1, found := collectorKeeper.GetNetFeeCollectedData(*ctx, tc.appID, tc.assetID)
 			s.Require().True(found)
-			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee, netFeesData1)
+			err := collectorKeeper.DecreaseNetFeeCollectedData(*ctx, tc.appID, tc.assetID, tc.fee)
 			if tc.errorExpected {
 				s.Require().Error(err)
 			} else {

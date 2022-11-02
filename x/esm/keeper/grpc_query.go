@@ -123,3 +123,20 @@ func (q QueryServer) QuerySnapshotPrice(c context.Context, req *types.QuerySnaps
 		Price: price,
 	}, nil
 }
+
+func (q QueryServer) QueryAssetDataAfterCoolOff(c context.Context, req *types.QueryAssetDataAfterCoolOffRequest) (*types.QueryAssetDataAfterCoolOffResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	item := q.GetAllAssetToAmount(ctx, req.AppId)
+	if item == nil {
+		return &types.QueryAssetDataAfterCoolOffResponse{}, nil
+	}
+
+	return &types.QueryAssetDataAfterCoolOffResponse{
+		AssetToAmount: item,
+	}, nil
+}

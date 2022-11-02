@@ -34,11 +34,11 @@ func (k Keeper) CalculateCollateralizationRatio(
 	amountOut sdk.Int,
 	assetOut assettypes.Asset,
 ) (sdk.Dec, error) {
-	totalIn, err := k.CalcAssetPrice(ctx, assetIn.Id, amountIn)
+	totalIn, err := k.Market.CalcAssetPrice(ctx, assetIn.Id, amountIn)
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
-	totalOut, err := k.CalcAssetPrice(ctx, assetOut.Id, amountOut)
+	totalOut, err := k.Market.CalcAssetPrice(ctx, assetOut.Id, amountOut)
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}

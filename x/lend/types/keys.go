@@ -44,8 +44,6 @@ var (
 )
 
 var (
-	KeyPrefixReserveAmount = []byte{0x05}
-
 	PoolKeyPrefix         = []byte{0x13}
 	LendUserPrefix        = []byte{0x15}
 	LendCounterIDPrefix   = []byte{0x16}
@@ -65,6 +63,7 @@ var (
 	BorrowInterestTrackerKeyPrefix        = []byte{0x44}
 	UserLendBorrowMappingKeyPrefix        = []byte{0x45}
 	ReserveBuybackAssetDataKeyPrefix      = []byte{0x46}
+	NewStableBorrowIDsKeyPrefix           = []byte{0x47}
 )
 
 func LendUserKey(ID uint64) []byte {

@@ -9,6 +9,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 )
@@ -51,6 +52,7 @@ type VaultKeeper interface {
 
 type MarketKeeper interface {
 	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
 type AuctionKeeper interface {
@@ -80,6 +82,9 @@ type LendKeeper interface {
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
 	SetBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset)
+	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
+	ReBalanceStableRates(ctx sdk.Context, borrowPos lendtypes.BorrowAsset) (lendtypes.BorrowAsset, error)
+	DeleteBorrow(ctx sdk.Context, ID uint64)
 }
 
 type RewardsKeeper interface {

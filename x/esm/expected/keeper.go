@@ -24,6 +24,9 @@ type VaultKeeper interface {
 	DeleteVault(ctx sdk.Context, id uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	GetStableMintVaults(ctx sdk.Context) (stableVaults []vaulttypes.StableMintVault)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
+	DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64)
 }
 
 type BankKeeper interface {
@@ -51,4 +54,5 @@ type Tokenmint interface {
 type Collector interface {
 	GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool)
 	GetAppNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFeeData []collectortypes.AppAssetIdToFeeCollectedData, found bool)
+	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error
 }

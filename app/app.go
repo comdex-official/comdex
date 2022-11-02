@@ -165,11 +165,11 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	tv1_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v1_0_0"
 	tv2_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v2_0_0"
 	tv3_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v3_0_0"
 	tv4_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v4_0_0"
+	tv5_0_0 "github.com/comdex-official/comdex/app/upgrades/testnet/v5_0_0"
 )
 
 const (
@@ -199,7 +199,6 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		bandoraclemoduleclient.AddFetchPriceHandler,
 		lendclient.AddLendPairsHandler,
 		lendclient.AddPoolHandler,
-		lendclient.UpdateLendPairsHandler,
 		lendclient.AddAssetToPairHandler,
 		lendclient.AddAssetRatesParamsHandler,
 		lendclient.AddAuctionParamsHandler,
@@ -568,6 +567,8 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.EsmKeeper,
+		&app.LiquidationKeeper,
+		&app.AuctionKeeper,
 	)
 
 	app.EsmKeeper = esmkeeper.NewKeeper(
@@ -1194,15 +1195,15 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	a.UpgradeKeeper.SetUpgradeHandler(
+	/*a.UpgradeKeeper.SetUpgradeHandler(
 		mv5.UpgradeName,
 		mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
-	)
-
-	/*a.UpgradeKeeper.SetUpgradeHandler(
-		tv4_0_0.UpgradeNameV4_4_0,
-		tv4_0_0.CreateUpgradeHandlerV440(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.AuctionKeeper),
 	)*/
+
+	a.UpgradeKeeper.SetUpgradeHandler(
+		tv5_0_0.UpgradeNameBeta,
+		tv5_0_0.CreateUpgradeHandlerV5Beta(a.mm, a.configurator, a.LendKeeper, a.LiquidationKeeper, a.VaultKeeper),
+	)
 
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1277,11 +1278,17 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_3_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
-	case upgradeInfo.Name == tv4_0_0.UpgradeNameV4_4_0 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
+	case upgradeInfo.Name == tv5_0_0.UpgradeNameBeta && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Deleted: []string{"bandoracle", "market"},
+			Added: []string{
+				bandoraclemoduletypes.ModuleName,
+				markettypes.ModuleName,
+			},
+		}
 
-	// prepare store for main net upgrade v5.0.0
-	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		// prepare store for main net upgrade v5.0.0
+		/*case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				assettypes.ModuleName,
@@ -1301,7 +1308,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				icahosttypes.StoreKey,
 				authz.ModuleName,
 			},
-		}
+		}*/
 	}
 
 	return storeUpgrades

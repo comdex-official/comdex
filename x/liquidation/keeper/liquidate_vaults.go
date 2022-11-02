@@ -21,7 +21,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		}
 		klwsParams, _ := k.esm.GetKillSwitchData(ctx, appIds[i])
 		if klwsParams.BreakerEnable || status {
-			ctx.Logger().Info("Kill Switch Or ESM is enabled")
+			ctx.Logger().Error("Kill Switch Or ESM is enabled For Liquidation, liquidate_vaults.go for AppID %d", appIds[i])
 			continue
 		}
 
@@ -45,16 +45,19 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 		newVaults := totalVaults[start:end]
 		for _, vault := range newVaults {
 			if vault.AppId != appIds[i] {
+				ctx.Logger().Error("Vault and app id mismatch in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
 				continue
 			}
 			extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
 			assetIn, found := k.asset.GetAsset(ctx, pair.AssetIn)
 			if !found {
+				ctx.Logger().Error("Asset not found in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
 				continue
 			}
 			totalRate, err := k.market.CalcAssetPrice(ctx, assetIn.Id, vault.AmountIn)
 			if err != nil {
+				ctx.Logger().Error("Error in CalcAssetPrice in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
 				continue
 			}
 			totalIn := totalRate
@@ -63,6 +66,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 			collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 			if err != nil {
+				ctx.Logger().Error("Error Calculating CR in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
 				continue
 			}
 			if collateralizationRatio.LT(liqRatio) {
@@ -70,16 +74,19 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
 				err1 := k.rewards.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
 				if err1 != nil {
+					ctx.Logger().Error("Error Calculating vault interest in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 					continue
 				}
 				vault, _ := k.vault.GetVault(ctx, vault.Id)
 				totalFees := vault.InterestAccumulated.Add(vault.ClosingFeeAccumulated)
 				collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 				if err != nil {
+					ctx.Logger().Error("Error Calculating CR in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 					continue
 				}
 				err = k.CreateLockedVault(ctx, vault, totalIn, collateralizationRatio, appIds[i], totalFees)
 				if err != nil {
+					ctx.Logger().Error("Error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 					continue
 				}
 				k.vault.DeleteVault(ctx, vault.Id)
