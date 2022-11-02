@@ -583,11 +583,11 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		newRewardDec := sdk.NewDec(newReward.Int64())
 		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
-		netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
-		if !found {
-			return nil
-		}
-		err = k.collector.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward, netFeeCollectedData)
+		// netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
+		// if !found {
+		// 	return nil
+		// }
+		err = k.collector.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)
 		if err != nil {
 			return nil
 		}

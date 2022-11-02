@@ -119,7 +119,7 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 	twa, found := k.GetTwa(ctx, id)
 	if found && twa.IsPriceActive {
 		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
-		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
+		denominator := sdk.NewDecFromInt(asset.Decimals)
 		return numerator.Quo(denominator), nil
 	}
 	return sdk.ZeroDec(), types.ErrorPriceNotActive

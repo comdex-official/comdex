@@ -192,7 +192,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "CMDX",
 				Denom:     "ucmdx",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},
@@ -201,7 +201,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "CMST",
 				Denom:     "ucmst",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},
@@ -210,7 +210,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:      "HARBOR",
 				Denom:     "uharbor",
-				Decimals:  1000000,
+				Decimals:  sdk.NewInt(1000000),
 				IsOnChain: true,
 			},
 		},

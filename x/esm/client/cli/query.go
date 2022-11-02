@@ -33,6 +33,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryUsersDepositMapping(),
 		queryDataAfterCoolOff(),
 		querySnapshotPrice(),
+		queryAssetDataAfterCoolOff(),
 	)
 
 	return cmd
@@ -253,6 +254,43 @@ func querySnapshotPrice() *cobra.Command {
 				&types.QuerySnapshotPriceRequest{
 					AppId:   id,
 					AssetId: asset,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryAssetDataAfterCoolOff() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "asset_data_after_cool_off [app-id]",
+		Short: "Query asset data after cool off period for esm",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAssetDataAfterCoolOff(
+				context.Background(),
+				&types.QueryAssetDataAfterCoolOffRequest{
+					AppId: id,
 				},
 			)
 			if err != nil {

@@ -79,7 +79,7 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	msg2 := assetTypes.Asset{
 		Name:      "CMDX",
 		Denom:     "ucmdx",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg2)
@@ -87,7 +87,7 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	msg3 := assetTypes.Asset{
 		Name:      "CMST",
 		Denom:     "ucmst",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
@@ -95,7 +95,7 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	msg4 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  1000000,
+		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg4)

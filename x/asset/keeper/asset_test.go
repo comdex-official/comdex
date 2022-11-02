@@ -183,7 +183,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    1,
 				Name:                  "CMRT",
 				Denom:                 "ucmrt",
-				Decimals:              100,
+				Decimals:              sdk.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -224,7 +224,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMDX",
 				Denom:                 "ucmdx",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
 			},
@@ -244,7 +244,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "OSMO",
 				Denom:                 "ucmdx",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 			},
@@ -256,7 +256,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMST",
 				Denom:                 "ucmst",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 			},
@@ -268,7 +268,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "HARBOR",
 				Denom:                 "uharbor",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
 			},
@@ -280,7 +280,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMDO",
 				Denom:                 "ucmdo",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 			},
@@ -292,7 +292,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "SPX",
 				Denom:                 "uspx",
-				Decimals:              1000000,
+				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},

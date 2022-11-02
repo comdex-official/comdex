@@ -245,7 +245,7 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 		asset.Denom = msg.Denom
 		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 	}
-	if msg.Decimals >= 0 {
+	if msg.Decimals.GTE(sdk.ZeroInt()) {
 		asset.Decimals = msg.Decimals
 	}
 	asset.IsOraclePriceRequired = msg.IsOraclePriceRequired

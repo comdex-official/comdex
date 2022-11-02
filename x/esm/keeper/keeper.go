@@ -97,36 +97,27 @@ func (k Keeper) DepositESM(ctx sdk.Context, depositorAddr string, AppID uint64, 
 	if !found {
 		return types.ErrESMTriggerParamsNotFound
 	}
-	currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
+	existingDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
 	if !found {
-		newCurrentDeposit := types.CurrentDepositStats{
+		existingDeposit = types.CurrentDepositStats{
 			AppId:   AppID,
 			Balance: Amount,
 		}
-		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
 	} else {
-		newCurrentDeposit := types.CurrentDepositStats{
-			AppId:   AppID,
-			Balance: currentDeposit.Balance.Add(Amount),
+		if existingDeposit.Balance.Amount.GT(esmTriggerParams.TargetValue.Amount) {
+			return types.ErrDepositForAppReached
 		}
-		k.SetCurrentDepositStats(ctx, newCurrentDeposit)
-	}
-	newCurrentDeposit, _ := k.GetCurrentDepositStats(ctx, AppID)
-
-	if newCurrentDeposit.Balance.Amount.GT(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrDepositForAppReached
-	}
-	if Amount.Amount.GT(esmTriggerParams.TargetValue.Amount) {
-		return types.ErrAmtExceedsTargetValue
+		existingDeposit.Balance = existingDeposit.Balance.Add(Amount)
 	}
 	addr, _ := sdk.AccAddressFromBech32(depositorAddr)
-
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, tokenminttypes.ModuleName, sdk.NewCoins(Amount)); err != nil {
 		return err
 	}
 	if err1 := k.tokenmint.BurnTokensForApp(ctx, AppID, govAsset.Id, Amount.Amount); err1 != nil {
 		return err1
 	}
+	k.SetCurrentDepositStats(ctx, existingDeposit)
+	// currentDeposit, found := k.GetCurrentDepositStats(ctx, AppID)
 
 	userDeposits, found := k.GetUserDepositByApp(ctx, depositorAddr, AppID)
 	if !found {
@@ -181,56 +172,87 @@ func (k Keeper) ExecuteESM(ctx sdk.Context, executor string, AppID uint64) error
 	return nil
 }
 
-func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, esmDataAfterCoolOff types.DataAfterCoolOff, from string) error {
+// take token input from user
+// find the token and its per token dollar value
+// calculate percentage of dollar of each collateral token
+// calculate token quantity from dollar value
+// subtract total dollar value from the end from the struct,
+// subtract token quantity from each collateral
+func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Coin, from string) error {
 	userAddress, err := sdk.AccAddressFromBech32(from)
 	if err != nil {
 		return err
 	}
-	assetInID, _ := k.asset.GetAssetForDenom(ctx, amount.Denom)
-
-	// initializing userWorth
-	userWorth := sdk.ZeroDec()
-	for _, v := range esmDataAfterCoolOff.DebtAsset {
-		if v.AssetID == assetInID.Id {
-			userWorth = v.DebtTokenWorth.Mul(sdk.NewDecFromInt(amount.Amount))
-			break
-		}
+	assetID, _ := k.asset.GetAssetForDenom(ctx, amount.Denom)
+	coolOffData, found := k.GetDataAfterCoolOff(ctx, appID)
+	if !found {
+		return types.ErrAppDataNotFound
+	}
+	assetESMData, found := k.GetAssetToAmount(ctx, appID, assetID.Id)
+	if !found || assetESMData.IsCollateral || assetESMData.Amount.IsZero() || amount.Amount.GT(assetESMData.Amount) {
+		return types.ErrInvalidAsset
+	}
+	unitWorth := assetESMData.DebtTokenWorth
+	//Total worth of debt asset brought by user
+	//totalDebtAssetWorth := unitWorth.Mul(amount.Amount.ToDec())
+	totalDebtAssetWorth := k.CalcDollarValueOfToken(ctx, unitWorth.TruncateInt().Uint64(), amount.Amount, assetID.Decimals)
+	err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
+	if err1 != nil {
+		return err1
+	}
+	err2 := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(amount))
+	if err2 != nil {
+		return err2
 	}
 
-	for i, data := range esmDataAfterCoolOff.CollateralAsset {
-		collAsset, _ := k.asset.GetAsset(ctx, data.AssetID)
-		tokenDValue := data.Share.Mul(userWorth)
-		price, _ := k.GetSnapshotOfPrices(ctx, appID, data.AssetID) // getting last saved prices
-		oldTokenQuant := tokenDValue.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-		usd := 1000000
-		tokenQuant := oldTokenQuant.Quo(sdk.NewDec(int64(usd)))
-		err1 := k.bank.SendCoinsFromAccountToModule(ctx, userAddress, types.ModuleName, sdk.NewCoins(amount))
-		if err1 != nil {
-			return err1
+	//Calculating share of all collateral asset that needs to be paid to the user upto the $ value of totalDebtAssetWorth
+	//Eg. If user brought $20 of CMST (totalDebtAssetWorth) and if 2 collateral exist as CMDX(80%) and ATOM(20%) then 20% of tokens that
+	//will be paid will be in terms of ATOM tokens , rest CMDX.
+	allAssetToAmtData := k.GetAllAssetToAmount(ctx, appID)
+	for _, tokenData := range allAssetToAmtData {
+		assetData, found := k.asset.GetAsset(ctx, tokenData.AssetID)
+		if !found {
+			return assettypes.ErrorAssetDoesNotExist
 		}
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(collAsset.Denom, tokenQuant.TruncateInt())))
-		if err != nil {
-			return err
+
+		if tokenData.IsCollateral && !tokenData.Amount.IsZero() {
+			unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
+			tokenShare := totalDebtAssetWorth.Mul(tokenData.Share) //$CMST Multiplied with Share of collateral give $share of collateral
+			//To calculate quantity of collateral token from the $share of tokenShare
+			collateralQuantity := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
+			collateralQuantity = collateralQuantity.Mul(sdk.NewDecFromInt(assetData.Decimals))
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, collateralQuantity.TruncateInt())))
+			if err != nil {
+				return err
+			}
+			//Reducing quantity of token in collateral
+			tokenData.Amount = tokenData.Amount.Sub(collateralQuantity.TruncateInt())
 		}
-		err2 := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(amount))
-		if err2 != nil {
-			return err2
-		}
-		data.Amount = data.Amount.Sub(tokenQuant.TruncateInt())
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i], esmDataAfterCoolOff.CollateralAsset[i+1:]...)
-		esmDataAfterCoolOff.CollateralAsset = append(esmDataAfterCoolOff.CollateralAsset[:i+1], esmDataAfterCoolOff.CollateralAsset[i:]...)
-		esmDataAfterCoolOff.CollateralAsset[i] = data
-		k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
+		k.SetAssetToAmount(ctx, tokenData)
 	}
 
-	for i, b := range esmDataAfterCoolOff.DebtAsset {
-		if b.AssetID == assetInID.Id {
-			b.Amount = b.Amount.Sub(amount.Amount)
-			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset[:i], esmDataAfterCoolOff.DebtAsset[i+1:]...)
-			esmDataAfterCoolOff.DebtAsset = append(esmDataAfterCoolOff.DebtAsset, b)
-			k.SetDataAfterCoolOff(ctx, esmDataAfterCoolOff)
-		}
+	//To reduce collateral token dollar quantity
+
+	//As the worth was calculated against collateral asset - totalDebtAssetWorth so we use it to subtract collateral dollar value
+	coolOffData.CollateralTotalAmount = coolOffData.CollateralTotalAmount.Sub(totalDebtAssetWorth)
+
+	//To reduce Debt token dollar quantity
+	//We need to now find the debt token worth,to subtract it
+	rate, found := k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
+	if !found {
+		rate = k.GetRateOfAsset(ctx, appID, assetID.Id)
+
 	}
+	totalAmount := sdk.NewDecFromInt(amount.Amount)
+	totalPrice := totalAmount.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+	coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(totalPrice)
+
+	//To reduce the debt token amount from asset data.
+
+	assetESMData.Amount = assetESMData.Amount.Sub(amount.Amount)
+	k.SetAssetToAmount(ctx, assetESMData)
+
+	k.SetDataAfterCoolOff(ctx, coolOffData)
 
 	return nil
 }
