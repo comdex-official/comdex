@@ -131,8 +131,12 @@ func ApplyFuncIfNoError(ctx sdk.Context, f func(ctx sdk.Context) error) (err err
 			err = errors.New("panic occurred during execution")
 		}
 	}()
-	err = f(ctx)
-	if err != nil {
+	cacheCtx, writeCache := ctx.CacheContext()
+	err = f(cacheCtx)
+	if err == nil {
+		// write state to the underlying multi-store
+		writeCache()
+	} else {
 		ctx.Logger().Error(err.Error())
 	}
 	return err
