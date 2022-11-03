@@ -13,37 +13,37 @@ import (
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKeeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
-	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		allApps, found := assetKeeper.GetApps(ctx)
-		if found {
-			for _, app := range allApps {
+	allApps, found := assetKeeper.GetApps(ctx)
+	if found {
+		for _, app := range allApps {
+			_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 				k.DeleteOutdatedRequests(ctx, app.Id)
 				if ctx.BlockHeight()%150 == 0 {
 					k.ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx, app.Id)
 				}
-			}
+				return nil
+			})
 		}
-		return nil
-	})
+	}
 }
 
 func EndBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKeeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyEndBlocker)
 
-	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		allApps, found := assetKeeper.GetApps(ctx)
-		if found {
-			for _, app := range allApps {
+	allApps, found := assetKeeper.GetApps(ctx)
+	if found {
+		for _, app := range allApps {
+			_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 				params, err := k.GetGenericParams(ctx, app.Id)
 				if err != nil {
-					continue
+					return err
 				}
 				if ctx.BlockHeight()%int64(params.BatchSize) == 0 {
 					k.ExecuteRequests(ctx, app.Id)
 					k.ProcessQueuedFarmers(ctx, app.Id)
 				}
-			}
+				return nil
+			})
 		}
-		return nil
-	})
+	}
 }
