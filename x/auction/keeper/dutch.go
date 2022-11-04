@@ -12,6 +12,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	utils "github.com/comdex-official/comdex/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 )
@@ -20,7 +21,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 	if lockedVault.Kind == nil {
 		extendedPair, found := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 		if !found {
-			return fmt.Errorf(auctiontypes.ErrorInvalidPair.Error(), lockedVault.LockedVaultId)
+			return fmt.Errorf("pair not found for extended pair id %d", lockedVault.ExtendedPairId)
 		}
 		pair, _ := k.asset.GetPair(ctx, extendedPair.PairId)
 
@@ -35,7 +36,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 		err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 		if err1 != nil {
-			return fmt.Errorf(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
+			return fmt.Errorf("error in start dutch auction for locked vault id %d", lockedVault.LockedVaultId)
 		}
 	}
 	return nil
@@ -464,135 +465,138 @@ func (k Keeper) CloseDutchAuction(
 }
 
 func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
-	dutchAuctions := k.GetDutchAuctions(ctx, appID)
 	auctionParams, found := k.GetAuctionParams(ctx, appID)
 	if !found {
 		return nil
 	}
+	dutchAuctions := k.GetDutchAuctions(ctx, appID)
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		lockedVault, found := k.liquidation.GetLockedVault(ctx, appID, dutchAuction.LockedVaultId)
-		if !found {
-			return auctiontypes.ErrorInvalidLockedVault
-		}
-
-		ExtendedPairVault, found := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
-		if !found {
-			return auctiontypes.ErrorInvalidExtendedPairVault
-		}
-		var inFlowTokenCurrentPrice uint64
-		if ExtendedPairVault.AssetOutOraclePrice {
-			// If oracle Price required for the assetOut
-			twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetInId)
-			if !found || !twaData.IsPriceActive {
-				return auctiontypes.ErrorPrices
-			}
-			inFlowTokenCurrentPrice = twaData.Twa
-		} else {
-			// If oracle Price is not required for the assetOut
-			inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
-		}
-		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
-		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
-		ntau := tnume.Quo(tdeno)
-		tau := sdk.NewInt(ntau.TruncateInt64())
-		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
-		seconds := sdk.NewInt(int64(dur.Seconds()))
-		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
-		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
-		dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
-		err := k.SetDutchAuction(ctx, dutchAuction)
-		if err != nil {
-			return err
-		}
-		// check if auction need to be restarted
-		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			esmStatus, found := k.esm.GetESMStatus(ctx, lockedVault.AppId)
-			status := false
-			if found {
-				status = esmStatus.Status
+		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
+			lockedVault, found := k.liquidation.GetLockedVault(ctx, appID, dutchAuction.LockedVaultId)
+			if !found {
+				return auctiontypes.ErrorInvalidLockedVault
 			}
 
-			if status {
-				// check user mapping of if vault exists for user
-				// if not create new vault of user with cmdx cmst
-				// if exists append in existing
-				// close auction func call
-				inflowLeft := dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
-				vaultID, userExists := k.vault.GetUserAppExtendedPairMappingData(ctx, string(dutchAuction.VaultOwner), dutchAuction.AppId, lockedVault.ExtendedPairId)
-				if userExists {
-					vaultData, _ := k.vault.GetVault(ctx, vaultID.VaultId)
-					if dutchAuction.OutflowTokenCurrentAmount.Amount.GT(sdk.ZeroInt()) {
-						err := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+			ExtendedPairVault, found := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+			if !found {
+				return auctiontypes.ErrorInvalidExtendedPairVault
+			}
+			var inFlowTokenCurrentPrice uint64
+			if ExtendedPairVault.AssetOutOraclePrice {
+				// If oracle Price required for the assetOut
+				twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetInId)
+				if !found || !twaData.IsPriceActive {
+					return auctiontypes.ErrorPrices
+				}
+				inFlowTokenCurrentPrice = twaData.Twa
+			} else {
+				// If oracle Price is not required for the assetOut
+				inFlowTokenCurrentPrice = ExtendedPairVault.AssetOutPrice
+			}
+			tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
+			tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
+			ntau := tnume.Quo(tdeno)
+			tau := sdk.NewInt(ntau.TruncateInt64())
+			dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
+			seconds := sdk.NewInt(int64(dur.Seconds()))
+			outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
+			dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
+			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
+			err := k.SetDutchAuction(ctx, dutchAuction)
+			if err != nil {
+				return err
+			}
+			// check if auction need to be restarted
+			if ctx.BlockTime().After(dutchAuction.EndTime) {
+				esmStatus, found := k.esm.GetESMStatus(ctx, lockedVault.AppId)
+				status := false
+				if found {
+					status = esmStatus.Status
+				}
+
+				if status {
+					// check user mapping of if vault exists for user
+					// if not create new vault of user with cmdx cmst
+					// if exists append in existing
+					// close auction func call
+					inflowLeft := dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)
+					vaultID, userExists := k.vault.GetUserAppExtendedPairMappingData(ctx, string(dutchAuction.VaultOwner), dutchAuction.AppId, lockedVault.ExtendedPairId)
+					if userExists {
+						vaultData, _ := k.vault.GetVault(ctx, vaultID.VaultId)
+						if dutchAuction.OutflowTokenCurrentAmount.Amount.GT(sdk.ZeroInt()) {
+							err := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+							if err != nil {
+								return err
+							}
+						}
+						// append to existing vault
+						vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
+						vaultData.AmountOut = vaultData.AmountOut.Add(inflowLeft)
+						k.vault.SetVault(ctx, vaultData)
+					} else {
+						if dutchAuction.OutflowTokenCurrentAmount.Amount.GT(sdk.ZeroInt()) {
+							err1 := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+							if err1 != nil {
+								return err1
+							}
+						}
+						// create new vault done
+						err := k.vault.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, inflowLeft)
 						if err != nil {
 							return err
 						}
 					}
-					// append to existing vault
-					vaultData.AmountIn = vaultData.AmountIn.Add(dutchAuction.OutflowTokenCurrentAmount.Amount)
-					vaultData.AmountOut = vaultData.AmountOut.Add(inflowLeft)
-					k.vault.SetVault(ctx, vaultData)
-				} else {
-					if dutchAuction.OutflowTokenCurrentAmount.Amount.GT(sdk.ZeroInt()) {
-						err1 := k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, vaulttypes.ModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
-						if err1 != nil {
-							return err1
-						}
+
+					dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
+
+					// update locked vault
+					err = k.liquidation.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
+					if err != nil {
+						return err
 					}
-					// create new vault done
-					err := k.vault.CreateNewVault(ctx, dutchAuction.VaultOwner.String(), lockedVault.AppId, lockedVault.ExtendedPairId, dutchAuction.OutflowTokenCurrentAmount.Amount, inflowLeft)
+
+					err = k.liquidation.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
+					if err != nil {
+						return err
+					}
+
+					err = k.SetDutchAuction(ctx, dutchAuction)
+					if err != nil {
+						return err
+					}
+					err = k.DeleteDutchAuction(ctx, dutchAuction)
+					if err != nil {
+						return err
+					}
+					err = k.SetHistoryDutchAuction(ctx, dutchAuction)
+					if err != nil {
+						return err
+					}
+					k.liquidation.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+				} else {
+					twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetOutId)
+					if !found || !twaData.IsPriceActive {
+						return auctiontypes.ErrorPrices
+					}
+					OutFlowTokenCurrentPrice := twaData.Twa
+					timeNow := ctx.BlockTime()
+					dutchAuction.StartTime = timeNow
+					dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+					outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
+					outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
+					dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
+					dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
+					dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
+					err := k.SetDutchAuction(ctx, dutchAuction)
 					if err != nil {
 						return err
 					}
 				}
-
-				dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
-
-				// update locked vault
-				err = k.liquidation.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
-				if err != nil {
-					return err
-				}
-
-				err = k.liquidation.SetFlagIsAuctionInProgress(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, false)
-				if err != nil {
-					return err
-				}
-
-				err = k.SetDutchAuction(ctx, dutchAuction)
-				if err != nil {
-					return err
-				}
-				err = k.DeleteDutchAuction(ctx, dutchAuction)
-				if err != nil {
-					return err
-				}
-				err = k.SetHistoryDutchAuction(ctx, dutchAuction)
-				if err != nil {
-					return err
-				}
-				k.liquidation.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
-			} else {
-				twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetOutId)
-				if !found || !twaData.IsPriceActive {
-					return auctiontypes.ErrorPrices
-				}
-				OutFlowTokenCurrentPrice := twaData.Twa
-				timeNow := ctx.BlockTime()
-				dutchAuction.StartTime = timeNow
-				dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
-				outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
-				outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
-				dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
-				dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
-				dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
-				err := k.SetDutchAuction(ctx, dutchAuction)
-				if err != nil {
-					return err
-				}
+				// SET initial price fetched from market module and also end price , start time , end time
 			}
-			// SET initial price fetched from market module and also end price , start time , end time
-		}
+			return nil
+		})
 	}
 	return nil
 }
