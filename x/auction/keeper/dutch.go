@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -19,8 +20,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 	if lockedVault.Kind == nil {
 		extendedPair, found := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
 		if !found {
-			ctx.Logger().Error(auctiontypes.ErrorInvalidPair.Error(), lockedVault.LockedVaultId)
-			return nil
+			return fmt.Errorf(auctiontypes.ErrorInvalidPair.Error(), lockedVault.LockedVaultId)
 		}
 		pair, _ := k.asset.GetPair(ctx, extendedPair.PairId)
 
@@ -35,8 +35,7 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 		err1 := k.StartDutchAuction(ctx, outflowToken, inflowToken, lockedVault.AppId, assetOut.Id, assetIn.Id, lockedVault.LockedVaultId, lockedVault.Owner, liquidationPenalty)
 		if err1 != nil {
-			ctx.Logger().Error(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
-			return nil
+			return fmt.Errorf(auctiontypes.ErrorInStartDutchAuction.Error(), lockedVault.LockedVaultId)
 		}
 	}
 	return nil
