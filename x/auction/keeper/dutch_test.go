@@ -305,7 +305,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	err = k.DutchActivator(*ctx, lockedVault)
-	s.Require().NoError(err)
+	s.Require().Error(err)
 	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
