@@ -26,6 +26,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 				err1 := k.SurplusActivator(ctx, data, killSwitchParams, status)
 				if err1 != nil {
 					ctx.Logger().Error("error in surplus activator")
+					return err1
 				}
 				return nil
 			})
@@ -33,6 +34,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 				err2 := k.DebtActivator(ctx, data, killSwitchParams, status)
 				if err2 != nil {
 					ctx.Logger().Error("error in debt activator")
+					return err2
 				}
 				return nil
 			})
