@@ -230,6 +230,8 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	beforeVault, found := s.vaultKeeper.GetVault(*ctx, 1)
 	s.Require().True(found)
 
+	s.AddAuctionParams()
+
 	// Liquidation shouldn't happen as price not changed
 	err := liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
