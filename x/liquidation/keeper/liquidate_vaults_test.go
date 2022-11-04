@@ -255,7 +255,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
 	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
-	s.Require().Equal(lockedVault[0].IsAuctionInProgress, false)
+	s.Require().Equal(lockedVault[0].IsAuctionInProgress, true)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
 	s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
