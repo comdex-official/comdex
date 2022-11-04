@@ -8,6 +8,7 @@ import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 
+	utils "github.com/comdex-official/comdex/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -462,49 +463,52 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 	}
 	// SET current price of inflow token and outflow token
 	for _, dutchAuction := range dutchAuctions {
-		twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetInId)
-		if !found || !twaData.IsPriceActive {
-			return auctiontypes.ErrorPrices
-		}
-		inFlowTokenCurrentPrice := twaData.Twa
-
-		// inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
-		// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
-		tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
-		tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
-		ntau := tnume.Quo(tdeno)
-		tau := sdk.NewInt(ntau.TruncateInt64())
-		dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
-		seconds := sdk.NewInt(int64(dur.Seconds()))
-		outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
-		dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
-		dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
-		err := k.SetDutchLendAuction(ctx, dutchAuction)
-		if err != nil {
-			return err
-		}
-		// check if auction need to be restarted
-		if ctx.BlockTime().After(dutchAuction.EndTime) {
-			twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetOutId)
+		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
+			twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetInId)
 			if !found || !twaData.IsPriceActive {
 				return auctiontypes.ErrorPrices
 			}
-			OutFlowTokenCurrentPrice := twaData.Twa
-			timeNow := ctx.BlockTime()
-			dutchAuction.StartTime = timeNow
-			dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
-			outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
-			outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
-			dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
-			dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
-			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
-			err = k.SetDutchLendAuction(ctx, dutchAuction)
+			inFlowTokenCurrentPrice := twaData.Twa
+
+			// inFlowTokenCurrentPrice := sdk.MustNewDecFromStr("1")
+			// tau := sdk.NewInt(int64(auctionParams.AuctionDurationSeconds))
+			tnume := dutchAuction.OutflowTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds)))
+			tdeno := dutchAuction.OutflowTokenInitialPrice.Sub(dutchAuction.OutflowTokenEndPrice)
+			ntau := tnume.Quo(tdeno)
+			tau := sdk.NewInt(ntau.TruncateInt64())
+			dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
+			seconds := sdk.NewInt(int64(dur.Seconds()))
+			outFlowTokenCurrentPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.OutflowTokenInitialPrice, tau, seconds)
+			dutchAuction.InflowTokenCurrentPrice = sdk.NewDec(int64(inFlowTokenCurrentPrice))
+			dutchAuction.OutflowTokenCurrentPrice = outFlowTokenCurrentPrice
+			err := k.SetDutchLendAuction(ctx, dutchAuction)
 			if err != nil {
 				return err
 			}
-			// SET initial price fetched from market module and also end price , start time , end time
-			// outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
-		}
+			// check if auction need to be restarted
+			if ctx.BlockTime().After(dutchAuction.EndTime) {
+				twaData, found := k.market.GetTwa(ctx, dutchAuction.AssetOutId)
+				if !found || !twaData.IsPriceActive {
+					return auctiontypes.ErrorPrices
+				}
+				OutFlowTokenCurrentPrice := twaData.Twa
+				timeNow := ctx.BlockTime()
+				dutchAuction.StartTime = timeNow
+				dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+				outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
+				outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
+				dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
+				dutchAuction.OutflowTokenEndPrice = outFlowTokenEndPrice
+				dutchAuction.OutflowTokenCurrentPrice = outFlowTokenInitialPrice
+				err = k.SetDutchLendAuction(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
+				// SET initial price fetched from market module and also end price , start time , end time
+				// outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
+			}
+			return nil
+		})
 	}
 	return nil
 }

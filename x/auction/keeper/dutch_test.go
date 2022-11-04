@@ -233,6 +233,8 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	beforeVault, found := vaultKeeper.GetVault(*ctx, 1)
 	s.Require().True(found)
 
+	s.AddAuctionParams()
+
 	// Liquidation shouldn't happen as price not changed
 	err := liquidationKeeper.LiquidateVaults(*ctx)
 	s.Require().NoError(err)
@@ -256,7 +258,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
 	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
-	s.Require().Equal(lockedVault[0].IsAuctionInProgress, false)
+	s.Require().Equal(lockedVault[0].IsAuctionInProgress, true)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
 	s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
@@ -293,9 +295,6 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
 
 	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-	/*s.Require().NoError(err)
-	err = k.RestartDutch(*ctx)
-	s.Require().NoError(err)*/
 
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
@@ -303,7 +302,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	err = k.DutchActivator(*ctx, lockedVault)
-	s.Require().NoError(err)
+	s.Require().Error(err)
 	dutchAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
@@ -418,9 +417,6 @@ func (s *KeeperTestSuite) TestDutchBid() {
 		s.Run(tc.name, func() {
 			s.advanceseconds(tc.advanceSeconds)
 			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-			/*s.Require().NoError(err)
-			err = k.RestartDutch(*ctx)
-			s.Require().NoError(err)*/
 			beforeAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
 			s.Require().NoError(err)
 			beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
@@ -433,10 +429,6 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			if tc.isErrorExpected {
 				s.advanceseconds(301 - tc.advanceSeconds)
 				auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-				/*s.Require().NoError(err1)
-				err2 := k.RestartDutch(*ctx)
-				s.Require().NoError(err2)
-				s.Require().Error(err)*/
 			} else {
 				s.Require().NoError(err)
 
@@ -514,33 +506,23 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	// s.AddAppAsset()
-	// s.AddPairAndExtendedPairVault1()
-	// s.LiquidateVaults1()
-	// s.AddAuctionParams()
 	s.TestDutchBid()
 	k, liquidationKeeper, ctx := &s.keeper, &s.liquidationKeeper, &s.ctx
-	// k, ctx := &s.keeper, &s.ctx
 	appId := uint64(1)
 	auctionMappingId := uint64(3)
 	auctionId := uint64(1)
 	lockedVault, found := liquidationKeeper.GetLockedVault(*ctx, 1, 1)
 	s.Require().True(found)
 	err := k.DutchActivator(*ctx, lockedVault)
-	s.Require().NoError(err)
+	s.Require().Error(err)
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	// beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	// s.Require().NoError(err)
 	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 	s.advanceseconds(250)
 
 	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-	/*s.Require().NoError(err1)
-	err = k.RestartDutch(*ctx)
-	s.Require().NoError(err)*/
 
 	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 10000000)
 	s.Require().NoError(err1)
@@ -564,8 +546,6 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 
-	// afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
-	// s.Require().NoError(err)
 	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
@@ -596,9 +576,6 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 
 	startPrice := dutchAuction.OutflowTokenCurrentPrice
 	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-	/*s.Require().NoError(err)
-	err = k.RestartDutch(*ctx)
-	s.Require().NoError(err)*/
 
 	dutchAuction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -640,9 +617,6 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	s.advanceseconds(150)
 
 	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
-	/*s.Require().NoError(err)
-	err = k.RestartDutch(*ctx)
-	s.Require().NoError(err)*/
 
 	dutchAuction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)

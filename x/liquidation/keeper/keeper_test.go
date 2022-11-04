@@ -11,6 +11,7 @@ import (
 
 	chain "github.com/comdex-official/comdex/app"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	"github.com/comdex-official/comdex/x/liquidation/types"
@@ -99,4 +100,21 @@ func ParseCoin(s string) sdk.Coin {
 		panic(err)
 	}
 	return coins
+}
+
+func (s *KeeperTestSuite) AddAuctionParams() {
+	ctx := &s.ctx
+	auctionParams := auctionTypes.AuctionParams{
+		AppId:                  1,
+		AuctionDurationSeconds: 300,
+		Buffer:                 sdk.MustNewDecFromStr("1.2"),
+		Cusp:                   sdk.MustNewDecFromStr("0.6"),
+		Step:                   sdk.NewIntFromUint64(1),
+		PriceFunctionType:      1,
+		SurplusId:              1,
+		DebtId:                 2,
+		DutchId:                3,
+		BidDurationSeconds:     300,
+	}
+	s.app.AuctionKeeper.SetAuctionParams(*ctx, auctionParams)
 }
