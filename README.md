@@ -71,7 +71,7 @@ The explorer for this chain is hosted
 
 Copyright © Comdex Technologies Pte Ltd. All rights reserved.
 
-Licensed under the (LICENSE).
+Licensed under the [comdex license](LICENSE).
 
 [![Project Status: Active -- The project has reached a stable, usable
 state and is being actively developed.](https://img.shields.io/badge/repo%20status-Active-green.svg?style=flat-square)](https://www.repostatus.org/#active)
