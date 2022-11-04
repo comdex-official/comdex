@@ -765,27 +765,27 @@ func TestNewMsgFundModuleAccounts(t *testing.T) {
 		{
 			name: "empty from",
 			msg: types.NewMsgFundModuleAccounts(
-				"lend",
+				1,
 				1,
 				"",
 				sdk.NewCoin("ucmdx", sdk.NewInt(1000000)),
 			),
 			isErrExp: true,
 		},
-		{
+		/*{
 			name: "empty moduleName",
 			msg: types.NewMsgFundModuleAccounts(
-				"",
+				sdk.NewInt(),
 				1,
 				"cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				sdk.NewCoin("ucmdx", sdk.NewInt(1000000)),
 			),
 			isErrExp: true,
-		},
+		},*/
 		{
 			name: "amount zero",
 			msg: types.NewMsgFundModuleAccounts(
-				"lend",
+				3,
 				1,
 				"cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				sdk.NewCoin("ucmdx", sdk.NewInt(0)),
@@ -795,7 +795,7 @@ func TestNewMsgFundModuleAccounts(t *testing.T) {
 		{
 			name: "valid case",
 			msg: types.NewMsgFundModuleAccounts(
-				"lend",
+				1,
 				1,
 				"cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				sdk.NewCoin("ucmdx", sdk.NewInt(1000000)),
