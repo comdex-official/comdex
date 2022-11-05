@@ -211,9 +211,9 @@ func (k Keeper) ReBalanceStableRates(ctx sdk.Context, borrowPos types.BorrowAsse
 	}
 	perc1, _ := sdk.NewDecFromStr(types.Perc1)                                 // 20%
 	perc2, _ := sdk.NewDecFromStr(types.Perc2)                                 // 90%
-	if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%
+	if borrowPos.StableBorrowRate.GTE(assetStats.StableBorrowApr.Add(perc1)) { // condition 1, 𝑆 ≥ 𝑆𝑡 + 20%, S is the rate at which you borrowed, and St is the current stable rate in the system.
 		borrowPos.StableBorrowRate = assetStats.StableBorrowApr
-	} else if (assetStats.StableBorrowApr.Add(perc1)).LTE(borrowPos.StableBorrowRate) || utilizationRatio.GTE(perc2) { // condition 2, 𝑆 + 20% ≤ 𝑆𝑡 ∨ 𝑢𝑡𝑖𝑙𝑖𝑧𝑎𝑡𝑖𝑜𝑛 ≥ 90%
+	} else if (borrowPos.StableBorrowRate.Add(perc1)).LTE(assetStats.StableBorrowApr) || utilizationRatio.GTE(perc2) { // condition 2, 𝑆 + 20% ≤ 𝑆𝑡 ∨ 𝑢𝑡𝑖𝑙𝑖𝑧𝑎𝑡𝑖𝑜𝑛 ≥ 90%
 		borrowPos.StableBorrowRate = assetStats.StableBorrowApr
 	}
 
