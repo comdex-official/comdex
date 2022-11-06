@@ -201,7 +201,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	cmd.Flags().String(flagName, "", "name")
 	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().Int64(flagDecimals, -1, "decimals")
+	cmd.Flags().String(flagDecimals, "", "decimals")
 	cmd.Flags().String(flagAssetOraclePrice, "", "is-oracle-price-required")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
