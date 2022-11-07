@@ -152,21 +152,8 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 		fundAmount    uint64
 		expectedError bool
 		query         lockerTypes.QueryLockerInfoRequest
+		ExpErr        error
 	}{
-		{
-			"CreateLocker : Insufficient balance App1 Asset 1",
-			lockerTypes.MsgCreateLockerRequest{
-				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
-				AssetId:   1,
-				AppId:     1,
-			},
-			100000,
-			true,
-			lockerTypes.QueryLockerInfoRequest{
-				Id: 1,
-			},
-		},
 		{
 			"CreateLocker : App1 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
@@ -180,6 +167,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			lockerTypes.QueryLockerInfoRequest{
 				Id: 1,
 			},
+			nil,
 		},
 		{
 			"CreateLocker : Duplicate locker App1 Asset1 should fail",
@@ -194,6 +182,52 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			lockerTypes.QueryLockerInfoRequest{
 				Id: 1,
 			},
+			lockerTypes.ErrorUserLockerAlreadyExists,
+		},
+		{
+			"CreateLocker : ErrorAssetDoesNotExist",
+			lockerTypes.MsgCreateLockerRequest{
+				Depositor: userAddress,
+				Amount:    sdk.NewIntFromUint64(1000000),
+				AssetId:   10,
+				AppId:     1,
+			},
+			1000000,
+			true,
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			lockerTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"CreateLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgCreateLockerRequest{
+				Depositor: userAddress,
+				Amount:    sdk.NewIntFromUint64(1000000),
+				AssetId:   1,
+				AppId:     10,
+			},
+			1000000,
+			true,
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"CreateLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgCreateLockerRequest{
+				Depositor: userAddress,
+				Amount:    sdk.NewIntFromUint64(1000000),
+				AssetId:   2,
+				AppId:     2,
+			},
+			1000000,
+			true,
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			lockerTypes.ErrorCollectorLookupDoesNotExists,
 		},
 		{
 			"CreateLocker : App1 Asset 2",
@@ -208,6 +242,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			lockerTypes.QueryLockerInfoRequest{
 				Id: 2,
 			},
+			nil,
 		},
 		{
 			"CreateLocker : App2 Asset 1",
@@ -222,6 +257,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			lockerTypes.QueryLockerInfoRequest{
 				Id: 3,
 			},
+			nil,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -231,8 +267,9 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
 			}
 			_, err := server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &tc.msg)
-			if tc.expectedError {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
@@ -248,6 +285,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 
 func (s *KeeperTestSuite) TestDepositLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	userAddress1 := "cosmos1fg240kge022yxh9yu5k5krhru9564u5cmrc57h"
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
 	// s.AddAppAsset()
 	s.TestCreateLocker()
@@ -258,13 +296,46 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 		query         lockerTypes.QueryLockerInfoRequest
 		fundAmount    uint64
 		expectedError bool
+		ExpErr        error
 	}{
 		{
-			"DepositLocker : Insufficient Balance App1 Asset 1",
+			"DepositLocker : ErrorAssetDoesNotExist",
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000000),
+				Amount:    sdk.NewIntFromUint64(4000000),
+				AssetId:   10,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			9900000,
+			false,
+			lockerTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"DepositLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(4000000),
+				AssetId:   1,
+				AppId:     10,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			9900000,
+			false,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"DepositLocker : ErrorLockerDoesNotExists",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress,
+				LockerId:  10,
+				Amount:    sdk.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -272,7 +343,56 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 				Id: 1,
 			},
 			9900000,
-			true,
+			false,
+			lockerTypes.ErrorLockerDoesNotExists,
+		},
+		{
+			"DepositLocker : ErrorInvalidAssetID",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(4000000),
+				AssetId:   2,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			9900000,
+			false,
+			lockerTypes.ErrorInvalidAssetID,
+		},
+		{
+			"DepositLocker : ErrorUnauthorized",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress1,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(4000000),
+				AssetId:   1,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			9900000,
+			false,
+			lockerTypes.ErrorUnauthorized,
+		},
+		{
+			"DepositLocker : ErrorAppMappingDoesNotExist 2",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(4000000),
+				AssetId:   1,
+				AppId:     2,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			9900000,
+			false,
+			lockerTypes.ErrorAppMappingDoesNotExist,
 		},
 		{
 			"DepositLocker : App1 Asset 1",
@@ -288,6 +408,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			},
 			9900000,
 			false,
+			nil,
 		},
 		{
 			"DepositLocker : App2 Asset 1",
@@ -303,6 +424,23 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			},
 			9900000,
 			false,
+			nil,
+		},
+		{
+			"DepositLocker : App2 Asset 1",
+			lockerTypes.MsgDepositAssetRequest{
+				Depositor: userAddress,
+				LockerId:  3,
+				Amount:    sdk.NewIntFromUint64(9223372036854775807),
+				AssetId:   1,
+				AppId:     2,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 3,
+			},
+			9223372036854775807,
+			false,
+			nil,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -315,8 +453,9 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			s.Require().NoError(err)
 			previousNetAmount := lockerInfo.LockerInfo.NetBalance
 			_, err = server.MsgDepositAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
-			if tc.expectedError {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
@@ -332,6 +471,8 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 
 func (s *KeeperTestSuite) TestWithdrawLocker() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	userAddress1 := "cosmos1fg240kge022yxh9yu5k5krhru9564u5cmrc57h"
+
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
 	// s.AddAppAsset()
 	s.TestCreateLocker()
@@ -342,21 +483,119 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 		query         lockerTypes.QueryLockerInfoRequest
 		expectedError bool
 		partial       bool
+		ExpErr        error
 	}{
 		{
-			"WithdrawLocker : Insufficient Balance App1 Asset 1",
+			"WithdrawLocker : ErrorAssetDoesNotExist",
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(10000000),
+				Amount:    sdk.NewIntFromUint64(100000),
+				AssetId:   10,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(100000),
+				AssetId:   1,
+				AppId:     10,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorLockerDoesNotExists",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress,
+				LockerId:  10,
+				Amount:    sdk.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     1,
 			},
 			lockerTypes.QueryLockerInfoRequest{
 				Id: 1,
 			},
+			false,
 			true,
+			lockerTypes.ErrorLockerDoesNotExists,
+		},
+		{
+			"WithdrawLocker : ErrorInvalidAssetID",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(100000),
+				AssetId:   2,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
 			true,
+			lockerTypes.ErrorInvalidAssetID,
+		},
+		{
+			"WithdrawLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(100000),
+				AssetId:   1,
+				AppId:     2,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorUnauthorized",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress1,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(100000),
+				AssetId:   1,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorUnauthorized,
+		},
+		{
+			"WithdrawLocker : ErrorRequestedAmountExceedsDepositAmount",
+			lockerTypes.MsgWithdrawAssetRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				Amount:    sdk.NewIntFromUint64(9223372036854775807),
+				AssetId:   1,
+				AppId:     1,
+			},
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorRequestedAmountExceedsDepositAmount,
 		},
 		{
 			"WithdrawLocker : Partial withdraw App1 Asset 1",
@@ -372,6 +611,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			},
 			false,
 			true,
+			nil,
 		},
 		{
 			"WithdrawLocker : Full Withdraw App1 Asset 1",
@@ -387,6 +627,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			},
 			false,
 			false,
+			nil,
 		},
 		{
 			"WithdrawLocker : Full Withdraw App2 Asset 1",
@@ -402,6 +643,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			},
 			false,
 			false,
+			nil,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -409,8 +651,9 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			s.Require().NoError(err)
 			previousNetAmount := lockerInfo.LockerInfo.NetBalance
 			_, err = server.MsgWithdrawAsset(sdk.WrapSDKContext(*ctx), &tc.msg)
-			if tc.expectedError {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
@@ -423,6 +666,197 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				} else {
 					s.Require().Equal(lockerInfo.LockerInfo.NetBalance, sdk.NewIntFromUint64(0))
 				}
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestCloseLocker() {
+	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	userAddress1 := "cosmos1fg240kge022yxh9yu5k5krhru9564u5cmrc57h"
+
+	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
+	// s.AddAppAsset()
+	s.TestCreateLocker()
+	server := keeper.NewMsgServer(*lockerKeeper)
+	for _, tc := range []struct {
+		name          string
+		msg           lockerTypes.MsgCloseLockerRequest
+		expectedError bool
+		partial       bool
+		ExpErr        error
+	}{
+		{
+			"WithdrawLocker : ErrorAssetDoesNotExist",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				AssetId:   10,
+				AppId:     1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				AssetId:   1,
+				AppId:     10,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorLockerDoesNotExists",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  10,
+				AssetId:   1,
+				AppId:     1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorLockerDoesNotExists,
+		},
+		{
+			"WithdrawLocker : ErrorInvalidAssetID",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				AssetId:   2,
+				AppId:     1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorInvalidAssetID,
+		},
+		{
+			"WithdrawLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				AssetId:   1,
+				AppId:     2,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorUnauthorized",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress1,
+				LockerId:  1,
+				AssetId:   1,
+				AppId:     1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorUnauthorized,
+		},
+		{
+			"WithdrawLocker : success",
+			lockerTypes.MsgCloseLockerRequest{
+				Depositor: userAddress,
+				LockerId:  1,
+				AssetId:   1,
+				AppId:     1,
+			},
+			false,
+			true,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			_, err := server.MsgCloseLocker(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				//lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
+				//s.Require().NoError(err)
+				//s.Require().Equal(lockerInfo.LockerInfo.Depositor, tc.msg.Depositor)
+				//s.Require().Equal(lockerInfo.LockerInfo.AppId, tc.msg.AppId)
+				//s.Require().Equal(lockerInfo.LockerInfo.AssetDepositId, tc.msg.AssetId)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestLockerRewardCalc() {
+	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	//userAddress1 := "cosmos1fg240kge022yxh9yu5k5krhru9564u5cmrc57h"
+
+	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
+	// s.AddAppAsset()
+	s.TestCreateLocker()
+	server := keeper.NewMsgServer(*lockerKeeper)
+	for _, tc := range []struct {
+		name          string
+		msg           lockerTypes.MsgLockerRewardCalcRequest
+		expectedError bool
+		partial       bool
+		ExpErr        error
+	}{
+		{
+			"WithdrawLocker : ErrorAppMappingDoesNotExist",
+			lockerTypes.MsgLockerRewardCalcRequest{
+				From:     userAddress,
+				AppId:    10,
+				LockerId: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingDoesNotExist,
+		},
+		{
+			"WithdrawLocker : ErrorAppMappingIDMismatch",
+			lockerTypes.MsgLockerRewardCalcRequest{
+				From:     userAddress,
+				AppId:    2,
+				LockerId: 1,
+			},
+			false,
+			true,
+			lockerTypes.ErrorAppMappingIDMismatch,
+		},
+		{
+			"WithdrawLocker : ErrorLockerDoesNotExists",
+			lockerTypes.MsgLockerRewardCalcRequest{
+				From:     userAddress,
+				AppId:    1,
+				LockerId: 44,
+			},
+			false,
+			true,
+			lockerTypes.ErrorLockerDoesNotExists,
+		},
+		{
+			"WithdrawLocker : success",
+			lockerTypes.MsgLockerRewardCalcRequest{
+				From:     userAddress,
+				AppId:    1,
+				LockerId: 1,
+			},
+			false,
+			true,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			_, err := server.MsgLockerRewardCalc(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
 			}
 		})
 	}

@@ -387,6 +387,9 @@ func (k msgServer) MsgLockerRewardCalc(c context.Context, msg *types.MsgLockerRe
 	if !found {
 		return nil, types.ErrorLockerDoesNotExists
 	}
+	if lockerData.AppId != appMapping.Id {
+		return nil, types.ErrorAppMappingIDMismatch
+	}
 	err1 := k.rewards.CalculateLockerRewards(ctx, appMapping.Id, lockerData.AssetDepositId, lockerData.LockerId, string(depositor), lockerData.NetBalance, lockerData.BlockHeight, lockerData.BlockTime.Unix())
 	if err1 != nil {
 		return nil, err1
