@@ -202,6 +202,7 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 			Decimals:              msg.Decimals,
 			IsOnChain:             msg.IsOnChain,
 			IsOraclePriceRequired: msg.IsOraclePriceRequired,
+			IsCdpMintable:         msg.IsCdpMintable,
 		}
 	)
 	if msg.IsOraclePriceRequired {

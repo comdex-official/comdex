@@ -103,7 +103,6 @@ func (k Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 			return types.ErrorReversePairAlreadyExist
 		}
 	}
-
 	var (
 		id   = k.GetPairID(ctx)
 		pair = types.Pair{

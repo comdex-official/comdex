@@ -37,6 +37,8 @@ var (
 	ErrorValueCantBeNegative               = errors.Register(ModuleName, 221, "Value can't be negative")
 	ErrorAppNameDidNotMeetCriterion        = errors.Register(ModuleName, 222, "App Name didn't meet the criterion")
 	ErrorPairNameDidNotMeetCriterion       = errors.Register(ModuleName, 223, "Pair Name didn't meet the criterion")
+	ErrorDuplicateShortNameForApp          = errors.Register(ModuleName, 224, "duplicate short name for app")
+	ErrorIsCDPMintableDisabled             = errors.Register(ModuleName, 225, "can not use asset out for which cdp mintable is false")
 )
 
 var (

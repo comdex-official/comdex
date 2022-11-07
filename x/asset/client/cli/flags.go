@@ -53,6 +53,7 @@ type createAddAssetsMappingInputs struct {
 	Decimals         string `json:"decimals"`
 	IsOnChain        string `json:"is_on_chain"`
 	AssetOraclePrice string `json:"asset_oracle_price"`
+	IsCdpMintable    string `json:"is_cdp_mintable"`
 	Title            string
 	Description      string
 	Deposit          string

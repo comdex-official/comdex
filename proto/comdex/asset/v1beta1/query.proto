@@ -194,7 +194,7 @@ service Query {
     option (google.api.http).get = "/comdex/asset/v1beta1/gov_token_in_an_app/{app_id}";
   }
   rpc QueryAllExtendedPairStableVaultsByApp(QueryAllExtendedPairStableVaultsByAppRequest) returns (QueryAllExtendedPairStableVaultsByAppResponse) {
-    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
+    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_data/{app_id}";
   }
 
 }

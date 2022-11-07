@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -621,7 +620,6 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		totalDue        = sdk.ZeroDec()
 		availableBorrow = sdk.ZeroDec()
 		averageCr       sdk.Dec
-		totalCr         = sdk.ZeroDec()
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -667,12 +665,6 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		}
 		totalDue = assetOutTotalPrice.Add(totalDue)
 
-		collaterlizationRatio, err := q.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, vault.AmountOut)
-		if err != nil {
-			return nil, err
-		}
-
-		totalCr = collaterlizationRatio.Add(totalCr)
 		minCr := extPairVault.MinCr
 
 		AmtIn := assetInTotalPrice
@@ -683,12 +675,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 
 		availableBorrow = av.Quo(sdk.OneDec()).Add(availableBorrow)
 	}
-
-	// totalLocked = totalLocked.Quo(sdk.NewInt(1000000))
-	// totalDue = totalDue.Quo(sdk.NewInt(1000000))
-	// availableBorrow = availableBorrow.Quo(sdk.NewInt(1000000))
-	t, _ := sdk.NewDecFromStr(strconv.Itoa(len(vaultsIds)))
-	averageCr = totalCr.Quo(t)
+	averageCr = totalLocked.Quo(totalDue)
 
 	return &types.QueryUserMyPositionByAppResponse{
 		CollateralLocked:  totalLocked.TruncateInt(),

@@ -77,6 +77,11 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		return txf, nil, err
 	}
 
+	isCdpMintable := ParseBoolFromString(assetsMapping.IsCdpMintable)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	from := clientCtx.GetFromAddress()
 
 	newDecimals, ok := sdk.NewIntFromString(decimals)
@@ -89,6 +94,7 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		Decimals:              newDecimals,
 		IsOnChain:             isOnChain,
 		IsOraclePriceRequired: assetOraclePrice,
+		IsCdpMintable:         isCdpMintable,
 	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
@@ -201,7 +207,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	cmd.Flags().String(flagName, "", "name")
 	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().Int64(flagDecimals, -1, "decimals")
+	cmd.Flags().String(flagDecimals, "", "decimals")
 	cmd.Flags().String(flagAssetOraclePrice, "", "is-oracle-price-required")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
