@@ -48,8 +48,8 @@ type MsgAddExtendedPairsVault struct {
 	LiquidationPenalty  sdk.Dec `json:"liquidation_penalty"`
 	DrawDownFee         sdk.Dec `json:"draw_down_fee"`
 	IsVaultActive       bool    `json:"is_vault_active"`
-	DebtCeiling         uint64  `json:"debt_ceiling"`
-	DebtFloor           uint64  `json:"debt_floor"`
+	DebtCeiling         sdk.Int `json:"debt_ceiling"`
+	DebtFloor           sdk.Int `json:"debt_floor"`
 	IsStableMintVault   bool    `json:"is_stable_mint_vault"`
 	MinCr               sdk.Dec `json:"min_cr"`
 	PairName            string  `json:"pair_name"`
@@ -62,12 +62,12 @@ type MsgSetCollectorLookupTable struct {
 	AppID            uint64  `json:"app_id"`
 	CollectorAssetID uint64  `json:"collector_asset_id"`
 	SecondaryAssetID uint64  `json:"secondary_asset_id"`
-	SurplusThreshold uint64  `json:"surplus_threshold"`
-	DebtThreshold    uint64  `json:"debt_threshold"`
+	SurplusThreshold sdk.Int `json:"surplus_threshold"`
+	DebtThreshold    sdk.Int `json:"debt_threshold"`
 	LockerSavingRate sdk.Dec `json:"locker_saving_rate"`
-	LotSize          uint64  `json:"lot_size"`
+	LotSize          sdk.Int `json:"lot_size"`
 	BidFactor        sdk.Dec `json:"bid_factor"`
-	DebtLotSize      uint64  `json:"debt_lot_size"`
+	DebtLotSize      sdk.Int `json:"debt_lot_size"`
 }
 
 type MsgSetAuctionMappingForApp struct {
@@ -89,18 +89,18 @@ type MsgUpdatePairsVault struct {
 	DrawDownFee        sdk.Dec `json:"draw_down_fee"`
 	IsVaultActive      bool    `json:"is_vault_active"`
 	MinCr              sdk.Dec `json:"min_cr"`
-	DebtCeiling        uint64  `json:"debt_ceiling"`
-	DebtFloor          uint64  `json:"debt_floor"`
+	DebtCeiling        sdk.Int `json:"debt_ceiling"`
+	DebtFloor          sdk.Int `json:"debt_floor"`
 	MinUsdValueLeft    uint64  `json:"min_usd_value_left"`
 }
 
 type MsgUpdateCollectorLookupTable struct {
 	AppID            uint64  `json:"app_id"`
 	AssetID          uint64  `json:"asset_id"`
-	DebtThreshold    uint64  `json:"debt_threshold"`
-	SurplusThreshold uint64  `json:"surplus_threshold"`
-	LotSize          uint64  `json:"lot_size"`
-	DebtLotSize      uint64  `json:"debt_lot_size"`
+	DebtThreshold    sdk.Int `json:"debt_threshold"`
+	SurplusThreshold sdk.Int `json:"surplus_threshold"`
+	LotSize          sdk.Int `json:"lot_size"`
+	DebtLotSize      sdk.Int `json:"debt_lot_size"`
 	BidFactor        sdk.Dec `json:"bid_factor"`
 	LSR              sdk.Dec `json:"lsr"`
 }

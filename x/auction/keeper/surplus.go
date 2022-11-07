@@ -63,14 +63,14 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 	}
 	// traverse this to access appId , collector asset id , netfees collected
 
-	if NetFeeCollectedData.NetFeesCollected.GTE(sdk.NewIntFromUint64(collector.SurplusThreshold + collector.LotSize)) {
+	if NetFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) {
 		// START SURPLUS AUCTION .  WITH COLLECTOR ASSET ID AS token given to user of lot size and secondary asset as received from user and burnt , bid factor
 		// calculate inflow token amount
 		assetBuyID := collector.SecondaryAssetId
 		assetSellID := collector.CollectorAssetId
 
 		// net = 900 surplusThreshhold = 500 , lotsize = 100
-		amount := sdk.NewIntFromUint64(collector.LotSize)
+		amount := collector.LotSize
 
 		status, sellToken, buyToken := k.getSurplusBuyTokenAmount(ctx, assetBuyID, assetSellID, amount)
 

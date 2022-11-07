@@ -121,8 +121,8 @@ func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extID
 }
 
 func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
-	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
-	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))
+	DebtCeiling := pairVaultBinding.DebtCeiling
+	DebtFloor := pairVaultBinding.DebtFloor
 
 	_, found := k.GetApp(ctx, pairVaultBinding.AppID)
 	if !found {
@@ -268,8 +268,8 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
 	ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
 	ExtPairVaultData.IsVaultActive = updatePairVault.IsVaultActive
-	ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
-	ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
+	ExtPairVaultData.DebtCeiling = updatePairVault.DebtCeiling
+	ExtPairVaultData.DebtFloor = updatePairVault.DebtFloor
 	ExtPairVaultData.MinCr = updatePairVault.MinCr
 	ExtPairVaultData.MinUsdValueLeft = updatePairVault.MinUsdValueLeft
 

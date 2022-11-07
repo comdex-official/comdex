@@ -823,9 +823,9 @@ func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint
 	netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, appID, assetID)
 	auctionMapping, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
 	collectorLookup, _ := k.GetCollectorLookupTable(ctx, appID, assetID)
-	netAmount := collectorLookup.SurplusThreshold + collectorLookup.LotSize
-	if auctionMapping.IsDistributor && netFeeCollectedData.NetFeesCollected.GT(sdk.NewInt(int64(netAmount))) {
-		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(sdk.NewInt(int64(collectorLookup.SurplusThreshold)))
+	netAmount := collectorLookup.SurplusThreshold.Add(collectorLookup.LotSize)
+	if auctionMapping.IsDistributor && netFeeCollectedData.NetFeesCollected.GT(netAmount) {
+		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(collectorLookup.SurplusThreshold)
 		return sdk.NewCoin(asset.Denom, finalAmount)
 	}
 	return sdk.NewCoin(asset.Denom, sdk.NewInt(0))
