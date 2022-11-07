@@ -222,30 +222,27 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
-	if msg.Name != "" {
-		IsLetter := regexp.MustCompile(`^[A-Z]+$`).MatchString
+	IsLetter := regexp.MustCompile(`^[A-Z]+$`).MatchString
 
-		if !IsLetter(msg.Name) || len(msg.Name) > 10 {
-			return types.ErrorNameDidNotMeetCriterion
-		}
-
-		if k.HasAssetForName(ctx, msg.Name) {
-			return types.ErrorDuplicateAsset
-		}
-		k.DeleteAssetForName(ctx, asset.Name)
-		asset.Name = msg.Name
-		k.SetAssetForName(ctx, asset.Name, asset.Id)
+	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+		return types.ErrorNameDidNotMeetCriterion
 	}
 
-	if msg.Denom != "" {
-		if k.HasAssetForDenom(ctx, msg.Denom) {
-			return types.ErrorDuplicateAsset
-		}
-
-		k.DeleteAssetForDenom(ctx, asset.Denom)
-		asset.Denom = msg.Denom
-		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+	if k.HasAssetForName(ctx, msg.Name) && asset.Name != msg.Name {
+		return types.ErrorDuplicateAsset
 	}
+	k.DeleteAssetForName(ctx, asset.Name)
+	asset.Name = msg.Name
+	k.SetAssetForName(ctx, asset.Name, asset.Id)
+
+	if k.HasAssetForDenom(ctx, msg.Denom) && asset.Denom != msg.Denom {
+		return types.ErrorDuplicateAsset
+	}
+
+	k.DeleteAssetForDenom(ctx, asset.Denom)
+	asset.Denom = msg.Denom
+	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+
 	if msg.Decimals.GTE(sdk.ZeroInt()) {
 		asset.Decimals = msg.Decimals
 	}

@@ -356,7 +356,7 @@ def CreateState():
     for asset in ASSETS:
         if len(asset) != 6:
             exit("Invalid asset configs")
-        AddAsset(asset[0], asset[1], asset[2], asset[3])
+        AddAsset(asset[0], asset[1], asset[2], asset[3], asset[4], asset[5])
         Vote("yes")
     
     for pair in PAIRS:

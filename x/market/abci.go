@@ -19,7 +19,8 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 		if bandKeeper.GetOracleValidationResult(ctx) {
 			block := bandKeeper.GetLastBlockHeight(ctx)
 			if block != types.Int64Zero {
-				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
+				// if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
+				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero {
 					assets := assetKeeper.GetAssets(ctx)
 					id := bandKeeper.GetLastFetchPriceID(ctx)
 					data, _ := bandKeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
