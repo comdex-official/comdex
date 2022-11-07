@@ -132,6 +132,14 @@ func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
 	if msg.AssetIn == msg.AssetOut {
 		return types.ErrorDuplicateAsset
 	}
+	pairs := k.GetPairs(ctx)
+	for _, data := range pairs {
+		if data.AssetIn == msg.AssetIn && data.AssetOut == msg.AssetOut {
+			return types.ErrorDuplicatePair
+		} else if (data.AssetIn == msg.AssetOut) && (data.AssetOut == msg.AssetIn) {
+			return types.ErrorReversePairAlreadyExist
+		}
+	}
 	pair.AssetIn = msg.AssetIn
 	pair.AssetOut = msg.AssetOut
 	k.SetPair(ctx, pair)

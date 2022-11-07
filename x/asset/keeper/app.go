@@ -229,6 +229,11 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 			}
 		}
 	}
+	if msg.GovTimeInSeconds == 0 {
+		if !msg.MinGovDeposit.IsZero() {
+			return types.ErrorMinGovDepositShouldBeZero
+		}
+	}
 
 	if msg.MinGovDeposit.LT(sdk.ZeroInt()) {
 		return types.ErrorValueCantBeNegative
