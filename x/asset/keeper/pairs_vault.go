@@ -128,7 +128,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	if !found {
 		return types.ErrorUnknownAppType
 	}
-	_, pairExists := k.GetPair(ctx, pairVaultBinding.PairID)
+	pair, pairExists := k.GetPair(ctx, pairVaultBinding.PairID)
 	if !pairExists {
 		return types.ErrorPairDoesNotExist
 	}
@@ -162,6 +162,12 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	if !(pairVaultBinding.DrawDownFee.GTE(sdk.ZeroDec()) && pairVaultBinding.DrawDownFee.LT(sdk.OneDec())) {
 		return types.ErrorFeeShouldNotBeGTOne
 	}
+	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+
+	if !assetOut.IsOnChain && !assetOut.IsCdpMintable {
+		return types.ErrorIsCDPMintableDisabled
+	}
+
 	blockHeight := ctx.BlockHeight()
 
 	if pairVaultBinding.StabilityFee.IsZero() {

@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	"regexp"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"regexp"
+	"strings"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -206,7 +206,7 @@ func (k Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 
 func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 	if k.HasAppForShortName(ctx, msg.ShortName) {
-		return types.ErrorDuplicateApp
+		return types.ErrorDuplicateShortNameForApp
 	}
 	if k.HasAppForName(ctx, msg.Name) {
 		return types.ErrorDuplicateApp
@@ -219,6 +219,15 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 
 	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 		return types.ErrorAppNameDidNotMeetCriterion
+	}
+
+	apps, found := k.GetApps(ctx)
+	if found {
+		for _, app := range apps {
+			if strings.Contains(msg.Name, app.Name) || strings.Contains(msg.ShortName, app.ShortName) || strings.Contains(msg.Name, app.ShortName) || strings.Contains(msg.ShortName, app.Name) {
+				return types.ErrorShortNameDidNotMeetCriterion
+			}
+		}
 	}
 
 	if msg.MinGovDeposit.LT(sdk.ZeroInt()) {

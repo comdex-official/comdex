@@ -22,10 +22,10 @@ func (s *KeeperTestSuite) TestAddApp() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 
 	for _, tc := range []struct {
-		name            string
-		msg             assetTypes.AppData
-		appID           uint64
-		isErrorExpected bool
+		name   string
+		msg    assetTypes.AppData
+		appID  uint64
+		ExpErr error
 	}{
 		{
 			"Add App cswap cswap",
@@ -43,14 +43,14 @@ func (s *KeeperTestSuite) TestAddApp() {
 					},
 					{
 						2,
-						genesisSupply,
+						sdk.ZeroInt(),
 						true,
 						userAddress1,
 					},
 				},
 			},
 			1,
-			false,
+			nil,
 		},
 		{
 			"Add Duplicate App name cswap werd",
@@ -69,7 +69,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateApp,
 		},
 		{
 			"Add Duplicate short name werd cswap",
@@ -88,7 +88,121 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateShortNameForApp,
+		},
+		{
+			"Add Duplicate short name werd cswap with .",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswap.",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"Add Duplicate short name werd cswap with space",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswap" + " ",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"Should be not able to use sub strings",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswaps",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"big short name",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswappp",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"big name",
+			assetTypes.AppData{
+				Name:             "werdwerdwerd",
+				ShortName:        "cswapp",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorAppNameDidNotMeetCriterion,
+		},
+		{
+			"capital letter in short name",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "Cswap",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
 		},
 		{
 			"Add App commodo commodo",
@@ -107,32 +221,14 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			false,
+			nil,
 		},
-		//{
-		//	"Add App sake sake",
-		//	assetTypes.AppData{
-		//		Name:             "sake",
-		//		ShortName:        "sake",
-		//		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		//		GovTimeInSeconds: 900,
-		//		GenesisToken: []assetTypes.MintGenesisToken{
-		//			{
-		//				4,
-		//				&genesisSupply,
-		//				true,
-		//				userAddress1,
-		//			},
-		//		},
-		//	},
-		//	3,
-		//	true,
-		//},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAppRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 
 				s.Require().NoError(err)
@@ -214,10 +310,10 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 func (s *KeeperTestSuite) TestAddAssetRecords() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	for _, tc := range []struct {
-		name            string
-		msg             assetTypes.Asset
-		assetID         uint64
-		isErrorExpected bool
+		name    string
+		msg     assetTypes.Asset
+		assetID uint64
+		ExpErr  error
 	}{
 		{
 			"Add Asset cmdx ucmdx",
@@ -227,18 +323,11 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
+				IsCdpMintable:         false,
 			},
 			1,
-			false,
+			nil,
 		},
-		//{"Add Asset:  Duplicate Asset Name  2 cmdx uosmo",
-		//	assetTypes.Asset{Name: "CMDX",
-		//		Denom:     "uosmo",
-		//		Decimals:  1000000,
-		//		IsOnChain: true},
-		//	2,
-		//	true,
-		//},
 		{
 			"Add Asset : Duplicate Denom 2 osmo ucmdx",
 			assetTypes.Asset{
@@ -247,9 +336,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateAsset,
 		},
 		{
 			"Add Asset 2",
@@ -259,9 +349,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         true,
 			},
 			2,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 3",
@@ -271,9 +362,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
+				IsCdpMintable:         false,
 			},
 			3,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 4",
@@ -283,9 +375,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			4,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 5",
@@ -295,15 +388,56 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			5,
-			false,
+			nil,
+		},
+		{
+			"Duplicate asset",
+			assetTypes.Asset{
+				Name:                  "SPX",
+				Denom:                 "uspx",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"wrong asset name type",
+			assetTypes.Asset{
+				Name:                  "SPXz",
+				Denom:                 "uspxz",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorNameDidNotMeetCriterion,
+		},
+		{
+			"big asset name",
+			assetTypes.Asset{
+				Name:                  "HUAHUAHUAHUA",
+				Denom:                 "uspxz",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorNameDidNotMeetCriterion,
 		},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				server := keeper.NewQueryServer(*assetKeeper)
@@ -351,6 +485,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 		symbol2                string
 		isErrorExpectedForPair bool
 		pairID                 uint64
+		ExpErr                 error
 	}{
 		{
 			"Add Pair 1: cmdx cmst",
@@ -362,6 +497,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			false,
 			1,
+			nil,
 		},
 		{
 			"Add Duplicate Pair : cmdx cmst",
@@ -373,6 +509,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			true,
 			1,
+			assetTypes.ErrorDuplicatePair,
 		},
 		{
 			"Add Pair 2 : cmst harbor",
@@ -384,13 +521,63 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"uharbor",
 			false,
 			2,
+			nil,
+		},
+		{
+			"adding reverse pair",
+			assetTypes.Pair{
+				AssetIn:  3,
+				AssetOut: 2,
+			},
+			"uharbor",
+			"ucmst",
+			true,
+			3,
+			assetTypes.ErrorReversePairAlreadyExist,
+		},
+		{
+			"same asset",
+			assetTypes.Pair{
+				AssetIn:  2,
+				AssetOut: 2,
+			},
+			"uharbor",
+			"uharbor",
+			true,
+			3,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"Wrong AssetIn",
+			assetTypes.Pair{
+				AssetIn:  22,
+				AssetOut: 3,
+			},
+			"uharborxyz",
+			"ucmst",
+			true,
+			3,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"Wrong AssetOut",
+			assetTypes.Pair{
+				AssetIn:  2,
+				AssetOut: 32,
+			},
+			"uharbor",
+			"ucmstxyz",
+			true,
+			3,
+			assetTypes.ErrorAssetDoesNotExist,
 		},
 	} {
 		s.Run(tc.name, func() {
 			server := keeper.NewQueryServer(*assetKeeper)
 			err := assetKeeper.AddPairsRecords(*ctx, tc.pair)
-			if tc.isErrorExpectedForPair {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				res, err := server.QueryPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairRequest{Id: tc.pairID})

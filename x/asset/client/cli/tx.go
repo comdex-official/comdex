@@ -77,6 +77,11 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		return txf, nil, err
 	}
 
+	isCdpMintable := ParseBoolFromString(assetsMapping.IsCdpMintable)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	from := clientCtx.GetFromAddress()
 
 	newDecimals, ok := sdk.NewIntFromString(decimals)
@@ -89,6 +94,7 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		Decimals:              newDecimals,
 		IsOnChain:             isOnChain,
 		IsOraclePriceRequired: assetOraclePrice,
+		IsCdpMintable:         isCdpMintable,
 	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
