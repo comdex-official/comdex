@@ -62,8 +62,27 @@ func (k Keeper) DeleteTwaData(ctx sdk.Context, assetID uint64) {
 	store.Delete(key)
 }
 
-func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch uint64) {
+func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch uint64, acceptedBlockDiff int64) {
 	twa, found := k.GetTwa(ctx, id)
+	if found {
+		if rate <= 0 && twa.DiscardedHeightDiff < 0 {
+			twa.DiscardedHeightDiff = ctx.BlockHeight()
+			twa.IsPriceActive = false
+			k.SetTwa(ctx, twa)
+			return
+		} else if rate > 0 && twa.DiscardedHeightDiff > 0 {
+			if ctx.BlockHeight()-twa.DiscardedHeightDiff < acceptedBlockDiff {
+				twa.DiscardedHeightDiff = -1
+			} else {
+				twa.PriceValue = twa.PriceValue[:0]
+				twa.DiscardedHeightDiff = -1
+				twa.IsPriceActive = false
+				twa.CurrentIndex = 0
+			}
+			k.SetTwa(ctx, twa)
+		}
+	}
+	twa, found = k.GetTwa(ctx, id)
 	if !found {
 		twa.AssetID = id
 		twa.ScriptID = scriptID
@@ -71,23 +90,31 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch ui
 		twa.IsPriceActive = false
 		twa.PriceValue = append(twa.PriceValue, rate)
 		twa.CurrentIndex = 1
+		twa.DiscardedHeightDiff = -1
 		k.SetTwa(ctx, twa)
 	} else {
 		if twa.IsPriceActive {
 			twa.PriceValue[twa.CurrentIndex] = rate
 			twa.CurrentIndex = twa.CurrentIndex + 1
 			twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
-			if twa.CurrentIndex == twaBatch {
+			if twa.CurrentIndex >= twaBatch {
 				twa.CurrentIndex = 0
 			}
 			k.SetTwa(ctx, twa)
 		} else {
-			twa.PriceValue = append(twa.PriceValue, rate)
-			twa.CurrentIndex = twa.CurrentIndex + 1
-			if twa.CurrentIndex == twaBatch {
+			if len(twa.PriceValue) >= int(twaBatch) {
+				twa.PriceValue[twa.CurrentIndex] = rate
 				twa.IsPriceActive = true
-				twa.CurrentIndex = 0
+				twa.CurrentIndex = twa.CurrentIndex + 1
 				twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+			} else {
+				twa.PriceValue = append(twa.PriceValue, rate)
+				twa.CurrentIndex = twa.CurrentIndex + 1
+				if twa.CurrentIndex >= twaBatch {
+					twa.IsPriceActive = true
+					twa.CurrentIndex = 0
+					twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+				}
 			}
 			k.SetTwa(ctx, twa)
 		}
@@ -124,57 +151,3 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price s
 	}
 	return sdk.ZeroDec(), types.ErrorPriceNotActive
 }
-
-// UNComment below and comment respective functions
-
-//func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
-//	asset, found := k.assetKeeper.GetAsset(ctx, id)
-//	if !found {
-//		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
-//	}
-//	// twa, found := k.GetTwa(ctx, id)
-//	var rate uint64
-//	if id == 1 {
-//		rate = 1000000
-//	}
-//	if id == 2 {
-//		rate = 1100000
-//	}
-//	if id == 3 {
-//		rate = 1000000
-//	}
-//	if id == 4 {
-//		rate = 1000000
-//	}
-//	if id == 10 {
-//		rate = 1000000
-//	}
-//	if found {
-//		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
-//		denominator := sdk.NewDecFromInt(sdk.NewIntFromUint64(uint64(asset.Decimals)))
-//		return numerator.Quo(denominator), nil
-//	}
-//	return sdk.ZeroDec(), types.ErrorPriceNotActive
-//}
-//
-//func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
-//	twa.AssetID = id
-//	twa.IsPriceActive = true
-//	if id == 1 {
-//		twa.Twa = 1000000
-//	}
-//	if id == 2 {
-//		twa.Twa = 1100000
-//	}
-//	if id == 3 {
-//		twa.Twa = 1000000
-//	}
-//	if id == 4 {
-//		twa.Twa = 1000000
-//	}
-//	if id == 10 {
-//		twa.Twa = 1000000
-//	}
-//
-//	return twa, true
-//}

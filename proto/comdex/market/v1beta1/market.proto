@@ -29,4 +29,7 @@ message TimeWeightedAverage {
     (gogoproto.customname) = "PriceValue",
     (gogoproto.moretags) = "yaml:\"price_value\""
   ];
+  int64 discarded_height_diff = 7 [
+    (gogoproto.moretags)   = "yaml:\"discarded_height_diff\""
+  ];
 }

@@ -51,3 +51,11 @@ func TestFucn1(t *testing.T) {
 	x := sdk.MustNewDecFromStr("128345678.4567432")
 	fmt.Println("uint64 value", x.TruncateInt().Uint64())
 }
+
+func TestFucn2(t *testing.T) {
+	arr :=[]int{12,23,34,45,56}
+	arr = arr[:0]
+	// arr = []int{}
+	// arr = make([]int, 0)
+	fmt.Println("arr new value", arr)
+}
