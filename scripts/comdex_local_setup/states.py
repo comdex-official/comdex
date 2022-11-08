@@ -464,7 +464,7 @@ WASM_PROPOSALS = [
         "proposalID": 0,
         "isProposal": False,
         "contractAddressKey": "locking_contract",
-        "content": {"lock": {"app_id": 1, "locking_period": "t3"}},
+        "content": {"lock": {"app_id": 1, "locking_period": "t2"}},
     },
     {
         "proposalID": 1,
