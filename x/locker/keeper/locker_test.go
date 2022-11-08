@@ -1,8 +1,11 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
+	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	"github.com/comdex-official/comdex/x/locker/keeper"
 	lockerTypes "github.com/comdex-official/comdex/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -789,53 +792,60 @@ func (s *KeeperTestSuite) TestCloseLocker() {
 	}
 }
 
+func (s *KeeperTestSuite) TestCreateIntRewards() {
+	rewardskeeper, ctx := &s.rewardsKeeper, &s.ctx
+	err := rewardskeeper.WhitelistAssetForInternalRewards(*ctx, 1, 1)
+	s.Require().NoError(err)
+}
+
+//SetNetFeeCollectedData
+
+func (s *KeeperTestSuite) TestSetNetFeeCollectedData() {
+	collectorkeeper, ctx := &s.collector, &s.ctx
+	err := collectorkeeper.SetNetFeeCollectedData(*ctx, 1, 1, sdk.NewInt(1000000000))
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) TestFundModule() {
+	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	s.Require().NoError(err)
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, lockerTypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	s.Require().NoError(err)
+}
+
 func (s *KeeperTestSuite) TestLockerRewardCalc() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	//userAddress1 := "cosmos1fg240kge022yxh9yu5k5krhru9564u5cmrc57h"
-
 	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
-	// s.AddAppAsset()
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
 	s.TestCreateLocker()
+	s.TestSetNetFeeCollectedData()
+	s.TestFundModule()
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
+	s.TestCreateIntRewards()
 	server := keeper.NewMsgServer(*lockerKeeper)
 	for _, tc := range []struct {
 		name          string
 		msg           lockerTypes.MsgLockerRewardCalcRequest
 		expectedError bool
 		partial       bool
+		query         lockerTypes.QueryLockerInfoRequest
 		ExpErr        error
 	}{
 		{
-			"WithdrawLocker : ErrorAppMappingDoesNotExist",
-			lockerTypes.MsgLockerRewardCalcRequest{
-				From:     userAddress,
-				AppId:    10,
-				LockerId: 1,
-			},
-			false,
-			true,
-			lockerTypes.ErrorAppMappingDoesNotExist,
-		},
-		{
-			"WithdrawLocker : ErrorAppMappingIDMismatch",
-			lockerTypes.MsgLockerRewardCalcRequest{
-				From:     userAddress,
-				AppId:    2,
-				LockerId: 1,
-			},
-			false,
-			true,
-			lockerTypes.ErrorAppMappingIDMismatch,
-		},
-		{
-			"WithdrawLocker : ErrorLockerDoesNotExists",
+			"WithdrawLocker : success",
 			lockerTypes.MsgLockerRewardCalcRequest{
 				From:     userAddress,
 				AppId:    1,
-				LockerId: 44,
+				LockerId: 1,
 			},
 			false,
 			true,
-			lockerTypes.ErrorLockerDoesNotExists,
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
+			nil,
 		},
 		{
 			"WithdrawLocker : success",
@@ -846,6 +856,9 @@ func (s *KeeperTestSuite) TestLockerRewardCalc() {
 			},
 			false,
 			true,
+			lockerTypes.QueryLockerInfoRequest{
+				Id: 1,
+			},
 			nil,
 		},
 	} {
@@ -857,6 +870,11 @@ func (s *KeeperTestSuite) TestLockerRewardCalc() {
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
+				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
+				s.Require().NoError(err)
+				s.Require().NotEqual(lockerInfo.LockerInfo.ReturnsAccumulated, sdk.ZeroInt())
+				fmt.Println("lockerInfo.LockerInfo", lockerInfo.LockerInfo)
+				fmt.Println("ReturnsAccumulated", lockerInfo.LockerInfo.ReturnsAccumulated)
 			}
 		})
 	}
