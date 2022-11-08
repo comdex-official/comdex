@@ -17,7 +17,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		block := k.GetLastBlockHeight(ctx)
 		if block != types.Int64Zero {
 			// if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block {
-				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero {
+			if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero {
 				if !k.GetCheckFlag(ctx) {
 					msg := k.GetFetchPriceMsg(ctx)
 					_, err := k.FetchPrice(ctx, msg)

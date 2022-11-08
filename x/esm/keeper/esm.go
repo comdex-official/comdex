@@ -392,7 +392,7 @@ func (k Keeper) SetUpShareCalculation(ctx sdk.Context, appID uint64) error {
 		}
 		k.SetAssetToAmount(ctx, amt)
 	}
-	esmStatus.SetUpShareCalculation = true
+	esmStatus.ShareCalculation = true
 	k.SetESMStatus(ctx, esmStatus)
 	return nil
 }
@@ -608,7 +608,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
 		}
 	}
-	esmStatus.SetUpCollateralRedemptionForStableVault = true
+	esmStatus.StableVaultRedemptionStatus = true
 
 	k.SetESMStatus(ctx, esmStatus)
 
@@ -625,15 +625,14 @@ func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) err
 			if !found {
 				continue
 			}
-			_, found= k.GetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id)
+			_, found = k.GetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id)
 
 			if price.IsPriceActive && !found {
 				k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price.Twa)
 
-			} else if ! price.IsPriceActive  {
+			} else if !price.IsPriceActive {
 				return nil
 			}
-
 		}
 	}
 	esmStatus.SnapshotStatus = true
