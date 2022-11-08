@@ -18,12 +18,12 @@ import (
 )
 
 func TestInvalidMsg(t *testing.T) {
-	app := app.Setup(false)
+	app1 := app.Setup(false)
 
-	app.VaultKeeper = keeper.NewKeeper(
-		app.AppCodec(), app.GetKey(types.StoreKey), app.BankKeeper, &app.AssetKeeper, &app.MarketKeeper, &app.CollectorKeeper, &app.EsmKeeper,
-		app.TokenmintKeeper, app.Rewardskeeper)
-	h := vault.NewHandler(app.VaultKeeper)
+	app1.VaultKeeper = keeper.NewKeeper(
+		app1.AppCodec(), app1.GetKey(types.StoreKey), app1.BankKeeper, &app1.AssetKeeper, &app1.MarketKeeper, &app1.CollectorKeeper, &app1.EsmKeeper,
+		app1.TokenmintKeeper, app1.Rewardskeeper)
+	h := vault.NewHandler(app1.VaultKeeper)
 
 	res, err := h(sdk.NewContext(nil, tmproto.Header{}, false, nil), testdata.NewTestMsg())
 	require.Error(t, err)
