@@ -17,7 +17,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 		discardData := bandKeeper.GetDiscardData(ctx)
-		if !discardData.DiscardBool {
+		if discardData.DiscardBool {
 			allTwa := k.GetAllTwa(ctx)
 			for _, twa := range allTwa {
 				twa.IsPriceActive = false
@@ -25,7 +25,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 				twa.PriceValue = twa.PriceValue[:0]
 				k.SetTwa(ctx, twa)
 			}
-			discardData.DiscardBool = true
+			discardData.DiscardBool = false
 			bandKeeper.SetDiscardData(ctx, discardData)
 		} else if bandKeeper.GetOracleValidationResult(ctx) {
 			block := bandKeeper.GetLastBlockHeight(ctx)
