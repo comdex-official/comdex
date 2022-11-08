@@ -16,22 +16,23 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		discardData := bandKeeper.GetDiscardData(ctx)
-		if discardData.DiscardBool {
-			allTwa := k.GetAllTwa(ctx)
-			for _, twa := range allTwa {
-				twa.IsPriceActive = false
-				twa.CurrentIndex = 0
-				twa.PriceValue = twa.PriceValue[:0]
-				k.SetTwa(ctx, twa)
-			}
-			discardData.DiscardBool = false
-			bandKeeper.SetDiscardData(ctx, discardData)
-		} else if bandKeeper.GetOracleValidationResult(ctx) {
+		if bandKeeper.GetOracleValidationResult(ctx) {
 			block := bandKeeper.GetLastBlockHeight(ctx)
 			if block != types.Int64Zero {
 				// if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
 				if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero {
+					discardData := bandKeeper.GetDiscardData(ctx)
+					if discardData.DiscardBool {
+						allTwa := k.GetAllTwa(ctx)
+						for _, twa := range allTwa {
+							twa.IsPriceActive = false
+							twa.CurrentIndex = 0
+							twa.PriceValue = twa.PriceValue[:0]
+							k.SetTwa(ctx, twa)
+						}
+						discardData.DiscardBool = false
+						bandKeeper.SetDiscardData(ctx, discardData)
+					}
 					assets := assetKeeper.GetAssets(ctx)
 					id := bandKeeper.GetLastFetchPriceID(ctx)
 					data, _ := bandKeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))

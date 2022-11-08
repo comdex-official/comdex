@@ -83,7 +83,7 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch ui
 		}
 	}
 	twa, found = k.GetTwa(ctx, id)
-	if !found {
+	if !found && rate > 0 {
 		twa.AssetID = id
 		twa.ScriptID = scriptID
 		twa.Twa = 0
@@ -92,7 +92,7 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch ui
 		twa.CurrentIndex = 1
 		twa.DiscardedHeightDiff = -1
 		k.SetTwa(ctx, twa)
-	} else {
+	} else if found && rate > 0 {
 		if twa.IsPriceActive {
 			twa.PriceValue[twa.CurrentIndex] = rate
 			twa.CurrentIndex = twa.CurrentIndex + 1
