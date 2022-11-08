@@ -246,12 +246,7 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 			return types.ErrPriceNotFound
 		}
 	}
-	// rate, found := k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
-	// if !found {
-	// 	rate = k.GetRateOfAsset(ctx, appID, assetID.Id)
-	// }
-	totalAmount := sdk.NewDecFromInt(amount.Amount)
-	totalPrice := totalAmount.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rateOut)))
+	totalPrice := k.CalcDollarValueOfToken(ctx, rateOut, amount.Amount, assetID.Decimals)
 	coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(totalPrice)
 
 	// To reduce the debt token amount from asset data.
