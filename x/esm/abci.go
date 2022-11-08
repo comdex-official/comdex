@@ -42,7 +42,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 							continue
 						}
 					}
-					if !esmStatus.SetUpCollateralRedemptionForStableVault  {
+					if !esmStatus.StableVaultRedemptionStatus  {
 						err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId,esmData)
 						if err != nil {
 							continue
@@ -55,7 +55,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 							continue
 						}
 					}
-					if !esmStatus.SetUpShareCalculation && esmStatus.VaultRedemptionStatus && esmStatus.SetUpCollateralRedemptionForStableVault  && esmStatus.CollectorTransaction {
+					if !esmStatus.ShareCalculation && esmStatus.VaultRedemptionStatus && esmStatus.StableVaultRedemptionStatus  && esmStatus.CollectorTransaction {
 						err := k.SetUpShareCalculation(ctx, esmStatus.AppId)
 						if err != nil {
 							continue
