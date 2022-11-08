@@ -63,12 +63,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: 10000000,
-		DebtThreshold:    5000000,
+		SurplusThreshold: sdk.NewInt(10000000),
+		DebtThreshold:    sdk.NewInt(5000000),
 		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          2000000,
+		LotSize:          sdk.NewInt(2000000),
 		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      2000000,
+		DebtLotSize:      sdk.NewInt(2000000),
 	}
 	err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg1)
 	s.Require().NoError(err)
@@ -77,12 +77,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 2,
 		SecondaryAssetID: 3,
-		SurplusThreshold: 10000000,
-		DebtThreshold:    5000000,
+		SurplusThreshold: sdk.NewInt(10000000),
+		DebtThreshold:    sdk.NewInt(5000000),
 		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          2000000,
+		LotSize:          sdk.NewInt(2000000),
 		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      2000000,
+		DebtLotSize:      sdk.NewInt(2000000),
 	}
 	err1 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg2)
 	s.Require().NoError(err1)
@@ -91,12 +91,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            2,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: 10000000,
-		DebtThreshold:    5000000,
+		SurplusThreshold: sdk.NewInt(10000000),
+		DebtThreshold:    sdk.NewInt(5000000),
 		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          2000000,
+		LotSize:          sdk.NewInt(2000000),
 		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      2000000,
+		DebtLotSize:      sdk.NewInt(2000000),
 	}
 	err2 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg3)
 	s.Require().NoError(err2)

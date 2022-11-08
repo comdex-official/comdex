@@ -106,6 +106,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         true,
 	})
 	s.Require().NoError(err)
 	assets := s.app.AssetKeeper.GetAssets(s.ctx)
@@ -164,8 +165,8 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       isVaultActive,
-		DebtCeiling:         1000000000000000000,
-		DebtFloor:           100000000,
+		DebtCeiling:         sdk.NewInt(1000000000000000000),
+		DebtFloor:           sdk.NewInt(100000000),
 		IsStableMintVault:   isStableMintVault,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
