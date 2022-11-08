@@ -106,6 +106,9 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch ui
 				twa.PriceValue[twa.CurrentIndex] = rate
 				twa.IsPriceActive = true
 				twa.CurrentIndex = twa.CurrentIndex + 1
+				if twa.CurrentIndex >= twaBatch {
+					twa.CurrentIndex = 0
+				}
 				twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
 			} else {
 				twa.PriceValue = append(twa.PriceValue, rate)
