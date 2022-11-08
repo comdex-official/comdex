@@ -54,7 +54,7 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (int64, int64, uint64, error) {
+func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (sdk.Int, int64, uint64, error) {
 	MinGovDeposit, GovTimeInSeconds, AssetID, err := qp.assetKeeper.GetAppWasmQuery(ctx, appID)
 	if err != nil {
 		return MinGovDeposit, GovTimeInSeconds, AssetID, nil

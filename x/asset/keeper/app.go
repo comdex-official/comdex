@@ -65,9 +65,9 @@ func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found boo
 	return app, true
 }
 
-func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
+func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (sdk.Int, int64, uint64, error) {
 	appData, _ := k.GetApp(ctx, id)
-	minGovDeposit := appData.MinGovDeposit.Int64()
+	minGovDeposit := appData.MinGovDeposit
 	var assetID uint64
 	gen := appData.GenesisToken
 	govTimeInSeconds := int64(appData.GovTimeInSeconds)
