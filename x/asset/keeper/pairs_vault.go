@@ -200,9 +200,9 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	return nil
 }
 
-func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
-	DebtCeiling := sdk.NewInt(int64(debtCeiling))
-	DebtFloor := sdk.NewInt(int64(debtFloor))
+func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor sdk.Int, PairName string) (bool, string) {
+	DebtCeiling := debtCeiling
+	DebtFloor := debtFloor
 
 	_, found := k.GetApp(ctx, appID)
 	if !found {

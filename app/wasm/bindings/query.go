@@ -135,8 +135,8 @@ type ExtendedPairsVaultRecordsQuery struct {
 	StabilityFee sdk.Dec `json:"stability_fee"`
 	ClosingFee   sdk.Dec `json:"closing_fee"`
 	DrawDownFee  sdk.Dec `json:"draw_down_fee"`
-	DebtCeiling  uint64  `json:"debt_ceiling"`
-	DebtFloor    uint64  `json:"debt_floor"`
+	DebtCeiling  sdk.Int  `json:"debt_ceiling"`
+	DebtFloor    sdk.Int  `json:"debt_floor"`
 	PairName     string  `json:"pair_name"`
 }
 
