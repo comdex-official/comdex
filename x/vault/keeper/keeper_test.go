@@ -74,6 +74,11 @@ func newInt(i int64) sdk.Int {
 	return sdk.NewInt(i)
 }
 
+func newIntStr(i string) sdk.Int {
+	res, _ := sdk.NewIntFromString(i)
+	return res
+}
+
 func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
