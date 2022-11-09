@@ -262,6 +262,8 @@ func (s *KeeperTestSuite) TestCreateVault() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	userAddress1 := "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp"
+
 	addr1 := s.addr(1)
 	s.AddAppAsset()
 
@@ -281,6 +283,18 @@ func (s *KeeperTestSuite) TestCreateVault() {
 
 	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
 	_, err := server.MsgCreate(sdk.WrapSDKContext(*ctx), &msg2)
+	s.Require().NoError(err)
+
+	msg3 := vaulttypes.MsgCreateRequest{
+		From:                userAddress1,
+		AppId:               1,
+		ExtendedPairVaultId: extendedVaultPairID1,
+		AmountIn:            sdk.NewInt(1000000000),
+		AmountOut:           sdk.NewInt(100000000),
+	}
+
+	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	_, err = server.MsgCreate(sdk.WrapSDKContext(*ctx), &msg3)
 	s.Require().NoError(err)
 }
 
@@ -306,7 +320,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 				AppMappingId:         1,
 				ExtendedPairId:       1,
 				TotalRewards:         sdk.NewCoin("btc", amt),
-				DurationDays:         5,
+				DurationDays:         3,
 				Depositor:            userAddress,
 				MinLockupTimeSeconds: 0,
 			},
@@ -327,15 +341,21 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 			}
 		})
 	}
+	userAddress1 := "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp"
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
 	req := abci.RequestBeginBlock{}
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
+	availableBalances1 := s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
+	fmt.Println("bal at first day second user", availableBalances1)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances1 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
+	fmt.Println("bal at second day second user", availableBalances1)
 }
