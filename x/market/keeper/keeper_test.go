@@ -81,3 +81,9 @@ func TestFucn2(t *testing.T) {
 	fmt.Println("newAmount", newAmount)
 	//fmt.Println("arr new value", arr)
 }
+
+func TestFucn3(t *testing.T) {
+	x := sdk.NewInt(32606975564)
+	y := sdk.NewInt(2600633730)
+	fmt.Println("answer", x.Sub(y))
+}

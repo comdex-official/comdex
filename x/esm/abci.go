@@ -61,11 +61,8 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 							continue
 						}
 					}
-
 				}
-
 			}
-
 		}
 		return nil
 	})
