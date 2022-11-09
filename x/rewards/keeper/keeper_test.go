@@ -37,8 +37,8 @@ func TestKeeperTestSuite(t *testing.T) {
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
-	s.rewardsKeeper = s.app.Rewardskeeper
 	s.assetKeeper = s.app.AssetKeeper
+	s.lockerKeeper = s.app.LockerKeeper
 	s.querier = rewardsKeeper.QueryServer{Keeper: s.rewardsKeeper}
 	s.msgServer = rewardsKeeper.NewMsgServerImpl(s.rewardsKeeper)
 	s.collector = s.app.CollectorKeeper
@@ -52,4 +52,8 @@ func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 	addr1, err := sdk.AccAddressFromBech32(addr)
 	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, lockerTypes.ModuleName, addr1, sdk.NewCoins(amt))
 	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
+	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
 }
