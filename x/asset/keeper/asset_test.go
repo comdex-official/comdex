@@ -1346,7 +1346,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			},
 			2,
 			true,
-			assetTypes.ErrorAssetAlreadyExistingApp,
+			assetTypes.ErrorIsCDPMintableDisabled,
 		},
 		{
 			"ErrorMinGovDepositIsZero",
