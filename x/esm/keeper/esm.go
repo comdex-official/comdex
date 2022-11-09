@@ -264,48 +264,6 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 	return dataAfterCoolOff
 }
 
-//A top level function gets called from the abci
-// It internally calls the following functions
-//1. Vault
-//2, stable Vault  (code for vault and stabel vault can be reused
-//3. collector
-//4. share calc.
-//5. esm setting data
-
-// func (k Keeper) EsmStepStateTrigger(ctx sdk.Context, appID uint64) error {
-// 	esmStatus, found := k.GetESMStatus(ctx, appID)
-// 	if !found {
-// 		return types.ErrESMParamsNotFound
-// 	}
-// 	esmData, _ := k.GetESMTriggerParams(ctx, appID)
-// 	//1. Vault Calling
-
-// 	err := k.SetUpCollateralRedemptionForVault(ctx, appID, esmData)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	//2, stable Vault  (code for vault and stabel vault can be reused)
-
-// 	err = k.SetUpCollateralRedemptionForStableVault(ctx, appID, esmData)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	//3. collector
-// 	//Used to reduce debt tokens from the debt pool.
-// 	//Call collector. for each debt token, substract it from debt pool, burn it.
-
-// 	//4. share calc.
-
-// 	//5. esm setting data
-// 	esmStatus.VaultRedemptionStatus = true
-
-// 	k.SetESMStatus(ctx, esmStatus)
-
-// 	return nil
-
-// }
-
 func (k Keeper) SetUpDebtRedemptionForCollector(ctx sdk.Context, appID uint64) error {
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {

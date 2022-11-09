@@ -11,13 +11,13 @@ ASSETS = [
     # [name, denom, decimals, isOnChain, assetOraclePriceRequired, isCdpMintable]
     ["ATOM", "uatom", 1000000, 0, 1, 0],  # ID - 1
     ["CMDX", "ucmdx",1000000, 0, 1, 0],  # ID - 2
-    ["CMST", "ucmst",1000000, 1, 0, 1],  # ID - 3
+    ["CMST", "ucmst",1000000, 1, 1, 1],  # ID - 3
     ["OSMO", "uosmo",1000000, 0, 1, 0],  # ID - 4
-    ["CATOM", "ucatom",1000000, 0, 0, 1],  # ID - 5
-    ["CCMDX", "uccmdx",1000000, 0, 0, 1],  # ID - 6
-    ["CCMST", "uccmst",1000000, 0, 0, 1],  # ID - 7
-    ["COSMO", "ucosmo",1000000, 0, 0, 1],  # ID - 8
-    ["HARBOR", "uharbor",1000000, 1, 0, 0],  # ID - 9
+    ["CATOM", "ucatom",1000000, 1, 0, 1],  # ID - 5
+    ["CCMDX", "uccmdx",1000000, 1, 0, 1],  # ID - 6
+    ["CCMST", "uccmst",1000000, 1, 0, 1],  # ID - 7
+    ["COSMO", "ucosmo",1000000, 1, 0, 1],  # ID - 8
+    ["HARBOR", "uharbor",1000000, 1, 1, 0],  # ID - 9
     ["WETH", "weth-wei",1000000000000000000, 0, 1, 0],  # ID - 10
     ["CANTO", "ucant",10000000000000000000000000, 0, 1, 0],  # ID - 11
     ["CGOLD", "ucgold",1000000, 1, 1, 1],  # ID - 12
