@@ -749,7 +749,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 				// send rewards
 				newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-				newRewardDec := sdk.NewDec(newReward.Int64())
+				newRewardDec := sdk.NewDecFromInt(newReward)
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 				err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)

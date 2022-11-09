@@ -674,7 +674,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 
 	if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
 		newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-		newInterestDec := sdk.NewDec(newInterest.Int64())
+		newInterestDec := sdk.NewDecFromInt(newInterest)
 		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 		vaultData.BlockTime = ctx.BlockTime()

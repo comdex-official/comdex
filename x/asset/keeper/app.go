@@ -285,11 +285,14 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if !assetData.IsOnChain {
 			return types.ErrorAssetIsOffChain
 		}
+		if assetData.IsCdpMintable {
+			return types.ErrorIsCDPMintableDisabled
+		}
 		_, err := sdk.AccAddressFromBech32(data.Recipient)
 		if err != nil {
 			return types.ErrorInvalidFrom
 		}
-		if data.GenesisSupply.LT(sdk.ZeroInt()) {
+		if data.GenesisSupply.LTE(sdk.ZeroInt()) {
 			return types.ErrorInvalidGenesisSupply
 		}
 		hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)

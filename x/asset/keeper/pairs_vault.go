@@ -164,7 +164,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	}
 	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
 
-	if !(assetOut.IsOnChain && assetOut.IsCdpMintable) {
+	if !assetOut.IsCdpMintable || !assetOut.IsOnChain {
 		return types.ErrorIsCDPMintableDisabled
 	}
 
