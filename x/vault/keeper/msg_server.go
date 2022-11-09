@@ -935,6 +935,10 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if err != nil {
 		return nil, err
 	}
+	// Check debt Floor
+	if !tokenOutAmount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
+	}
 
 	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
@@ -1096,6 +1100,10 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if err != nil {
 		return nil, err
 	}
+	// Check debt Floor
+	if !tokenOutAmount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
+	}
 	// Check Debt Ceil
 	// currentMintedStatistics := tokenMintedStatistics.Add(msg.Amount)
 	currentMintedStatistics := tokenMintedStatistics.Add(tokenOutAmount)
@@ -1129,7 +1137,6 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		//			COLLECTOR FUNCTION
 		/////////////////////////////////////////////////
 
-		//collectorShare := (tokenOutAmount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
 		collectorShare := sdk.NewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
 		if collectorShare.GT(sdk.ZeroInt()) {
@@ -1214,6 +1221,11 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	// Checking if the appMapping_id in the msg_create & extendedPairVault_are same or not
 	if appMapping.Id != extendedPairVault.AppId {
 		return nil, types.ErrorAppMappingIDMismatch
+	}
+
+	// Check debt Floor
+	if !msg.Amount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
 	}
 
 	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)

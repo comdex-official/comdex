@@ -164,7 +164,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	}
 	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
 
-	if !(assetOut.IsOnChain && assetOut.IsCdpMintable) {
+	if !assetOut.IsCdpMintable || !assetOut.IsOnChain {
 		return types.ErrorIsCDPMintableDisabled
 	}
 
@@ -334,7 +334,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			}
 			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
 				newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-				newInterestDec := sdk.NewDec(newInterest.Int64())
+				newInterestDec := sdk.NewDecFromInt(newInterest)
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 				// updating user rewards data
