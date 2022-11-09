@@ -548,6 +548,8 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						if err != nil {
 							return err
 						}
+						length := k.vault.GetLengthOfVault(ctx)
+						k.vault.SetLengthOfVault(ctx, length+1)
 					}
 
 					dutchAuction.AuctionStatus = auctiontypes.AuctionEnded

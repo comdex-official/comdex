@@ -1,13 +1,17 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
+	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/comdex-official/comdex/x/rewards"
 	keeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func (s *KeeperTestSuite) AddAppAsset() {
@@ -105,43 +109,77 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 }
 
 func (s *KeeperTestSuite) TestCreateLocker() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
 	s.AddAppAsset()
 	s.AddCollectorLookupTable()
-	locker := lockertypes.Locker{
-		LockerId:           1,
-		Depositor:          userAddress,
-		ReturnsAccumulated: sdk.ZeroInt(),
-		NetBalance:         sdk.NewIntFromUint64(1000000),
-		CreatedAt:          utils.ParseTime("2022-03-01T12:00:00Z"),
-		AssetDepositId:     1,
-		IsLocked:           false,
-		AppId:              1,
-		BlockHeight:        10,
-		BlockTime:          utils.ParseTime("2022-03-01T12:00:00Z"),
+	lockerKeeper, ctx := &s.lockerKeeper, &s.ctx
+	server := lockerkeeper.NewMsgServer(*lockerKeeper)
+	for _, tc := range []struct {
+		name string
+		msg  lockertypes.MsgAddWhiteListedAssetRequest
+	}{
+		{
+			"Whitelist : App1 Asset 1",
+			lockertypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 1,
+			},
+		},
+		{
+			"Whitelist : App1 Asset 2",
+			lockertypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   1,
+				AssetId: 2,
+			},
+		},
+		{
+			"Whitelist : App2 Asset 1",
+			lockertypes.MsgAddWhiteListedAssetRequest{
+				From:    userAddress,
+				AppId:   2,
+				AssetId: 1,
+			},
+		},
+	} {
+		s.Run(tc.name, func() {
+			_, err := lockerKeeper.AddWhiteListedAsset(*ctx, &tc.msg)
+			s.Require().NoError(err)
+		})
 	}
-	lockerKeeper.SetLocker(*ctx, locker)
-	_, found := lockerKeeper.GetLocker(*ctx, 1)
-	s.Require().True(found)
+	msg2 := lockertypes.MsgCreateLockerRequest{
+		Depositor: userAddress,
+		Amount:    sdk.NewInt(1000000000),
+		AssetId:   1,
+		AppId:     1,
+	}
+
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	_, err := server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &msg2)
+	s.Require().NoError(err)
 }
 
 func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	amt, _ := sdk.NewIntFromString("1000000000000000000000")
+	s.fundAddr(userAddress, sdk.NewCoin("weth", amt))
 
 	s.TestCreateLocker()
 	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
-	amt, _ := sdk.NewIntFromString("1000000000000000000000")
 	server := keeper.NewMsgServerImpl(*rewardsKeeper)
 	for _, tc := range []struct {
 		name          string
 		msg           types.ActivateExternalRewardsLockers
 		expectedError bool
-		query         types.QueryExternalRewardsLockersRequest
 		ExpErr        error
 	}{
 		{
-			"WithdrawLocker : success",
+			"ActivateExternalRewardsLockers : success",
 			types.ActivateExternalRewardsLockers{
 				AppMappingId:         1,
 				AssetId:              1,
@@ -151,7 +189,6 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
 				MinLockupTimeSeconds: 0,
 			},
 			false,
-			types.QueryExternalRewardsLockersRequest{},
 			nil,
 		},
 	} {
@@ -163,9 +200,20 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
-				_, err := s.querier.QueryExternalRewardsLockers(sdk.WrapSDKContext(*ctx), &tc.query)
-				s.Require().NoError(err)
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+				fmt.Println("bal when created ext rewards", availableBalances)
 			}
 		})
 	}
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(11)
+	req := abci.RequestBeginBlock{}
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at first day", availableBalances)
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(12)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at second day", availableBalances)
 }

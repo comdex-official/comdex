@@ -494,6 +494,8 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			k.vault.DeleteUserVaultExtendedPairMapping(ctx, data.Owner, appID, data.ExtendedPairVaultID)
 			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountOut, false)
 			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountIn, false)
+			length := k.vault.GetLengthOfVault(ctx)
+			k.vault.SetLengthOfVault(ctx, length-1)
 		}
 	}
 	esmStatus.VaultRedemptionStatus = true
