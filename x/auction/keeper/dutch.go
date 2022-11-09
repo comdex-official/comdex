@@ -325,17 +325,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		if err != nil {
 			return err
 		}
-	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { // entire collateral sold out
-		err = k.SetDutchAuction(ctx, auction)
-		if err != nil {
-			return err
-		}
-
-		// remove dutch auction
-		err = k.CloseDutchAuction(ctx, auction)
-		if err != nil {
-			return err
-		}
 	} else {
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -427,8 +416,6 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
 
 	// set sell of history in locked vault
 	err = k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)

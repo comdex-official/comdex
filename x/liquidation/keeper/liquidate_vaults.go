@@ -78,6 +78,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 					}
 					vault, _ := k.vault.GetVault(ctx, vault.Id)
 					totalFees := vault.InterestAccumulated.Add(vault.ClosingFeeAccumulated)
+					totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 					collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 					if err != nil {
 						return fmt.Errorf("error Calculating CR in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
