@@ -135,7 +135,8 @@ func (genState GenesisState) Validate() error {
 			orderSet[order.PairId][order.Id] = struct{}{}
 		}
 		activeFarmerMap := map[string]ActiveFarmer{}
-		for i, activeFarmer := range appState.ActiveFarmers {
+		for i := len(appState.ActiveFarmers) - 1; i >= 0; i-- {
+			activeFarmer := appState.ActiveFarmers[i]
 			if activeFarmer.FarmedPoolCoin.IsPositive() {
 				if err := activeFarmer.Validate(); err != nil {
 					return fmt.Errorf("invalid active farmer at index %d: %w", i, err)
@@ -144,7 +145,8 @@ func (genState GenesisState) Validate() error {
 					return fmt.Errorf("active farmer at index %d has unknown pool id: %d", i, activeFarmer.PoolId)
 				}
 				if _, ok := activeFarmerMap[activeFarmer.Farmer]; ok {
-					return fmt.Errorf("active farmer at index %d has a duplicate farmer : %s", i, activeFarmer.Farmer)
+					continue
+					// return fmt.Errorf("active farmer at index %d has a duplicate farmer : %s", i, activeFarmer.Farmer)
 				}
 				activeFarmerMap[activeFarmer.Farmer] = activeFarmer
 			}
