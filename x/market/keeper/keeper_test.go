@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	rewardtypes "github.com/comdex-official/comdex/x/rewards/types"
+	"math"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -53,9 +55,29 @@ func TestFucn1(t *testing.T) {
 }
 
 func TestFucn2(t *testing.T) {
-	arr :=[]int{12,23,34,45,56}
-	arr = arr[:0]
+	//arr :=[]int{12,23,34,45,56}
+	//arr = arr[:0]
 	// arr = []int{}
 	// arr = make([]int, 0)
-	fmt.Println("arr new value", arr)
+	lsr, _ := sdk.NewDecFromStr("0.001")
+	amount := sdk.NewInt(100000000)
+	yearsElapsed := sdk.NewDec(50).QuoInt64(rewardtypes.SecondsPerYear)
+	perc := lsr.String()
+	a, _ := sdk.NewDecFromStr("1")
+	b, _ := sdk.NewDecFromStr(perc)
+	factor1 := a.Add(b)
+
+	intPerBlockFactor := math.Pow(factor1.MustFloat64(), yearsElapsed.MustFloat64())
+	intAccPerBlock := intPerBlockFactor - rewardtypes.Float64One
+
+	amtFloat := amount.ToDec().MustFloat64()
+	newAmount := intAccPerBlock * amtFloat
+
+	fmt.Println("yearsElapsed", yearsElapsed)
+	fmt.Println("yearsElapsed float", yearsElapsed.MustFloat64())
+	fmt.Println("factor1 ", factor1)
+	fmt.Println("factor1 float", factor1.MustFloat64())
+	fmt.Println("intPerBlockFactor", intPerBlockFactor)
+	fmt.Println("newAmount", newAmount)
+	//fmt.Println("arr new value", arr)
 }

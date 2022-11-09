@@ -92,6 +92,7 @@ func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         true,
 	})
 	s.Require().NoError(err)
 	assets := s.app.AssetKeeper.GetAssets(s.ctx)
