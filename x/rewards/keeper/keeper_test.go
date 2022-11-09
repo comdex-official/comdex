@@ -1,9 +1,13 @@
 package keeper_test
 
 import (
+	"encoding/binary"
+	"github.com/comdex-official/comdex/app/wasm/bindings"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -28,6 +32,7 @@ type KeeperTestSuite struct {
 	msgServer     rewardstypes.MsgServer
 	collector     collectorKeeper.Keeper
 	rewardsKeeper rewardsKeeper.Keeper
+	vaultKeeper   vaultKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -43,6 +48,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.msgServer = rewardsKeeper.NewMsgServerImpl(s.rewardsKeeper)
 	s.collector = s.app.CollectorKeeper
 	s.rewardsKeeper = s.app.Rewardskeeper
+	s.vaultKeeper = s.app.VaultKeeper
 }
 
 func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
@@ -56,4 +62,66 @@ func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) getBalances(addr sdk.AccAddress) sdk.Coins {
 	return s.app.BankKeeper.GetAllBalances(s.ctx, addr)
+}
+
+func (s *KeeperTestSuite) CreateNewPair(addr sdk.Address, assetIn, assetOut uint64) uint64 {
+	err := s.app.AssetKeeper.AddPairsRecords(s.ctx, assettypes.Pair{
+		AssetIn:  assetIn,
+		AssetOut: assetOut,
+	})
+	s.Suite.NoError(err)
+	pairs := s.app.AssetKeeper.GetPairs(s.ctx)
+	var pairID uint64
+	for _, pair := range pairs {
+		if pair.AssetIn == assetIn && pair.AssetOut == assetOut {
+			pairID = pair.Id
+			break
+		}
+	}
+	s.Require().NotZero(pairID)
+	return pairID
+}
+
+func (s *KeeperTestSuite) addr(addrNum int) sdk.AccAddress {
+	addr := make(sdk.AccAddress, 20)
+	binary.PutVarint(addr, int64(addrNum))
+	return addr
+}
+
+func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
+	pairName string,
+	appMappingID, pairID uint64,
+	isStableMintVault, isVaultActive bool,
+) uint64 {
+	err := s.app.AssetKeeper.WasmAddExtendedPairsVaultRecords(s.ctx, &bindings.MsgAddExtendedPairsVault{
+		AppID:               appMappingID,
+		PairID:              pairID,
+		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
+		ClosingFee:          sdk.NewDec(0),
+		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
+		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
+		IsVaultActive:       isVaultActive,
+		DebtCeiling:         sdk.NewInt(1000000000000000000),
+		DebtFloor:           sdk.NewInt(100000000),
+		IsStableMintVault:   isStableMintVault,
+		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
+		PairName:            pairName,
+		AssetOutOraclePrice: true,
+		AssetOutPrice:       1000000,
+		MinUsdValueLeft:     1000000,
+	})
+	s.Suite.Require().NoError(err)
+
+	extendedVaultPairs, found := s.app.AssetKeeper.GetPairsVaults(s.ctx)
+	s.Suite.Require().True(found)
+
+	var extendedVaultPairID uint64
+	for _, extendedVaultPair := range extendedVaultPairs {
+		if extendedVaultPair.PairName == pairName && extendedVaultPair.AppId == appMappingID {
+			extendedVaultPairID = extendedVaultPair.Id
+			break
+		}
+	}
+	s.Require().NotZero(extendedVaultPairID)
+	return extendedVaultPairID
 }

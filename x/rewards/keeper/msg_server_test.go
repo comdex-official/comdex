@@ -7,9 +7,12 @@ import (
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	"github.com/comdex-official/comdex/x/rewards"
 	keeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"github.com/comdex-official/comdex/x/rewards/types"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
@@ -35,23 +38,48 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg3 := assetTypes.Asset{
-		Name:      "CMDX",
-		Denom:     "ucmdx",
-		Decimals:  sdk.NewInt(1000000),
-		IsOnChain: true,
+		Name:          "CMDX",
+		Denom:         "ucmdx",
+		Decimals:      sdk.NewInt(1000000),
+		IsOnChain:     true,
+		IsCdpMintable: true,
 	}
 
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
 	s.Require().NoError(err)
+	market1 := markettypes.TimeWeightedAverage{
+		AssetID:       1,
+		ScriptID:      12,
+		Twa:           1000000,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{1000000},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market1)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 1)
+	s.Suite.NoError(err)
 
 	msg4 := assetTypes.Asset{
-		Name:      "CMST",
-		Denom:     "ucmst",
-		Decimals:  sdk.NewInt(1000000),
-		IsOnChain: true,
+		Name:          "CMST",
+		Denom:         "ucmst",
+		Decimals:      sdk.NewInt(1000000),
+		IsOnChain:     true,
+		IsCdpMintable: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
 	s.Require().NoError(err)
+
+	market2 := markettypes.TimeWeightedAverage{
+		AssetID:       2,
+		ScriptID:      12,
+		Twa:           1000000,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{1000000},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market2)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 2)
+	s.Suite.NoError(err)
 
 	msg5 := assetTypes.Asset{
 		Name:      "HARBOR",
@@ -61,6 +89,18 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
 	s.Require().NoError(err)
+
+	market3 := markettypes.TimeWeightedAverage{
+		AssetID:       3,
+		ScriptID:      12,
+		Twa:           1000000,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{1000000},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market3)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 3)
+	s.Suite.NoError(err)
 }
 
 func (s *KeeperTestSuite) AddCollectorLookupTable() {
@@ -195,6 +235,88 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
 		s.Run(tc.name, func() {
 
 			_, err := server.ExternalRewardsLockers(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+				fmt.Println("bal when created ext rewards", availableBalances)
+			}
+		})
+	}
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(11)
+	req := abci.RequestBeginBlock{}
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at first day", availableBalances)
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(12)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at second day", availableBalances)
+}
+
+func (s *KeeperTestSuite) TestCreateVault() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
+	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	addr1 := s.addr(1)
+	s.AddAppAsset()
+
+	pairID := s.CreateNewPair(addr1, 1, 2)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", 1, pairID, false, true)
+
+	vaultKeeper, ctx := &s.vaultKeeper, &s.ctx
+	server := vaultkeeper.NewMsgServer(*vaultKeeper)
+
+	msg2 := vaulttypes.MsgCreateRequest{
+		From:                userAddress,
+		AppId:               1,
+		ExtendedPairVaultId: extendedVaultPairID1,
+		AmountIn:            sdk.NewInt(1000000000),
+		AmountOut:           sdk.NewInt(200000000),
+	}
+
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	_, err := server.MsgCreate(sdk.WrapSDKContext(*ctx), &msg2)
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
+	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	amt, _ := sdk.NewIntFromString("1000000000000000000000")
+	s.fundAddr(userAddress, sdk.NewCoin("btc", amt))
+
+	s.TestCreateVault()
+	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
+	server := keeper.NewMsgServerImpl(*rewardsKeeper)
+	for _, tc := range []struct {
+		name          string
+		msg           types.ActivateExternalRewardsVault
+		expectedError bool
+		ExpErr        error
+	}{
+		{
+			"ActivateExternalRewardsLockers : success",
+			types.ActivateExternalRewardsVault{
+				AppMappingId:         1,
+				ExtendedPairId:       1,
+				TotalRewards:         sdk.NewCoin("btc", amt),
+				DurationDays:         5,
+				Depositor:            userAddress,
+				MinLockupTimeSeconds: 0,
+			},
+			false,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			_, err := server.ExternalRewardsVault(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.ExpErr != nil {
 				s.Require().Error(err)
 				s.Require().EqualError(err, tc.ExpErr.Error())
