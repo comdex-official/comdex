@@ -192,6 +192,9 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 		return types.ErrorNameDidNotMeetCriterion
 	}
+	if !msg.IsOnChain && msg.IsCdpMintable {
+		return types.ErrorOffChainAssetCannotBeMintable
+	}
 
 	var (
 		id    = k.GetAssetID(ctx)

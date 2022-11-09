@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	"fmt"
-
+	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/stretchr/testify/suite"
@@ -2022,7 +2022,8 @@ func (s *KeeperTestSuite) TestMsgVaultInterestCalc() {
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
 	//extendedVaultPairID3 := s.CreateNewExtendedVaultPair("CMDX-D", appID1, pairID2, false, false)
-
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
 	msg := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
 	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
@@ -2030,6 +2031,13 @@ func (s *KeeperTestSuite) TestMsgVaultInterestCalc() {
 	msg = types.NewMsgCreateRequest(addr2, appID2, extendedVaultPairID2, newInt(1000000000), newInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr2.String()), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000))))
 	s.msgServer.MsgCreate(sdk.WrapSDKContext(s.ctx), msg)
+
+	rewardskeeper, ctx := &s.rewardsKeeper, &s.ctx
+	err := rewardskeeper.WhitelistAppIDVault(*ctx, 1)
+	s.Require().NoError(err)
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
 
 	testCases := []struct {
 		Name               string
@@ -2040,6 +2048,22 @@ func (s *KeeperTestSuite) TestMsgVaultInterestCalc() {
 		QueryResponse      *types.Vault
 		AvailableBalance   sdk.Coins
 	}{
+		{
+			Name:               "success valid case app1 user1",
+			Msg:                *types.NewMsgVaultInterestCalcRequest(addr1, appID1, 1),
+			ExpErr:             nil,
+			ExpResp:            &types.MsgVaultInterestCalcResponse{},
+			QueryResponseIndex: 0,
+			QueryResponse: &types.Vault{
+				Id:                  1,
+				AppId:               appID1,
+				ExtendedPairVaultID: extendedVaultPairID1,
+				Owner:               addr1.String(),
+				AmountIn:            newInt(1069000000),
+				AmountOut:           newInt(200000000),
+			},
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(198000000))),
+		},
 		{
 			Name:               "success valid case app1 user1",
 			Msg:                *types.NewMsgVaultInterestCalcRequest(addr1, appID1, 1),
@@ -2081,6 +2105,7 @@ func (s *KeeperTestSuite) TestMsgVaultInterestCalc() {
 				//s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
+				fmt.Println("InterestAccumulated", vaults[tc.QueryResponseIndex].InterestAccumulated)
 				s.Require().Len(vaults, 2)
 				s.Require().Equal(tc.QueryResponse.Id, vaults[tc.QueryResponseIndex].Id)
 				s.Require().Equal(tc.QueryResponse.Owner, vaults[tc.QueryResponseIndex].Owner)
