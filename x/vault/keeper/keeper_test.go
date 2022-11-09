@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"testing"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -21,11 +22,12 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app       *chain.App
-	ctx       sdk.Context
-	keeper    keeper.Keeper
-	querier   keeper.QueryServer
-	msgServer types.MsgServer
+	app           *chain.App
+	ctx           sdk.Context
+	keeper        keeper.Keeper
+	querier       keeper.QueryServer
+	msgServer     types.MsgServer
+	rewardsKeeper rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -38,6 +40,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.app.VaultKeeper
 	s.querier = keeper.QueryServer{Keeper: s.keeper}
 	s.msgServer = keeper.NewMsgServer(s.keeper)
+	s.rewardsKeeper = s.app.Rewardskeeper
 }
 
 // Below are just shortcuts to frequently-used functions.

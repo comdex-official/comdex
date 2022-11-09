@@ -40,6 +40,7 @@ var (
 	ErrorDuplicateShortNameForApp          = errors.Register(ModuleName, 224, "duplicate short name for app")
 	ErrorIsCDPMintableDisabled             = errors.Register(ModuleName, 225, "can not use asset out for which cdp mintable is false")
 	ErrorMinGovDepositShouldBeZero         = errors.Register(ModuleName, 226, "min gov deposit should be zero if token not used for governance")
+	ErrorOffChainAssetCannotBeMintable     = errors.Register(ModuleName, 227, "Off Chain Asset Can not Be Mintable")
 )
 
 var (

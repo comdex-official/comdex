@@ -590,14 +590,14 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	k.SetVault(ctx, newVault)
 	k.SetIDForVault(ctx, newID)
 
-	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, newVault)
-
 	var mappingData types.OwnerAppExtendedPairVaultMappingData
 	mappingData.Owner = From
 	mappingData.AppId = AppID
 	mappingData.ExtendedPairId = ExtendedPairVaultID
 	mappingData.VaultId = newVault.Id
-
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, AppID, ExtendedPairVaultID)
+	appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds, newVault.Id)
+	k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 	k.SetUserAppExtendedPairMappingData(ctx, mappingData)
 
 	return nil

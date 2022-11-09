@@ -28,7 +28,7 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 			if found && esmStatus.Status {
 				//Should check if price exists in the band or not. else should skip---- k.market.isPriceValidationActive
 				//to add this check at all abci as well where price is important
-				if !esmStatus.SnapshotStatus   {
+				if !esmStatus.SnapshotStatus {
 					err := k.SnapshotOfPrices(ctx, esmStatus)
 					if err != nil {
 						continue
@@ -37,13 +37,13 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 				if ctx.BlockTime().After(esmStatus.EndTime) && esmStatus.SnapshotStatus {
 					esmData, _ := k.GetESMTriggerParams(ctx, esmStatus.AppId)
 					if !esmStatus.VaultRedemptionStatus {
-						err := k.SetUpCollateralRedemptionForVault(ctx, esmStatus.AppId,esmData)
+						err := k.SetUpCollateralRedemptionForVault(ctx, esmStatus.AppId, esmData)
 						if err != nil {
 							continue
 						}
 					}
-					if !esmStatus.StableVaultRedemptionStatus  {
-						err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId,esmData)
+					if !esmStatus.StableVaultRedemptionStatus {
+						err := k.SetUpCollateralRedemptionForStableVault(ctx, esmStatus.AppId, esmData)
 						if err != nil {
 							continue
 						}
@@ -55,17 +55,14 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 							continue
 						}
 					}
-					if !esmStatus.ShareCalculation && esmStatus.VaultRedemptionStatus && esmStatus.StableVaultRedemptionStatus  && esmStatus.CollectorTransaction {
+					if !esmStatus.ShareCalculation && esmStatus.VaultRedemptionStatus && esmStatus.StableVaultRedemptionStatus && esmStatus.CollectorTransaction {
 						err := k.SetUpShareCalculation(ctx, esmStatus.AppId)
 						if err != nil {
 							continue
 						}
 					}
-
 				}
-
 			}
-
 		}
 		return nil
 	})

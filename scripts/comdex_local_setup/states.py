@@ -19,7 +19,8 @@ ASSETS = [
     ["COSMO", "ucosmo",1000000, 0, 0, 1],  # ID - 8
     ["HARBOR", "uharbor",1000000, 1, 0, 0],  # ID - 9
     ["WETH", "weth-wei",1000000000000000000, 0, 1, 0],  # ID - 10
-    ["CANTO", "ucant",10000000000000000000000000, 0, 1, 0],  # ID - 10
+    ["CANTO", "ucant",10000000000000000000000000, 0, 1, 0],  # ID - 11
+    ["CGOLD", "ucgold",1000000, 1, 1, 1],  # ID - 12
 ]
 
 PAIRS = [
@@ -27,7 +28,8 @@ PAIRS = [
     [1, 3],  # ID - 1
     [2, 3],  # ID - 2
     [4, 3],  # ID - 3
-    [10, 3],  # ID - 3
+    [10, 3],  # ID - 4
+    [2, 12],  # ID - 5
 ]
 
 LIQUIDITY_PAIRS = [
@@ -671,8 +673,8 @@ WASM_PROPOSALS = [
                                 "app_id": 1,
                                 "target_value": {"amount": "200", "denom": "uharbor"},
                                 "cool_off_period": 60,
-                                "asset_id": [3],
-                                "rates": [1000000],
+                                "asset_id": [3,4],
+                                "rates": [1000000,1000000],
                             }
                         }
                     ],
@@ -716,7 +718,7 @@ WASM_PROPOSALS = [
             }
         },
     },
-        {
+    {
         "proposalID": 11,
         "isProposal": True,
         "contractAddressKey": "governance_contract",
@@ -764,7 +766,7 @@ WASM_PROPOSALS = [
                         {
                             "msg_add_extended_pairs_vault": {
                                 "app_id": 1,
-                                "pair_id": 4,
+                                "pair_id": 3,
                                 "stability_fee": "0.025",
                                 "closing_fee": "0.00",
                                 "liquidation_penalty": "0.12",
@@ -774,7 +776,42 @@ WASM_PROPOSALS = [
                                 "debt_floor": "100000000",
                                 "is_stable_mint_vault": True,
                                 "min_cr": "1.01",
-                                "pair_name": "WETH-B",
+                                "pair_name": "OSMO-B",
+                                "asset_out_oracle_price": False,
+                                "asset_out_price": 1000000,
+                                "min_usd_value_left": 100000,
+                            }
+                        }
+                    ],
+                    "app_id_param": 1,
+                }
+            }
+        },
+    },
+    {
+        "proposalID": 13,
+        "isProposal": True,
+        "contractAddressKey": "governance_contract",
+        "content": {
+            "propose": {
+                "propose": {
+                    "title": "New proposal for add vault pair for CMDX C - CMST",
+                    "description": "This is a base execution proposal to add CMDX C - CMST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 CMST f. Debt Floor : 100 CMST ",
+                    "msgs": [
+                        {
+                            "msg_add_extended_pairs_vault": {
+                                "app_id": 1,
+                                "pair_id": 5,
+                                "stability_fee": "0.025",
+                                "closing_fee": "0.00",
+                                "liquidation_penalty": "0.12",
+                                "draw_down_fee": "0.001",
+                                "is_vault_active": True,
+                                "debt_ceiling": "100000000000000",
+                                "debt_floor": "100000000",
+                                "is_stable_mint_vault": False,
+                                "min_cr": "1.7",
+                                "pair_name": "CGOLD-A",
                                 "asset_out_oracle_price": False,
                                 "asset_out_price": 1000000,
                                 "min_usd_value_left": 100000,

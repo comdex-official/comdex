@@ -792,12 +792,6 @@ func (s *KeeperTestSuite) TestCloseLocker() {
 	}
 }
 
-func (s *KeeperTestSuite) TestCreateIntRewards() {
-	rewardskeeper, ctx := &s.rewardsKeeper, &s.ctx
-	err := rewardskeeper.WhitelistAssetForInternalRewards(*ctx, 1, 1)
-	s.Require().NoError(err)
-}
-
 //SetNetFeeCollectedData
 
 func (s *KeeperTestSuite) TestSetNetFeeCollectedData() {
@@ -823,7 +817,10 @@ func (s *KeeperTestSuite) TestLockerRewardCalc() {
 	s.TestFundModule()
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
-	s.TestCreateIntRewards()
+	//s.TestCreateIntRewards()
+	rewardskeeper, ctx := &s.rewardsKeeper, &s.ctx
+	err := rewardskeeper.WhitelistAssetForInternalRewards(*ctx, 1, 1)
+	s.Require().NoError(err)
 	server := keeper.NewMsgServer(*lockerKeeper)
 	for _, tc := range []struct {
 		name          string
@@ -873,7 +870,6 @@ func (s *KeeperTestSuite) TestLockerRewardCalc() {
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 				s.Require().NoError(err)
 				s.Require().NotEqual(lockerInfo.LockerInfo.ReturnsAccumulated, sdk.ZeroInt())
-				fmt.Println("lockerInfo.LockerInfo", lockerInfo.LockerInfo)
 				fmt.Println("ReturnsAccumulated", lockerInfo.LockerInfo.ReturnsAccumulated)
 			}
 		})

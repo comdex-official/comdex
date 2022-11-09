@@ -307,7 +307,6 @@ func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []type
 // }
 
 func (k Keeper) SetUpDebtRedemptionForCollector(ctx sdk.Context, appID uint64) error {
-
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
@@ -358,7 +357,6 @@ func (k Keeper) SetUpDebtRedemptionForCollector(ctx sdk.Context, appID uint64) e
 }
 
 func (k Keeper) SetUpShareCalculation(ctx sdk.Context, appID uint64) error {
-
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
@@ -398,7 +396,6 @@ func (k Keeper) SetUpShareCalculation(ctx sdk.Context, appID uint64) error {
 }
 
 func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64, esmData types.ESMTriggerParams) error {
-
 	esmStatus, found := k.GetESMStatus(ctx, appID)
 	if !found {
 		return types.ErrESMParamsNotFound
@@ -494,8 +491,9 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			}
 			k.vault.DeleteVault(ctx, data.Id)
 			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
-			
-			//Delete User Data
+			k.vault.DeleteUserVaultExtendedPairMapping(ctx, data.Owner, appID, data.ExtendedPairVaultID)
+			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountOut, false)
+			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountIn, false)
 		}
 	}
 	esmStatus.VaultRedemptionStatus = true
@@ -607,6 +605,8 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 				k.SetAssetToAmount(ctx, assetToAmtOutData)
 			}
 			k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, data.ExtendedPairVaultID, data.Id, data.AppId)
+			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountOut, false)
+			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appID, data.ExtendedPairVaultID, data.AmountIn, false)
 		}
 	}
 	esmStatus.StableVaultRedemptionStatus = true
