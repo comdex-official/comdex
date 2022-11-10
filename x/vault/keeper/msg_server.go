@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -127,7 +126,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	} else {
 		// If not zero deduct send to collector//////////
 		// one approach could be
-		collectorShare := (msg.AmountOut.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := sdk.NewDecFromInt(msg.AmountOut).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
 		if collectorShare.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
@@ -162,7 +161,8 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	newVault.Id = updatedID
 	newVault.AmountIn = msg.AmountIn
 
-	closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+	//closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+	closingFeeVal := msg.AmountOut.ToDec().Mul(extendedPairVault.ClosingFee).TruncateInt()
 
 	newVault.ClosingFeeAccumulated = closingFeeVal
 	newVault.AmountOut = msg.AmountOut
@@ -511,7 +511,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	} else {
 		// If not zero deduct send to collector//////////
 		// one approach could be
-		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := sdk.NewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
 		if collectorShare.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
@@ -840,7 +840,6 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	return &types.MsgCloseResponse{}, nil
 }
 
-// MsgDepositAndDraw.
 func (k msgServer) MsgDepositAndDraw(c context.Context, msg *types.MsgDepositAndDrawRequest) (*types.MsgDepositAndDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	userVault, found := k.GetVault(ctx, msg.UserVaultId)
@@ -936,6 +935,10 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if err != nil {
 		return nil, err
 	}
+	// Check debt Floor
+	if !tokenOutAmount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
+	}
 
 	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
@@ -976,8 +979,9 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	} else {
 		// If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
-		// collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		collectorShare := (tokenOutAmount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		// collectorShare := (tokenOutAmount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := sdk.NewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+
 		if collectorShare.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
@@ -1096,6 +1100,10 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if err != nil {
 		return nil, err
 	}
+	// Check debt Floor
+	if !tokenOutAmount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
+	}
 	// Check Debt Ceil
 	// currentMintedStatistics := tokenMintedStatistics.Add(msg.Amount)
 	currentMintedStatistics := tokenMintedStatistics.Add(tokenOutAmount)
@@ -1129,8 +1137,8 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		//			COLLECTOR FUNCTION
 		/////////////////////////////////////////////////
 
-		// collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		collectorShare := (tokenOutAmount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := sdk.NewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+
 		if collectorShare.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
@@ -1215,6 +1223,11 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		return nil, types.ErrorAppMappingIDMismatch
 	}
 
+	// Check debt Floor
+	if !msg.Amount.GTE(extendedPairVault.DebtFloor) {
+		return nil, types.ErrorAmountOutLessThanDebtFloor
+	}
+
 	stableVault, found := k.GetStableMintVault(ctx, msg.StableVaultId)
 	if !found {
 		return nil, types.ErrorVaultDoesNotExist
@@ -1264,7 +1277,9 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		//If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
 		/////////////////////////////////////////////////
-		collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		//collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
+		collectorShare := sdk.NewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+
 		if collectorShare.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
@@ -1319,6 +1334,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 // calculate total debt
 // call function
 // exit function
+
 func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultInterestCalcRequest) (*types.MsgVaultInterestCalcResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	appMapping, found := k.asset.GetApp(ctx, msg.AppId)

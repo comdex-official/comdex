@@ -27,6 +27,8 @@ type VaultKeeper interface {
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
 	DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64)
+	GetLengthOfVault(ctx sdk.Context) uint64
+	SetLengthOfVault(ctx sdk.Context, length uint64)
 }
 
 type BankKeeper interface {

@@ -216,7 +216,14 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 		}
 
 		if tokenData.IsCollateral && !tokenData.Amount.IsZero() {
-			unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
+			// unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
+			unitRate := k.GetRateOfAsset(ctx, appID, assetID.Id)
+			if unitRate == 0 {
+				unitRate, found = k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
+				if !found {
+					return types.ErrPriceNotFound
+				}
+			}
 			tokenShare := totalDebtAssetWorth.Mul(tokenData.Share) //$CMST Multiplied with Share of collateral give $share of collateral
 			// To calculate quantity of collateral token from the $share of tokenShare
 			collateralQuantity := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
@@ -238,12 +245,15 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 
 	// To reduce Debt token dollar quantity
 	// We need to now find the debt token worth,to subtract it
-	rate, found := k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
-	if !found {
-		rate = k.GetRateOfAsset(ctx, appID, assetID.Id)
+
+	rateOut := k.GetRateOfAsset(ctx, appID, assetID.Id)
+	if rateOut == 0 {
+		rateOut, found = k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
+		if !found {
+			return types.ErrPriceNotFound
+		}
 	}
-	totalAmount := sdk.NewDecFromInt(amount.Amount)
-	totalPrice := totalAmount.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+	totalPrice := k.CalcDollarValueOfToken(ctx, rateOut, amount.Amount, assetID.Decimals)
 	coolOffData.DebtTotalAmount = coolOffData.DebtTotalAmount.Sub(totalPrice)
 
 	// To reduce the debt token amount from asset data.

@@ -21,24 +21,8 @@ func (m *Asset) Validate() error {
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
 		return errors.Wrapf(err, "invalid denom %s", m.Denom)
 	}
-	if m.Decimals.LT(sdk.ZeroInt()) {
-		return fmt.Errorf("decimals cannot be less than zero")
-	}
-
-	return nil
-}
-
-func (m *Asset) UpdateValidate() error {
-	if len(m.Name) > MaxAssetNameLength {
-		return fmt.Errorf("name length cannot be greater than %d", MaxAssetNameLength)
-	}
-	if m.Denom != "" {
-		if err := sdk.ValidateDenom(m.Denom); err != nil {
-			return errors.Wrapf(err, "invalid denom %s", m.Denom)
-		}
-	}
-	if m.Decimals.LT(sdk.ZeroInt()) {
-		return fmt.Errorf("decimals cannot be less than zero")
+	if m.Decimals.LTE(sdk.ZeroInt()) {
+		return fmt.Errorf("decimals cannot be less than or equal to zero")
 	}
 
 	return nil

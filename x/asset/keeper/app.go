@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	"regexp"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+	"regexp"
+	"strings"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
@@ -65,9 +65,9 @@ func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found boo
 	return app, true
 }
 
-func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (int64, int64, uint64, error) {
+func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (sdk.Int, int64, uint64, error) {
 	appData, _ := k.GetApp(ctx, id)
-	minGovDeposit := appData.MinGovDeposit.Int64()
+	minGovDeposit := appData.MinGovDeposit
 	var assetID uint64
 	gen := appData.GenesisToken
 	govTimeInSeconds := int64(appData.GovTimeInSeconds)
@@ -206,7 +206,7 @@ func (k Keeper) GetGenesisTokenForApp(ctx sdk.Context, appID uint64) uint64 {
 
 func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 	if k.HasAppForShortName(ctx, msg.ShortName) {
-		return types.ErrorDuplicateApp
+		return types.ErrorDuplicateShortNameForApp
 	}
 	if k.HasAppForName(ctx, msg.Name) {
 		return types.ErrorDuplicateApp
@@ -219,6 +219,20 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 
 	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
 		return types.ErrorAppNameDidNotMeetCriterion
+	}
+
+	apps, found := k.GetApps(ctx)
+	if found {
+		for _, app := range apps {
+			if strings.Contains(msg.Name, app.Name) || strings.Contains(msg.ShortName, app.ShortName) || strings.Contains(msg.Name, app.ShortName) || strings.Contains(msg.ShortName, app.Name) {
+				return types.ErrorShortNameDidNotMeetCriterion
+			}
+		}
+	}
+	if msg.GovTimeInSeconds == 0 {
+		if !msg.MinGovDeposit.IsZero() {
+			return types.ErrorMinGovDepositShouldBeZero
+		}
 	}
 
 	if msg.MinGovDeposit.LT(sdk.ZeroInt()) {
@@ -271,11 +285,14 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if !assetData.IsOnChain {
 			return types.ErrorAssetIsOffChain
 		}
+		if assetData.IsCdpMintable {
+			return types.ErrorIsCDPMintableDisabled
+		}
 		_, err := sdk.AccAddressFromBech32(data.Recipient)
 		if err != nil {
 			return types.ErrorInvalidFrom
 		}
-		if data.GenesisSupply.LT(sdk.ZeroInt()) {
+		if data.GenesisSupply.LTE(sdk.ZeroInt()) {
 			return types.ErrorInvalidGenesisSupply
 		}
 		hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)

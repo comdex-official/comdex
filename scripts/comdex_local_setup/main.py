@@ -106,13 +106,14 @@ def AddApp(name, shortName, minGovDeposit=0, govTimeInSeconds=0):
         exit("error in add app prop")
     print(f"New App {name} Proposal  Submitted ✔️")
 
-def AddAsset(name, denom, decimals=1, isOnChain=1, assetOraclePriceRequired=1):
+def AddAsset(name, denom, decimals=1, isOnChain=1, assetOraclePriceRequired=1, isCdpMintable=1):
     jsonData = {
         "name" : name,
         "denom" : denom,
         "decimals" :str(decimals),
         "is_on_chain" :str(isOnChain),
         "asset_oracle_price" :str(assetOraclePriceRequired),
+        "is_cdp_mintable" :str(isCdpMintable),
         "title" :"Add assets for applications to be deployed on comdex chain",
         "description" :f"This proposal it to add asset {name} to be then used on harbor, commodo and cswap apps",
         "deposit" :"1000000000ucmdx"
@@ -353,9 +354,9 @@ def CreateState():
         Vote("yes")
     
     for asset in ASSETS:
-        if len(asset) != 5:
+        if len(asset) != 6:
             exit("Invalid asset configs")
-        AddAsset(asset[0], asset[1], asset[2], asset[3])
+        AddAsset(asset[0], asset[1], asset[2], asset[3], asset[4], asset[5])
         Vote("yes")
     
     for pair in PAIRS:

@@ -75,6 +75,18 @@ message ESMStatus{
   bool snapshotStatus = 7 [
     (gogoproto.moretags) = "yaml:\"snapshot_status\""
   ];
+
+  bool stable_vault_redemption_status = 8 [
+    (gogoproto.moretags) = "yaml:\"stable_vault_redemption_status\""
+  ];
+
+  bool collector_transaction = 9 [
+    (gogoproto.moretags) = "yaml:\"collector_transaction\""
+  ];
+
+  bool share_calculation = 10 [
+    (gogoproto.moretags) = "yaml:\"share_calculation\""
+  ];
 }
 
 message KillSwitchParams{

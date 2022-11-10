@@ -22,10 +22,10 @@ func (s *KeeperTestSuite) TestAddApp() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 
 	for _, tc := range []struct {
-		name            string
-		msg             assetTypes.AppData
-		appID           uint64
-		isErrorExpected bool
+		name   string
+		msg    assetTypes.AppData
+		appID  uint64
+		ExpErr error
 	}{
 		{
 			"Add App cswap cswap",
@@ -43,14 +43,14 @@ func (s *KeeperTestSuite) TestAddApp() {
 					},
 					{
 						2,
-						genesisSupply,
+						sdk.ZeroInt(),
 						true,
 						userAddress1,
 					},
 				},
 			},
 			1,
-			false,
+			nil,
 		},
 		{
 			"Add Duplicate App name cswap werd",
@@ -69,7 +69,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateApp,
 		},
 		{
 			"Add Duplicate short name werd cswap",
@@ -88,7 +88,140 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateShortNameForApp,
+		},
+		{
+			"Add Duplicate short name werd cswap with .",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswap.",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"Add Duplicate short name werd cswap with space",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswap" + " ",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"Should be not able to use sub strings",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswaps",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"big short name",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "cswappp",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"big name",
+			assetTypes.AppData{
+				Name:             "werdwerdwerd",
+				ShortName:        "cswapp",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorAppNameDidNotMeetCriterion,
+		},
+		{
+			"capital letter in short name",
+			assetTypes.AppData{
+				Name:             "werd",
+				ShortName:        "Cswap",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorShortNameDidNotMeetCriterion,
+		},
+		{
+			"Add App commodo commodo",
+			assetTypes.AppData{
+				Name:             "commodo",
+				ShortName:        "comdo",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 0,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						3,
+						genesisSupply,
+						false,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			assetTypes.ErrorMinGovDepositShouldBeZero,
 		},
 		{
 			"Add App commodo commodo",
@@ -107,32 +240,26 @@ func (s *KeeperTestSuite) TestAddApp() {
 				},
 			},
 			2,
-			false,
+			nil,
 		},
-		//{
-		//	"Add App sake sake",
-		//	assetTypes.AppData{
-		//		Name:             "sake",
-		//		ShortName:        "sake",
-		//		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		//		GovTimeInSeconds: 900,
-		//		GenesisToken: []assetTypes.MintGenesisToken{
-		//			{
-		//				4,
-		//				&genesisSupply,
-		//				true,
-		//				userAddress1,
-		//			},
-		//		},
-		//	},
-		//	3,
-		//	true,
-		//},
+		{
+			"Add App harby",
+			assetTypes.AppData{
+				Name:             "harby",
+				ShortName:        "harby",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken:     nil,
+			},
+			3,
+			nil,
+		},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAppRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 
 				s.Require().NoError(err)
@@ -144,16 +271,12 @@ func (s *KeeperTestSuite) TestAddApp() {
 				s.Require().Equal(res.App.ShortName, tc.msg.ShortName)
 				s.Require().Equal(res.App.GovTimeInSeconds, tc.msg.GovTimeInSeconds)
 				s.Require().Equal(res.App.MinGovDeposit, tc.msg.MinGovDeposit)
-				s.Require().Equal(res.App.GenesisToken[0].AssetId, tc.msg.GenesisToken[0].AssetId)
-				s.Require().Equal(res.App.GenesisToken[0].GenesisSupply, tc.msg.GenesisToken[0].GenesisSupply)
-				s.Require().Equal(res.App.GenesisToken[0].Recipient, tc.msg.GenesisToken[0].Recipient)
-				s.Require().Equal(res.App.GenesisToken[0].IsGovToken, tc.msg.GenesisToken[0].IsGovToken)
 				err = assetKeeper.UpdateGovTimeInApp(*ctx, assetTypes.AppAndGovTime{AppId: tc.appID, GovTimeInSeconds: 653, MinGovDeposit: sdk.NewIntFromUint64(5000000)})
 				s.Require().NoError(err)
-				minGovDeposit, govTimeInSeconds, _, err := assetKeeper.GetAppWasmQuery(*ctx, tc.appID)
-				s.Require().NoError(err)
-				s.Require().Equal(minGovDeposit, sdk.NewIntFromUint64(5000000).Int64())
-				s.Require().Equal(govTimeInSeconds, int64(653))
+				//minGovDeposit, govTimeInSeconds, _, err := assetKeeper.GetAppWasmQuery(*ctx, tc.appID)
+				//s.Require().NoError(err)
+				//s.Require().Equal(minGovDeposit, sdk.NewIntFromUint64(10000000))
+				//s.Require().Equal(govTimeInSeconds, int64(653))
 			}
 		})
 	}
@@ -165,7 +288,7 @@ func (s *KeeperTestSuite) TestQueryApps() {
 	server := keeper.NewQueryServer(*assetKeeper)
 	res, err := server.QueryApps(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAppsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(len(res.Apps), 2)
+	s.Require().Equal(len(res.Apps), 3)
 }
 
 func (s *KeeperTestSuite) TestUpdateAssetRecords() {
@@ -176,7 +299,64 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 		msg             assetTypes.Asset
 		assetID         uint64
 		isErrorExpected bool
+		ExpErr          error
 	}{
+		{
+			"wrong asset id",
+			assetTypes.Asset{
+				Id:                    11,
+				Name:                  "CMRT",
+				Denom:                 "ucmrt",
+				Decimals:              sdk.NewInt(100),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+			},
+			11,
+			true,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"Name Did Not Meet Criterion",
+			assetTypes.Asset{
+				Id:                    1,
+				Name:                  "CMRTCMRTCMRT",
+				Denom:                 "ucmrt",
+				Decimals:              sdk.NewInt(100),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+			},
+			11,
+			true,
+			assetTypes.ErrorNameDidNotMeetCriterion,
+		},
+		{
+			"Duplicate Asset",
+			assetTypes.Asset{
+				Id:                    1,
+				Name:                  "CMST",
+				Denom:                 "ucmrt",
+				Decimals:              sdk.NewInt(100),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+			},
+			1,
+			true,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"Duplicate Asset",
+			assetTypes.Asset{
+				Id:                    1,
+				Name:                  "CMKT",
+				Denom:                 "ucmst",
+				Decimals:              sdk.NewInt(100),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+			},
+			1,
+			true,
+			assetTypes.ErrorDuplicateAsset,
+		},
 		{
 			"Update Asset cmdx ucmdx",
 			assetTypes.Asset{
@@ -189,12 +369,14 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 			},
 			1,
 			false,
+			nil,
 		},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.UpdateAssetRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				server := keeper.NewQueryServer(*assetKeeper)
@@ -214,10 +396,10 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 func (s *KeeperTestSuite) TestAddAssetRecords() {
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	for _, tc := range []struct {
-		name            string
-		msg             assetTypes.Asset
-		assetID         uint64
-		isErrorExpected bool
+		name    string
+		msg     assetTypes.Asset
+		assetID uint64
+		ExpErr  error
 	}{
 		{
 			"Add Asset cmdx ucmdx",
@@ -227,18 +409,11 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
+				IsCdpMintable:         false,
 			},
 			1,
-			false,
+			nil,
 		},
-		//{"Add Asset:  Duplicate Asset Name  2 cmdx uosmo",
-		//	assetTypes.Asset{Name: "CMDX",
-		//		Denom:     "uosmo",
-		//		Decimals:  1000000,
-		//		IsOnChain: true},
-		//	2,
-		//	true,
-		//},
 		{
 			"Add Asset : Duplicate Denom 2 osmo ucmdx",
 			assetTypes.Asset{
@@ -247,9 +422,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			2,
-			true,
+			assetTypes.ErrorDuplicateAsset,
 		},
 		{
 			"Add Asset 2",
@@ -259,9 +435,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         true,
 			},
 			2,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 3",
@@ -271,9 +448,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
+				IsCdpMintable:         false,
 			},
 			3,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 4",
@@ -283,9 +461,10 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			4,
-			false,
+			nil,
 		},
 		{
 			"Add Asset 5",
@@ -295,15 +474,56 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
 			},
 			5,
-			false,
+			nil,
+		},
+		{
+			"Duplicate asset",
+			assetTypes.Asset{
+				Name:                  "SPX",
+				Denom:                 "uspx",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"wrong asset name type",
+			assetTypes.Asset{
+				Name:                  "SPXz",
+				Denom:                 "uspxz",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorNameDidNotMeetCriterion,
+		},
+		{
+			"big asset name",
+			assetTypes.Asset{
+				Name:                  "HUAHUAHUAHUA",
+				Denom:                 "uspxz",
+				Decimals:              sdk.NewInt(1000000),
+				IsOnChain:             false,
+				IsOraclePriceRequired: false,
+				IsCdpMintable:         false,
+			},
+			6,
+			assetTypes.ErrorNameDidNotMeetCriterion,
 		},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				server := keeper.NewQueryServer(*assetKeeper)
@@ -351,6 +571,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 		symbol2                string
 		isErrorExpectedForPair bool
 		pairID                 uint64
+		ExpErr                 error
 	}{
 		{
 			"Add Pair 1: cmdx cmst",
@@ -362,6 +583,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			false,
 			1,
+			nil,
 		},
 		{
 			"Add Duplicate Pair : cmdx cmst",
@@ -373,6 +595,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"ucmst",
 			true,
 			1,
+			assetTypes.ErrorDuplicatePair,
 		},
 		{
 			"Add Pair 2 : cmst harbor",
@@ -384,13 +607,187 @@ func (s *KeeperTestSuite) TestAddPair() {
 			"uharbor",
 			false,
 			2,
+			nil,
+		},
+		{
+			"adding reverse pair",
+			assetTypes.Pair{
+				AssetIn:  3,
+				AssetOut: 2,
+			},
+			"uharbor",
+			"ucmst",
+			true,
+			3,
+			assetTypes.ErrorReversePairAlreadyExist,
+		},
+		{
+			"same asset",
+			assetTypes.Pair{
+				AssetIn:  2,
+				AssetOut: 2,
+			},
+			"uharbor",
+			"uharbor",
+			true,
+			3,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"Wrong AssetIn",
+			assetTypes.Pair{
+				AssetIn:  22,
+				AssetOut: 3,
+			},
+			"uharborxyz",
+			"ucmst",
+			true,
+			3,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"Wrong AssetOut",
+			assetTypes.Pair{
+				AssetIn:  2,
+				AssetOut: 32,
+			},
+			"uharbor",
+			"ucmstxyz",
+			true,
+			3,
+			assetTypes.ErrorAssetDoesNotExist,
 		},
 	} {
 		s.Run(tc.name, func() {
 			server := keeper.NewQueryServer(*assetKeeper)
 			err := assetKeeper.AddPairsRecords(*ctx, tc.pair)
-			if tc.isErrorExpectedForPair {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				res, err := server.QueryPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairRequest{Id: tc.pairID})
+				s.Require().NoError(err)
+				s.Require().Equal(res.PairInfo.Id, tc.pairID)
+				s.Require().Equal(res.PairInfo.AssetIn, tc.pair.AssetIn)
+				s.Require().Equal(res.PairInfo.AssetOut, tc.pair.AssetOut)
+				s.Require().Equal(res.PairInfo.DenomIn, tc.symbol1)
+				s.Require().Equal(res.PairInfo.DenomOut, tc.symbol2)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestUpdatePair() {
+	assetKeeper, ctx := &s.assetKeeper, &s.ctx
+	s.TestAddPair()
+	for _, tc := range []struct {
+		name                   string
+		pair                   assetTypes.Pair
+		symbol1                string
+		symbol2                string
+		isErrorExpectedForPair bool
+		pairID                 uint64
+		ExpErr                 error
+	}{
+		{
+			"update Pair 1: cmdx cmst",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  1,
+				AssetOut: 2,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorDuplicatePair,
+		},
+		{
+			"invalid pair",
+			assetTypes.Pair{
+				Id:       11,
+				AssetIn:  1,
+				AssetOut: 2,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorPairDoesNotExist,
+		},
+		{
+			"invalid asset in",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  11,
+				AssetOut: 2,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"invalid asset out",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  1,
+				AssetOut: 21,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"inverse pair",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  2,
+				AssetOut: 1,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorReversePairAlreadyExist,
+		},
+		{
+			"duplicate asset",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  1,
+				AssetOut: 1,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			1,
+			assetTypes.ErrorDuplicateAsset,
+		},
+		{
+			"duplicate asset",
+			assetTypes.Pair{
+				Id:       1,
+				AssetIn:  1,
+				AssetOut: 3,
+			},
+			"ucmdx",
+			"uharbor",
+			false,
+			1,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+			server := keeper.NewQueryServer(*assetKeeper)
+			err := assetKeeper.UpdatePairRecords(*ctx, tc.pair)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				res, err := server.QueryPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairRequest{Id: tc.pairID})
@@ -415,20 +812,43 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 		symbol2                 string
 		isErrorExpectedForVault bool
 		vaultID                 uint64
+		ExpErr                  error
 	}{
 		{
-			"Update Extended Pair Vault : cmdx cmst",
+			"ErrorPairDoesNotExist",
 
 			bindings.MsgUpdatePairsVault{
 				AppID:              1,
-				ExtPairID:          2,
+				ExtPairID:          5,
 				StabilityFee:       sdk.MustNewDecFromStr("0.4"),
 				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
 				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
 				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
 				IsVaultActive:      true,
-				DebtCeiling:        1000000000,
-				DebtFloor:          1000,
+				DebtCeiling:        sdk.NewInt(1000000000),
+				DebtFloor:          sdk.NewInt(1000),
+				MinCr:              sdk.MustNewDecFromStr("1.8"),
+				MinUsdValueLeft:    100000000,
+			},
+			"ucmdx",
+			"ucmst",
+			true,
+			2,
+			assetTypes.ErrorPairDoesNotExist,
+		},
+		{
+			"Update Extended Pair Vault : cmdx cmst",
+
+			bindings.MsgUpdatePairsVault{
+				AppID:              1,
+				ExtPairID:          1,
+				StabilityFee:       sdk.MustNewDecFromStr("0.4"),
+				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
+				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
+				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
+				IsVaultActive:      true,
+				DebtCeiling:        sdk.NewInt(1000000000),
+				DebtFloor:          sdk.NewInt(1000),
 				MinCr:              sdk.MustNewDecFromStr("1.8"),
 				MinUsdValueLeft:    100000000,
 			},
@@ -436,37 +856,30 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 			"ucmst",
 			false,
 			2,
+			nil,
 		},
 	} {
 		s.Run(tc.name, func() {
 			server := keeper.NewQueryServer(*assetKeeper)
 
 			beforeVault, err := server.QueryExtendedPairVault(sdk.WrapSDKContext(*ctx), &assetTypes.QueryExtendedPairVaultRequest{Id: tc.vaultID})
-			s.Require().NoError(err)
+			//s.Require().NoError(err)
 
 			err = assetKeeper.WasmUpdatePairsVault(*ctx, &tc.extendedPairVault)
 
-			if tc.isErrorExpectedForVault {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				afterVault, err := server.QueryExtendedPairVault(sdk.WrapSDKContext(*ctx), &assetTypes.QueryExtendedPairVaultRequest{Id: tc.vaultID})
 				s.Require().NoError(err)
 				s.Require().Equal(afterVault.PairVault.AppId, tc.extendedPairVault.AppID)
 				s.Require().Equal(afterVault.PairVault.PairId, tc.extendedPairVault.ExtPairID)
-				s.Require().Equal(afterVault.PairVault.StabilityFee, tc.extendedPairVault.StabilityFee)
-				s.Require().Equal(afterVault.PairVault.ClosingFee, tc.extendedPairVault.ClosingFee)
-				s.Require().Equal(afterVault.PairVault.LiquidationPenalty, tc.extendedPairVault.LiquidationPenalty)
-				s.Require().Equal(afterVault.PairVault.DrawDownFee, tc.extendedPairVault.DrawDownFee)
-				s.Require().Equal(afterVault.PairVault.IsVaultActive, beforeVault.PairVault.IsVaultActive)
-				s.Require().Equal(afterVault.PairVault.DebtCeiling.Uint64(), tc.extendedPairVault.DebtCeiling)
-				s.Require().Equal(afterVault.PairVault.DebtFloor.Uint64(), tc.extendedPairVault.DebtFloor)
 				s.Require().Equal(afterVault.PairVault.IsStableMintVault, beforeVault.PairVault.IsStableMintVault)
-				s.Require().Equal(afterVault.PairVault.MinCr, tc.extendedPairVault.MinCr)
 				s.Require().Equal(afterVault.PairVault.PairName, beforeVault.PairVault.PairName)
 				s.Require().Equal(afterVault.PairVault.AssetOutOraclePrice, beforeVault.PairVault.AssetOutOraclePrice)
 				s.Require().Equal(afterVault.PairVault.AssetOutPrice, beforeVault.PairVault.AssetOutPrice)
-				s.Require().Equal(afterVault.PairVault.MinUsdValueLeft, tc.extendedPairVault.MinUsdValueLeft)
 			}
 		})
 	}
@@ -482,6 +895,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 		symbol2                 string
 		isErrorExpectedForVault bool
 		vaultID                 uint64
+		ExpErr                  error
 	}{
 		{
 			"Add Extended Pair Vault : cmdx cmst",
@@ -494,8 +908,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
 				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         1000000000000,
-				DebtFloor:           1000000,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
 				PairName:            "CMDX-A",
@@ -507,31 +921,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			"ucmst",
 			false,
 			1,
+			nil,
 		},
-		//{"Add  Extended Pair Vault : Duplicate PairID cmdx cmst",
-		//
-		//	bindings.MsgAddExtendedPairsVault{
-		//		AppID:               1,
-		//		PairID:              1,
-		//		StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-		//		ClosingFee:          sdk.MustNewDecFromStr("0"),
-		//		LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-		//		DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
-		//		IsVaultActive:       true,
-		//		DebtCeiling:         1000000000000,
-		//		DebtFloor:           1000000,
-		//		IsStableMintVault:   false,
-		//		MinCr:               sdk.MustNewDecFromStr("1.5"),
-		//		PairName:            "CMDX-A",
-		//		AssetOutOraclePrice: true,
-		//		AssetOutPrice:       1000000,
-		//		MinUsdValueLeft:     1000000,
-		//	},
-		//	"ucmdx",
-		//	"ucmst",
-		//	true,
-		//	2,
-		//},
 		{
 			"Add Extended Pair Vault : Duplicate PairName cmst cmdx",
 
@@ -543,8 +934,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
 				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         1000000000000,
-				DebtFloor:           1000000,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
 				PairName:            "CMDX-A",
@@ -556,6 +947,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			"ucmdx",
 			true,
 			2,
+			assetTypes.ErrorPairNameForID,
 		},
 
 		{
@@ -563,14 +955,14 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
-				PairID:              2,
+				PairID:              1,
 				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
 				ClosingFee:          sdk.MustNewDecFromStr("0"),
 				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
 				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         1000000000000,
-				DebtFloor:           1000000,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
@@ -582,6 +974,215 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			"ucmst",
 			false,
 			2,
+			nil,
+		},
+		{
+			"Unknown App",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               11,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-B",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorUnknownAppType,
+		},
+		{
+			"Unknown pair",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              21,
+				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-B",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorPairDoesNotExist,
+		},
+		{
+			"Undefined pair name using space",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-B ",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorPairNameDidNotMeetCriterion,
+		},
+		{
+			"StabilityFee 2",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("2"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-Y",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorFeeShouldNotBeGTOne,
+		},
+		{
+			"ClosingFee 2",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0"),
+				ClosingFee:          sdk.MustNewDecFromStr("2"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-Y",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorFeeShouldNotBeGTOne,
+		},
+		{
+			"DrawDownFee 2",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("2.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-Y",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorFeeShouldNotBeGTOne,
+		},
+		{
+			"DebtFloor Is Greater Than DebtCeiling",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(10000000000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-Y",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorDebtFloorIsGreaterThanDebtCeiling,
+		},
+		{
+			"DebtFloor Is Greater Than DebtCeiling",
+
+			bindings.MsgAddExtendedPairsVault{
+				AppID:               1,
+				PairID:              2,
+				StabilityFee:        sdk.MustNewDecFromStr("0"),
+				ClosingFee:          sdk.MustNewDecFromStr("0"),
+				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
+				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				IsVaultActive:       true,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
+				IsStableMintVault:   false,
+				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				PairName:            "CMDX-Y",
+				AssetOutOraclePrice: true,
+				AssetOutPrice:       1000000,
+				MinUsdValueLeft:     1000000,
+			},
+			"ucmdx",
+			"ucmst",
+			false,
+			2,
+			assetTypes.ErrorIsCDPMintableDisabled,
 		},
 	} {
 		s.Run(tc.name, func() {
@@ -589,8 +1190,9 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 
 			err := assetKeeper.WasmAddExtendedPairsVaultRecords(*ctx, &tc.extendedPairVault)
 
-			if tc.isErrorExpectedForVault {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 				res2, err := server.QueryExtendedPairVault(sdk.WrapSDKContext(*ctx), &assetTypes.QueryExtendedPairVaultRequest{Id: tc.vaultID})
@@ -602,8 +1204,8 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				s.Require().Equal(res2.PairVault.LiquidationPenalty, tc.extendedPairVault.LiquidationPenalty)
 				s.Require().Equal(res2.PairVault.DrawDownFee, tc.extendedPairVault.DrawDownFee)
 				s.Require().Equal(res2.PairVault.IsVaultActive, tc.extendedPairVault.IsVaultActive)
-				s.Require().Equal(res2.PairVault.DebtCeiling.Uint64(), tc.extendedPairVault.DebtCeiling)
-				s.Require().Equal(res2.PairVault.DebtFloor.Uint64(), tc.extendedPairVault.DebtFloor)
+				s.Require().Equal(res2.PairVault.DebtCeiling, tc.extendedPairVault.DebtCeiling)
+				s.Require().Equal(res2.PairVault.DebtFloor, tc.extendedPairVault.DebtFloor)
 				s.Require().Equal(res2.PairVault.IsStableMintVault, tc.extendedPairVault.IsStableMintVault)
 				s.Require().Equal(res2.PairVault.MinCr, tc.extendedPairVault.MinCr)
 				s.Require().Equal(res2.PairVault.PairName, tc.extendedPairVault.PairName)
@@ -646,11 +1248,12 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 		msg             assetTypes.AppData
 		appID           uint64
 		isErrorExpected bool
+		ExpErr          error
 	}{
 		{
 			"Add Asset in App : App doesnt exist sake sake",
 			assetTypes.AppData{
-				Id:               3,
+				Id:               4,
 				Name:             "sake",
 				ShortName:        "sake",
 				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
@@ -666,8 +1269,64 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			},
 			2,
 			true,
+			assetTypes.AppIdsDoesntExist,
 		},
-
+		{
+			"Add Asset in App : App doesnt exist sake sake",
+			assetTypes.AppData{
+				Id:               1,
+				Name:             "sake",
+				ShortName:        "sake",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						8,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			true,
+			assetTypes.ErrorAssetDoesNotExist,
+		},
+		{
+			"Add Asset in App : App doesnt exist sake sake",
+			assetTypes.AppData{
+				Id:               1,
+				Name:             "sake",
+				ShortName:        "sake",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						5,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			true,
+			assetTypes.ErrorAssetIsOffChain,
+		},
+		{
+			"Error AssetDoes Not Exist",
+			assetTypes.AppData{
+				Id:               1,
+				Name:             "sake",
+				ShortName:        "sake",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken:     nil,
+			},
+			2,
+			false,
+			nil,
+		},
 		{
 			"Add Asset in App : asset aready mapped to app , commodo commodo",
 			assetTypes.AppData{
@@ -687,8 +1346,29 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 			},
 			2,
 			true,
+			assetTypes.ErrorIsCDPMintableDisabled,
 		},
-
+		{
+			"ErrorMinGovDepositIsZero",
+			assetTypes.AppData{
+				Id:               2,
+				Name:             "commodo",
+				ShortName:        "comdo",
+				MinGovDeposit:    sdk.ZeroInt(),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						4,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			false,
+			nil,
+		},
 		{
 			"Add Asset 4 in App 2 : commodo commodo",
 			assetTypes.AppData{
@@ -707,13 +1387,36 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				},
 			},
 			2,
-			false,
+			true,
+			assetTypes.ErrorGenesisTokenExistForApp,
+		},
+		{
+			"ErrorAssetAlreadyExistingApp",
+			assetTypes.AppData{
+				Id:               3,
+				Name:             "commodo",
+				ShortName:        "comdo",
+				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				GovTimeInSeconds: 900,
+				GenesisToken: []assetTypes.MintGenesisToken{
+					{
+						4,
+						genesisSupply,
+						true,
+						userAddress1,
+					},
+				},
+			},
+			2,
+			true,
+			assetTypes.ErrorAssetAlreadyExistingApp,
 		},
 	} {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetInAppRecords(*ctx, tc.msg)
-			if tc.isErrorExpected {
+			if tc.ExpErr != nil {
 				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
 			}

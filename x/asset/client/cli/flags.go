@@ -5,10 +5,6 @@ import (
 )
 
 const (
-	flagName                 = "name"
-	flagDenom                = "denom"
-	flagDecimals             = "decimals"
-	flagAssetOraclePrice     = "is-oracle-price-required"
 	FlagAddAssetMappingFile  = "add-asset-mapping-file"
 	FlagAddAssetsMappingFile = "add-assets-file"
 )
@@ -53,6 +49,7 @@ type createAddAssetsMappingInputs struct {
 	Decimals         string `json:"decimals"`
 	IsOnChain        string `json:"is_on_chain"`
 	AssetOraclePrice string `json:"asset_oracle_price"`
+	IsCdpMintable    string `json:"is_cdp_mintable"`
 	Title            string
 	Description      string
 	Deposit          string

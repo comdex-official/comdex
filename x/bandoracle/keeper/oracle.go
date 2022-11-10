@@ -120,6 +120,7 @@ func (k Keeper) SetFetchPriceMsg(ctx sdk.Context, msg types.MsgFetchPriceData) {
 			msg.PrepareGas,
 			msg.ExecuteGas,
 			msg.TwaBatchSize,
+			msg.AcceptedHeightDiff,
 		)
 		value = k.cdc.MustMarshal(v)
 	)
@@ -158,6 +159,7 @@ func (k Keeper) AddFetchPriceRecords(ctx sdk.Context, price types.MsgFetchPriceD
 	k.SetFetchPriceMsg(ctx, price)
 	k.SetLastBlockHeight(ctx, ctx.BlockHeight())
 	k.SetCheckFlag(ctx, false)
+	k.SetDiscardData(ctx, types.DiscardData{BlockHeight: -1, DiscardBool: false})
 	allTwa := k.market.GetAllTwa(ctx)
 	for _, data := range allTwa {
 		k.market.DeleteTwaData(ctx, data.AssetID)
@@ -222,4 +224,28 @@ func (k Keeper) GetCheckFlag(ctx sdk.Context) bool {
 	k.cdc.MustUnmarshal(value, &id)
 
 	return id.GetValue()
+}
+
+func (k Keeper) SetDiscardData(ctx sdk.Context, disData types.DiscardData) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.DiscardFlagKey
+		value = k.cdc.MustMarshal(&disData)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetDiscardData(ctx sdk.Context) types.DiscardData {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.DiscardFlagKey
+		value = store.Get(key)
+	)
+
+	var disData types.DiscardData
+	if value != nil {
+		k.cdc.MustUnmarshal(value, &disData)
+	}
+	return disData
 }

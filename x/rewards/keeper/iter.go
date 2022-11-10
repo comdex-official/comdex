@@ -2,11 +2,10 @@ package keeper
 
 import (
 	"fmt"
-	"math"
-	"strconv"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"math"
+	"strconv"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -187,17 +186,18 @@ func (k Keeper) CalculationOfRewards(
 	}
 	//{(1+ Annual Interest Rate)^(No of seconds per block/No. of seconds in a year)}-1
 
-	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear).MustFloat64()
+	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
 	perc := lsr.String()
 	a, _ := sdk.NewDecFromStr("1")
 	b, _ := sdk.NewDecFromStr(perc)
-	factor1 := a.Add(b).MustFloat64()
-	intPerBlockFactor := math.Pow(factor1, yearsElapsed)
+	factor1 := a.Add(b)
+	intPerBlockFactor := math.Pow(factor1.MustFloat64(), yearsElapsed.MustFloat64())
 	intAccPerBlock := intPerBlockFactor - types.Float64One
-	amtFloat, _ := strconv.ParseFloat(amount.String(), 64)
+	amtFloat := amount.ToDec().MustFloat64()
 	newAmount := intAccPerBlock * amtFloat
 
-	s := fmt.Sprint(newAmount)
+	//s := fmt.Sprint(newAmount)
+	s := strconv.FormatFloat(newAmount, 'f', 18, 64)
 	newAm, err := sdk.NewDecFromStr(s)
 	if err != nil {
 		return sdk.ZeroDec(), err

@@ -580,7 +580,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 	if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 		// send rewards
 		newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-		newRewardDec := sdk.NewDec(newReward.Int64())
+		newRewardDec :=  sdk.NewDecFromInt(newReward)
 		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 		// netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
@@ -674,7 +674,7 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 
 	if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
 		newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-		newInterestDec := sdk.NewDec(newInterest.Int64())
+		newInterestDec := sdk.NewDecFromInt(newInterest)
 		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 		vaultData.BlockTime = ctx.BlockTime()

@@ -25,9 +25,10 @@ const (
 
 var (
 	// PortKey defines the key to store the port ID in store.
-	PortKey      = KeyPrefix("bandoracle-port-")
-	MsgDataKey   = []byte{0x02}
-	CheckFlagKey = []byte{0x03}
+	PortKey        = KeyPrefix("bandoracle-port-")
+	MsgDataKey     = []byte{0x02}
+	CheckFlagKey   = []byte{0x03}
+	DiscardFlagKey = []byte{0x04}
 )
 
 func KeyPrefix(p string) []byte {

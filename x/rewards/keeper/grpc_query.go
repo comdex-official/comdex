@@ -15,6 +15,10 @@ import (
 
 var _ types.QueryServer = &Keeper{}
 
+type QueryServer struct {
+	Keeper
+}
+
 // Params queries the parameters of the incentives module.
 func (k Keeper) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)

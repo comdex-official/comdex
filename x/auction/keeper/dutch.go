@@ -277,7 +277,8 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// calculate inflow amount and outflow amount if  user  transaction successful
 	auction.OutflowTokenCurrentAmount = auction.OutflowTokenCurrentAmount.Sub(outFlowTokenCoin)
 	auction.InflowTokenCurrentAmount = auction.InflowTokenCurrentAmount.Add(inFlowTokenCoin)
-
+	outflowToReduce := outFlowTokenCoin
+	inflowToReduce := inFlowTokenCoin
 	// collateral not over but target cmst reached then send remaining collateral to owner
 	// if inflow token current amount >= InflowTokenTargetAmount
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) {
@@ -290,6 +291,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 				return err
 			}
 		}
+		outflowToReduce = outflowToReduce.Add(total)
 
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
@@ -308,21 +310,11 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		if err != nil {
 			return err
 		}
+		inflowToReduce = inflowToReduce.Add(requiredAmount)
 
 		// storing protocol loss
 		k.SetProtocolStatistics(ctx, auction.AppId, auction.AssetInId, requiredAmount.Amount)
 
-		err = k.SetDutchAuction(ctx, auction)
-		if err != nil {
-			return err
-		}
-
-		// remove dutch auction
-		err = k.CloseDutchAuction(ctx, auction)
-		if err != nil {
-			return err
-		}
-	} else if auction.OutflowTokenCurrentAmount.Amount.IsZero() { // entire collateral sold out
 		err = k.SetDutchAuction(ctx, auction)
 		if err != nil {
 			return err
@@ -338,6 +330,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 		if err != nil {
 			return err
 		}
+	}
+	err = k.UpdateProtocolData(ctx, outflowToReduce, inflowToReduce, lockedVault.ExtendedPairId)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -420,8 +416,6 @@ func (k Keeper) CloseDutchAuction(
 	if err != nil {
 		return err
 	}
-	lockedVault.AmountIn = lockedVault.AmountIn.Sub(dutchAuction.OutflowTokenInitAmount.Amount)
-	lockedVault.AmountOut = lockedVault.AmountOut.Sub(burnToken.Amount)
 
 	// set sell of history in locked vault
 	err = k.liquidation.CreateLockedVaultHistory(ctx, lockedVault)
@@ -430,11 +424,6 @@ func (k Keeper) CloseDutchAuction(
 	}
 
 	dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
-
-	err = k.UpdateProtocolData(ctx, dutchAuction, burnToken)
-	if err != nil {
-		return err
-	}
 
 	// update locked vault
 	err = k.liquidation.SetFlagIsAuctionComplete(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId, true)
@@ -546,6 +535,8 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						if err != nil {
 							return err
 						}
+						length := k.vault.GetLengthOfVault(ctx)
+						k.vault.SetLengthOfVault(ctx, length+1)
 					}
 
 					dutchAuction.AuctionStatus = auctiontypes.AuctionEnded
@@ -601,13 +592,8 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 	return nil
 }
 
-func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAuction, burnToken sdk.Coin) error {
-	lockedVault, found1 := k.liquidation.GetLockedVault(ctx, auction.AppId, auction.LockedVaultId)
-	if !found1 {
-		return auctiontypes.ErrorVaultNotFound
-	}
-
-	ExtendedPairVault, found2 := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+func (k Keeper) UpdateProtocolData(ctx sdk.Context, collateralToken, burnToken sdk.Coin, extPairID uint64) error {
+	ExtendedPairVault, found2 := k.asset.GetPairsVault(ctx, extPairID)
 	if !found2 {
 		return auctiontypes.ErrorInvalidExtendedPairVault
 	}
@@ -618,7 +604,7 @@ func (k Keeper) UpdateProtocolData(ctx sdk.Context, auction auctiontypes.DutchAu
 	}
 
 	k.vault.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, burnToken.Amount, false)
-	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, auction.OutflowTokenInitAmount.Amount.Sub(auction.OutflowTokenCurrentAmount.Amount), false)
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, collateralToken.Amount, false)
 	return nil
 }
 
