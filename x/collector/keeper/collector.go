@@ -749,7 +749,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 				// send rewards
 				newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-				newRewardDec := sdk.NewDec(newReward.Int64())
+				newRewardDec := sdk.NewDecFromInt(newReward)
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 				err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)
@@ -823,9 +823,9 @@ func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint
 	netFeeCollectedData, _ := k.GetNetFeeCollectedData(ctx, appID, assetID)
 	auctionMapping, _ := k.GetAuctionMappingForApp(ctx, appID, assetID)
 	collectorLookup, _ := k.GetCollectorLookupTable(ctx, appID, assetID)
-	netAmount := collectorLookup.SurplusThreshold + collectorLookup.LotSize
-	if auctionMapping.IsDistributor && netFeeCollectedData.NetFeesCollected.GT(sdk.NewInt(int64(netAmount))) {
-		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(sdk.NewInt(int64(collectorLookup.SurplusThreshold)))
+	netAmount := collectorLookup.SurplusThreshold.Add(collectorLookup.LotSize)
+	if auctionMapping.IsDistributor && netFeeCollectedData.NetFeesCollected.GT(netAmount) {
+		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(collectorLookup.SurplusThreshold)
 		return sdk.NewCoin(asset.Denom, finalAmount)
 	}
 	return sdk.NewCoin(asset.Denom, sdk.NewInt(0))

@@ -26,6 +26,7 @@ var (
 	SendCoinsFromModuleToAccountInLockerIsZero  = errors.Register(ModuleName, 215, "Coin value in module to account transfer in locker is zero")
 	SendCoinsFromAccountToModuleInLockerIsZero  = errors.Register(ModuleName, 216, "Coin value in account to module transfer in locker is zero")
 	ErrorCollectorLookupDoesNotExists           = errors.Register(ModuleName, 217, "Collector lookup does not exists")
+	ErrorAppMappingIDMismatch                   = errors.Register(ModuleName, 218, "App Mapping Id mismatch")
 )
 
 var ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")

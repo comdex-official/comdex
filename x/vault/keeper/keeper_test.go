@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"testing"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -21,11 +22,12 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app       *chain.App
-	ctx       sdk.Context
-	keeper    keeper.Keeper
-	querier   keeper.QueryServer
-	msgServer types.MsgServer
+	app           *chain.App
+	ctx           sdk.Context
+	keeper        keeper.Keeper
+	querier       keeper.QueryServer
+	msgServer     types.MsgServer
+	rewardsKeeper rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -38,6 +40,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.keeper = s.app.VaultKeeper
 	s.querier = keeper.QueryServer{Keeper: s.keeper}
 	s.msgServer = keeper.NewMsgServer(s.keeper)
+	s.rewardsKeeper = s.app.Rewardskeeper
 }
 
 // Below are just shortcuts to frequently-used functions.
@@ -74,6 +77,11 @@ func newInt(i int64) sdk.Int {
 	return sdk.NewInt(i)
 }
 
+func newIntStr(i string) sdk.Int {
+	res, _ := sdk.NewIntFromString(i)
+	return res
+}
+
 func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
@@ -106,6 +114,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         true,
 	})
 	s.Require().NoError(err)
 	assets := s.app.AssetKeeper.GetAssets(s.ctx)
@@ -164,8 +173,8 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       isVaultActive,
-		DebtCeiling:         1000000000000000000,
-		DebtFloor:           100000000,
+		DebtCeiling:         sdk.NewInt(1000000000000000000),
+		DebtFloor:           sdk.NewInt(100000000),
 		IsStableMintVault:   isStableMintVault,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,

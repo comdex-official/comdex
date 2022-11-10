@@ -77,6 +77,11 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		return txf, nil, err
 	}
 
+	isCdpMintable := ParseBoolFromString(assetsMapping.IsCdpMintable)
+	if err != nil {
+		return txf, nil, err
+	}
+
 	from := clientCtx.GetFromAddress()
 
 	newDecimals, ok := sdk.NewIntFromString(decimals)
@@ -89,6 +94,7 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 		Decimals:              newDecimals,
 		IsOnChain:             isOnChain,
 		IsOraclePriceRequired: assetOraclePrice,
+		IsCdpMintable:         isCdpMintable,
 	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
@@ -112,8 +118,8 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-asset [id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "update-asset [id] [name] [denom] [decimal] [is-oracle-price-required]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Update an Asset",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -126,25 +132,15 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				return err
 			}
 
-			name, err := cmd.Flags().GetString(flagName)
-			if err != nil {
-				return err
-			}
+			name := args[1]
 
-			denom, err := cmd.Flags().GetString(flagDenom)
-			if err != nil {
-				return err
-			}
+			denom := args[2]
 
-			decimals, err := cmd.Flags().GetString(flagDecimals)
-			if err != nil {
-				return err
+			decimals, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidDecimals
 			}
-
-			assetOraclePrice, err := cmd.Flags().GetString(flagAssetOraclePrice)
-			if err != nil {
-				return err
-			}
+			assetOraclePrice := args[4]
 
 			newAssetOraclePrice := ParseBoolFromString(assetOraclePrice)
 
@@ -159,16 +155,12 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			}
 
 			from := clientCtx.GetFromAddress()
-			newDecimals, ok := sdk.NewIntFromString(decimals)
-			if !ok {
-				return types.ErrorInvalidDecimals
-			}
 
 			asset := types.Asset{
 				Id:                    id,
 				Name:                  name,
 				Denom:                 denom,
-				Decimals:              newDecimals,
+				Decimals:              decimals,
 				IsOraclePriceRequired: newAssetOraclePrice,
 			}
 
@@ -199,10 +191,6 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
 	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagName, "", "name")
-	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().Int64(flagDecimals, -1, "decimals")
-	cmd.Flags().String(flagAssetOraclePrice, "", "is-oracle-price-required")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 

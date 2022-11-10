@@ -121,14 +121,14 @@ func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extID
 }
 
 func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
-	DebtCeiling := sdk.NewInt(int64(pairVaultBinding.DebtCeiling))
-	DebtFloor := sdk.NewInt(int64(pairVaultBinding.DebtFloor))
+	DebtCeiling := pairVaultBinding.DebtCeiling
+	DebtFloor := pairVaultBinding.DebtFloor
 
 	_, found := k.GetApp(ctx, pairVaultBinding.AppID)
 	if !found {
 		return types.ErrorUnknownAppType
 	}
-	_, pairExists := k.GetPair(ctx, pairVaultBinding.PairID)
+	pair, pairExists := k.GetPair(ctx, pairVaultBinding.PairID)
 	if !pairExists {
 		return types.ErrorPairDoesNotExist
 	}
@@ -162,6 +162,12 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	if !(pairVaultBinding.DrawDownFee.GTE(sdk.ZeroDec()) && pairVaultBinding.DrawDownFee.LT(sdk.OneDec())) {
 		return types.ErrorFeeShouldNotBeGTOne
 	}
+	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
+
+	if !assetOut.IsCdpMintable || !assetOut.IsOnChain {
+		return types.ErrorIsCDPMintableDisabled
+	}
+
 	blockHeight := ctx.BlockHeight()
 
 	if pairVaultBinding.StabilityFee.IsZero() {
@@ -194,9 +200,9 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	return nil
 }
 
-func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor uint64, PairName string) (bool, string) {
-	DebtCeiling := sdk.NewInt(int64(debtCeiling))
-	DebtFloor := sdk.NewInt(int64(debtFloor))
+func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor sdk.Int, PairName string) (bool, string) {
+	DebtCeiling := debtCeiling
+	DebtFloor := debtFloor
 
 	_, found := k.GetApp(ctx, appID)
 	if !found {
@@ -262,8 +268,8 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 	ExtPairVaultData.LiquidationPenalty = updatePairVault.LiquidationPenalty
 	ExtPairVaultData.DrawDownFee = updatePairVault.DrawDownFee
 	ExtPairVaultData.IsVaultActive = updatePairVault.IsVaultActive
-	ExtPairVaultData.DebtCeiling = sdk.NewInt(int64(updatePairVault.DebtCeiling))
-	ExtPairVaultData.DebtFloor = sdk.NewInt(int64(updatePairVault.DebtFloor))
+	ExtPairVaultData.DebtCeiling = updatePairVault.DebtCeiling
+	ExtPairVaultData.DebtFloor = updatePairVault.DebtFloor
 	ExtPairVaultData.MinCr = updatePairVault.MinCr
 	ExtPairVaultData.MinUsdValueLeft = updatePairVault.MinUsdValueLeft
 
@@ -328,7 +334,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			}
 			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
 				newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-				newInterestDec := sdk.NewDec(newInterest.Int64())
+				newInterestDec := sdk.NewDecFromInt(newInterest)
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 				// updating user rewards data

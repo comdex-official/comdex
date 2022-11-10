@@ -30,12 +30,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: 10000000,
-				DebtThreshold:    5000000,
+				SurplusThreshold: sdk.NewInt(10000000),
+				DebtThreshold:    sdk.NewInt(5000000),
 				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          200000,
+				LotSize:          sdk.NewInt(200000),
 				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      2000000,
+				DebtLotSize:      sdk.NewInt(2000000),
 			},
 		},
 	} {
@@ -103,12 +103,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: 10000000,
-				DebtThreshold:    5000000,
+				SurplusThreshold: sdk.NewInt(10000000),
+				DebtThreshold:    sdk.NewInt(5000000),
 				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          200000,
+				LotSize:          sdk.NewInt(200000),
 				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      2000000,
+				DebtLotSize:      sdk.NewInt(2000000),
 			},
 		},
 	} {
@@ -167,7 +167,7 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
-	s.WasmUpdateCollectorLookupTable(30000, 20500, 800, 501)
+	s.WasmUpdateCollectorLookupTable(sdk.NewInt(30000), sdk.NewInt(20500), sdk.NewInt(800), sdk.NewInt(501))
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -226,10 +226,10 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction.AssetInId, collectorLookUp.CollectorAssetId)
 	s.Require().Equal(debtAuction.AssetOutId, collectorLookUp.SecondaryAssetId)
 	s.Require().Equal(debtAuction.BidFactor, collectorLookUp.BidFactor)
-	s.Require().Equal(debtAuction.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
-	s.Require().Equal(debtAuction.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().Equal(debtAuction.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
+	s.Require().Equal(debtAuction.ExpectedUserToken.Amount, collectorLookUp.LotSize)
+	s.Require().Equal(debtAuction.AuctionedToken.Amount, collectorLookUp.DebtLotSize)
+	s.Require().Equal(debtAuction.ExpectedMintedToken.Amount, collectorLookUp.DebtLotSize)
+	s.Require().True(netFees.NetFeesCollected.LTE(collectorLookUp.DebtThreshold.Sub(collectorLookUp.LotSize)))
 
 	// Test restart debt auction
 	s.advanceseconds(301)
@@ -246,10 +246,10 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.Require().Equal(debtAuction1.AssetInId, collectorLookUp.CollectorAssetId)
 	s.Require().Equal(debtAuction1.AssetOutId, collectorLookUp.SecondaryAssetId)
 	s.Require().Equal(debtAuction1.BidFactor, collectorLookUp.BidFactor)
-	s.Require().Equal(debtAuction1.ExpectedUserToken.Amount.Uint64(), collectorLookUp.LotSize)
-	s.Require().Equal(debtAuction1.AuctionedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().Equal(debtAuction1.ExpectedMintedToken.Amount.Uint64(), collectorLookUp.DebtLotSize)
-	s.Require().True(netFees.NetFeesCollected.LTE(sdk.NewIntFromUint64(collectorLookUp.DebtThreshold - collectorLookUp.LotSize)))
+	s.Require().Equal(debtAuction1.ExpectedUserToken.Amount, collectorLookUp.LotSize)
+	s.Require().Equal(debtAuction1.AuctionedToken.Amount, collectorLookUp.DebtLotSize)
+	s.Require().Equal(debtAuction1.ExpectedMintedToken.Amount, collectorLookUp.DebtLotSize)
+	s.Require().True(netFees.NetFeesCollected.LTE(collectorLookUp.DebtThreshold.Sub(collectorLookUp.LotSize)))
 	s.Require().Equal(ctx.BlockTime().Add(time.Second*time.Duration(300)), debtAuction1.EndTime)
 }
 

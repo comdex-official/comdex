@@ -314,17 +314,13 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 	if !found {
 		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
 	}
-	// calculating price of the asset_in
-	assetInTotalPrice, err := k.oracle.CalcAssetPrice(ctx, assetInData.Id, amountIn)
-	if err != nil {
-		return sdk.ZeroDec(), err
-	}
 	esmStatus, found := k.esm.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
 	if found {
 		statusEsm = esmStatus.Status
 	}
-
+	var assetInTotalPrice sdk.Dec
+	var err error
 	// check to get calc asset price from esm
 	if statusEsm && esmStatus.SnapshotStatus {
 		price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
@@ -334,6 +330,12 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 		numerator := sdk.NewDecFromInt(amountIn).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
 		denominator := sdk.NewDecFromInt(assetInData.Decimals)
 		assetInTotalPrice = numerator.Quo(denominator)
+	} else if !statusEsm {
+		// calculating price of the asset_in
+		assetInTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetInData.Id, amountIn)
+		if err != nil {
+			return sdk.ZeroDec(), err
+		}
 	}
 	var assetOutTotalPrice sdk.Dec
 
@@ -590,14 +592,14 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	k.SetVault(ctx, newVault)
 	k.SetIDForVault(ctx, newID)
 
-	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx, newVault)
-
 	var mappingData types.OwnerAppExtendedPairVaultMappingData
 	mappingData.Owner = From
 	mappingData.AppId = AppID
 	mappingData.ExtendedPairId = ExtendedPairVaultID
 	mappingData.VaultId = newVault.Id
-
+	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, AppID, ExtendedPairVaultID)
+	appExtendedPairVaultData.VaultIds = append(appExtendedPairVaultData.VaultIds, newVault.Id)
+	k.SetAppExtendedPairVaultMappingData(ctx, appExtendedPairVaultData)
 	k.SetUserAppExtendedPairMappingData(ctx, mappingData)
 
 	return nil

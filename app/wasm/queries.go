@@ -54,7 +54,7 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (int64, int64, uint64, error) {
+func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (sdk.Int, int64, uint64, error) {
 	MinGovDeposit, GovTimeInSeconds, AssetID, err := qp.assetKeeper.GetAppWasmQuery(ctx, appID)
 	if err != nil {
 		return MinGovDeposit, GovTimeInSeconds, AssetID, nil
@@ -106,7 +106,7 @@ func (qp QueryPlugin) CollectorLookupTableQueryCheck(ctx sdk.Context, appID, col
 	return found, err
 }
 
-func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor uint64, PairName string) (found bool, err string) {
+func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor sdk.Int, PairName string) (found bool, err string) {
 	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, appID, pairID, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
 	return found, err
 }

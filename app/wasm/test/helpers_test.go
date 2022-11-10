@@ -77,26 +77,29 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	_ = assetKeeper.AddAppRecords(*ctx, msg1)
 
 	msg2 := assetTypes.Asset{
-		Name:      "CMDX",
-		Denom:     "ucmdx",
-		Decimals:  sdk.NewInt(1000000),
-		IsOnChain: true,
+		Name:          "CMDX",
+		Denom:         "ucmdx",
+		Decimals:      sdk.NewInt(1000000),
+		IsOnChain:     true,
+		IsCdpMintable: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg2)
 
 	msg3 := assetTypes.Asset{
-		Name:      "CMST",
-		Denom:     "ucmst",
-		Decimals:  sdk.NewInt(1000000),
-		IsOnChain: true,
+		Name:          "CMST",
+		Denom:         "ucmst",
+		Decimals:      sdk.NewInt(1000000),
+		IsOnChain:     true,
+		IsCdpMintable: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
 
 	msg4 := assetTypes.Asset{
-		Name:      "HARBOR",
-		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
-		IsOnChain: true,
+		Name:          "HARBOR",
+		Denom:         "uharbor",
+		Decimals:      sdk.NewInt(1000000),
+		IsOnChain:     true,
+		IsCdpMintable: true,
 	}
 	_ = assetKeeper.AddAssetRecords(*ctx, msg4)
 }
@@ -141,12 +144,12 @@ func AddCollectorLookuptable(app *app.App, ctx1 sdk.Context) {
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: 10000000,
-				DebtThreshold:    5000000,
+				SurplusThreshold: sdk.NewInt(10000000),
+				DebtThreshold:    sdk.NewInt(5000000),
 				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          2000000,
+				LotSize:          sdk.NewInt(2000000),
 				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      2000000,
+				DebtLotSize:      sdk.NewInt(2000000),
 			},
 		},
 	} {
@@ -172,8 +175,8 @@ func AddExtendedPairVault(app *app.App, ctx1 sdk.Context) {
 				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
 				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         1000000000000,
-				DebtFloor:           1000000,
+				DebtCeiling:         sdk.NewInt(1000000000000),
+				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
 				PairName:            "CMDX-A",

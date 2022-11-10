@@ -20,7 +20,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			appID := comdexQuery.AppData.AppID
 			MinGovDeposit, GovTimeInSeconds, assetID, _ := queryPlugin.GetAppInfo(ctx, appID)
 			res := bindings.AppDataResponse{
-				MinGovDeposit:    MinGovDeposit,
+				MinGovDeposit:    MinGovDeposit.String(),
 				GovTimeInSeconds: GovTimeInSeconds,
 				AssetID:          assetID,
 			}

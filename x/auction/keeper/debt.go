@@ -62,13 +62,13 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	}
 	// traverse this to access appId , collector asset id , netfees collected
 
-	if NetFeeCollectedData.NetFeesCollected.LTE(sdk.NewIntFromUint64(collector.DebtThreshold - collector.LotSize)) {
+	if NetFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) {
 		// START DEBT AUCTION .  LOTSIZE AS MINTED FOR SECONDARY ASSET and ACCEPT Collector assetid from user
 		// calculate inflow token amount
 		assetInID := collector.CollectorAssetId
 		assetOutID := collector.SecondaryAssetId
 		// net = 200 debtThreshold = 500 , lotsize = 100
-		amount := sdk.NewIntFromUint64(collector.LotSize)
+		amount := collector.LotSize
 
 		status, outflowToken, inflowToken := k.getDebtSellTokenAmount(ctx, appID, assetInID, assetOutID, amount)
 		if status == auctiontypes.NoAuction {
@@ -93,13 +93,12 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetO
 	if !found1 || !found2 {
 		return auctiontypes.NoAuction, emptyCoin, emptyCoin
 	}
-	var debtLot uint64
 	collectorData, _ := k.collector.GetCollectorLookupTable(ctx, appID, AssetInID)
 
-	debtLot = collectorData.DebtLotSize
+	debtLot := collectorData.DebtLotSize
 
 	buyToken = sdk.NewCoin(buyAsset.Denom, lotSize)
-	sellToken = sdk.NewCoin(sellAsset.Denom, sdk.NewIntFromUint64(debtLot))
+	sellToken = sdk.NewCoin(sellAsset.Denom, debtLot)
 	return 5, sellToken, buyToken
 }
 

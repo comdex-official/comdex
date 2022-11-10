@@ -17,4 +17,5 @@ message Asset {
     (gogoproto.nullable) = false];
   bool is_on_chain = 5 [(gogoproto.moretags) = "yaml:\"is_on_chain\""];
   bool is_oracle_price_required = 6 [(gogoproto.moretags) = "yaml:\"is_oracle_price_required\""];
+  bool is_cdp_mintable = 7 [(gogoproto.moretags) = "yaml:\"is_cdp_mintable\""];
 }

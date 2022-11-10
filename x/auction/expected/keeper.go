@@ -65,6 +65,8 @@ type VaultKeeper interface {
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 	GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec) (sdk.Dec, sdk.Int, error)
+	GetLengthOfVault(ctx sdk.Context) uint64
+	SetLengthOfVault(ctx sdk.Context, length uint64)
 }
 
 type CollectorKeeper interface {

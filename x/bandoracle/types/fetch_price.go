@@ -38,19 +38,21 @@ func NewMsgFetchPriceData(
 	prepareGas uint64,
 	executeGas uint64,
 	twaBatch uint64,
+	acceptedHeightDiff int64,
 ) *MsgFetchPriceData {
 	return &MsgFetchPriceData{
-		ClientID:       FetchPriceClientIDKey,
-		Creator:        creator,
-		OracleScriptID: uint64(oracleScriptID),
-		SourceChannel:  sourceChannel,
-		Calldata:       callData,
-		AskCount:       askCount,
-		MinCount:       minCount,
-		FeeLimit:       feeLimit,
-		PrepareGas:     prepareGas,
-		ExecuteGas:     executeGas,
-		TwaBatchSize:   twaBatch,
+		ClientID:           FetchPriceClientIDKey,
+		Creator:            creator,
+		OracleScriptID:     uint64(oracleScriptID),
+		SourceChannel:      sourceChannel,
+		Calldata:           callData,
+		AskCount:           askCount,
+		MinCount:           minCount,
+		FeeLimit:           feeLimit,
+		PrepareGas:         prepareGas,
+		ExecuteGas:         executeGas,
+		TwaBatchSize:       twaBatch,
+		AcceptedHeightDiff: acceptedHeightDiff,
 	}
 }
 
@@ -90,6 +92,9 @@ func (m *MsgFetchPriceData) ValidateBasic() error {
 	}
 	if m.TwaBatchSize == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid batch size")
+	}
+	if m.AcceptedHeightDiff <= 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid height")
 	}
 	return nil
 }

@@ -175,8 +175,8 @@ func (s *VaultIntegrationTestSuite) CreateNewExtendedVaultPair(pairName string, 
 		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
 		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       true,
-		DebtCeiling:         1000000000000000000,
-		DebtFloor:           100000000,
+		DebtCeiling:         sdk.NewInt(1000000000000000000),
+		DebtFloor:           sdk.NewInt(100000000),
 		IsStableMintVault:   false,
 		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,

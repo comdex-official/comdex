@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (s *KeeperTestSuite) WasmUpdateCollectorLookupTable(surplusThreshhold uint64, debtThreshhold uint64, lotsize uint64, debtlotsize uint64) {
+func (s *KeeperTestSuite) WasmUpdateCollectorLookupTable(surplusThreshhold, debtThreshhold, lotsize, debtlotsize sdk.Int) {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 
 	msg1 := bindings.MsgUpdateCollectorLookupTable{
@@ -37,7 +37,7 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
-	s.WasmUpdateCollectorLookupTable(19500, 1000, 501, 300)
+	s.WasmUpdateCollectorLookupTable(sdk.NewInt(19500), sdk.NewInt(1000), sdk.NewInt(501), sdk.NewInt(300))
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -96,10 +96,10 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.SecondaryAssetId)
 	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.CollectorAssetId)
 	s.Require().Equal(surplusAuction.BidFactor, collectorLookUp.BidFactor)
-	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.LotSize)
+	s.Require().Equal(surplusAuction.SellToken.Amount, collectorLookUp.LotSize)
 	s.Require().Equal(surplusAuction.BuyToken.Amount.Uint64(), uint64(0))
 	s.Require().Equal(surplusAuction.Bid.Amount.Uint64(), uint64(0))
-	s.Require().True(netFees.NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.SurplusThreshold + collectorLookUp.LotSize)))
+	s.Require().True(netFees.NetFeesCollected.GTE(collectorLookUp.SurplusThreshold.Add(collectorLookUp.LotSize)))
 
 	// Test restart surplus auction
 	s.advanceseconds(301)
@@ -116,10 +116,10 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	s.Require().Equal(surplusAuction.AssetInId, collectorLookUp.SecondaryAssetId)
 	s.Require().Equal(surplusAuction.AssetOutId, collectorLookUp.CollectorAssetId)
 	s.Require().Equal(surplusAuction1.BidFactor, collectorLookUp.BidFactor)
-	s.Require().Equal(surplusAuction.SellToken.Amount.Uint64(), collectorLookUp.LotSize)
+	s.Require().Equal(surplusAuction.SellToken.Amount, collectorLookUp.LotSize)
 	s.Require().Equal(surplusAuction.BuyToken.Amount.Uint64(), uint64(0))
 	s.Require().Equal(surplusAuction.Bid.Amount.Uint64(), uint64(0))
-	s.Require().True(netFees.NetFeesCollected.GTE(sdk.NewIntFromUint64(collectorLookUp.SurplusThreshold + collectorLookUp.LotSize)))
+	s.Require().True(netFees.NetFeesCollected.GTE(collectorLookUp.SurplusThreshold.Add(collectorLookUp.LotSize)))
 	s.Require().Equal(ctx.BlockTime().Add(time.Second*time.Duration(300)), surplusAuction1.EndTime)
 }
 

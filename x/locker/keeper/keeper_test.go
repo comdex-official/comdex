@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"testing"
 	"time"
 
@@ -20,13 +21,14 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app          *chain.App
-	ctx          sdk.Context
-	assetKeeper  assetKeeper.Keeper
-	lockerKeeper lockerKeeper.Keeper
-	querier      lockerKeeper.QueryServer
-	msgServer    lockerTypes.MsgServer
-	collector    collectorKeeper.Keeper
+	app           *chain.App
+	ctx           sdk.Context
+	assetKeeper   assetKeeper.Keeper
+	lockerKeeper  lockerKeeper.Keeper
+	querier       lockerKeeper.QueryServer
+	msgServer     lockerTypes.MsgServer
+	collector     collectorKeeper.Keeper
+	rewardsKeeper rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -41,6 +43,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
 	s.msgServer = lockerKeeper.NewMsgServer(s.lockerKeeper)
 	s.collector = s.app.CollectorKeeper
+	s.rewardsKeeper = s.app.Rewardskeeper
 }
 
 //

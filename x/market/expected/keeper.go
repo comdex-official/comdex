@@ -41,4 +41,5 @@ type BandOracleKeeper interface {
 	GetCheckFlag(ctx sdk.Context) bool
 	SetCheckFlag(ctx sdk.Context, flag bool)
 	GetOracleValidationResult(ctx sdk.Context) bool
+	GetDiscardData(ctx sdk.Context) (disData types.DiscardData)
 }
