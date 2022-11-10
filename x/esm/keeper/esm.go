@@ -694,7 +694,3 @@ func (k Keeper) GetRateOfAsset(ctx sdk.Context, appID, assetID uint64) uint64 {
 	}
 	return rateOut
 }
-
-
-
-
