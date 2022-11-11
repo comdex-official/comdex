@@ -29,10 +29,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 
 	for _, item := range state.CollectorAuctionLookupTable {
-		err := k.SetAuctionMappingForApp(ctx, item)
-		if err != nil {
-			return
-		}
+		k.SetGenAuctionMappingForApp(ctx, item)
 	}
 
 	for _, item := range state.AppToDenomsMapping {

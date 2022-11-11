@@ -502,18 +502,40 @@ func (q QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryD
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []types.DutchBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.DutchBiddings
 	)
 	if req.History {
-		item = q.GetHistoryDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryLendUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
 	} else {
-		item = q.GetDutchLendUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.LendUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryDutchLendBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
 

@@ -19,6 +19,8 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"protocolStatistics\"", (gogoproto.nullable) = false ];
   repeated AuctionParams auctionParams = 5
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
-  Params params = 6 [(gogoproto.nullable) = false];
-  uint64 UserBiddingID  = 7 ;
+  repeated DutchAuction dutchLendAuction = 6
+  [ (gogoproto.moretags) = "yaml:\"dutchLendAuction\"", (gogoproto.nullable) = false ];
+  Params params = 7 [(gogoproto.nullable) = false];
+  uint64 UserBiddingID  = 8 ;
 }

@@ -26,4 +26,5 @@ message GenesisState {
     (gogoproto.moretags)   = "yaml:\"userVaultAssetMapping\"",
     (gogoproto.nullable)   = false
   ];
+  uint64 lengthOfVaults = 5 [ (gogoproto.moretags) = "yaml:\"lengthOfVaults\""];
 }

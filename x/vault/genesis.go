@@ -36,6 +36,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	}
 	k.SetIDForVault(ctx, vaultID)
 	k.SetIDForStableVault(ctx, stableVaultID)
+	k.SetLengthOfVault(ctx, state.LengthOfVaults)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -44,5 +45,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetStableMintVaults(ctx),
 		k.GetAllAppExtendedPairVaultMapping(ctx),
 		k.GetAllUserVaultExtendedPairMapping(ctx),
+		k.GetLengthOfVault(ctx),
 	)
 }

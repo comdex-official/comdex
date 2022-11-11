@@ -10,26 +10,18 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	var auctionID uint64
+	var lendAuctionID uint64
 
 	for _, item := range state.SurplusAuction {
-		err := k.SetSurplusAuction(ctx, item)
-		if err != nil {
-			return
-		}
+		k.SetGenSurplusAuction(ctx, item)
 	}
 
 	for _, item := range state.DebtAuction {
-		err := k.SetDebtAuction(ctx, item)
-		if err != nil {
-			return
-		}
+		k.SetGenDebtAuction(ctx, item)
 	}
 
 	for _, item := range state.DutchAuction {
-		err := k.SetDutchAuction(ctx, item)
-		if err != nil {
-			return
-		}
+		k.SetGenDutchAuction(ctx, item)
 		auctionID = item.AuctionId
 	}
 
@@ -37,12 +29,18 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetUserBiddingID(ctx, state.UserBiddingID)
 
 	for _, item := range state.ProtocolStatistics {
-		k.SetProtocolStatistics(ctx, item.AppId, item.AssetId, sdk.Int(item.Loss))
+		k.SetGenProtocolStatistics(ctx, item.AppId, item.AssetId, item.Loss)
 	}
 
 	for _, item := range state.AuctionParams {
 		k.SetAuctionParams(ctx, item)
 	}
+
+	for _, item := range state.DutchAuction {
+		k.SetGenLendDutchLendAuction(ctx, item)
+		lendAuctionID = item.AuctionId
+	}
+	k.SetLendAuctionID(ctx,lendAuctionID)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -52,6 +50,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllDutchAuctions(ctx),
 		k.GetAllProtocolStat(ctx),
 		k.GetAllAuctionParams(ctx),
+		k.GetDutchLendAuctions(ctx,3),
 		k.GetParams(ctx),
 		k.GetUserBiddingID(ctx),
 	)
