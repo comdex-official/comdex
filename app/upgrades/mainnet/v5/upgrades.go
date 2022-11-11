@@ -51,7 +51,7 @@ func InitializeStates(
 	}
 
 	assets := []assettypes.Asset{
-		{Name: "ATOM", Denom: "uatom", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
+		{Name: "ATOM", Denom: "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
 		{Name: "CMDX", Denom: "ucmdx", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
 		{Name: "CMST", Denom: "ucmst", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: true, IsCdpMintable: true},
 		{Name: "OSMO", Denom: "uosmo", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
