@@ -520,3 +520,21 @@ func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Module
 	}
 	return ModuleBalance, true
 }
+
+func (k Keeper) DeleteAssetStatsByPoolIDAndAssetID(ctx sdk.Context, PoolAssetLBMapping types.PoolAssetLBMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SetAssetStatsByPoolIDAndAssetID(PoolAssetLBMapping.PoolID, PoolAssetLBMapping.AssetID)
+	)
+
+	store.Delete(key)
+}
+
+func (k Keeper) DeleteAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AssetToPairMappingKey(assetToPair.AssetID, assetToPair.PoolID)
+	)
+
+	store.Delete(key)
+}
