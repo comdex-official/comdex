@@ -557,12 +557,12 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		// take bh from lsr
 		rewards, err = k.CalculationOfRewards(ctx, NetBalance, collectorLookup.LockerSavingRate, collectorBTime)
 		if err != nil {
-			return nil
+			return err
 		}
 	} else {
 		rewards, err = k.CalculationOfRewards(ctx, NetBalance, collectorLookup.LockerSavingRate, lockerBlockTime)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 	lockerData, _ := k.locker.GetLocker(ctx, lockerID)
@@ -589,14 +589,14 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		// }
 		err = k.collector.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)
 		if err != nil {
-			return nil
+			return err
 		}
 		assetData, _ := k.asset.GetAsset(ctx, assetID)
 
 		if newReward.GT(sdk.ZeroInt()) {
 			err = k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 			if err != nil {
-				return nil
+				return err
 			}
 		}
 		lockerRewardsMapping, found := k.locker.GetLockerTotalRewardsByAssetAppWise(ctx, appID, lockerData.AssetDepositId)
@@ -607,13 +607,13 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 			lockerReward.TotalRewards = newReward
 			err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerReward)
 			if err != nil {
-				return nil
+				return err
 			}
 		} else {
 			lockerRewardsMapping.TotalRewards = lockerRewardsMapping.TotalRewards.Add(newReward)
 			err = k.locker.SetLockerTotalRewardsByAssetAppWise(ctx, lockerRewardsMapping)
 			if err != nil {
-				return nil
+				return err
 			}
 		}
 		// updating user rewards data

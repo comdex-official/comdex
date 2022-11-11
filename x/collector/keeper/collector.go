@@ -842,3 +842,13 @@ func (k Keeper) WasmMsgGetSurplusFund(ctx sdk.Context, appID, assetID uint64, ad
 	}
 	return nil
 }
+
+func (k Keeper) SetGenAuctionMappingForApp(ctx sdk.Context, record types.AppAssetIdToAuctionLookupTable) {
+	var (
+		store = ctx.KVStore(k.storeKey)
+		key   = types.AppIDToAuctionMappingKey(record.AppId, record.AssetId)
+		value = k.cdc.MustMarshal(&record)
+	)
+
+	store.Set(key, value)
+}
