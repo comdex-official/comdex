@@ -27,17 +27,3 @@ func GetQueryCmd() *cobra.Command {
 
 	return cmd
 }
-
-func GetTxCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                        "liquidation",
-		Short:                      "Liquidation module sub-commands",
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
-	}
-
-	cmd.AddCommand()
-
-	return cmd
-}

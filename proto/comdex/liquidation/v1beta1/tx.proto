@@ -8,20 +8,18 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message MsgLiquidateVaultRequest {
-
-
-    uint64 app_id = 1 [
+    string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    uint64 app_id = 2 [
       (gogoproto.customname) = "AppId",
-      (gogoproto.moretags) = "yaml:\"id\""];
+      (gogoproto.moretags) = "yaml:\"app_id\""];
   
-    uint64 vault_id = 2 [
+    uint64 vault_id = 3 [
       (gogoproto.customname) = "VaultId",
-      (gogoproto.moretags) = "yaml:\"id\""];
+      (gogoproto.moretags) = "yaml:\"vault_id\""];
   }
   message  MsgLiquidateVaultResponse{}
 
   service Msg {
-    rpc MsgCreate(MsgLiquidateVaultRequest) returns (MsgLiquidateVaultResponse);
-   
+    rpc MsgLiquidateVault(MsgLiquidateVaultRequest) returns (MsgLiquidateVaultResponse);
   }
   
