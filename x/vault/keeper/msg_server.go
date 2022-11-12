@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -161,7 +162,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	newVault.Id = updatedID
 	newVault.AmountIn = msg.AmountIn
 
-	//closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
+	// closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
 	closingFeeVal := msg.AmountOut.ToDec().Mul(extendedPairVault.ClosingFee).TruncateInt()
 
 	newVault.ClosingFeeAccumulated = closingFeeVal

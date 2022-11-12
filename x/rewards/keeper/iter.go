@@ -2,10 +2,11 @@ package keeper
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"math"
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -196,7 +197,7 @@ func (k Keeper) CalculationOfRewards(
 	amtFloat := amount.ToDec().MustFloat64()
 	newAmount := intAccPerBlock * amtFloat
 
-	//s := fmt.Sprint(newAmount)
+	// s := fmt.Sprint(newAmount)
 	s := strconv.FormatFloat(newAmount, 'f', 18, 64)
 	newAm, err := sdk.NewDecFromStr(s)
 	if err != nil {

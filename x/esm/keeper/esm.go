@@ -273,13 +273,13 @@ func (k Keeper) SetUpDebtRedemptionForCollector(ctx sdk.Context, appID uint64) e
 	if found1 {
 		for _, data := range netFee {
 			coolOffData, _ := k.GetDataAfterCoolOff(ctx, appID)
-			//Call AssetToAmount for the debt asset
+			// Call AssetToAmount for the debt asset
 			value, _ := k.GetAssetToAmount(ctx, data.AppId, data.AssetId)
 
 			if !value.IsCollateral && !data.NetFeesCollected.IsZero() {
-				//substract dollar value
-				//burn token
-				//update collector data
+				// substract dollar value
+				// burn token
+				// update collector data
 				assetData, found := k.asset.GetAsset(ctx, value.AssetID)
 				if !found {
 					return assettypes.ErrorAssetDoesNotExist
@@ -326,8 +326,8 @@ func (k Keeper) SetUpShareCalculation(ctx sdk.Context, appID uint64) error {
 		if !found {
 			return assettypes.ErrorAssetDoesNotExist
 		}
-		//TODO Refactor
-		//Call Rate out function for debt asset
+		// TODO Refactor
+		// Call Rate out function for debt asset
 		rate := k.GetRateOfAsset(ctx, appID, amt.AssetID)
 		if rate == 0 {
 			rate, found = k.GetSnapshotOfPrices(ctx, appID, amt.AssetID)
@@ -383,7 +383,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			//Call Rate out function for debt asset
+			// Call Rate out function for debt asset
 			rateOut := k.GetRateOfAsset(ctx, appID, assetOutData.Id)
 			if rateOut == 0 {
 				rateOut, found = k.GetSnapshotOfPrices(ctx, appID, assetOutData.Id)
@@ -463,7 +463,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 	return nil
 }
 
-//StableMintVault Function
+// StableMintVault Function
 
 func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID uint64, esmData types.ESMTriggerParams) error {
 	// var totalVaults []vaulttypes.Vault;
@@ -493,12 +493,12 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 			if !found {
 				return assettypes.ErrorAssetDoesNotExist
 			}
-			//Call Rate in function for collateral
+			// Call Rate in function for collateral
 			rateIn := k.GetRateOfAsset(ctx, appID, assetInData.Id)
 			if rateIn == 0 {
 				return types.ErrPriceNotFound
 			}
-			//Call Rate out function for debt asset
+			// Call Rate out function for debt asset
 			rateOut := k.GetRateOfAsset(ctx, appID, assetOutData.Id)
 			if rateOut == 0 {
 				return types.ErrPriceNotFound
@@ -590,7 +590,6 @@ func (k Keeper) SnapshotOfPrices(ctx sdk.Context, esmStatus types.ESMStatus) err
 
 			if price.IsPriceActive && !found {
 				k.SetSnapshotOfPrices(ctx, esmStatus.AppId, a.Id, price.Twa)
-
 			} else if !price.IsPriceActive {
 				return nil
 			}

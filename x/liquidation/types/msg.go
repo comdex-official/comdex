@@ -5,9 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	_ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
-)
+var _ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
 
 func NewMsgLiquidateRequest(
 	from sdk.AccAddress,
@@ -29,7 +27,6 @@ func (m *MsgLiquidateVaultRequest) Type() string {
 }
 
 func (m *MsgLiquidateVaultRequest) ValidateBasic() error {
-
 	if m.AppId == 0 {
 		return errors.Wrap(ErrAppIDInvalid, "app_id cannot be zero")
 	}

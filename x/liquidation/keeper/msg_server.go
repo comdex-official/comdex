@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaultypes "github.com/comdex-official/comdex/x/vault/types"
@@ -27,7 +28,7 @@ func (k msgServer) MsgLiquidateVault(c context.Context, msg *types.MsgLiquidateV
 	if !found {
 		return nil, types.ErrAppIDDoesNotExists
 	}
-	//Call Vault Data
+	// Call Vault Data
 	vault, found := k.vault.GetVault(ctx, msg.VaultId)
 	if !found {
 		return nil, vaultypes.ErrorVaultDoesNotExist
