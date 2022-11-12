@@ -21,12 +21,12 @@ func MigrateValueCollectorLookupTableData(store sdk.KVStore, cdc codec.BinaryCod
 		AppId:            2,
 		CollectorAssetId: 3,
 		SecondaryAssetId: 9,
-		SurplusThreshold: sdk.NewInt(100000000000000),
-		DebtThreshold:    sdk.NewInt(1000000000),
+		SurplusThreshold: sdk.NewIntFromUint64(100000000000000),
+		DebtThreshold:    sdk.NewIntFromUint64(1000000000),
 		LockerSavingRate: sdk.MustNewDecFromStr("0.015"),
-		LotSize:          sdk.NewInt(200000000),
+		LotSize:          sdk.NewIntFromUint64(200000000),
 		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		DebtLotSize:      sdk.NewIntFromUint64(2000000),
 		BlockHeight:      0,
 	}
 	key := collectortypes.CollectorLookupTableMappingKey(collectData.AppId, collectData.CollectorAssetId)
