@@ -17,7 +17,7 @@ func NewMigrator(keeper Keeper) Migrator {
 }
 
 // Migrate1to2 migrates from version 1 to 2.
-func (m Migrator) Migrate1to2(ctx sdk.Context) error {
+func (m Migrator) Migrate2to3(ctx sdk.Context) error {
 	fmt.Println("Migrate1to2")
 	return v5types.MigrateStore(ctx, m.keeper.key, m.keeper.cdc)
 }

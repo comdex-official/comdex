@@ -87,7 +87,7 @@ type AppModule struct {
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
-	return 2
+	return 3
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
@@ -117,7 +117,7 @@ func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { retu
 func (a AppModule) RegisterServices(configurator module.Configurator) {
 	migrator := keeper.NewMigrator(a.keeper)
 	// register v1 -> v2 migration
-	if err := configurator.RegisterMigration(types.ModuleName, 1, migrator.Migrate1to2); err != nil {
+	if err := configurator.RegisterMigration(types.ModuleName, 2, migrator.Migrate2to3); err != nil {
 		panic(fmt.Errorf("failed to migrate %s to v2: %w", types.ModuleName, err))
 	}
 	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(a.keeper))
