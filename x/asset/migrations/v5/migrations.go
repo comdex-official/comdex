@@ -9,61 +9,10 @@ import (
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
 	store := ctx.KVStore(storeKey)
-	err := MigrateValueApps(store, cdc)
+	err := MigrateValueAsset(store, cdc)
 	if err != nil {
 		return err
 	}
-	err = MigrateValueAsset(store, cdc)
-	if err != nil {
-		return err
-	}
-	return err
-}
-
-func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	app1 := assettypes.AppData{
-		Id:               1,
-		Name:             "CSWAP",
-		ShortName:        "cswap",
-		MinGovDeposit:    sdk.ZeroInt(),
-		GovTimeInSeconds: 300,
-		GenesisToken:     nil,
-	}
-	key1 := assettypes.AppKey(app1.Id)
-	store.Delete(key1)
-	SetApp(store, cdc, app1)
-
-	genesisToken := assettypes.MintGenesisToken{
-		AssetId:       9,
-		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
-		IsGovToken:    true,
-		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
-	}
-	var gToken []assettypes.MintGenesisToken
-	gToken = append(gToken, genesisToken)
-	app2 := assettypes.AppData{
-		Id:               2,
-		Name:             "HARBOR",
-		ShortName:        "hbr",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
-		GovTimeInSeconds: 300,
-		GenesisToken:     gToken,
-	}
-	key2 := assettypes.AppKey(app2.Id)
-	store.Delete(key2)
-	SetApp(store, cdc, app2)
-
-	app3 := assettypes.AppData{
-		Id:               3,
-		Name:             "commodo",
-		ShortName:        "cmdo",
-		MinGovDeposit:    sdk.ZeroInt(),
-		GovTimeInSeconds: 0,
-		GenesisToken:     nil,
-	}
-	key3 := assettypes.AppKey(app3.Id)
-	store.Delete(key3)
-	SetApp(store, cdc, app3)
 	return nil
 }
 
@@ -75,6 +24,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         false,
 	}
 	key1 := assettypes.AssetKey(asset1.Id)
 	store.Delete(key1)
@@ -87,6 +37,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         false,
 	}
 	key2 := assettypes.AssetKey(asset2.Id)
 	store.Delete(key2)
@@ -97,8 +48,9 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Name:                  "CMST",
 		Denom:                 "ucmst",
 		Decimals:              sdk.NewInt(1000000),
-		IsOnChain:             false,
+		IsOnChain:             true,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         true,
 	}
 	key3 := assettypes.AssetKey(asset3.Id)
 	store.Delete(key3)
@@ -111,6 +63,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         false,
 	}
 	key4 := assettypes.AssetKey(asset4.Id)
 	store.Delete(key4)
@@ -123,6 +76,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
+		IsCdpMintable:         true,
 	}
 	key5 := assettypes.AssetKey(asset5.Id)
 	store.Delete(key5)
@@ -135,6 +89,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
+		IsCdpMintable:         true,
 	}
 	key6 := assettypes.AssetKey(asset6.Id)
 	store.Delete(key6)
@@ -147,6 +102,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
+		IsCdpMintable:         true,
 	}
 	key7 := assettypes.AssetKey(asset7.Id)
 	store.Delete(key7)
@@ -159,6 +115,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
+		IsCdpMintable:         true,
 	}
 	key8 := assettypes.AssetKey(asset8.Id)
 	store.Delete(key8)
@@ -171,6 +128,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
+		IsCdpMintable:         false,
 	}
 	key9 := assettypes.AssetKey(asset9.Id)
 	store.Delete(key9)
@@ -183,6 +141,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         false,
 	}
 	key10 := assettypes.AssetKey(asset10.Id)
 	store.Delete(key10)
@@ -195,21 +154,13 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Decimals:              sdk.NewInt(1000000000000000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
+		IsCdpMintable:         false,
 	}
 	key11 := assettypes.AssetKey(asset11.Id)
 	store.Delete(key11)
 	SetAsset(store, cdc, asset11)
 
 	return nil
-}
-
-func SetApp(store sdk.KVStore, cdc codec.BinaryCodec, app assettypes.AppData) {
-	var (
-		key   = assettypes.AppKey(app.Id)
-		value = cdc.MustMarshal(&app)
-	)
-
-	store.Set(key, value)
 }
 
 func SetAsset(store sdk.KVStore, cdc codec.BinaryCodec, asset assettypes.Asset) {

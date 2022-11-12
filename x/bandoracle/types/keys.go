@@ -2,7 +2,7 @@ package types
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "bandoracleV1"
+	ModuleName = "bandoracleV2"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
@@ -20,7 +20,7 @@ const (
 	Version = "bandchain-1"
 
 	// PortID is the default port id that module binds to.
-	PortID = "bandoracleV1"
+	PortID = "bandoracleV2"
 )
 
 var (

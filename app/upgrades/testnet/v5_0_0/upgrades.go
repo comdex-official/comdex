@@ -35,13 +35,14 @@ func CreateUpgradeHandlerV51Beta(
 	mm *module.Manager,
 	configurator module.Configurator,
 	lk lendkeeper.Keeper,
+	vaultkeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
+		SetVaultLengthCounter(ctx, vaultkeeper)
 		FixAssetStatsData(ctx, lk)
 		return vm, err
 	}
