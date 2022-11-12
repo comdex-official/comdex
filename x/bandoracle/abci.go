@@ -35,14 +35,14 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 				req := k.GetTempFetchPriceID(ctx)
 				res := k.OraclePriceValidationByRequestID(ctx, req)
 				discardData := k.GetDiscardData(ctx)
-				//By default discard height -1 - set while adding band proposal
-				//addd new parameter in kvv store to save the accepted discard height
-				//one more bool value to save the result of the operation---bydefault false
+				// By default discard height -1 - set while adding band proposal
+				// addd new parameter in kvv store to save the accepted discard height
+				// one more bool value to save the result of the operation---bydefault false
 				if !res && discardData.BlockHeight < 0 {
 					discardData.BlockHeight = ctx.BlockHeight()
 				} else if res && discardData.BlockHeight > 0 {
 					if (ctx.BlockHeight() - discardData.BlockHeight) < msg.AcceptedHeightDiff {
-						//No issues
+						// No issues
 						discardData.BlockHeight = -1
 					} else if (ctx.BlockHeight() - discardData.BlockHeight) >= msg.AcceptedHeightDiff {
 						discardData.DiscardBool = true
@@ -57,5 +57,5 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	}
 }
 
-//if discardBool true------> setCounter to 0 , price to false   ----should be a if condition at the top----> at the end of condition set Discard Bool to false
-//if discardBool false-------> nothing to do.
+// if discardBool true------> setCounter to 0 , price to false   ----should be a if condition at the top----> at the end of condition set Discard Bool to false
+// if discardBool false-------> nothing to do.

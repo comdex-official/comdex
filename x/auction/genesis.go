@@ -40,7 +40,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetGenLendDutchLendAuction(ctx, item)
 		lendAuctionID = item.AuctionId
 	}
-	k.SetLendAuctionID(ctx,lendAuctionID)
+	k.SetLendAuctionID(ctx, lendAuctionID)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
@@ -50,7 +50,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllDutchAuctions(ctx),
 		k.GetAllProtocolStat(ctx),
 		k.GetAllAuctionParams(ctx),
-		k.GetDutchLendAuctions(ctx,3),
+		k.GetDutchLendAuctions(ctx, 3),
 		k.GetParams(ctx),
 		k.GetUserBiddingID(ctx),
 	)
