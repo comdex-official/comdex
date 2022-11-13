@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -194,6 +195,21 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	k.SetUserAppExtendedPairMappingData(ctx, mappingData)
 
 	ctx.GasMeter().ConsumeGas(types.CreateVaultGas, "CreateVaultGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCreateVault,
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(newVault.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, newVault.AmountIn.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, newVault.AmountOut.String()),
+			sdk.NewAttribute(types.AttributeKeyCreatedAt, ctx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyInterestAccumulated, newVault.InterestAccumulated.String()),
+			sdk.NewAttribute(types.AttributeKeyClosingFeeAccumulated, newVault.ClosingFeeAccumulated.String()),
+		),
+	})
 
 	return &types.MsgCreateResponse{}, nil
 }
@@ -837,6 +853,21 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	k.rewards.DeleteVaultInterestTracker(ctx, rewards)
 
 	ctx.GasMeter().ConsumeGas(types.CloseVaultGas, "CloseVaultGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCloseVault,
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(userVault.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, userVault.AmountIn.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, userVault.AmountOut.String()),
+			sdk.NewAttribute(types.AttributeKeyCreatedAt, userVault.CreatedAt.String()),
+			sdk.NewAttribute(types.AttributeKeyInterestAccumulated, userVault.InterestAccumulated.String()),
+			sdk.NewAttribute(types.AttributeKeyClosingFeeAccumulated, userVault.ClosingFeeAccumulated.String()),
+		),
+	})
 
 	return &types.MsgCloseResponse{}, nil
 }
