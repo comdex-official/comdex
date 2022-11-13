@@ -674,7 +674,7 @@ WASM_PROPOSALS = [
                             "msg_add_e_s_m_trigger_params": {
                                 "app_id": 1,
                                 "target_value": {"amount": "200", "denom": "uharbor"},
-                                "cool_off_period": 180,
+                                "cool_off_period": 7200,
                                 "asset_id": [4,3,13],
                                 "rates": [1000000,1000000,1000000],
                             }
