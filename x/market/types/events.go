@@ -1,6 +1,6 @@
 package types
 
-// Event types for the Vault module.
+// Event types for the market module.
 const (
 	EventTypeTwaChange = "twa_change"
 
