@@ -675,8 +675,8 @@ WASM_PROPOSALS = [
                                 "app_id": 1,
                                 "target_value": {"amount": "200", "denom": "uharbor"},
                                 "cool_off_period": 7200,
-                                "asset_id": [4,13],
-                                "rates": [1000000,1000000],
+                                "asset_id": [4,3,13],
+                                "rates": [1000000,1000000,1000000],
                             }
                         }
                     ],

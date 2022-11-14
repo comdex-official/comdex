@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strconv"
+
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -126,10 +128,22 @@ func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch ui
 
 func (k Keeper) CalculateTwa(ctx sdk.Context, twa types.TimeWeightedAverage, twaBatch uint64) uint64 {
 	var sum uint64
+	oldTwa := twa.Twa
 	for i := 0; i < int(twaBatch); i++ {
 		sum = sum + twa.PriceValue[i]
 	}
 	twa.Twa = sum / twaBatch
+
+	if oldTwa != twa.Twa {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeTwaChange,
+				sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(twa.AssetID, 10)),
+				sdk.NewAttribute(types.AttributeKeyOldTwa, strconv.FormatUint(oldTwa, 10)),
+				sdk.NewAttribute(types.AttributeKeyNewTwa, strconv.FormatUint(twa.Twa, 10)),
+			),
+		})
+	}
 	return twa.Twa
 }
 

@@ -26,8 +26,8 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, as
 				continue
 			}
 			if found && esmStatus.Status {
-				//Should check if price exists in the band or not. else should skip---- k.market.isPriceValidationActive
-				//to add this check at all abci as well where price is important
+				// Should check if price exists in the band or not. else should skip---- k.market.isPriceValidationActive
+				// to add this check at all abci as well where price is important
 				if !esmStatus.SnapshotStatus {
 					err := k.SnapshotOfPrices(ctx, esmStatus)
 					if err != nil {
