@@ -190,7 +190,7 @@ def CreateLiquidityPair(appID, baseCoinDenom, quoteCoinDenom):
     print(f"New Liquidity Pair ({baseCoinDenom}, {quoteCoinDenom}) Proposal  Submitted ✔️")
 
 def CreateLiquidityPool(appID, pairID, depositCoins):
-    command = f"comdex tx liquidityV1 create-pool {appID} {pairID} {depositCoins} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"
+    command = f"comdex tx liquidity create-pool {appID} {pairID} {depositCoins} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:

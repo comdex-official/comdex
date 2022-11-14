@@ -21,8 +21,8 @@ import (
 // GetTxCmd returns the transaction commands for the module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		Use:                        "liquidity",
+		Short:                      fmt.Sprintf("%s transactions subcommands", "liquidity"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
