@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	"strconv"
+
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 )
 
 func (k Keeper) SetTwa(ctx sdk.Context, twa types.TimeWeightedAverage) {
