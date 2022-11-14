@@ -1,7 +1,7 @@
 package v5
 
 const (
-	UpgradeName   = "v5"
+	UpgradeName   = "v5.0.0"
 	UpgradeHeight = ""
 	UpgradeInfo   = `'{
 		"binaries": {
