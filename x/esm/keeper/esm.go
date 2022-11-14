@@ -277,7 +277,7 @@ func (k Keeper) SetUpDebtRedemptionForCollector(ctx sdk.Context, appID uint64) e
 			value, _ := k.GetAssetToAmount(ctx, data.AppId, data.AssetId)
 
 			if !value.IsCollateral && !data.NetFeesCollected.IsZero() {
-				// substract dollar value
+				// subtract dollar value
 				// burn token
 				// update collector data
 				assetData, found := k.asset.GetAsset(ctx, value.AssetID)
