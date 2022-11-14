@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -143,6 +144,18 @@ func (k Keeper) StartDutchAuction(
 	if err != nil {
 		return err
 	}
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			auctiontypes.EventTypeDutchNewAuction,
+			sdk.NewAttribute(auctiontypes.DataAppID, strconv.FormatUint(auction.AppId, 10)),
+			sdk.NewAttribute(auctiontypes.AttributeKeyOwner, auction.VaultOwner.String()),
+			sdk.NewAttribute(auctiontypes.AttributeKeyCollateral, auction.OutflowTokenInitAmount.String()),
+			sdk.NewAttribute(auctiontypes.AttributeKeyDebt, auction.InflowTokenTargetAmount.String()),
+			sdk.NewAttribute(auctiontypes.AttributeKeyStartTime, auction.StartTime.String()),
+			sdk.NewAttribute(auctiontypes.AttributeKeyEndTime, auction.EndTime.String()),
+		),
+	)
 
 	return nil
 }

@@ -28,7 +28,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 				if err1 != nil {
 					ctx.EventManager().EmitEvent(
 						sdk.NewEvent(
-							types.EventTypeSurplusActivator,
+							types.EventTypeSurplusActivatorErr,
 							sdk.NewAttribute(types.DataAppID, fmt.Sprintf("%d", data.AppId)),
 							sdk.NewAttribute(types.DataAssetID, fmt.Sprintf("%d", data.AssetId)),
 							sdk.NewAttribute(types.DataAssetOutOraclePrice, fmt.Sprintf("%t", data.AssetOutOraclePrice)),
@@ -51,7 +51,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 				if err2 != nil {
 					ctx.EventManager().EmitEvent(
 						sdk.NewEvent(
-							types.EventTypeDebtActivator,
+							types.EventTypeDebtActivatorErr,
 							sdk.NewAttribute(types.DataAppID, fmt.Sprintf("%d", data.AppId)),
 							sdk.NewAttribute(types.DataAssetID, fmt.Sprintf("%d", data.AssetId)),
 							sdk.NewAttribute(types.DataAssetOutOraclePrice, fmt.Sprintf("%t", data.AssetOutOraclePrice)),
@@ -80,7 +80,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 			if err4 != nil {
 				ctx.EventManager().EmitEvent(
 					sdk.NewEvent(
-						types.EventTypeRestartDutch,
+						types.EventTypeRestartDutchErr,
 						sdk.NewAttribute(types.DataAppID, fmt.Sprintf("%d", app.Id)),
 					),
 				)
@@ -91,7 +91,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 			if err6 != nil {
 				ctx.EventManager().EmitEvent(
 					sdk.NewEvent(
-						types.EventTypeRestartLendDutch,
+						types.EventTypeRestartLendDutchErr,
 						sdk.NewAttribute(types.DataAppID, fmt.Sprintf("%d", app.Id)),
 					),
 				)

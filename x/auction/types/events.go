@@ -1,10 +1,16 @@
 package types
 
 const (
-	EventTypeSurplusActivator      = "surplus_activator"
-	EventTypeDebtActivator         = "debt_activator"
-	EventTypeRestartDutch          = "restart_dutch"
-	EventTypeRestartLendDutch      = "restart_lend_dutch"
+	EventTypeSurplusActivatorErr   = "surplus_activator_err"
+	EventTypeDebtActivatorErr      = "debt_activator_err"
+	EventTypeRestartDutchErr       = "restart_dutch_err"
+	EventTypeRestartLendDutchErr   = "restart_lend_dutch_err"
+	EventTypeDutchNewAuction       = "dutch_new_auction"
+	AttributeKeyOwner              = "vault_owner"
+	AttributeKeyCollateral         = "collateral_token"
+	AttributeKeyDebt               = "debt_token"
+	AttributeKeyStartTime          = "start_time"
+	AttributeKeyEndTime            = "end_time"
 	DataAppID                      = "data_app_id"
 	DataAssetID                    = "data_asset_id"
 	DataAssetOutOraclePrice        = "data_asset_out_oracle_price"

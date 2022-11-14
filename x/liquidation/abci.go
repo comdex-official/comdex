@@ -18,7 +18,7 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		ctx.Logger().Error("error in LiquidateVaults")
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
-				types.EventTypeLiquidateVaults,
+				types.EventTypeLiquidateVaultsErr,
 				sdk.NewAttribute(types.Error, fmt.Sprintf("%s", err)),
 			),
 		)
@@ -28,7 +28,7 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		ctx.Logger().Error("error in LiquidateBorrows")
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
-				types.EventTypeLiquidateBorrows,
+				types.EventTypeLiquidateBorrowsErr,
 				sdk.NewAttribute(types.Error, fmt.Sprintf("%s", err)),
 			),
 		)

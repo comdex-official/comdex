@@ -1,7 +1,7 @@
 package types
 
 const (
-	EventTypeLiquidateVaults  = "liquidate_vaults"
-	EventTypeLiquidateBorrows = "liquidate_borrows"
-	Error                     = "error"
+	EventTypeLiquidateVaultsErr  = "liquidate_vaults_err"
+	EventTypeLiquidateBorrowsErr = "liquidate_borrows_err"
+	Error                        = "error"
 )
