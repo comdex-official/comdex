@@ -7,7 +7,19 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
+var (
+	_ sdk.Msg = (*MsgPlaceSurplusBidRequest)(nil)
+	_ sdk.Msg = (*MsgPlaceDebtBidRequest)(nil)
+	_ sdk.Msg = (*MsgPlaceDutchBidRequest)(nil)
+	_ sdk.Msg = (*MsgPlaceDutchLendBidRequest)(nil)
+)
+
+const (
+	TypeMsgPlaceSurplusBidRequest   = "place_surplus_bid"
+	TypeMsgPlaceDebtBidRequest      = "place_debt_bid"
+	TypeMsgPlaceDutchBidRequest     = "place_dutch_bid"
+	TypeMsgPlaceDutchLendBidRequest = "place_dutch_lend_bid"
+)
 
 func NewMsgPlaceSurplusBid(from string, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceSurplusBidRequest {
 	return &MsgPlaceSurplusBidRequest{
@@ -19,7 +31,10 @@ func NewMsgPlaceSurplusBid(from string, auctionID uint64, amt sdk.Coin, appID, a
 	}
 }
 
-func (m *MsgPlaceSurplusBidRequest) ValidateBasic() error {
+func (m MsgPlaceSurplusBidRequest) Route() string { return RouterKey }
+func (m MsgPlaceSurplusBidRequest) Type() string  { return TypeMsgPlaceSurplusBidRequest }
+
+func (m MsgPlaceSurplusBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
 		return errors.New("auction id cannot be zero")
 	}
@@ -33,7 +48,11 @@ func (m *MsgPlaceSurplusBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgPlaceSurplusBidRequest) GetSigners() []sdk.AccAddress {
+func (m MsgPlaceSurplusBidRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgPlaceSurplusBidRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)
@@ -53,7 +72,10 @@ func NewMsgPlaceDebtBid(from string, auctionID uint64, bid, amt sdk.Coin, appID,
 	}
 }
 
-func (m *MsgPlaceDebtBidRequest) ValidateBasic() error {
+func (m MsgPlaceDebtBidRequest) Route() string { return RouterKey }
+func (m MsgPlaceDebtBidRequest) Type() string  { return TypeMsgPlaceDebtBidRequest }
+
+func (m MsgPlaceDebtBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
 		return errors.New("auction id cannot be zero")
 	}
@@ -64,7 +86,11 @@ func (m *MsgPlaceDebtBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgPlaceDebtBidRequest) GetSigners() []sdk.AccAddress {
+func (m MsgPlaceDebtBidRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgPlaceDebtBidRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)
@@ -84,7 +110,10 @@ func NewMsgPlaceDutchBid(from string, auctionID uint64, amt sdk.Coin, max sdk.De
 	}
 }
 
-func (m *MsgPlaceDutchBidRequest) ValidateBasic() error {
+func (m MsgPlaceDutchBidRequest) Route() string { return RouterKey }
+func (m MsgPlaceDutchBidRequest) Type() string  { return TypeMsgPlaceDutchBidRequest }
+
+func (m MsgPlaceDutchBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
 		return errors.New("auction id cannot be zero")
 	}
@@ -95,7 +124,11 @@ func (m *MsgPlaceDutchBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgPlaceDutchBidRequest) GetSigners() []sdk.AccAddress {
+func (m MsgPlaceDutchBidRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgPlaceDutchBidRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)
@@ -115,7 +148,10 @@ func NewMsgPlaceDutchLendBid(from string, auctionID uint64, amt sdk.Coin, max sd
 	}
 }
 
-func (m *MsgPlaceDutchLendBidRequest) ValidateBasic() error {
+func (m MsgPlaceDutchLendBidRequest) Route() string { return RouterKey }
+func (m MsgPlaceDutchLendBidRequest) Type() string  { return TypeMsgPlaceDutchLendBidRequest }
+
+func (m MsgPlaceDutchLendBidRequest) ValidateBasic() error {
 	if m.AuctionId == 0 {
 		return errors.New("auction id cannot be zero")
 	}
@@ -126,7 +162,11 @@ func (m *MsgPlaceDutchLendBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgPlaceDutchLendBidRequest) GetSigners() []sdk.AccAddress {
+func (m MsgPlaceDutchLendBidRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m MsgPlaceDutchLendBidRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
 		panic(err)
