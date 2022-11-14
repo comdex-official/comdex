@@ -199,12 +199,12 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreateVault,
-			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(newVault.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(newVault.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
-			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
 			sdk.NewAttribute(types.AttributeKeyAmountIn, newVault.AmountIn.String()),
-			sdk.NewAttribute(types.AttributeKeyAmountIn, newVault.AmountOut.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, newVault.AmountOut.String()),
 			sdk.NewAttribute(types.AttributeKeyCreatedAt, ctx.BlockTime().String()),
 			sdk.NewAttribute(types.AttributeKeyInterestAccumulated, newVault.InterestAccumulated.String()),
 			sdk.NewAttribute(types.AttributeKeyClosingFeeAccumulated, newVault.ClosingFeeAccumulated.String()),
@@ -306,6 +306,16 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 
 	ctx.GasMeter().ConsumeGas(types.DepositVaultGas, "DepositVaultGas")
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDepositVault,
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(msg.UserVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, msg.Amount.String()),
+		),
+	})
 
 	return &types.MsgDepositResponse{}, nil
 }
@@ -414,6 +424,16 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, false)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawVaultGas, "WithdrawVaultGas")
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeWithdrawVault,
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(msg.UserVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, msg.Amount.String()),
+		),
+	})
 
 	return &types.MsgWithdrawResponse{}, nil
 }
@@ -559,6 +579,17 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 
 	ctx.GasMeter().ConsumeGas(types.DrawVaultGas, "DrawVaultGas")
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeDrawVault,
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(msg.UserVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, msg.Amount.String()),
+		),
+	})
 
 	return &types.MsgDrawResponse{}, nil
 }
@@ -712,6 +743,17 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 
 	ctx.GasMeter().ConsumeGas(types.RepayVaultGas, "RepayVaultGas")
 
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeRepayVault,
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(msg.UserVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, msg.Amount.String()),
+		),
+	})
+
 	return &types.MsgRepayResponse{}, nil
 }
 
@@ -857,12 +899,10 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCloseVault,
-			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(userVault.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyVaultID, strconv.FormatUint(userVault.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
-			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
+			sdk.NewAttribute(types.AttributeKeyExtendedPairID, strconv.FormatUint(msg.ExtendedPairVaultId, 10)),
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.From),
-			sdk.NewAttribute(types.AttributeKeyAmountIn, userVault.AmountIn.String()),
-			sdk.NewAttribute(types.AttributeKeyAmountIn, userVault.AmountOut.String()),
 			sdk.NewAttribute(types.AttributeKeyCreatedAt, userVault.CreatedAt.String()),
 			sdk.NewAttribute(types.AttributeKeyInterestAccumulated, userVault.InterestAccumulated.String()),
 			sdk.NewAttribute(types.AttributeKeyClosingFeeAccumulated, userVault.ClosingFeeAccumulated.String()),
