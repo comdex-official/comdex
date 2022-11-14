@@ -217,9 +217,9 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 
 		if tokenData.IsCollateral && !tokenData.Amount.IsZero() {
 			// unitRate, _ := k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
-			unitRate := k.GetRateOfAsset(ctx, appID, assetID.Id)
+			unitRate := k.GetRateOfAsset(ctx, appID, assetData.Id)
 			if unitRate == 0 {
-				unitRate, found = k.GetSnapshotOfPrices(ctx, appID, assetID.Id)
+				unitRate, found = k.GetSnapshotOfPrices(ctx, appID, assetData.Id)
 				if !found {
 					return types.ErrPriceNotFound
 				}
