@@ -20,8 +20,8 @@ const (
 // Liquidity params default values.
 var (
 	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
-	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 5000_000_000))
-	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 5000_000_000))
+	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 2000_000_000))
+	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 2000_000_000))
 	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
 	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
 	DefaultSwapFeeRate              = sdk.NewDecWithPrec(3, 3) // 0.3%
