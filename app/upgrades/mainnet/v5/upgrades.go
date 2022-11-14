@@ -58,6 +58,7 @@ func InitializeStates(
 			panic(err)
 		}
 	}
+	assetKeeper.SetGenesisTokenForApp(ctx, 2, 9)
 
 	assets := []assettypes.Asset{
 		{Name: "ATOM", Denom: "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
