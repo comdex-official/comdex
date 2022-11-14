@@ -20,8 +20,8 @@ import (
 func GetQueryCmd() *cobra.Command {
 	// Group rewards queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        "rewards",
+		Short:                      fmt.Sprintf("Querying commands for the %s module", "rewards"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,

@@ -18,8 +18,8 @@ import (
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group esm queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        "esm",
+		Short:                      fmt.Sprintf("Querying commands for the %s module", "esm"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
