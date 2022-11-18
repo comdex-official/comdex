@@ -31,7 +31,7 @@ func (m *MsgMintNewTokensRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidAppID, "app id can not be zero")
 	}
 	if m.AssetId == 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "app id can not be zero")
+		return errors.Wrap(ErrorInvalidAssetID, "asset id can not be zero")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
