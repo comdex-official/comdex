@@ -19,6 +19,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgLiquidateVaultRequest:
 			res, err := server.MsgLiquidateVault(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgLiquidateBorrowRequest:
+			res, err := server.MsgLiquidateBorrow(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
