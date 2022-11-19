@@ -1,7 +1,7 @@
 package v5
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,7 +37,7 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		AssetId:       9,
 		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
 		IsGovToken:    true,
-		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
+		Recipient:     "petri1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
 	}
 	var gToken []assettypes.MintGenesisToken
 	gToken = append(gToken, genesisToken)
@@ -83,7 +83,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	asset2 := assettypes.Asset{
 		Id:                    2,
 		Name:                  "CMDX",
-		Denom:                 "ucmdx",
+		Denom:                 "upetri",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
@@ -94,7 +94,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 	asset3 := assettypes.Asset{
 		Id:                    3,
-		Name:                  "CMST",
+		Name:                  "FUST",
 		Denom:                 "ucmst",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
@@ -131,7 +131,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	asset6 := assettypes.Asset{
 		Id:                    6,
 		Name:                  "cCMDX",
-		Denom:                 "uccmdx",
+		Denom:                 "uspetri",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
@@ -142,8 +142,8 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 	asset7 := assettypes.Asset{
 		Id:                    7,
-		Name:                  "cCMST",
-		Denom:                 "uccmst",
+		Name:                  "cFUST",
+		Denom:                 "usfust",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,

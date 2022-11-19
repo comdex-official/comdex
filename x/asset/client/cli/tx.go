@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/petrichormoney/petri/x/asset/types"
 )
 
 func NewCmdSubmitAddAssetsProposal() *cobra.Command {
@@ -28,9 +28,9 @@ Sample json content
 	"decimals" :"1000000",
 	"is_on_chain" :"0",
 	"asset_oracle_price" :"1",
-	"title" :"Add assets for applications to be deployed on comdex testnet",
+	"title" :"Add assets for applications to be deployed on petri testnet",
 	"description" :"This proposal it to add following assets ATOM to be then used on harbor, commodo and cswap apps",
-	"deposit" :"1000000000ucmdx"
+	"deposit" :"1000000000upetri"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

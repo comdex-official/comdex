@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
+	"github.com/petrichormoney/petri/x/auction/keeper"
+	"github.com/petrichormoney/petri/x/auction/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {

@@ -3,8 +3,8 @@ package market
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/market/keeper"
-	"github.com/comdex-official/comdex/x/market/types"
+	"github.com/petrichormoney/petri/x/market/keeper"
+	"github.com/petrichormoney/petri/x/market/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

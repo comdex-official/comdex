@@ -12,18 +12,18 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/liquidity interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreatePair{}, "comdex/liquidity/MsgCreatePair", nil)
-	cdc.RegisterConcrete(&MsgCreatePool{}, "comdex/liquidity/MsgCreatePool", nil)
-	cdc.RegisterConcrete(&MsgDeposit{}, "comdex/liquidity/MsgDeposit", nil)
-	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/liquidity/MsgWithdraw", nil)
-	cdc.RegisterConcrete(&MsgLimitOrder{}, "comdex/liquidity/MsgLimitOrder", nil)
-	cdc.RegisterConcrete(&MsgMarketOrder{}, "comdex/liquidity/MsgMarketOrder", nil)
-	cdc.RegisterConcrete(&MsgCancelOrder{}, "comdex/liquidity/MsgCancelOrder", nil)
-	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "comdex/liquidity/MsgCancelAllOrders", nil)
-	cdc.RegisterConcrete(&MsgFarm{}, "comdex/liquidity/MsgFarm", nil)
-	cdc.RegisterConcrete(&MsgUnfarm{}, "comdex/liquidity/MsgUnfarm", nil)
-	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "comdex/liquidity/UpdateGenericParamsProposal", nil)
-	cdc.RegisterConcrete(&CreateNewLiquidityPairProposal{}, "comdex/liquidity/CreateNewLiquidityPairProposal", nil)
+	cdc.RegisterConcrete(&MsgCreatePair{}, "petri/liquidity/MsgCreatePair", nil)
+	cdc.RegisterConcrete(&MsgCreatePool{}, "petri/liquidity/MsgCreatePool", nil)
+	cdc.RegisterConcrete(&MsgDeposit{}, "petri/liquidity/MsgDeposit", nil)
+	cdc.RegisterConcrete(&MsgWithdraw{}, "petri/liquidity/MsgWithdraw", nil)
+	cdc.RegisterConcrete(&MsgLimitOrder{}, "petri/liquidity/MsgLimitOrder", nil)
+	cdc.RegisterConcrete(&MsgMarketOrder{}, "petri/liquidity/MsgMarketOrder", nil)
+	cdc.RegisterConcrete(&MsgCancelOrder{}, "petri/liquidity/MsgCancelOrder", nil)
+	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "petri/liquidity/MsgCancelAllOrders", nil)
+	cdc.RegisterConcrete(&MsgFarm{}, "petri/liquidity/MsgFarm", nil)
+	cdc.RegisterConcrete(&MsgUnfarm{}, "petri/liquidity/MsgUnfarm", nil)
+	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "petri/liquidity/UpdateGenericParamsProposal", nil)
+	cdc.RegisterConcrete(&CreateNewLiquidityPairProposal{}, "petri/liquidity/CreateNewLiquidityPairProposal", nil)
 }
 
 // RegisterInterfaces registers the x/liquidity interfaces types with the

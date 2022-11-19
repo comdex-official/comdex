@@ -15,8 +15,8 @@ const (
 func init() {
 	govtypes.RegisterProposalType(ProposalUpdateGenericParams)
 	govtypes.RegisterProposalType(ProposalCreateNewLiquidityPair)
-	govtypes.RegisterProposalTypeCodec(&UpdateGenericParamsProposal{}, "comdex/UpdateGenericParams")
-	govtypes.RegisterProposalTypeCodec(&CreateNewLiquidityPairProposal{}, "comdex/CreateNewLiquidityPair")
+	govtypes.RegisterProposalTypeCodec(&UpdateGenericParamsProposal{}, "petri/UpdateGenericParams")
+	govtypes.RegisterProposalTypeCodec(&CreateNewLiquidityPairProposal{}, "petri/CreateNewLiquidityPair")
 }
 
 var (

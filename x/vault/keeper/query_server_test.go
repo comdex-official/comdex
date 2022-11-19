@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/stretchr/testify/suite"
 	"google.golang.org/grpc/codes"
@@ -560,7 +560,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryVaultInfoOfOwnerByAppRequest{AppId: appID2, Owner: "comdex..."},
+			Req:               &types.QueryVaultInfoOfOwnerByAppRequest{AppId: appID2, Owner: "petri..."},
 			ExpErr:            status.Errorf(codes.NotFound, "Address is not correct"),
 			ExpResp:           nil,
 		},
@@ -998,7 +998,7 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryAllVaultIdsByAnOwnerRequest{Owner: "comdex..."},
+			Req:               &types.QueryAllVaultIdsByAnOwnerRequest{Owner: "petri..."},
 			ExpErr:            status.Errorf(codes.NotFound, "Address is not correct"),
 			ExpResp:           nil,
 		},
@@ -2533,7 +2533,7 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 		},
 		{
 			SkipVaultCreation: true,
-			Req:               &types.QueryUserMyPositionByAppRequest{AppId: appID1, Owner: "comdex..."},
+			Req:               &types.QueryUserMyPositionByAppRequest{AppId: appID1, Owner: "petri..."},
 			ExpErr:            status.Errorf(codes.NotFound, "Address is not correct"),
 			ExpResp:           nil,
 		},

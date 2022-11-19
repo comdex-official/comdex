@@ -8,10 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/liquidity/amm"
-	"github.com/comdex-official/comdex/x/liquidity/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
+	"github.com/petrichormoney/petri/x/liquidity/amm"
+	"github.com/petrichormoney/petri/x/liquidity/types"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
 )
 
 func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {

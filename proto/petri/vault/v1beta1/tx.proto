@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+package petri.vault.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package            = "github.com/petrichormoney/petri/x/vault/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgCreateRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount_in = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount_in\"",
+    (gogoproto.nullable)   = false
+  ];
+  string amount_out = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount_out\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgCreateResponse {}
+
+message MsgDepositRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgDepositResponse {}
+
+message MsgWithdrawRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgWithdrawResponse {}
+
+message MsgDrawRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgDrawResponse {}
+
+message MsgRepayRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgRepayResponse {}
+
+message MsgCloseRequest {
+  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+}
+
+message MsgCloseResponse {}
+
+message MsgDepositAndDrawRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  uint64 user_vault_id   = 4
+      [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgDepositAndDrawResponse {}
+
+message MsgCreateStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"Amount\"",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message  MsgCreateStableMintResponse{}
+
+
+message MsgDepositStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 stable_vault_id   = 5
+  [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
+}
+
+
+
+message  MsgDepositStableMintResponse{}
+
+
+
+message MsgWithdrawStableMintRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 extended_pair_vault_id = 3 [
+    (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
+  ];
+  string amount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  uint64 stable_vault_id   = 5
+  [ (gogoproto.moretags) = "yaml:\"stable_vault_id\"" ];
+}
+
+message  MsgWithdrawStableMintResponse{}
+
+message MsgVaultInterestCalcRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 user_vault_id   = 3
+  [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
+}
+
+message  MsgVaultInterestCalcResponse{}
+
+service Msg {
+  rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
+  rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
+  rpc MsgWithdraw(MsgWithdrawRequest) returns (MsgWithdrawResponse);
+  rpc MsgDraw(MsgDrawRequest) returns (MsgDrawResponse);
+  rpc MsgRepay(MsgRepayRequest) returns (MsgRepayResponse);
+  rpc MsgClose(MsgCloseRequest) returns (MsgCloseResponse);
+  rpc MsgDepositAndDraw(MsgDepositAndDrawRequest) returns (MsgDepositAndDrawResponse);
+  rpc MsgCreateStableMint(MsgCreateStableMintRequest) returns (MsgCreateStableMintResponse);
+  rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
+  rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
+  rpc MsgVaultInterestCalc(MsgVaultInterestCalcRequest) returns (MsgVaultInterestCalcResponse);
+}

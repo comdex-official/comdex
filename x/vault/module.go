@@ -16,9 +16,9 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/vault/client/cli"
-	"github.com/comdex-official/comdex/x/vault/keeper"
-	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/x/vault/client/cli"
+	"github.com/petrichormoney/petri/x/vault/keeper"
+	"github.com/petrichormoney/petri/x/vault/types"
 )
 
 var (

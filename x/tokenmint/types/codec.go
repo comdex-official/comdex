@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgMintNewTokensRequest{}, "comdex/tokenmint/MsgMintNewTokensRequest", nil)
+	cdc.RegisterConcrete(&MsgMintNewTokensRequest{}, "petri/tokenmint/MsgMintNewTokensRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

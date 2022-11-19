@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/petrichormoney/petri/x/asset/types"
 )
 
 func queryAsset() *cobra.Command {

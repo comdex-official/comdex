@@ -16,10 +16,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/liquidity/client/cli"
-	"github.com/comdex-official/comdex/x/liquidity/expected"
-	"github.com/comdex-official/comdex/x/liquidity/keeper"
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/petrichormoney/petri/x/liquidity/client/cli"
+	"github.com/petrichormoney/petri/x/liquidity/expected"
+	"github.com/petrichormoney/petri/x/liquidity/keeper"
+	"github.com/petrichormoney/petri/x/liquidity/types"
 )
 
 var (

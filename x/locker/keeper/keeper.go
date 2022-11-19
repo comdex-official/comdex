@@ -9,8 +9,8 @@ import (
 
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/comdex-official/comdex/x/locker/expected"
-	"github.com/comdex-official/comdex/x/locker/types"
+	"github.com/petrichormoney/petri/x/locker/expected"
+	"github.com/petrichormoney/petri/x/locker/types"
 )
 
 type Keeper struct {

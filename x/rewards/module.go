@@ -17,9 +17,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/comdex-official/comdex/x/rewards/client/cli"
-	"github.com/comdex-official/comdex/x/rewards/keeper"
-	"github.com/comdex-official/comdex/x/rewards/types"
+	"github.com/petrichormoney/petri/x/rewards/client/cli"
+	"github.com/petrichormoney/petri/x/rewards/keeper"
+	"github.com/petrichormoney/petri/x/rewards/types"
 )
 
 var (

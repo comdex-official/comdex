@@ -1,0 +1,6 @@
+syntax = "proto3";
+package petri.locker.v1beta1;
+
+option go_package = "github.com/petrichormoney/petri/x/locker/types";
+
+message Params {}

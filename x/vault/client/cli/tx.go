@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/x/vault/types"
 )
 
 // GetTxCmd returns the transaction commands for this module .

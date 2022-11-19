@@ -1,0 +1,32 @@
+syntax = "proto3";
+package petri.bandoracle.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/bandoracle/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message FetchPriceCallData {
+  repeated string symbols = 1;
+  uint64 multiplier = 2;
+}
+
+message FetchPriceResult {
+  repeated uint64 rates = 1;
+}
+
+message Market {
+  string symbol    = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+  uint64 script_id = 2 [
+    (gogoproto.customname) = "ScriptID",
+    (gogoproto.moretags)   = "yaml:\"script_id\""
+  ];
+}
+
+message DiscardData {
+  int64 block_height = 1 [
+    (gogoproto.moretags)   = "yaml:\"block_height\""
+  ];
+  bool discard_bool = 2 [(gogoproto.moretags) = "yaml:\"discard_bool\""];
+}

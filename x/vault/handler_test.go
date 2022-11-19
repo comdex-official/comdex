@@ -6,10 +6,10 @@ import (
 
 	_ "github.com/stretchr/testify/suite"
 
-	"github.com/comdex-official/comdex/app"
-	"github.com/comdex-official/comdex/x/vault"
-	"github.com/comdex-official/comdex/x/vault/keeper"
-	"github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/app"
+	"github.com/petrichormoney/petri/x/vault"
+	"github.com/petrichormoney/petri/x/vault/keeper"
+	"github.com/petrichormoney/petri/x/vault/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

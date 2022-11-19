@@ -3,8 +3,8 @@ package keeper
 // import (
 // 	"testing"
 
-// 	"github.com/comdex-official/comdex/x/esm/keeper"
-// 	"github.com/comdex-official/comdex/x/esm/types"
+// 	"github.com/petrichormoney/petri/x/esm/keeper"
+// 	"github.com/petrichormoney/petri/x/esm/types"
 // 	"github.com/cosmos/cosmos-sdk/codec"
 // 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 // 	"github.com/cosmos/cosmos-sdk/store"

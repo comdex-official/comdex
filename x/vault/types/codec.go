@@ -10,17 +10,17 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateRequest{}, "comdex/vault/MsgCreateRequest", nil)
-	cdc.RegisterConcrete(&MsgCloseRequest{}, "comdex/vault/MsgCloseRequest", nil)
-	cdc.RegisterConcrete(&MsgDepositRequest{}, "comdex/vault/MsgDepositRequest", nil)
-	cdc.RegisterConcrete(&MsgRepayRequest{}, "comdex/vault/MsgRepayRequest", nil)
-	cdc.RegisterConcrete(&MsgWithdrawRequest{}, "comdex/vault/MsgWithdrawRequest", nil)
-	cdc.RegisterConcrete(&MsgDrawRequest{}, "comdex/vault/MsgDrawRequest", nil)
-	cdc.RegisterConcrete(&MsgDepositAndDrawRequest{}, "comdex/vault/MsgDepositAndDrawRequest", nil)
-	cdc.RegisterConcrete(&MsgCreateStableMintRequest{}, "comdex/vault/MsgCreateStableMintRequest", nil)
-	cdc.RegisterConcrete(&MsgDepositStableMintRequest{}, "comdex/vault/MsgDepositStableMintRequest", nil)
-	cdc.RegisterConcrete(&MsgWithdrawStableMintRequest{}, "comdex/vault/MsgWithdrawStableMintRequest", nil)
-	cdc.RegisterConcrete(&MsgVaultInterestCalcRequest{}, "comdex/vault/MsgVaultInterestCalcRequest", nil)
+	cdc.RegisterConcrete(&MsgCreateRequest{}, "petri/vault/MsgCreateRequest", nil)
+	cdc.RegisterConcrete(&MsgCloseRequest{}, "petri/vault/MsgCloseRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositRequest{}, "petri/vault/MsgDepositRequest", nil)
+	cdc.RegisterConcrete(&MsgRepayRequest{}, "petri/vault/MsgRepayRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawRequest{}, "petri/vault/MsgWithdrawRequest", nil)
+	cdc.RegisterConcrete(&MsgDrawRequest{}, "petri/vault/MsgDrawRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositAndDrawRequest{}, "petri/vault/MsgDepositAndDrawRequest", nil)
+	cdc.RegisterConcrete(&MsgCreateStableMintRequest{}, "petri/vault/MsgCreateStableMintRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositStableMintRequest{}, "petri/vault/MsgDepositStableMintRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawStableMintRequest{}, "petri/vault/MsgWithdrawStableMintRequest", nil)
+	cdc.RegisterConcrete(&MsgVaultInterestCalcRequest{}, "petri/vault/MsgVaultInterestCalcRequest", nil)
 }
 
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {

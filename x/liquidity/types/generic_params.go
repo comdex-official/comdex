@@ -14,7 +14,7 @@ const (
 	DefaultBatchSize        uint64 = 1
 	DefaultTickPrecision    uint64 = 6
 	DefaultMaxOrderLifespan        = 24 * time.Hour
-	DefaultFeeDenom         string = "ucmdx"
+	DefaultFeeDenom         string = "upetri"
 )
 
 // Liquidity params default values.

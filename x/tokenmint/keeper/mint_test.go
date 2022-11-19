@@ -1,9 +1,9 @@
 package keeper_test
 
 import (
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/tokenmint/keeper"
-	tokenmintTypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	"github.com/petrichormoney/petri/x/tokenmint/keeper"
+	tokenmintTypes "github.com/petrichormoney/petri/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -53,7 +53,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg3 := assetTypes.Asset{
 		Name:      "CMDX",
-		Denom:     "ucmdx",
+		Denom:     "upetri",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
@@ -62,7 +62,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg4 := assetTypes.Asset{
-		Name:      "CMST",
+		Name:      "FUST",
 		Denom:     "ucmst",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,

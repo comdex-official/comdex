@@ -5,12 +5,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
-	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
-	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	assetkeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
+	liquiditykeeper "github.com/petrichormoney/petri/x/liquidity/keeper"
+	liquiditytypes "github.com/petrichormoney/petri/x/liquidity/types"
+	rewardskeeper "github.com/petrichormoney/petri/x/rewards/keeper"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
 )
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v4_0_0

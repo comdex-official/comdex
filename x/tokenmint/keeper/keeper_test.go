@@ -4,19 +4,19 @@ import (
 	"testing"
 	"time"
 
-	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
+	collectorTypes "github.com/petrichormoney/petri/x/collector/types"
 
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	chain "github.com/comdex-official/comdex/app"
-	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	tokenmintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	tokenmintTypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	chain "github.com/petrichormoney/petri/app"
+	assetKeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	auctionKeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	collectorKeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	tokenmintKeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	tokenmintTypes "github.com/petrichormoney/petri/x/tokenmint/types"
 )
 
 type KeeperTestSuite struct {

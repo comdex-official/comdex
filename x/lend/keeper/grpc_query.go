@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/comdex-official/comdex/x/lend/types"
+	"github.com/petrichormoney/petri/x/lend/types"
 )
 
 var _ types.QueryServer = QueryServer{}

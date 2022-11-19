@@ -1,15 +1,15 @@
 package esm
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/esm/expected"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
+	"github.com/petrichormoney/petri/x/esm/expected"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	utils "github.com/comdex-official/comdex/types"
-	"github.com/comdex-official/comdex/x/esm/keeper"
-	"github.com/comdex-official/comdex/x/esm/types"
+	utils "github.com/petrichormoney/petri/types"
+	"github.com/petrichormoney/petri/x/esm/keeper"
+	"github.com/petrichormoney/petri/x/esm/types"
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, assetKeeper expected.AssetKeeper) {

@@ -3,8 +3,8 @@ package tokenmint
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/tokenmint/keeper"
-	"github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/petrichormoney/petri/x/tokenmint/keeper"
+	"github.com/petrichormoney/petri/x/tokenmint/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

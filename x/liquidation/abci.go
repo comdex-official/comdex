@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/liquidation/keeper"
-	"github.com/comdex-official/comdex/x/liquidation/types"
+	"github.com/petrichormoney/petri/x/liquidation/keeper"
+	"github.com/petrichormoney/petri/x/liquidation/types"
 )
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {

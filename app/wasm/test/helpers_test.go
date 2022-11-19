@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	tokenmintTypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	tokenmintTypes "github.com/petrichormoney/petri/x/tokenmint/types"
 
 	"github.com/stretchr/testify/require"
 
@@ -17,24 +17,24 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/comdex-official/comdex/app"
-	"github.com/comdex-official/comdex/x/tokenmint/keeper"
+	"github.com/petrichormoney/petri/app"
+	"github.com/petrichormoney/petri/x/tokenmint/keeper"
 )
 
 func SetupCustomApp() (*app.App, *sdk.Context) {
-	comdex, ctx := CreateTestInput()
-	return comdex, ctx
+	petri, ctx := CreateTestInput()
+	return petri, ctx
 }
 
 func CreateTestInput() (*app.App, *sdk.Context) {
-	comdex := app.Setup(false)
-	ctx := comdex.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "comdex-1", Time: time.Now().UTC()})
-	return comdex, &ctx
+	petri := app.Setup(false)
+	ctx := petri.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "redsun-1", Time: time.Now().UTC()})
+	return petri, &ctx
 }
 
-func FundAccount(t *testing.T, ctx sdk.Context, comdex *app.App, acct sdk.AccAddress) {
-	err := simapp.FundAccount(comdex.BankKeeper, ctx, acct, sdk.NewCoins(
-		sdk.NewCoin("ucmdx", sdk.NewInt(10000000000)),
+func FundAccount(t *testing.T, ctx sdk.Context, petri *app.App, acct sdk.AccAddress) {
+	err := simapp.FundAccount(petri.BankKeeper, ctx, acct, sdk.NewCoins(
+		sdk.NewCoin("upetri", sdk.NewInt(10000000000)),
 	))
 	require.NoError(t, err)
 }
@@ -77,8 +77,8 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	_ = assetKeeper.AddAppRecords(*ctx, msg1)
 
 	msg2 := assetTypes.Asset{
-		Name:          "CMDX",
-		Denom:         "ucmdx",
+		Name:          "PETRI",
+		Denom:         "upetri",
 		Decimals:      sdk.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
@@ -86,8 +86,8 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	_ = assetKeeper.AddAssetRecords(*ctx, msg2)
 
 	msg3 := assetTypes.Asset{
-		Name:          "CMST",
-		Denom:         "ucmst",
+		Name:          "FUST",
+		Denom:         "ufust",
 		Decimals:      sdk.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
@@ -95,8 +95,8 @@ func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
 
 	msg4 := assetTypes.Asset{
-		Name:          "HARBOR",
-		Denom:         "uharbor",
+		Name:          "FURY",
+		Denom:         "ufury",
 		Decimals:      sdk.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
@@ -116,13 +116,13 @@ func AddPair(app *app.App, ctx1 sdk.Context) {
 		pairID                 uint64
 	}{
 		{
-			"Add Pair 1: cmdx cmst",
+			"Add Pair 1: petri fust",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
 			},
-			"ucmdx",
-			"ucmst",
+			"upetri",
+			"ufust",
 			false,
 			1,
 		},
@@ -165,7 +165,7 @@ func AddExtendedPairVault(app *app.App, ctx1 sdk.Context) {
 		msg  bindings.MsgAddExtendedPairsVault
 	}{
 		{
-			"Add Extended Pair Vault : cmdx cmst",
+			"Add Extended Pair Vault : petri fust",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -179,7 +179,7 @@ func AddExtendedPairVault(app *app.App, ctx1 sdk.Context) {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-A",
+				PairName:            "PETRI-A",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,

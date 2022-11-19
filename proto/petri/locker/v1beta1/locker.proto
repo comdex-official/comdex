@@ -1,0 +1,126 @@
+syntax = "proto3";
+package petri.locker.v1beta1;
+import "cosmos/base/v1beta1/coin.proto";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package            = "github.com/petrichormoney/petri/x/locker/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+//locker_id will be the key which will be derived from the LockerLookUpTable
+message Locker {
+  uint64 locker_id = 1 [
+      (gogoproto.moretags) = "yaml:\"locker_id\""
+  ];
+  string depositor = 2 [
+      (gogoproto.moretags) = "yaml:\"depositor\""
+  ]; 
+  string returns_accumulated = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"returns_accumulated\"",
+    (gogoproto.nullable)   = false
+  ];
+  string net_balance = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"net_balance\"",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp created_at = 5 [
+      (gogoproto.nullable) = false,
+      (gogoproto.stdtime) = true,
+      (gogoproto.moretags)   = "yaml:\"created_at\""
+  ];
+
+  uint64 asset_deposit_id = 6[
+      (gogoproto.moretags)   = "yaml:\"asset_deposit_id\""
+  ];
+  bool is_locked = 7 [
+    (gogoproto.moretags)   = "yaml:\"is_locked\""
+  ]; 
+  uint64 app_id = 8[
+    (gogoproto.moretags)   = "yaml:\"app_id\""
+  ];
+  int64 block_height = 9 [
+    (gogoproto.moretags)   = "yaml:\"block_height\""
+  ];
+  google.protobuf.Timestamp block_time = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags)   = "yaml:\"block_time\""
+];
+}
+
+//Key is user address
+
+message UserAppAssetLockerMapping{
+  string owner = 1 [
+      (gogoproto.moretags) = "yaml:\"owner\""
+  ];
+  uint64 app_id = 2;
+  uint64 asset_id = 3;
+  uint64 locker_id = 4 [
+    (gogoproto.moretags) = "yaml:\"locker_id\""];
+  repeated UserTxData user_data = 5  [
+    (gogoproto.moretags) = "yaml:\"user_data\""];
+  }
+
+message UserTxData{
+  string tx_type =1 [(gogoproto.moretags) = "yaml:\"tx_type\""];
+  string amount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.nullable)   = false
+  ];
+  string balance = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags)   = "yaml:\"balance\"",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Timestamp tx_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"tx_time\""
+  ];
+
+}
+
+message LockerLookupTableData {
+  uint64 app_id = 1[(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2;
+  repeated uint64 locker_ids = 3 [
+  (gogoproto.moretags) = "yaml:\"addresses\""
+   ];
+   string deposited_amount = 4 [
+     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+     (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
+     (gogoproto.nullable)   = false
+   ]; 
+ }
+
+//Key is app_mapping_id
+message LockerProductAssetMapping {
+  uint64 app_id = 1 [
+      (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  
+  uint64 asset_id  = 2 [
+      (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+}
+
+message LockedDepositedAmountDataMap
+{
+  uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  string deposited_amount= 2 [ (gogoproto.moretags) = "yaml:\"deposited_amount\"",
+         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.nullable)   = false];
+}
+
+message LockerTotalRewardsByAssetAppWise {
+  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  string total_rewards= 3 [ (gogoproto.moretags) = "yaml:\"total_rewards\"",
+         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.nullable)   = false];
+}

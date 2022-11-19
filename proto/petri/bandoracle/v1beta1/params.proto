@@ -1,0 +1,7 @@
+syntax = "proto3";
+package petri.bandoracle.v1beta1;
+
+option go_package = "github.com/petrichormoney/petri/x/bandoracle/types";
+
+// Params defines the parameters for the module.
+message Params {}

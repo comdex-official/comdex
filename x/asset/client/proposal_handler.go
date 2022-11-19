@@ -3,8 +3,8 @@ package client
 import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
-	"github.com/comdex-official/comdex/x/asset/client/cli"
-	"github.com/comdex-official/comdex/x/asset/client/rest"
+	"github.com/petrichormoney/petri/x/asset/client/cli"
+	"github.com/petrichormoney/petri/x/asset/client/rest"
 )
 
 var AddAssetsHandler = []govclient.ProposalHandler{

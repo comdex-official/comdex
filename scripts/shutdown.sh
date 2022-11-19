@@ -1,3 +1,3 @@
-killall comdex
+killall petri
 echo "
 Node Shutdown."

@@ -26,5 +26,5 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 done
 
 # move proto files to the right places
-cp -r github.com/comdex-official/comdex/* ./
+cp -r github.com/petrichormoney/petri/* ./
 rm -rf github.com

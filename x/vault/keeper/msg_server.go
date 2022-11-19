@@ -6,10 +6,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	"github.com/comdex-official/comdex/x/vault/types"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
+	"github.com/petrichormoney/petri/x/vault/types"
 )
 
 var _ types.MsgServer = msgServer{}
@@ -1321,7 +1321,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	if stableAmountIn.LT(sdk.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
-	// updated amount is the CMST amount
+	// updated amount is the FUST amount
 	var updatedAmount sdk.Int
 	// Take amount from user
 	if msg.Amount.GT(sdk.ZeroInt()) {

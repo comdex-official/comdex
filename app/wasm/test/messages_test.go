@@ -3,26 +3,26 @@ package wasm
 import (
 	"testing"
 
-	"github.com/comdex-official/comdex/app/wasm"
-	"github.com/comdex-official/comdex/app/wasm/bindings"
+	"github.com/petrichormoney/petri/app/wasm"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestWhitelistAssetLocker(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddAppAsset(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddAppAsset(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhiteListAssetLocker
@@ -40,7 +40,7 @@ func TestWhitelistAssetLocker(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			found, _ := querier.WhiteListedAssetQueryCheck(*ctx, tc.msg.AppID, tc.msg.AssetID)
 			require.True(t, found)
-			err := wasm.WhiteListAsset(comdex.LockerKeeper, *ctx, actor.String(), tc.msg)
+			err := wasm.WhiteListAsset(petri.LockerKeeper, *ctx, actor.String(), tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -54,18 +54,18 @@ func TestWhitelistAssetLocker(t *testing.T) {
 
 func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddExtendedPairsVault
@@ -85,7 +85,7 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B",
+				PairName:            "PETRI-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000000000,
@@ -97,7 +97,7 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 			found, _ := querier.ExtendedPairsVaultRecordsQueryCheck(*ctx, tc.msg.AppID, tc.msg.PairID, tc.msg.StabilityFee, tc.msg.ClosingFee, tc.msg.DrawDownFee, tc.msg.DebtCeiling, tc.msg.DebtFloor, tc.msg.PairName)
 
 			require.True(t, found)
-			err := wasm.MsgAddExtendedPairsVault(comdex.AssetKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgAddExtendedPairsVault(petri.AssetKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -111,18 +111,18 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 
 func TestMsgSetCollectorLookupTable(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetCollectorLookupTable
@@ -148,7 +148,7 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 			found, _ := querier.CollectorLookupTableQueryCheck(*ctx, tc.msg.AppID, tc.msg.CollectorAssetID, tc.msg.SecondaryAssetID)
 
 			require.True(t, found)
-			err := wasm.MsgSetCollectorLookupTable(comdex.CollectorKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgSetCollectorLookupTable(petri.CollectorKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -162,18 +162,18 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 
 func TestMsgSetAuctionMappingForApp(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetAuctionMappingForApp
@@ -197,7 +197,7 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 			found, _ := querier.AuctionMappingForAppQueryCheck(*ctx, tc.msg.AppID)
 
 			require.True(t, found)
-			err := wasm.MsgSetAuctionMappingForApp(comdex.CollectorKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgSetAuctionMappingForApp(petri.CollectorKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -211,19 +211,19 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 
 func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	AddCollectorLookuptable(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	AddCollectorLookuptable(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdateCollectorLookupTable
@@ -248,7 +248,7 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 			found, _ := querier.UpdateCollectorLookupTableQueryCheck(*ctx, tc.msg.AppID, tc.msg.AssetID)
 
 			require.True(t, found)
-			err := wasm.MsgUpdateCollectorLookupTable(comdex.CollectorKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgUpdateCollectorLookupTable(petri.CollectorKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -262,19 +262,19 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 
 func TestMsgUpdatePairsVault(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	AddExtendedPairVault(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	AddExtendedPairVault(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdatePairsVault
@@ -301,7 +301,7 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 			found, _ := querier.UpdatePairsVaultQueryCheck(*ctx, tc.msg.AppID, tc.msg.ExtPairID)
 
 			require.True(t, found)
-			err := wasm.MsgUpdatePairsVault(comdex.AssetKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgUpdatePairsVault(petri.AssetKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -318,18 +318,18 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 
 func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhitelistAppIDLiquidation
@@ -347,7 +347,7 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 			found, _ := querier.WasmWhitelistAppIDLiquidationQueryCheck(*ctx, tc.msg.AppID)
 
 			require.True(t, found)
-			err := wasm.MsgWhitelistAppIDLiquidation(comdex.LiquidationKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgWhitelistAppIDLiquidation(petri.LiquidationKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -364,19 +364,19 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 
 func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	WhitelistAppIDLiquidation(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	WhitelistAppIDLiquidation(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgRemoveWhitelistAppIDLiquidation
@@ -394,7 +394,7 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 			found, _ := querier.WasmRemoveWhitelistAppIDLiquidationQueryCheck(*ctx, tc.msg.AppID)
 
 			require.True(t, found)
-			err := wasm.MsgRemoveWhitelistAppIDLiquidation(comdex.LiquidationKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgRemoveWhitelistAppIDLiquidation(petri.LiquidationKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -408,18 +408,18 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 
 func TestMsgAddAuctionParams(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp()
-	AddPair(comdex, *ctx)
-	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
-		&comdex.LockerKeeper,
-		&comdex.TokenmintKeeper,
-		&comdex.Rewardskeeper,
-		&comdex.CollectorKeeper,
-		&comdex.LiquidationKeeper,
-		&comdex.EsmKeeper,
-		&comdex.VaultKeeper,
-		&comdex.LendKeeper,
-		&comdex.LiquidityKeeper)
+	petri, ctx := SetupCustomApp()
+	AddPair(petri, *ctx)
+	querier := wasm.NewQueryPlugin(&petri.AssetKeeper,
+		&petri.LockerKeeper,
+		&petri.TokenmintKeeper,
+		&petri.Rewardskeeper,
+		&petri.CollectorKeeper,
+		&petri.LiquidationKeeper,
+		&petri.EsmKeeper,
+		&petri.VaultKeeper,
+		&petri.LendKeeper,
+		&petri.LiquidityKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddAuctionParams
@@ -446,7 +446,7 @@ func TestMsgAddAuctionParams(t *testing.T) {
 			found, _ := querier.AuctionMappingForAppQueryCheck(*ctx, tc.msg.AppID)
 
 			require.True(t, found)
-			err := wasm.MsgAddAuctionParams(comdex.AuctionKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgAddAuctionParams(petri.AuctionKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {
@@ -465,8 +465,8 @@ func TestMsgBurnGovTokensForApp(t *testing.T) {
 	actor := RandomAccountAddress()
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	addr, _ := sdk.AccAddressFromBech32(userAddress)
-	comdex, ctx := SetupCustomApp()
-	MsgMintNewTokens(comdex, *ctx)
+	petri, ctx := SetupCustomApp()
+	MsgMintNewTokens(petri, *ctx)
 
 	for _, tc := range []struct {
 		name            string
@@ -478,13 +478,13 @@ func TestMsgBurnGovTokensForApp(t *testing.T) {
 			msg: &bindings.MsgBurnGovTokensForApp{
 				AppID:  1,
 				From:   addr,
-				Amount: sdk.NewCoin("uharbor", sdk.NewInt(100)),
+				Amount: sdk.NewCoin("ufury", sdk.NewInt(100)),
 			},
 			isErrorExpected: false,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := wasm.MsgBurnGovTokensForApp(comdex.TokenmintKeeper, *ctx, actor, tc.msg)
+			err := wasm.MsgBurnGovTokensForApp(petri.TokenmintKeeper, *ctx, actor, tc.msg)
 			if tc.isErrorExpected {
 				require.Error(t, err)
 			} else {

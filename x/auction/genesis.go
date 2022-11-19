@@ -3,8 +3,8 @@ package auction
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
+	"github.com/petrichormoney/petri/x/auction/keeper"
+	"github.com/petrichormoney/petri/x/auction/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

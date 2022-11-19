@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/petrichormoney/petri/x/tokenmint/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -32,7 +32,7 @@ func GetQueryCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryAllTokenMintedForAllApps Queries the total token minted for all the apps on comdex.
+// QueryAllTokenMintedForAllApps Queries the total token minted for all the apps on petri.
 func QueryAllTokenMintedForAllApps() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "total-token-minted-all-apps",

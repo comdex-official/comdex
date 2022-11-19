@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"time"
 
-	utils "github.com/comdex-official/comdex/types"
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	utils "github.com/petrichormoney/petri/types"
+	"github.com/petrichormoney/petri/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/stretchr/testify/suite"
@@ -1102,8 +1102,8 @@ func (s *KeeperTestSuite) TestPoolIncentives() {
 				s.Require().NoError(err)
 				s.Require().Equal(resp.PoolIncentives[0].PoolId, pool.Id)
 				s.Require().Equal(resp.PoolIncentives[0].MasterPool, false)
-				s.Require().Equal(resp.PoolIncentives[0].TotalRewards, utils.ParseCoin("0ucmdx"))
-				s.Require().Equal(resp.PoolIncentives[0].DistributedRewards, utils.ParseCoin("0ucmdx"))
+				s.Require().Equal(resp.PoolIncentives[0].TotalRewards, utils.ParseCoin("0upetri"))
+				s.Require().Equal(resp.PoolIncentives[0].DistributedRewards, utils.ParseCoin("0upetri"))
 				s.Require().Equal(resp.PoolIncentives[0].TotalEpochs, uint64(1))
 				s.Require().Equal(resp.PoolIncentives[0].EpochDuration, time.Hour*24)
 				s.Require().Equal(resp.PoolIncentives[0].IsSwapFee, true)

@@ -2,12 +2,12 @@ package keeper_test
 
 import (
 	"fmt"
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	utils "github.com/comdex-official/comdex/types"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	"github.com/comdex-official/comdex/x/locker/keeper"
-	lockerTypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	utils "github.com/petrichormoney/petri/types"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	"github.com/petrichormoney/petri/x/locker/keeper"
+	lockerTypes "github.com/petrichormoney/petri/x/locker/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -33,7 +33,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg3 := assetTypes.Asset{
 		Name:      "CMDX",
-		Denom:     "ucmdx",
+		Denom:     "upetri",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
@@ -42,7 +42,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg4 := assetTypes.Asset{
-		Name:      "CMST",
+		Name:      "FUST",
 		Denom:     "ucmst",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
@@ -265,7 +265,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 	} {
 		s.Run(tc.name, func() {
 			if tc.msg.AssetId == 1 {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("upetri", sdk.NewIntFromUint64(tc.fundAmount)))
 			} else {
 				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
 			}
@@ -448,7 +448,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 	} {
 		s.Run(tc.name, func() {
 			if tc.msg.AssetId == 1 {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("upetri", sdk.NewIntFromUint64(tc.fundAmount)))
 			} else {
 				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
 			}
@@ -801,9 +801,9 @@ func (s *KeeperTestSuite) TestSetNetFeeCollectedData() {
 }
 
 func (s *KeeperTestSuite) TestFundModule() {
-	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("upetri", sdk.NewIntFromUint64(10000000000))))
 	s.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, lockerTypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, lockerTypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("upetri", sdk.NewIntFromUint64(10000000000))))
 	s.Require().NoError(err)
 }
 

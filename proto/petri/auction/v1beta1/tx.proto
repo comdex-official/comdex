@@ -1,0 +1,66 @@
+syntax = "proto3";
+package petri.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/auction/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+message MsgPlaceSurplusBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  uint64 app_id = 4;
+  uint64 auction_mapping_id = 5;
+}
+
+message MsgPlaceSurplusBidResponse {}
+
+message MsgPlaceDebtBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin bid = 3 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin expectedUserToken = 4 [(gogoproto.nullable) = false];
+  uint64 app_id = 5;
+  uint64 auction_mapping_id = 6;
+}
+
+message MsgPlaceDebtBidResponse {}
+
+message MsgPlaceDutchBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  string max = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max\""];
+  uint64 app_id = 5;
+  uint64 auction_mapping_id = 6;
+}
+
+message MsgPlaceDutchBidResponse {}
+
+message MsgPlaceDutchLendBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+  string max = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max\""];
+  uint64 app_id = 5;
+  uint64 auction_mapping_id = 6;
+}
+
+message MsgPlaceDutchLendBidResponse {}
+
+service Msg {
+  rpc MsgPlaceSurplusBid(MsgPlaceSurplusBidRequest) returns (MsgPlaceSurplusBidResponse);
+  rpc MsgPlaceDebtBid(MsgPlaceDebtBidRequest) returns (MsgPlaceDebtBidResponse);
+  rpc MsgPlaceDutchBid(MsgPlaceDutchBidRequest) returns (MsgPlaceDutchBidResponse);
+  rpc MsgPlaceDutchLendBid(MsgPlaceDutchLendBidRequest) returns (MsgPlaceDutchLendBidResponse);
+}

@@ -9,12 +9,12 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateLockerRequest{}, "comdex/locker/MsgCreateLockerRequest", nil)
-	cdc.RegisterConcrete(&MsgDepositAssetRequest{}, "comdex/locker/MsgDepositAssetRequest", nil)
-	cdc.RegisterConcrete(&MsgWithdrawAssetRequest{}, "comdex/locker/MsgWithdrawAssetRequest", nil)
-	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "comdex/locker/MsgAddWhiteListedAssetRequest", nil)
-	cdc.RegisterConcrete(&MsgCloseLockerRequest{}, "comdex/locker/MsgCloseLockerRequest", nil)
-	cdc.RegisterConcrete(&MsgLockerRewardCalcRequest{}, "comdex/locker/MsgLockerRewardCalcRequest", nil)
+	cdc.RegisterConcrete(&MsgCreateLockerRequest{}, "petri/locker/MsgCreateLockerRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositAssetRequest{}, "petri/locker/MsgDepositAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgWithdrawAssetRequest{}, "petri/locker/MsgWithdrawAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgAddWhiteListedAssetRequest{}, "petri/locker/MsgAddWhiteListedAssetRequest", nil)
+	cdc.RegisterConcrete(&MsgCloseLockerRequest{}, "petri/locker/MsgCloseLockerRequest", nil)
+	cdc.RegisterConcrete(&MsgLockerRewardCalcRequest{}, "petri/locker/MsgLockerRewardCalcRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

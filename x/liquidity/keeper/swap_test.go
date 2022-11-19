@@ -3,10 +3,10 @@ package keeper_test
 import (
 	"time"
 
-	utils "github.com/comdex-official/comdex/types"
-	"github.com/comdex-official/comdex/x/liquidity"
-	"github.com/comdex-official/comdex/x/liquidity/amm"
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	utils "github.com/petrichormoney/petri/types"
+	"github.com/petrichormoney/petri/x/liquidity"
+	"github.com/petrichormoney/petri/x/liquidity/amm"
+	"github.com/petrichormoney/petri/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/stretchr/testify/suite"
@@ -1648,7 +1648,7 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 
 	appID1 := s.CreateNewApp("appone")
 
-	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset1 := s.CreateNewAsset("ASSETONE", "upetri", 1000000)
 	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
@@ -1670,15 +1670,15 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	// execute orders and try to convert, conversion will not take since there are no pool
 	s.nextBlock()
 	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("936000ucmdx,936000uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("936000upetri,936000uharbor").IsEqual(accumulatedSwapFee))
 
 	// try to convert again, conversion will not take place since there are no pool
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("936000ucmdx,936000uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("936000upetri,936000uharbor").IsEqual(accumulatedSwapFee))
 
 	// now create pool, so that token conversion can go through this
-	_ = s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000ucmdx,1000000000000uharbor")
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000upetri,1000000000000uharbor")
 
 	// NOTE
 	// Eery conversion internally is an limit order based on the pool path
@@ -1687,21 +1687,21 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
 	// here order is placed for swap, hence harbor tokens are reduced and this will get executed in next block
-	s.Require().True(utils.ParseCoins("936000ucmdx,9uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("936000upetri,9uharbor").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, swap order for 9 uharbor placed again in next block
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1859952ucmdx").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1859952upetri").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, this block will execute the order for 9 harbor placed above
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871844ucmdx").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1871844upetri").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, here 1uharbor is refunded back since it is very small amount for swap order.
 	// here all harbor tokens are converted into cmdx, since cmdx is the default distribution token for rewards
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871996ucmdx,1uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1871996upetri,1uharbor").IsEqual(accumulatedSwapFee))
 }

@@ -3,12 +3,12 @@ package keeper
 import (
 	"sort"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
-	"github.com/comdex-official/comdex/x/vault/types"
+	tokenminttypes "github.com/petrichormoney/petri/x/tokenmint/types"
+	"github.com/petrichormoney/petri/x/vault/types"
 )
 
 func (k Keeper) SetLengthOfVault(ctx sdk.Context, length uint64) {

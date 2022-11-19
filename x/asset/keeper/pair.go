@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
-	"github.com/comdex-official/comdex/x/asset/types"
+	"github.com/petrichormoney/petri/x/asset/types"
 )
 
 func (k Keeper) SetPairID(ctx sdk.Context, id uint64) {

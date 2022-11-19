@@ -5,18 +5,18 @@ import (
 	"strconv"
 	"time"
 
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	liquidationtypes "github.com/petrichormoney/petri/x/liquidation/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	vaulttypes "github.com/petrichormoney/petri/x/vault/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	utils "github.com/comdex-official/comdex/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	utils "github.com/petrichormoney/petri/types"
+	auctiontypes "github.com/petrichormoney/petri/x/auction/types"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
 )
 
 func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error {
@@ -217,7 +217,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
 
 	// required target cmst to raise in usd * 10**-12
-	// here we are multiplying each ucmdx with uusd so cmdx tokens price will be calculated amount * 10**-12
+	// here we are multiplying each upetri with uusd so cmdx tokens price will be calculated amount * 10**-12
 
 	lockedVault, found := k.liquidation.GetLockedVault(ctx, appID, auction.LockedVaultId)
 	if !found {
@@ -241,7 +241,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	}
 	amountLeftInPUSD := outLeft.Sub(owe)
 	amountLeftInPUSDforDebt := outLeftDebt.Sub(owe)
-	// convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting ucmdx to cmdx
+	// convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting upetri to cmdx
 
 	// check if bid in usd*10**-12 is greater than required target cmst in usd*10**-12
 	// if user wants to buy more than target cmst then user should be sold only required cmst amount
@@ -397,7 +397,7 @@ func (k Keeper) CloseDutchAuction(
 	}
 	// calculate penalty
 	penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-	// burn and send target CMST to collector
+	// burn and send target FUST to collector
 	burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 	burnToken.Amount = lockedVault.AmountOut
 	penaltyCoin.Amount = dutchAuction.InflowTokenTargetAmount.Amount.Sub(burnToken.Amount)
@@ -528,7 +528,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 						flag = true
 					}
 					penaltyCoin := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
-					// burn and send target CMST to collector
+					// burn and send target FUST to collector
 					burnToken := sdk.NewCoin(dutchAuction.InflowTokenCurrentAmount.Denom, sdk.ZeroInt())
 					burnToken.Amount = lockedVault.AmountOut
 					penaltyCoin.Amount = dutchAuction.InflowTokenCurrentAmount.Amount.Sub(burnToken.Amount)

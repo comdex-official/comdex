@@ -11,7 +11,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"github.com/comdex-official/comdex/x/esm/types"
+	"github.com/petrichormoney/petri/x/esm/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

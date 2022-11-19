@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/petrichormoney/petri/x/liquidity/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -315,7 +315,7 @@ func NewQueryPoolCmd() *cobra.Command {
 Example:
 $ %s query %s pool 1 1
 $ %s query %s pool 1 --pool-coin-denom=pool1
-$ %s query %s pool 1 --reserve-address=comdex...
+$ %s query %s pool 1 --reserve-address=petri...
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -622,8 +622,8 @@ func NewQueryOrdersCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query for all orders in the pair.
 Example:
-$ %s query %s orders 1 comdex...
-$ %s query %s orders 1 --pair-id=1 comdex...
+$ %s query %s orders 1 petri...
+$ %s query %s orders 1 --pair-id=1 petri...
 $ %s query %s orders 1 --pair-id=1
 `,
 				version.AppName, types.ModuleName,
@@ -763,7 +763,7 @@ func NewQueryFarmerCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query farming status of the farmer.
 Example:
-$ %s query %s farmer 1 1 comdex...
+$ %s query %s farmer 1 1 petri...
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -816,7 +816,7 @@ func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 			fmt.Sprintf(`Deserialize pool coins into pool assets.
 Example:
 $ %s query %s deserialize 1 1 123400000
-> {coins : [1000000ucmdx, 4000000ucmst]}
+> {coins : [1000000upetri, 4000000ucmst]}
 `,
 				version.AppName, types.ModuleName,
 			),

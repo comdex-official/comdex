@@ -1,16 +1,16 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/auction"
-	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
-	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
-	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
-	vaultKeeper1 "github.com/comdex-official/comdex/x/vault/keeper"
-	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	"github.com/petrichormoney/petri/x/auction"
+	auctionKeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	auctionTypes "github.com/petrichormoney/petri/x/auction/types"
+	collectorTypes "github.com/petrichormoney/petri/x/collector/types"
+	liquidationTypes "github.com/petrichormoney/petri/x/liquidation/types"
+	markettypes "github.com/petrichormoney/petri/x/market/types"
+	vaultKeeper1 "github.com/petrichormoney/petri/x/vault/keeper"
+	vaultTypes "github.com/petrichormoney/petri/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -191,7 +191,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			"Add Asset 1",
 			assetTypes.Asset{
 				Name:          "CMDX",
-				Denom:         "ucmdx",
+				Denom:         "upetri",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
@@ -200,7 +200,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		{
 			"Add Asset 2",
 			assetTypes.Asset{
-				Name:          "CMST",
+				Name:          "FUST",
 				Denom:         "ucmst",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,
@@ -356,7 +356,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			auctionTypes.MsgPlaceDutchBidRequest{
 				AuctionId:        1,
 				Bidder:           userAddress1,
-				Amount:           ParseCoin("1000001ucmdx"),
+				Amount:           ParseCoin("1000001upetri"),
 				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
@@ -382,7 +382,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			auctionTypes.MsgPlaceDutchBidRequest{
 				AuctionId:        1,
 				Bidder:           userAddress1,
-				Amount:           ParseCoin("1ucmdx"),
+				Amount:           ParseCoin("1upetri"),
 				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
@@ -391,11 +391,11 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			true,
 		},
 		{
-			"Place Dutch Bid : collateral max price less than current price 1000ucmdx max 1.1",
+			"Place Dutch Bid : collateral max price less than current price 1000upetri max 1.1",
 			auctionTypes.MsgPlaceDutchBidRequest{
 				AuctionId:        1,
 				Bidder:           userAddress1,
-				Amount:           ParseCoin("1000ucmdx"),
+				Amount:           ParseCoin("1000upetri"),
 				Max:              sdk.MustNewDecFromStr("1.1"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
@@ -404,11 +404,11 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			true,
 		},
 		{
-			"Place Dutch Bid : collateral max price more than current price 1000ucmdx max 1.4",
+			"Place Dutch Bid : collateral max price more than current price 1000upetri max 1.4",
 			auctionTypes.MsgPlaceDutchBidRequest{
 				AuctionId:        1,
 				Bidder:           userAddress1,
-				Amount:           ParseCoin("1000ucmdx"),
+				Amount:           ParseCoin("1000upetri"),
 				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
@@ -422,7 +422,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			beforeAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
 			s.Require().NoError(err)
-			beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+			beforeCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 			s.Require().NoError(err)
 			beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 			s.Require().NoError(err)
@@ -435,7 +435,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			} else {
 				s.Require().NoError(err)
 
-				afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+				afterCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 				s.Require().NoError(err)
 				afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 				s.Require().NoError(err)
@@ -475,7 +475,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	beforeCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 	s.Require().NoError(err)
 	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
@@ -493,7 +493,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 
 	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
-	afterCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
+	afterCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 	s.Require().NoError(err)
 	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)

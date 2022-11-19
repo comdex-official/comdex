@@ -1,8 +1,8 @@
 package v5
 
 import (
-	v5types "github.com/comdex-official/comdex/x/lend/migrations/v5/types"
-	"github.com/comdex-official/comdex/x/lend/types"
+	v5types "github.com/petrichormoney/petri/x/lend/migrations/v5/types"
+	"github.com/petrichormoney/petri/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"

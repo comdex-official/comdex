@@ -6,9 +6,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	"github.com/comdex-official/comdex/x/locker/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	"github.com/petrichormoney/petri/x/locker/types"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
 )
 
 var _ types.MsgServer = msgServer{}

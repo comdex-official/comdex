@@ -1,0 +1,58 @@
+syntax = "proto3";
+package petri.market.v1beta1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "petri/market/v1beta1/market.proto";
+import "petri/market/v1beta1/params.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/market/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryMarketsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryMarketsResponse {
+  repeated TimeWeightedAverage timeWeightedAverage = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"time_weighted_average\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryMarketRequest {
+  uint64 assetID = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+}
+
+message QueryMarketResponse {
+  TimeWeightedAverage timeWeightedAverage = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"time_weighted_average\""
+  ];
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+service Query {
+  rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
+    option (google.api.http).get = "/petri/market/v1beta1/timeWeightedAverage";
+  }
+  rpc QueryMarket(QueryMarketRequest) returns (QueryMarketResponse) {
+    option (google.api.http).get = "/petri/market/v1beta1/timeWeightedAverage/{assetID}";
+  }
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/petri/market/v1beta1/params";
+  }
+}

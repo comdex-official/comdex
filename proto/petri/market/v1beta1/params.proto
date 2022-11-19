@@ -1,0 +1,11 @@
+syntax = "proto3";
+package petri.market.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/market/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+message Params {}

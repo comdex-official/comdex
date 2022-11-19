@@ -9,8 +9,8 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgLiquidateVaultRequest{}, "comdex/liquidation/MsgLiquidateVaultRequest", nil)
-	cdc.RegisterConcrete(&MsgLiquidateBorrowRequest{}, "comdex/liquidation/MsgLiquidateBorrowRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateVaultRequest{}, "petri/liquidation/MsgLiquidateVaultRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateBorrowRequest{}, "petri/liquidation/MsgLiquidateBorrowRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

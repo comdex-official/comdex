@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/esm/types"
+	"github.com/petrichormoney/petri/x/esm/types"
 )
 
 func (k Keeper) SetKillSwitchData(ctx sdk.Context, switchParams types.KillSwitchParams) error {

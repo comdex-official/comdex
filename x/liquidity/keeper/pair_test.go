@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/petrichormoney/petri/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/stretchr/testify/suite"
@@ -73,7 +73,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, asset1.Denom, asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0ucmdx is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0upetri is smaller than 2000000000upetri"), "insufficient pair creation fee"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,

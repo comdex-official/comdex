@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	"github.com/comdex-official/comdex/x/rewards/expected"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	"github.com/petrichormoney/petri/x/rewards/expected"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
+	"github.com/petrichormoney/petri/x/rewards/types"
 )
 
 type (

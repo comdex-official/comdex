@@ -3,14 +3,14 @@ package keeper_test
 import (
 	"time"
 
-	"github.com/comdex-official/comdex/x/auction"
+	"github.com/petrichormoney/petri/x/auction"
 
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	tokenmintKeeper1 "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	auctionKeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	auctionTypes "github.com/petrichormoney/petri/x/auction/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	tokenmintKeeper1 "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	tokenminttypes "github.com/petrichormoney/petri/x/tokenmint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

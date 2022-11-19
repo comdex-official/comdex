@@ -1,12 +1,12 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
-	vaultKeeper1 "github.com/comdex-official/comdex/x/vault/keeper"
-	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	liquidationTypes "github.com/petrichormoney/petri/x/liquidation/types"
+	markettypes "github.com/petrichormoney/petri/x/market/types"
+	vaultKeeper1 "github.com/petrichormoney/petri/x/vault/keeper"
+	vaultTypes "github.com/petrichormoney/petri/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -188,7 +188,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			"Add Asset 1",
 			assetTypes.Asset{
 				Name:          "CMDX",
-				Denom:         "ucmdx",
+				Denom:         "upetri",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
@@ -197,7 +197,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		{
 			"Add Asset 2",
 			assetTypes.Asset{
-				Name:          "CMST",
+				Name:          "FUST",
 				Denom:         "ucmst",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,

@@ -10,19 +10,19 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	comdex "github.com/comdex-official/comdex/app"
+	petri "github.com/petrichormoney/petri/app"
 )
 
 // New creates application instance with in-memory database and disabled logging.
-func New(dir string) *comdex.App {
+func New(dir string) *petri.App {
 	var (
 		db       = tmdb.NewMemDB()
 		logger   = log.NewNopLogger()
-		encoding = comdex.MakeEncodingConfig()
+		encoding = petri.MakeEncodingConfig()
 	)
 
-	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
-		simapp.EmptyAppOptions{}, comdex.GetWasmEnabledProposals(), comdex.EmptyWasmOpts)
+	a := petri.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
+		simapp.EmptyAppOptions{}, petri.GetWasmEnabledProposals(), petri.EmptyWasmOpts)
 	// InitChain updates deliverState which is required when app.NewContext is called
 	a.InitChain(abcitypes.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,

@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/collector/types"
+	"github.com/petrichormoney/petri/x/collector/types"
 )
 
 // GetParams get all parameters as types.Params.

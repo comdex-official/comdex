@@ -3,10 +3,10 @@ package tokenmint_test
 // import (
 // 	"testing"
 
-// 	keepertest "github.com/comdex-official/comdex/testutil/keeper"
-// 	"github.com/comdex-official/comdex/testutil/nullify"
-// 	"github.com/comdex-official/comdex/x/tokenmint"
-// 	"github.com/comdex-official/comdex/x/tokenmint/types"
+// 	keepertest "github.com/petrichormoney/petri/testutil/keeper"
+// 	"github.com/petrichormoney/petri/testutil/nullify"
+// 	"github.com/petrichormoney/petri/x/tokenmint"
+// 	"github.com/petrichormoney/petri/x/tokenmint/types"
 // 	"github.com/stretchr/testify/require"
 // )
 

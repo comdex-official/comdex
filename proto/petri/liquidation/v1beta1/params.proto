@@ -1,0 +1,8 @@
+syntax = "proto3";
+package petri.liquidation.v1beta1;
+
+option go_package = "github.com/petrichormoney/petri/x/liquidation/types";
+
+message Params {
+    uint64 liquidation_batch_size = 1;
+} 

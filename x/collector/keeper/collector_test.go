@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	assetTypes "github.com/comdex-official/comdex/x/asset/types"
-	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
-	collectorTypes "github.com/comdex-official/comdex/x/collector/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	assetTypes "github.com/petrichormoney/petri/x/asset/types"
+	auctionTypes "github.com/petrichormoney/petri/x/auction/types"
+	collectorTypes "github.com/petrichormoney/petri/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -51,14 +51,14 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg2 := assetTypes.Asset{
 		Name:      "CMDX",
-		Denom:     "ucmdx",
+		Denom:     "upetri",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2)
 
 	msg3 := assetTypes.Asset{
-		Name:      "CMST",
+		Name:      "FUST",
 		Denom:     "ucmst",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,

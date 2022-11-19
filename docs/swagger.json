@@ -21,7 +21,7 @@
             "description": "Everything about Assets",
             "externalDocs": {
                 "description": "Find out more",
-                "url": "http://comdex.one"
+                "url": "http://petri.one"
             }
         },
         {
@@ -29,7 +29,7 @@
             "description": "Everything about Oracle",
             "externalDocs": {
                 "description": "Find out more",
-                "url": "http://comdex.one"
+                "url": "http://petri.one"
             }
         },
         {
@@ -37,12 +37,12 @@
             "description": "Everything about Vault",
             "externalDocs": {
                 "description": "Find out more",
-                "url": "http://comdex.one"
+                "url": "http://petri.one"
             }
         }
     ],
     "paths": {
-        "/comdex/asset/v1beta1/assets": {
+        "/petri/asset/v1beta1/assets": {
             "get": {
                 "description": "Get list of all available Assets",
                 "consumes": [
@@ -72,7 +72,7 @@
                 }
             }
         },
-        "/comdex/asset/v1beta1/assets/{assetId}": {
+        "/petri/asset/v1beta1/assets/{assetId}": {
             "get": {
                 "description": "Search for any assets by using assetId",
                 "consumes": [
@@ -110,7 +110,7 @@
                 }
             }
         },
-        "/comdex/asset/v1beta1/pairs": {
+        "/petri/asset/v1beta1/pairs": {
             "get": {
                 "description": "Get list of all available Pairs",
                 "consumes": [
@@ -140,7 +140,7 @@
                 }
             }
         },
-        "/comdex/asset/v1beta1/pairs/{pairId}": {
+        "/petri/asset/v1beta1/pairs/{pairId}": {
             "get": {
                 "description": "Search for any assets by using assetId",
                 "consumes": [
@@ -178,7 +178,7 @@
                 }
             }
         },
-        "/comdex/asset/v1beta1/params": {
+        "/petri/asset/v1beta1/params": {
             "get": {
                 "description": "Params",
                 "consumes": [
@@ -218,7 +218,7 @@
                 }
             }
         },
-        "/comdex/oracle/v1beta1/markets": {
+        "/petri/oracle/v1beta1/markets": {
             "get": {
                 "description": "Get list of all available Markets",
                 "consumes": [
@@ -248,7 +248,7 @@
                 }
             }
         },
-        "/comdex/oracle/v1beta1/markets/{marketSymbol}": {
+        "/petri/oracle/v1beta1/markets/{marketSymbol}": {
             "get": {
                 "description": "Search for any market by using market symbol",
                 "consumes": [
@@ -286,7 +286,7 @@
                 }
             }
         },
-        "/comdex/oracle/v1beta1/params": {
+        "/petri/oracle/v1beta1/params": {
             "get": {
                 "description": "Params",
                 "consumes": [
@@ -316,7 +316,7 @@
                 }
             }
         },
-        "/comdex/vault/v1beta1/vaults": {
+        "/petri/vault/v1beta1/vaults": {
             "get": {
                 "description": "Get list of all available vaults",
                 "consumes": [
@@ -346,7 +346,7 @@
                 }
             }
         },
-        "/comdex/vault/v1beta1/vaults/{vaultId}": {
+        "/petri/vault/v1beta1/vaults/{vaultId}": {
             "get": {
                 "description": "Search for any vault by using vaultId",
                 "consumes": [

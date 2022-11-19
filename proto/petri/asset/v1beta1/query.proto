@@ -1,0 +1,200 @@
+syntax = "proto3";
+package petri.asset.v1beta1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "petri/asset/v1beta1/asset.proto";
+import "petri/asset/v1beta1/params.proto";
+import "petri/asset/v1beta1/app.proto";
+import "petri/asset/v1beta1/pair.proto";
+import "petri/asset/v1beta1/extendedPairVault.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/asset/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QueryAssetsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAssetsResponse {
+  repeated Asset assets = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"assets\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAssetRequest {
+  uint64 id = 1;
+}
+
+message QueryAssetResponse {
+  Asset asset = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset\""];
+}
+
+
+message QueryPairsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryPairsResponse {
+  repeated PairInfo pairsInfo = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pairs_info\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryPairRequest {
+  uint64 id = 1;
+}
+
+message QueryPairResponse {
+  PairInfo pairInfo = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pair_info\""];
+}
+
+message QueryAppRequest {
+  uint64 id = 1;
+}
+
+message QueryAppResponse {
+  AppData app = 1 [
+    (gogoproto.moretags) = "yaml:\"app\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryGovTokenByAppRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+}
+
+message QueryGovTokenByAppResponse {
+  uint64 gov_asset_id = 1 [(gogoproto.moretags) = "yaml:\"gov_asset_id\""];
+}
+
+message QueryAppsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAppsResponse {
+  repeated AppData apps = 1 [
+    (gogoproto.moretags) = "yaml:\"apps\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExtendedPairVaultRequest {
+  uint64 id = 1;
+}
+
+message QueryExtendedPairVaultResponse {
+  ExtendedPairVault pairVault = 1 [
+    (gogoproto.moretags) = "yaml:\"pair_vault\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryAllExtendedPairVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairVaultsResponse {
+  repeated ExtendedPairVault pairVault = 1 [
+    (gogoproto.moretags) = "yaml:\"pair_vault\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairVaultsByAppRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairVaultsByAppResponse {
+  repeated ExtendedPairVault extended_pair = 1 [
+    (gogoproto.moretags) = "yaml:\"extended_pair\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairStableVaultsIDByAppRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairStableVaultsIDByAppResponse {
+  repeated uint64 extended_pairs_id = 1 [(gogoproto.moretags) = "yaml:\"extended_pairs_id\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairStableVaultsByAppRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllExtendedPairStableVaultsByAppResponse {
+  repeated ExtendedPairVault extended_pair = 1 [
+    (gogoproto.moretags) = "yaml:\"extended_pair\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+service Query {
+  rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/assets";
+  }
+  rpc QueryAsset(QueryAssetRequest) returns (QueryAssetResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/assets/{id}";
+  }
+  rpc QueryPairs(QueryPairsRequest) returns (QueryPairsResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/pairs";
+  }
+  rpc QueryPair(QueryPairRequest) returns (QueryPairResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/pairs/{id}";
+  }
+  rpc QueryApps(QueryAppsRequest) returns (QueryAppsResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/apps";
+  }
+  rpc QueryApp(QueryAppRequest) returns (QueryAppResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/app/{id}";
+  }
+  rpc QueryExtendedPairVault(QueryExtendedPairVaultRequest) returns (QueryExtendedPairVaultResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/extended_pair_vault/{id}";
+  }
+  rpc QueryAllExtendedPairVaults(QueryAllExtendedPairVaultsRequest) returns (QueryAllExtendedPairVaultsResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/extended_pair_vaults";
+  }
+  rpc QueryAllExtendedPairVaultsByApp(QueryAllExtendedPairVaultsByAppRequest) returns (QueryAllExtendedPairVaultsByAppResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/product_to_extended_pair/{app_id}";
+  }
+  rpc QueryAllExtendedPairStableVaultsIDByApp(QueryAllExtendedPairStableVaultsIDByAppRequest) returns (QueryAllExtendedPairStableVaultsIDByAppResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/extended_pair_stable_vault_wise/{app_id}";
+  }
+  rpc QueryGovTokenByApp(QueryGovTokenByAppRequest) returns (QueryGovTokenByAppResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/gov_token_in_an_app/{app_id}";
+  }
+  rpc QueryAllExtendedPairStableVaultsByApp(QueryAllExtendedPairStableVaultsByAppRequest) returns (QueryAllExtendedPairStableVaultsByAppResponse) {
+    option (google.api.http).get = "/petri/asset/v1beta1/extended_pair_stable_vault_data/{app_id}";
+  }
+
+}

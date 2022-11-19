@@ -12,7 +12,7 @@ var (
 	_ paramstypes.ParamSet = (*Params)(nil)
 
 	KeyAdmin     = []byte("admin")
-	DefaultAdmin = []string{"comdex1tadhnvwa0sqzwr3m60f7dsjw4ua77qsz3ptcyw"}
+	DefaultAdmin = []string{"petri1tadhnvwa0sqzwr3m60f7dsjw4ua77qsz3ptcyw"}
 )
 
 const (

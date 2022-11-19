@@ -3,25 +3,25 @@ package wasm
 import (
 	"encoding/json"
 
-	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	esmkeeper "github.com/petrichormoney/petri/x/esm/keeper"
+	vaultkeeper "github.com/petrichormoney/petri/x/vault/keeper"
 
-	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	tokenmintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
+	auctionkeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	liquidationkeeper "github.com/petrichormoney/petri/x/liquidation/keeper"
+	tokenmintkeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/comdex-official/comdex/app/wasm/bindings"
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
-	lockertypes "github.com/comdex-official/comdex/x/locker/types"
-	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	"github.com/petrichormoney/petri/app/wasm/bindings"
+	assetkeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	collectorkeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	lockerkeeper "github.com/petrichormoney/petri/x/locker/keeper"
+	lockertypes "github.com/petrichormoney/petri/x/locker/types"
+	rewardskeeper "github.com/petrichormoney/petri/x/rewards/keeper"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
 )
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
@@ -63,66 +63,66 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 	if msg.Custom != nil {
 		// only handle the happy path where this is really minting / swapping ...
 		// leave everything else for the wrapped version
-		var comdexMsg bindings.ComdexMessages
-		if err := json.Unmarshal(msg.Custom, &comdexMsg); err != nil {
-			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
+		var petriMsg bindings.ComdexMessages
+		if err := json.Unmarshal(msg.Custom, &petriMsg); err != nil {
+			return nil, nil, sdkerrors.Wrap(err, "petri msg error")
 		}
-		if comdexMsg.MsgWhiteListAssetLocker != nil {
-			return m.whitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgWhiteListAssetLocker)
+		if petriMsg.MsgWhiteListAssetLocker != nil {
+			return m.whitelistAssetLocker(ctx, contractAddr, petriMsg.MsgWhiteListAssetLocker)
 		}
-		if comdexMsg.MsgWhitelistAppIDLockerRewards != nil {
-			return m.whitelistAppIDLockerRewards(ctx, contractAddr, comdexMsg.MsgWhitelistAppIDLockerRewards)
+		if petriMsg.MsgWhitelistAppIDLockerRewards != nil {
+			return m.whitelistAppIDLockerRewards(ctx, contractAddr, petriMsg.MsgWhitelistAppIDLockerRewards)
 		}
-		if comdexMsg.MsgWhitelistAppIDVaultInterest != nil {
-			return m.whitelistAppIDVaultInterest(ctx, contractAddr, comdexMsg.MsgWhitelistAppIDVaultInterest)
+		if petriMsg.MsgWhitelistAppIDVaultInterest != nil {
+			return m.whitelistAppIDVaultInterest(ctx, contractAddr, petriMsg.MsgWhitelistAppIDVaultInterest)
 		}
-		if comdexMsg.MsgAddExtendedPairsVault != nil {
-			return m.AddExtendedPairsVault(ctx, contractAddr, comdexMsg.MsgAddExtendedPairsVault)
+		if petriMsg.MsgAddExtendedPairsVault != nil {
+			return m.AddExtendedPairsVault(ctx, contractAddr, petriMsg.MsgAddExtendedPairsVault)
 		}
-		if comdexMsg.MsgSetCollectorLookupTable != nil {
-			return m.SetCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgSetCollectorLookupTable)
+		if petriMsg.MsgSetCollectorLookupTable != nil {
+			return m.SetCollectorLookupTable(ctx, contractAddr, petriMsg.MsgSetCollectorLookupTable)
 		}
-		if comdexMsg.MsgSetAuctionMappingForApp != nil {
-			return m.SetAuctionMappingForApp(ctx, contractAddr, comdexMsg.MsgSetAuctionMappingForApp)
+		if petriMsg.MsgSetAuctionMappingForApp != nil {
+			return m.SetAuctionMappingForApp(ctx, contractAddr, petriMsg.MsgSetAuctionMappingForApp)
 		}
-		if comdexMsg.MsgUpdatePairsVault != nil {
-			return m.UpdatePairsVault(ctx, contractAddr, comdexMsg.MsgUpdatePairsVault)
+		if petriMsg.MsgUpdatePairsVault != nil {
+			return m.UpdatePairsVault(ctx, contractAddr, petriMsg.MsgUpdatePairsVault)
 		}
-		if comdexMsg.MsgUpdateCollectorLookupTable != nil {
-			return m.UpdateCollectorLookupTable(ctx, contractAddr, comdexMsg.MsgUpdateCollectorLookupTable)
+		if petriMsg.MsgUpdateCollectorLookupTable != nil {
+			return m.UpdateCollectorLookupTable(ctx, contractAddr, petriMsg.MsgUpdateCollectorLookupTable)
 		}
-		if comdexMsg.MsgRemoveWhitelistAssetLocker != nil {
-			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAssetLocker)
+		if petriMsg.MsgRemoveWhitelistAssetLocker != nil {
+			return m.RemoveWhitelistAssetLocker(ctx, contractAddr, petriMsg.MsgRemoveWhitelistAssetLocker)
 		}
-		if comdexMsg.MsgRemoveWhitelistAppIDVaultInterest != nil {
-			return m.RemoveWhitelistAppIDVaultInterest(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAppIDVaultInterest)
+		if petriMsg.MsgRemoveWhitelistAppIDVaultInterest != nil {
+			return m.RemoveWhitelistAppIDVaultInterest(ctx, contractAddr, petriMsg.MsgRemoveWhitelistAppIDVaultInterest)
 		}
-		if comdexMsg.MsgWhitelistAppIDLiquidation != nil {
-			return m.WhitelistAppIDLiquidation(ctx, contractAddr, comdexMsg.MsgWhitelistAppIDLiquidation)
+		if petriMsg.MsgWhitelistAppIDLiquidation != nil {
+			return m.WhitelistAppIDLiquidation(ctx, contractAddr, petriMsg.MsgWhitelistAppIDLiquidation)
 		}
-		if comdexMsg.MsgRemoveWhitelistAppIDLiquidation != nil {
-			return m.RemoveWhitelistAppIDLiquidation(ctx, contractAddr, comdexMsg.MsgRemoveWhitelistAppIDLiquidation)
+		if petriMsg.MsgRemoveWhitelistAppIDLiquidation != nil {
+			return m.RemoveWhitelistAppIDLiquidation(ctx, contractAddr, petriMsg.MsgRemoveWhitelistAppIDLiquidation)
 		}
-		if comdexMsg.MsgAddAuctionParams != nil {
-			return m.AddAuctionParams(ctx, contractAddr, comdexMsg.MsgAddAuctionParams)
+		if petriMsg.MsgAddAuctionParams != nil {
+			return m.AddAuctionParams(ctx, contractAddr, petriMsg.MsgAddAuctionParams)
 		}
-		if comdexMsg.MsgBurnGovTokensForApp != nil {
-			return m.BurnGovTokensForApp(ctx, contractAddr, comdexMsg.MsgBurnGovTokensForApp)
+		if petriMsg.MsgBurnGovTokensForApp != nil {
+			return m.BurnGovTokensForApp(ctx, contractAddr, petriMsg.MsgBurnGovTokensForApp)
 		}
-		if comdexMsg.MsgAddESMTriggerParams != nil {
-			return m.AddESMTriggerParams(ctx, contractAddr, comdexMsg.MsgAddESMTriggerParams)
+		if petriMsg.MsgAddESMTriggerParams != nil {
+			return m.AddESMTriggerParams(ctx, contractAddr, petriMsg.MsgAddESMTriggerParams)
 		}
-		if comdexMsg.MsgEmissionRewards != nil {
-			return m.ExecuteAddEmissionRewards(ctx, contractAddr, comdexMsg.MsgEmissionRewards)
+		if petriMsg.MsgEmissionRewards != nil {
+			return m.ExecuteAddEmissionRewards(ctx, contractAddr, petriMsg.MsgEmissionRewards)
 		}
-		if comdexMsg.MsgFoundationEmission != nil {
-			return m.ExecuteFoundationEmission(ctx, contractAddr, comdexMsg.MsgFoundationEmission)
+		if petriMsg.MsgFoundationEmission != nil {
+			return m.ExecuteFoundationEmission(ctx, contractAddr, petriMsg.MsgFoundationEmission)
 		}
-		if comdexMsg.MsgRebaseMint != nil {
-			return m.ExecuteMsgRebaseMint(ctx, contractAddr, comdexMsg.MsgRebaseMint)
+		if petriMsg.MsgRebaseMint != nil {
+			return m.ExecuteMsgRebaseMint(ctx, contractAddr, petriMsg.MsgRebaseMint)
 		}
-		if comdexMsg.MsgGetSurplusFund != nil {
-			return m.ExecuteMsgGetSurplusFund(ctx, contractAddr, comdexMsg.MsgGetSurplusFund)
+		if petriMsg.MsgGetSurplusFund != nil {
+			return m.ExecuteMsgGetSurplusFund(ctx, contractAddr, petriMsg.MsgGetSurplusFund)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)

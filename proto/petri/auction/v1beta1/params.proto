@@ -1,0 +1,9 @@
+syntax = "proto3";
+package petri.auction.v1beta1;
+
+
+option go_package = "github.com/petrichormoney/petri/x/auction/types";
+
+message Params {
+
+}

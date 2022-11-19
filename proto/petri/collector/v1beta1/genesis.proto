@@ -1,0 +1,23 @@
+syntax = "proto3";
+package petri.collector.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "petri/collector/v1beta1/params.proto";
+import "petri/collector/v1beta1/collector.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/collector/types";
+
+message GenesisState {
+  repeated AppAssetIdToFeeCollectedData netFeeCollectedData = 1
+  [ (gogoproto.moretags) = "yaml:\"netFeeCollectedData\"", (gogoproto.nullable) = false ];
+  repeated AppToAssetIdCollectorMapping appIdToAssetCollectorMapping = 2
+  [ (gogoproto.moretags) = "yaml:\"appIdToAssetCollectorMapping\"", (gogoproto.nullable) = false ];
+  repeated CollectorLookupTableData collectorLookup = 3
+  [ (gogoproto.moretags) = "yaml:\"collectorLookupTable\"", (gogoproto.nullable) = false ];
+  repeated AppAssetIdToAuctionLookupTable collectorAuctionLookupTable = 4
+  [ (gogoproto.moretags) = "yaml:\"collectorAuctionLookupTable\"", (gogoproto.nullable) = false ];
+  repeated AppToDenomsMapping appToDenomsMapping = 5
+  [ (gogoproto.moretags) = "yaml:\"appToDenomsMapping\"", (gogoproto.nullable) = false ];
+  Params params = 6 [(gogoproto.nullable) = false];
+
+}

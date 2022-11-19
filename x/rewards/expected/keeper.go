@@ -1,19 +1,19 @@
 package expected
 
 import (
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	"github.com/comdex-official/comdex/x/liquidity/amm"
+	lendtypes "github.com/petrichormoney/petri/x/lend/types"
+	"github.com/petrichormoney/petri/x/liquidity/amm"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
-	lockertypes "github.com/comdex-official/comdex/x/locker/types"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
-	"github.com/comdex-official/comdex/x/rewards/types"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	liquiditytypes "github.com/petrichormoney/petri/x/liquidity/types"
+	lockertypes "github.com/petrichormoney/petri/x/locker/types"
+	markettypes "github.com/petrichormoney/petri/x/market/types"
+	"github.com/petrichormoney/petri/x/rewards/types"
+	vaulttypes "github.com/petrichormoney/petri/x/vault/types"
 )
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias).

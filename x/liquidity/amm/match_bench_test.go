@@ -7,8 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	utils "github.com/comdex-official/comdex/types"
-	"github.com/comdex-official/comdex/x/liquidity/amm"
+	utils "github.com/petrichormoney/petri/types"
+	"github.com/petrichormoney/petri/x/liquidity/amm"
 )
 
 func BenchmarkFindMatchPrice(b *testing.B) {

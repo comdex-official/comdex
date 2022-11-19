@@ -9,17 +9,17 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	chain "github.com/comdex-official/comdex/app"
-	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
-	collectKeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
-	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
-	tokenmintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
+	chain "github.com/petrichormoney/petri/app"
+	assetKeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	"github.com/petrichormoney/petri/x/auction/keeper"
+	"github.com/petrichormoney/petri/x/auction/types"
+	collectKeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	liquidationKeeper "github.com/petrichormoney/petri/x/liquidation/keeper"
+	liquidationTypes "github.com/petrichormoney/petri/x/liquidation/types"
+	marketKeeper "github.com/petrichormoney/petri/x/market/keeper"
+	tokenmintKeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	vaultKeeper "github.com/petrichormoney/petri/x/vault/keeper"
+	vaultTypes "github.com/petrichormoney/petri/x/vault/types"
 )
 
 type KeeperTestSuite struct {

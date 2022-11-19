@@ -4,17 +4,17 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
-	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
-	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
-	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
-	tokenMintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	assetkeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	auctionKeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	collectorKeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	esmKeeper "github.com/petrichormoney/petri/x/esm/keeper"
+	lendKeeper "github.com/petrichormoney/petri/x/lend/keeper"
+	liquidationKeeper "github.com/petrichormoney/petri/x/liquidation/keeper"
+	liquidityKeeper "github.com/petrichormoney/petri/x/liquidity/keeper"
+	lockerkeeper "github.com/petrichormoney/petri/x/locker/keeper"
+	rewardsKeeper "github.com/petrichormoney/petri/x/rewards/keeper"
+	tokenMintkeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	vaultKeeper "github.com/petrichormoney/petri/x/vault/keeper"
 )
 
 func RegisterCustomPlugins(
@@ -30,10 +30,10 @@ func RegisterCustomPlugins(
 	lend *lendKeeper.Keeper,
 	liquidity *liquidityKeeper.Keeper,
 ) []wasmkeeper.Option {
-	comdexQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
+	cmd/petriQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
 
 	appDataQueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
-		Custom: CustomQuerier(comdexQueryPlugin),
+		Custom: CustomQuerier(cmd/petriQueryPlugin),
 	})
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
 		CustomMessageDecorator(*locker, *rewards, *asset, *collector, *liquidation, *auction, *tokenMint, *esm, *vault),

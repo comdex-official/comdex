@@ -1,0 +1,15 @@
+syntax = "proto3";
+package petri.bandoracle.v1beta1;
+
+
+option go_package = "github.com/petrichormoney/petri/x/bandoracle/types";
+
+message BandoraclePacketData {
+    oneof packet {
+        NoData noData = 1;
+    }
+}
+
+message NoData {
+}
+

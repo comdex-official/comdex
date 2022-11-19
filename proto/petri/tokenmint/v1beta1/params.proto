@@ -1,0 +1,12 @@
+syntax = "proto3";
+package petri.tokenmint.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/petrichormoney/petri/x/tokenmint/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}

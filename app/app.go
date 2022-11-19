@@ -97,9 +97,9 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 
-	"github.com/comdex-official/comdex/x/liquidation"
-	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	"github.com/petrichormoney/petri/x/liquidation"
+	liquidationkeeper "github.com/petrichormoney/petri/x/liquidation/keeper"
+	liquidationtypes "github.com/petrichormoney/petri/x/liquidation/types"
 
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -108,48 +108,48 @@ import (
 	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	"github.com/comdex-official/comdex/x/asset"
-	assetclient "github.com/comdex-official/comdex/x/asset/client"
-	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	"github.com/comdex-official/comdex/x/auction"
-	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	"github.com/comdex-official/comdex/x/collector"
-	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	"github.com/comdex-official/comdex/x/esm"
-	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	"github.com/petrichormoney/petri/x/asset"
+	assetclient "github.com/petrichormoney/petri/x/asset/client"
+	assetkeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	assettypes "github.com/petrichormoney/petri/x/asset/types"
+	"github.com/petrichormoney/petri/x/auction"
+	auctionkeeper "github.com/petrichormoney/petri/x/auction/keeper"
+	auctiontypes "github.com/petrichormoney/petri/x/auction/types"
+	"github.com/petrichormoney/petri/x/collector"
+	collectorkeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	"github.com/petrichormoney/petri/x/esm"
+	esmkeeper "github.com/petrichormoney/petri/x/esm/keeper"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
 
-	"github.com/comdex-official/comdex/x/lend"
-	lendclient "github.com/comdex-official/comdex/x/lend/client"
-	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	"github.com/comdex-official/comdex/x/locker"
-	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
-	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	"github.com/petrichormoney/petri/x/lend"
+	lendclient "github.com/petrichormoney/petri/x/lend/client"
+	lendkeeper "github.com/petrichormoney/petri/x/lend/keeper"
+	lendtypes "github.com/petrichormoney/petri/x/lend/types"
+	"github.com/petrichormoney/petri/x/locker"
+	lockerkeeper "github.com/petrichormoney/petri/x/locker/keeper"
+	lockertypes "github.com/petrichormoney/petri/x/locker/types"
 
-	bandoraclemodule "github.com/comdex-official/comdex/x/bandoracle"
-	bandoraclemoduleclient "github.com/comdex-official/comdex/x/bandoracle/client"
-	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
+	bandoraclemodule "github.com/petrichormoney/petri/x/bandoracle"
+	bandoraclemoduleclient "github.com/petrichormoney/petri/x/bandoracle/client"
+	bandoraclemodulekeeper "github.com/petrichormoney/petri/x/bandoracle/keeper"
+	bandoraclemoduletypes "github.com/petrichormoney/petri/x/bandoracle/types"
 
-	"github.com/comdex-official/comdex/x/market"
-	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
-	markettypes "github.com/comdex-official/comdex/x/market/types"
+	"github.com/petrichormoney/petri/x/market"
+	marketkeeper "github.com/petrichormoney/petri/x/market/keeper"
+	markettypes "github.com/petrichormoney/petri/x/market/types"
 
-	"github.com/comdex-official/comdex/x/rewards"
-	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	"github.com/petrichormoney/petri/x/rewards"
+	rewardskeeper "github.com/petrichormoney/petri/x/rewards/keeper"
+	rewardstypes "github.com/petrichormoney/petri/x/rewards/types"
 
-	"github.com/comdex-official/comdex/x/tokenmint"
-	tokenmintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/petrichormoney/petri/x/tokenmint"
+	tokenmintkeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	tokenminttypes "github.com/petrichormoney/petri/x/tokenmint/types"
 
-	"github.com/comdex-official/comdex/x/vault"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
+	"github.com/petrichormoney/petri/x/vault"
+	vaultkeeper "github.com/petrichormoney/petri/x/vault/keeper"
+	vaulttypes "github.com/petrichormoney/petri/x/vault/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -158,19 +158,19 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
-	"github.com/comdex-official/comdex/x/liquidity"
-	liquidityclient "github.com/comdex-official/comdex/x/liquidity/client"
-	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
-	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+	"github.com/petrichormoney/petri/x/liquidity"
+	liquidityclient "github.com/petrichormoney/petri/x/liquidity/client"
+	liquiditykeeper "github.com/petrichormoney/petri/x/liquidity/keeper"
+	liquiditytypes "github.com/petrichormoney/petri/x/liquidity/types"
 
-	cwasm "github.com/comdex-official/comdex/app/wasm"
+	cwasm "github.com/petrichormoney/petri/app/wasm"
 
-	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
+	mv5 "github.com/petrichormoney/petri/app/upgrades/mainnet/v5"
 )
 
 const (
-	AccountAddressPrefix = "comdex"
-	Name                 = "comdex"
+	AccountAddressPrefix = "petri"
+	Name                 = "petri"
 )
 
 // GetWasmEnabledProposals parses the WasmProposalsEnabled / EnableSpecificWasmProposals values to
@@ -730,7 +730,7 @@ func New(
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
-	supportedFeatures := "iterator,staking,stargate,comdex"
+	supportedFeatures := "iterator,staking,stargate,petri"
 
 	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper), wasmOpts...)
 

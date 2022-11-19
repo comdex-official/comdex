@@ -8,8 +8,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
-	"github.com/comdex-official/comdex/x/rewards/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
+	"github.com/petrichormoney/petri/x/rewards/types"
 )
 
 func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {

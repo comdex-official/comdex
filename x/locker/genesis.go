@@ -3,8 +3,8 @@ package locker
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/x/locker/keeper"
-	"github.com/comdex-official/comdex/x/locker/types"
+	"github.com/petrichormoney/petri/x/locker/keeper"
+	"github.com/petrichormoney/petri/x/locker/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

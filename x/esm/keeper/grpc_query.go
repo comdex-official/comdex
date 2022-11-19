@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/comdex-official/comdex/x/esm/types"
+	"github.com/petrichormoney/petri/x/esm/types"
 )
 
 var _ types.QueryServer = QueryServer{}

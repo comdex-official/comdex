@@ -9,10 +9,10 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "comdex/auction/MsgPlaceSurplusBidRequest", nil)
-	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "comdex/auction/MsgPlaceDebtBidRequest", nil)
-	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "comdex/auction/MsgPlaceDutchBidRequest", nil)
-	cdc.RegisterConcrete(&MsgPlaceDutchLendBidRequest{}, "comdex/auction/MsgPlaceDutchLendBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceSurplusBidRequest{}, "petri/auction/MsgPlaceSurplusBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDebtBidRequest{}, "petri/auction/MsgPlaceDebtBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDutchBidRequest{}, "petri/auction/MsgPlaceDutchBidRequest", nil)
+	cdc.RegisterConcrete(&MsgPlaceDutchLendBidRequest{}, "petri/auction/MsgPlaceDutchLendBidRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

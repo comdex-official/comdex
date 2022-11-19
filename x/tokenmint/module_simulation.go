@@ -3,9 +3,9 @@ package tokenmint
 // import (
 // 	"math/rand"
 
-// 	"github.com/comdex-official/comdex/testutil/sample"
-// 	tokenmintsimulation "github.com/comdex-official/comdex/x/tokenmint/simulation"
-// 	"github.com/comdex-official/comdex/x/tokenmint/types"
+// 	"github.com/petrichormoney/petri/testutil/sample"
+// 	tokenmintsimulation "github.com/petrichormoney/petri/x/tokenmint/simulation"
+// 	"github.com/petrichormoney/petri/x/tokenmint/types"
 // 	"github.com/cosmos/cosmos-sdk/baseapp"
 // 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"

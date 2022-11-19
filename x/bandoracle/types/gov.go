@@ -11,7 +11,7 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalFetchPrice)
-	govtypes.RegisterProposalTypeCodec(&FetchPriceProposal{}, "comdex/FetchPriceProposal")
+	govtypes.RegisterProposalTypeCodec(&FetchPriceProposal{}, "petri/FetchPriceProposal")
 }
 
 var _ govtypes.Content = &FetchPriceProposal{}

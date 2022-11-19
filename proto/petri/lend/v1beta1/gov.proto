@@ -1,0 +1,38 @@
+syntax = "proto3";
+package petri.lend.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "petri/lend/v1beta1/lend.proto";
+
+
+option go_package = "github.com/petrichormoney/petri/x/lend/types";
+
+message LendPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
+}
+
+message AddPoolsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  Pool Pool = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetToPairProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AssetToPairMapping AssetToPairMapping = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetRatesParams {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AssetRatesParams AssetRatesParams = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAuctionParamsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AuctionParams AuctionParams = 3 [(gogoproto.nullable) = false];
+}

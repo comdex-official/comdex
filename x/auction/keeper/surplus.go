@@ -3,14 +3,14 @@ package keeper
 import (
 	"time"
 
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	esmtypes "github.com/petrichormoney/petri/x/esm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	collectortypes "github.com/comdex-official/comdex/x/collector/types"
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	auctiontypes "github.com/petrichormoney/petri/x/auction/types"
+	collectortypes "github.com/petrichormoney/petri/x/collector/types"
+	tokenminttypes "github.com/petrichormoney/petri/x/tokenmint/types"
 )
 
 func (k Keeper) SurplusActivator(ctx sdk.Context, data collectortypes.AppAssetIdToAuctionLookupTable, killSwitchParams esmtypes.KillSwitchParams, status bool) error {

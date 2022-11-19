@@ -3,16 +3,16 @@ package wasm
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
-	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
-	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
-	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
-	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
-	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
-	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
-	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
-	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	assetKeeper "github.com/petrichormoney/petri/x/asset/keeper"
+	collectorkeeper "github.com/petrichormoney/petri/x/collector/keeper"
+	esmKeeper "github.com/petrichormoney/petri/x/esm/keeper"
+	lendKeeper "github.com/petrichormoney/petri/x/lend/keeper"
+	liquidationKeeper "github.com/petrichormoney/petri/x/liquidation/keeper"
+	liquidityKeeper "github.com/petrichormoney/petri/x/liquidity/keeper"
+	lockerkeeper "github.com/petrichormoney/petri/x/locker/keeper"
+	rewardsKeeper "github.com/petrichormoney/petri/x/rewards/keeper"
+	tokenMintKeeper "github.com/petrichormoney/petri/x/tokenmint/keeper"
+	vaultKeeper "github.com/petrichormoney/petri/x/vault/keeper"
 )
 
 type QueryPlugin struct {

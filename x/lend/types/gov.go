@@ -14,15 +14,15 @@ var (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
-	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
+	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "petri/AddLendPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddPool)
-	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "petri/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
-	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "comdex/AddAssetToPairProposal")
+	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "petri/AddAssetToPairProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetRatesParams)
-	govtypes.RegisterProposalTypeCodec(&AddAssetRatesParams{}, "comdex/AddAssetRatesParams")
+	govtypes.RegisterProposalTypeCodec(&AddAssetRatesParams{}, "petri/AddAssetRatesParams")
 	govtypes.RegisterProposalType(ProposalAddAuctionParams)
-	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "comdex/AddAuctionParamsProposal")
+	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "petri/AddAuctionParamsProposal")
 }
 
 var (
