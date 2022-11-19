@@ -7,6 +7,12 @@ option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
+service Msg {
+  rpc MsgLiquidateVault(MsgLiquidateVaultRequest) returns (MsgLiquidateVaultResponse);
+
+  rpc MsgLiquidateBorrow(MsgLiquidateBorrowRequest) returns (MsgLiquidateBorrowResponse);
+}
+
 message MsgLiquidateVaultRequest {
     string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
     uint64 app_id = 2 [
@@ -18,8 +24,12 @@ message MsgLiquidateVaultRequest {
       (gogoproto.moretags) = "yaml:\"vault_id\""];
   }
   message  MsgLiquidateVaultResponse{}
-
-  service Msg {
-    rpc MsgLiquidateVault(MsgLiquidateVaultRequest) returns (MsgLiquidateVaultResponse);
-  }
   
+  message MsgLiquidateBorrowRequest {
+    string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  
+    uint64 borrow_id = 2 [
+      (gogoproto.customname) = "BorrowId",
+      (gogoproto.moretags) = "yaml:\"borrow_id\""];
+  }
+  message  MsgLiquidateBorrowResponse{}

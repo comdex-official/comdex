@@ -26,6 +26,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txLiquidate(),
+		txLiquidateBorrow(),
 	)
 
 	return cmd
@@ -53,6 +54,36 @@ func txLiquidate() *cobra.Command {
 			}
 
 			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, appID, vaultID)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txLiquidateBorrow() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "liquidate_borrow [borrowID]",
+		Short: "liquidate faulty Borrow Position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLiquidateBorrowRequest(ctx.FromAddress, borrowID)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
