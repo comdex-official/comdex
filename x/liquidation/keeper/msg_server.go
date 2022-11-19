@@ -35,7 +35,7 @@ func (k msgServer) MsgLiquidateVault(c context.Context, msg *types.MsgLiquidateV
 	}
 	klwsParams, _ := k.esm.GetKillSwitchData(ctx, appID)
 	if klwsParams.BreakerEnable || status {
-		return nil, fmt.Errorf("Kill Switch Or ESM is enabled For Liquidation, AppID %d", appID)
+		return nil, fmt.Errorf("kill Switch Or ESM is enabled For Liquidation, AppID %d", appID)
 	}
 	// Call Vault Data
 	vault, found := k.vault.GetVault(ctx, msg.VaultId)
