@@ -60,4 +60,5 @@ var (
 	ErrorBorrowPosLiquidated                 = sdkerrors.Register(ModuleName, 1167, "Borrow Position Liquidated")
 	ErrorInsufficientCTokensForRewards       = sdkerrors.Register(ModuleName, 1168, "Insufficient CTokens For Rewards in the cPool")
 	ErrorAssetRatesParamsAlreadyExists       = sdkerrors.Register(ModuleName, 1169, "Asset Rates Params already exists")
+	ErrorLBMappingNotFound      			 = sdkerrors.Register(ModuleName, 1170, "Asset LB Mapping Not found")
 )
