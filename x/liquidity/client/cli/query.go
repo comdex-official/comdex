@@ -816,7 +816,7 @@ func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 			fmt.Sprintf(`Deserialize pool coins into pool assets.
 Example:
 $ %s query %s deserialize 1 1 123400000
-> {coins : [1000000upetri, 4000000ucmst]}
+> {coins : [1000000upetri, 4000000ufust]}
 `,
 				version.AppName, types.ModuleName,
 			),

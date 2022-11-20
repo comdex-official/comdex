@@ -10,17 +10,17 @@ APPS = [
 ASSETS = [
     # [name, denom, decimals, isOnChain, assetOraclePriceRequired, isCdpMintable]
     ["ATOM", "uatom", 1000000, 0, 1, 0],  # ID - 1
-    ["CMDX", "upetri",1000000, 0, 1, 0],  # ID - 2
-    ["FUST", "ucmst",1000000, 1, 1, 1],  # ID - 3
+    ["PETRI", "upetri",1000000, 0, 1, 0],  # ID - 2
+    ["FUST", "ufust",1000000, 1, 1, 1],  # ID - 3
     ["OSMO", "uosmo",1000000, 0, 1, 0],  # ID - 4
-    ["CATOM", "ucatom",1000000, 1, 0, 1],  # ID - 5
-    ["CCMDX", "uspetri",1000000, 1, 0, 1],  # ID - 6
-    ["CFUST", "usfust",1000000, 1, 0, 1],  # ID - 7
-    ["COSMO", "ucosmo",1000000, 1, 0, 1],  # ID - 8
+    ["sATOM", "usatom",1000000, 1, 0, 1],  # ID - 5
+    ["sPETRI", "uspetri",1000000, 1, 0, 1],  # ID - 6
+    ["sFUST", "usfust",1000000, 1, 0, 1],  # ID - 7
+    ["sOSMO", "ucosmo",1000000, 1, 0, 1],  # ID - 8
     ["HARBOR", "uharbor",1000000, 1, 1, 0],  # ID - 9
     ["WETH", "weth-wei",1000000000000000000, 0, 1, 0],  # ID - 10
     ["CANTO", "ucant",10000000000000000000000000, 0, 1, 0],  # ID - 11
-    ["CGOLD", "ucgold",1000000, 1, 1, 1],  # ID - 12
+    ["sGOLD", "usgold",1000000, 1, 1, 1],  # ID - 12
     ["USDC", "usdc",1000000, 0, 1, 0],  # ID - 13
 
 ]
@@ -119,7 +119,7 @@ ADD_ASSET_RATES = [
         },
     ],
     [
-        "CMDX",
+        "PETRI",
         {
             "asset_id": "2",
             "u_optimal": "0.5",
@@ -136,8 +136,8 @@ ADD_ASSET_RATES = [
             "liquidation_bonus": "0.05",
             "reserve_factor": "0.2",
             "c_asset_id": "6",
-            "title": "Add Asset Rates Stats CMDX",
-            "description": "adding asset rates stats CMDX",
+            "title": "Add Asset Rates Stats PETRI",
+            "description": "adding asset rates stats PETRI",
             "deposit": "10000000upetri",
         },
     ],
@@ -149,7 +149,7 @@ ADD_LEND_POOL = [
         "asset_id": "1,2,3",
         "asset_transit_type": "3,1,2",
         "supply_cap": "5000000000000000000,1000000000000000000,5000000000000000000",
-        "c_pool_name": "CMDX-ATOM-FUST",
+        "c_pool_name": "PETRI-ATOM-FUST",
         "reserve_funds": "100000000",
         "title": "Add pool",
         "description": "adding pool",
@@ -170,41 +170,41 @@ ADD_LEND_POOL = [
 
 ADD_LEND_PAIR = [
     [
-        "CMDX-FUST",
+        "PETRI-FUST",
         {
             "asset_in": "2",
             "asset_out": "3",
             "is_inter_pool": "0",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair CMDX-FUST",
-            "description": "adding extended pairs for CMDX-FUST same pool",
+            "title": "Add Extended pair PETRI-FUST",
+            "description": "adding extended pairs for PETRI-FUST same pool",
             "deposit": "10000000upetri",
         },
     ],
     [
-        "CMDX-ATOM",
+        "PETRI-ATOM",
         {
             "asset_in": "2",
             "asset_out": "1",
             "is_inter_pool": "0",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair CMDX-ATOM",
-            "description": "adding extended pairs CMDX-ATOM same pool",
+            "title": "Add Extended pair PETRI-ATOM",
+            "description": "adding extended pairs PETRI-ATOM same pool",
             "deposit": "10000000upetri",
         },
     ],
     [
-        "ATOM-CMDX",
+        "ATOM-PETRI",
         {
             "asset_in": "1",
             "asset_out": "2",
             "is_inter_pool": "0",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair ATOM-CMDX",
-            "description": "adding extended pairs ATOM-CMDX same pool",
+            "title": "Add Extended pair ATOM-PETRI",
+            "description": "adding extended pairs ATOM-PETRI same pool",
             "deposit": "10000000upetri",
         },
     ],
@@ -222,15 +222,15 @@ ADD_LEND_PAIR = [
         },
     ],
     [
-        "FUST-CMDX",
+        "FUST-PETRI",
         {
             "asset_in": "3",
             "asset_out": "2",
             "is_inter_pool": "0",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair FUST-CMDX",
-            "description": "adding extended pairs FUST-CMDX same pool",
+            "title": "Add Extended pair FUST-PETRI",
+            "description": "adding extended pairs FUST-PETRI same pool",
             "deposit": "10000000upetri",
         },
     ],
@@ -326,15 +326,15 @@ ADD_LEND_PAIR = [
         },
     ],
     [
-        "CMDX-OSMO",
+        "PETRI-OSMO",
         {
             "asset_in": "2",
             "asset_out": "4",
             "is_inter_pool": "1",
             "asset_out_pool_id": "2",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair CMDX-OSMO",
-            "description": "adding extended pairs CMDX-OSMO cross pool",
+            "title": "Add Extended pair PETRI-OSMO",
+            "description": "adding extended pairs PETRI-OSMO cross pool",
             "deposit": "10000000upetri",
         },
     ],
@@ -365,41 +365,41 @@ ADD_LEND_PAIR = [
         },
     ],
     [
-        "OSMO-CMDX",
+        "OSMO-PETRI",
         {
             "asset_in": "4",
             "asset_out": "2",
             "is_inter_pool": "1",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair OSMO-CMDX",
-            "description": "adding extended pairs OSMO-CMDX cross pool",
+            "title": "Add Extended pair OSMO-PETRI",
+            "description": "adding extended pairs OSMO-PETRI cross pool",
             "deposit": "10000000upetri",
         },
     ],
     [
-        "FUST-CMDX",
+        "FUST-PETRI",
         {
             "asset_in": "3",
             "asset_out": "2",
             "is_inter_pool": "1",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair FUST-CMDX",
-            "description": "adding extended pairs FUST-CMDX cross pool",
+            "title": "Add Extended pair FUST-PETRI",
+            "description": "adding extended pairs FUST-PETRI cross pool",
             "deposit": "10000000upetri",
         },
     ],
     [
-        "ATOM-CMDX",
+        "ATOM-PETRI",
         {
             "asset_in": "1",
             "asset_out": "2",
             "is_inter_pool": "1",
             "asset_out_pool_id": "1",
             "min_usd_value_left": "100000000000",
-            "title": "Add Extended pair ATOM-CMDX",
-            "description": "adding extended pairs ATOM-CMDX cross pool",
+            "title": "Add Extended pair ATOM-PETRI",
+            "description": "adding extended pairs ATOM-PETRI cross pool",
             "deposit": "10000000upetri",
         },
     ],
@@ -477,8 +477,8 @@ WASM_PROPOSALS = [
         "content": {
             "propose": {
                 "propose": {
-                    "title": "New proposal for add vault pair for CMDX C - FUST",
-                    "description": "This is a base execution proposal to add CMDX C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
+                    "title": "New proposal for add vault pair for PETRI C - FUST",
+                    "description": "This is a base execution proposal to add PETRI C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
                     "msgs": [
                         {
                             "msg_add_extended_pairs_vault": {
@@ -652,8 +652,8 @@ WASM_PROPOSALS = [
         "content": {
             "propose": {
                 "propose": {
-                    "title": "New proposal for add pair for CMDX",
-                    "description": "This is an base proposal execution proposal to add CMDX-FUST n.",
+                    "title": "New proposal for add pair for PETRI",
+                    "description": "This is an base proposal execution proposal to add PETRI-FUST n.",
                     "msgs": [{"msg_whitelist_app_id_liquidation": {"app_id": 1}}],
                     "app_id_param": 1,
                 }
@@ -692,8 +692,8 @@ WASM_PROPOSALS = [
         "content": {
             "propose": {
                 "propose": {
-                    "title": "New proposal for add vault pair for CMDX C - FUST",
-                    "description": "This is a base execution proposal to add CMDX C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
+                    "title": "New proposal for add vault pair for PETRI C - FUST",
+                    "description": "This is a base execution proposal to add PETRI C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
                     "msgs": [
                         {
                             "msg_add_extended_pairs_vault": {
@@ -708,7 +708,7 @@ WASM_PROPOSALS = [
                                 "debt_floor": "100000000",
                                 "is_stable_mint_vault": False,
                                 "min_cr": "1.7",
-                                "pair_name": "CMDX-A",
+                                "pair_name": "PETRI-A",
                                 "asset_out_oracle_price": False,
                                 "asset_out_price": 1000000,
                                 "min_usd_value_left": 100000,
@@ -727,8 +727,8 @@ WASM_PROPOSALS = [
         "content": {
             "propose": {
                 "propose": {
-                    "title": "New proposal for add vault pair for CMDX C - FUST",
-                    "description": "This is a base execution proposal to add CMDX C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
+                    "title": "New proposal for add vault pair for PETRI C - FUST",
+                    "description": "This is a base execution proposal to add PETRI C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
                     "msgs": [
                         {
                             "msg_add_extended_pairs_vault": {
@@ -762,8 +762,8 @@ WASM_PROPOSALS = [
         "content": {
             "propose": {
                 "propose": {
-                    "title": "New proposal for add vault pair for CMDX C - FUST",
-                    "description": "This is a base execution proposal to add CMDX C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
+                    "title": "New proposal for add vault pair for PETRI C - FUST",
+                    "description": "This is a base execution proposal to add PETRI C - FUST vault pair with given Vault properties a. Liquidation ratio : 140 % b. Stability Fee : 1%  c. Liquidation Penalty : 12% d. DrawDown Fee : 1% e. Debt Cieling : 100000000 FUST f. Debt Floor : 100 FUST ",
                     "msgs": [
                         {
                             "msg_add_extended_pairs_vault": {
