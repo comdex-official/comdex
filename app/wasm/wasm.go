@@ -18,22 +18,22 @@ import (
 )
 
 func RegisterCustomPlugins(
-	locker *lockerkeeper.Keeper,
-	tokenMint *tokenMintkeeper.Keeper,
-	asset *assetkeeper.Keeper,
-	rewards *rewardsKeeper.Keeper,
-	collector *collectorKeeper.Keeper,
-	liquidation *liquidationKeeper.Keeper,
-	auction *auctionKeeper.Keeper,
-	esm *esmKeeper.Keeper,
-	vault *vaultKeeper.Keeper,
-	lend *lendKeeper.Keeper,
-	liquidity *liquidityKeeper.Keeper,
+		locker *lockerkeeper.Keeper,
+		tokenMint *tokenMintkeeper.Keeper,
+		asset *assetkeeper.Keeper,
+		rewards *rewardsKeeper.Keeper,
+		collector *collectorKeeper.Keeper,
+		liquidation *liquidationKeeper.Keeper,
+		auction *auctionKeeper.Keeper,
+		esm *esmKeeper.Keeper,
+		vault *vaultKeeper.Keeper,
+		lend *lendKeeper.Keeper,
+		liquidity *liquidityKeeper.Keeper,
 ) []wasmkeeper.Option {
-	cmd/petriQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
+	petriQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
 
 	appDataQueryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
-		Custom: CustomQuerier(cmd/petriQueryPlugin),
+		Custom: CustomQuerier(petriQueryPlugin),
 	})
 	messengerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
 		CustomMessageDecorator(*locker, *rewards, *asset, *collector, *liquidation, *auction, *tokenMint, *esm, *vault),
