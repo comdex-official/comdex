@@ -50,7 +50,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg2 := assetTypes.Asset{
-		Name:      "CMDX",
+		Name:      "PETRI",
 		Denom:     "upetri",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,

@@ -1700,7 +1700,7 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	s.Require().True(utils.ParseCoins("1871844upetri").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, here 1uharbor is refunded back since it is very small amount for swap order.
-	// here all harbor tokens are converted into cmdx, since cmdx is the default distribution token for rewards
+	// here all harbor tokens are converted into petri, since petri is the default distribution token for rewards
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
 	s.Require().True(utils.ParseCoins("1871996upetri,1uharbor").IsEqual(accumulatedSwapFee))

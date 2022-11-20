@@ -25,7 +25,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		asset2            uint64
 	}{
 		{
-			"Add Pair , Extended Pair Vault : cmdx cmst",
+			"Add Pair , Extended Pair Vault : petri cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -42,7 +42,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B",
+				PairName:            "PETRI-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -190,7 +190,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		{
 			"Add Asset 1",
 			assetTypes.Asset{
-				Name:          "CMDX",
+				Name:          "PETRI",
 				Denom:         "upetri",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,

@@ -12,7 +12,7 @@ import (
 
 func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
-		var petriQuery bindings.ComdexQuery
+		var petriQuery bindings.PetriQuery
 		if err := json.Unmarshal(request, &petriQuery); err != nil {
 			return nil, sdkerrors.Wrap(err, "app query")
 		}

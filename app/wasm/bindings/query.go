@@ -2,7 +2,7 @@ package bindings
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
-type ComdexQuery struct {
+type PetriQuery struct {
 	AppData                                *AppData                                `json:"get_app,omitempty"`
 	AssetData                              *AssetData                              `json:"get_asset_data,omitempty"`
 	State                                  *State                                  `json:"state,omitempty"`

@@ -358,7 +358,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 			assetTypes.ErrorDuplicateAsset,
 		},
 		{
-			"Update Asset cmdx upetri",
+			"Update Asset petri upetri",
 			assetTypes.Asset{
 				Id:                    1,
 				Name:                  "CMRT",
@@ -402,9 +402,9 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 		ExpErr  error
 	}{
 		{
-			"Add Asset cmdx upetri",
+			"Add Asset petri upetri",
 			assetTypes.Asset{
-				Name:                  "CMDX",
+				Name:                  "PETRI",
 				Denom:                 "upetri",
 				Decimals:              sdk.NewInt(1000000),
 				IsOnChain:             true,
@@ -574,7 +574,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 		ExpErr                 error
 	}{
 		{
-			"Add Pair 1: cmdx cmst",
+			"Add Pair 1: petri cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -586,7 +586,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 			nil,
 		},
 		{
-			"Add Duplicate Pair : cmdx cmst",
+			"Add Duplicate Pair : petri cmst",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -691,7 +691,7 @@ func (s *KeeperTestSuite) TestUpdatePair() {
 		ExpErr                 error
 	}{
 		{
-			"update Pair 1: cmdx cmst",
+			"update Pair 1: petri cmst",
 			assetTypes.Pair{
 				Id:       1,
 				AssetIn:  1,
@@ -837,7 +837,7 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 			assetTypes.ErrorPairDoesNotExist,
 		},
 		{
-			"Update Extended Pair Vault : cmdx cmst",
+			"Update Extended Pair Vault : petri cmst",
 
 			bindings.MsgUpdatePairsVault{
 				AppID:              1,
@@ -898,7 +898,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 		ExpErr                  error
 	}{
 		{
-			"Add Extended Pair Vault : cmdx cmst",
+			"Add Extended Pair Vault : petri cmst",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -912,7 +912,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-A",
+				PairName:            "PETRI-A",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -924,7 +924,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			nil,
 		},
 		{
-			"Add Extended Pair Vault : Duplicate PairName cmst cmdx",
+			"Add Extended Pair Vault : Duplicate PairName cmst petri",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -938,7 +938,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-A",
+				PairName:            "PETRI-A",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -951,7 +951,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 		},
 
 		{
-			"Add Pair , Extended Pair Vault : cmdx cmst",
+			"Add Pair , Extended Pair Vault : petri cmst",
 
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
@@ -965,7 +965,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B",
+				PairName:            "PETRI-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -991,7 +991,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B",
+				PairName:            "PETRI-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1017,7 +1017,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B",
+				PairName:            "PETRI-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1043,7 +1043,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-B ",
+				PairName:            "PETRI-B ",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1069,7 +1069,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-Y",
+				PairName:            "PETRI-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1095,7 +1095,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-Y",
+				PairName:            "PETRI-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1121,7 +1121,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-Y",
+				PairName:            "PETRI-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1147,7 +1147,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(10000000000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-Y",
+				PairName:            "PETRI-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,
@@ -1173,7 +1173,7 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 				DebtFloor:           sdk.NewInt(1000000),
 				IsStableMintVault:   false,
 				MinCr:               sdk.MustNewDecFromStr("1.5"),
-				PairName:            "CMDX-Y",
+				PairName:            "PETRI-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
 				MinUsdValueLeft:     1000000,

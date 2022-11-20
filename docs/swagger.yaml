@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
-  description: API Documentation of Comdex custom modules
-  title: Comdex Swagger Documentation
+  description: API Documentation of Petri custom modules
+  title: Petri Swagger Documentation
   contact: {}
   license:
     name: Apache 2.0

@@ -82,7 +82,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 	asset2 := assettypes.Asset{
 		Id:                    2,
-		Name:                  "CMDX",
+		Name:                  "PETRI",
 		Denom:                 "upetri",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,
@@ -130,7 +130,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 	asset6 := assettypes.Asset{
 		Id:                    6,
-		Name:                  "cCMDX",
+		Name:                  "sPETRI",
 		Denom:                 "uspetri",
 		Decimals:              sdk.NewInt(1000000),
 		IsOnChain:             false,

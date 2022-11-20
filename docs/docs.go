@@ -26,8 +26,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "localhost:1317",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "Comdex Swagger Documentation",
-	Description: "API Documentation of Comdex custom modules",
+	Title:       "Petri Swagger Documentation",
+	Description: "API Documentation of Petri custom modules",
 }
 
 type s struct{}

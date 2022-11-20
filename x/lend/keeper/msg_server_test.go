@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -292,7 +292,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -447,7 +447,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -593,7 +593,7 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -729,7 +729,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -994,7 +994,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -1192,7 +1192,7 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -1385,7 +1385,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -1562,7 +1562,7 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -1743,7 +1743,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 
-	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -1966,7 +1966,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 //	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 //	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 //
-//	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+//	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 //	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 //
 //	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -2005,9 +2005,9 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 //	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), poolOneID, appOneID)
 //	msgLend2 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), poolOneID, appOneID)
 //
-//	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
-//	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
-//	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
+//	msg3 := types.NewMsgFundModuleAccounts("petri", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
+//	msg4 := types.NewMsgFundModuleAccounts("petri", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
+//	msg5 := types.NewMsgFundModuleAccounts("petri", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
 //	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 //	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 //	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))
@@ -2119,7 +2119,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 //	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 //	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 //
-//	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-FUST", assetDataPoolOne)
+//	poolOneID := s.CreateNewPool("petri", "PETRI-ATOM-FUST", assetDataPoolOne)
 //	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-FUST", assetDataPoolTwo)
 //
 //	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
@@ -2158,9 +2158,9 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 //	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), poolOneID, appOneID)
 //	msgLend2 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), poolOneID, appOneID)
 //
-//	msg3 := types.NewMsgFundModuleAccounts("cmdx", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
-//	msg4 := types.NewMsgFundModuleAccounts("cmdx", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
-//	msg5 := types.NewMsgFundModuleAccounts("cmdx", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
+//	msg3 := types.NewMsgFundModuleAccounts("petri", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
+//	msg4 := types.NewMsgFundModuleAccounts("petri", assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
+//	msg5 := types.NewMsgFundModuleAccounts("petri", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(120000000)))
 //	// msg6 := types.NewMsgFundModuleAccounts("osmo", assetThreeID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset3", newInt(10000000000)))
 //	msg7 := types.NewMsgFundModuleAccounts("osmo", assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 //	msg8 := types.NewMsgFundModuleAccounts("osmo", assetFourID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset4", newInt(10000000000)))

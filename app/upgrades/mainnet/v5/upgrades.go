@@ -49,7 +49,7 @@ func InitializeStates(
 	gToken = append(gToken, genesisToken)
 
 	apps := []assettypes.AppData{
-		{Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+		{Name: "atom", ShortName: "uatom", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
 		{Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000000), GovTimeInSeconds: 259200, GenesisToken: gToken},
 	}
 	for _, app := range apps {
@@ -66,7 +66,7 @@ func InitializeStates(
 		{Name: "PETRI", Denom: "upetri", Decimals: sdk.NewInt(1000000000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
 		{Name: "FUST", Denom: "ufust", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: true, IsCdpMintable: true},
 		{Name: "OSMO", Denom: "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
-		{Name: "sATOM", Denom: "ucatom", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
+		{Name: "sATOM", Denom: "usatom", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
 		{Name: "sFURY", Denom: "usfury", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
 		{Name: "sFUST", Denom: "uscmst", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
 		{Name: "sOSMO", Denom: "usosmo", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
@@ -206,7 +206,7 @@ func InitializeStates(
 	liquidityPairs := []LiquidityPair{
 		{AppID: 1, From: "petri12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "upetri", QuoteCoinDenom: "ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352"},
 		{AppID: 1, From: "petri12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "upetri", QuoteCoinDenom: "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B"},
-		{AppID: 1, From: "petri12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "upetri", QuoteCoinDenom: "ucmst"},
+		{AppID: 1, From: "petri12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "upetri", QuoteCoinDenom: "ufust"},
 		{AppID: 1, From: "petri12gfx7e3p08ljrwhq4lxz0360czcv9jpzajlytv", BaseCoinDenom: "upetri", QuoteCoinDenom: "uharbor"},
 	}
 

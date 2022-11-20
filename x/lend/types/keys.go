@@ -9,7 +9,7 @@ const (
 	ModuleName = "lendV1"
 
 	// ModuleAcc1 , ModuleAcc2 & ModuleAcc3  defines different module accounts to store selected pairs of asset.
-	ModuleAcc1 = "cmdx"
+	ModuleAcc1 = "petri"
 	ModuleAcc2 = "atom"
 	ModuleAcc3 = "osmo"
 

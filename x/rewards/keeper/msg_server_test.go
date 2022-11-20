@@ -38,7 +38,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 
 	msg3 := assetTypes.Asset{
-		Name:          "CMDX",
+		Name:          "PETRI",
 		Denom:         "upetri",
 		Decimals:      sdk.NewInt(1000000),
 		IsOnChain:     true,
@@ -268,7 +268,7 @@ func (s *KeeperTestSuite) TestCreateVault() {
 	s.AddAppAsset()
 
 	pairID := s.CreateNewPair(addr1, 1, 2)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", 1, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", 1, pairID, false, true)
 
 	vaultKeeper, ctx := &s.vaultKeeper, &s.ctx
 	server := vaultkeeper.NewMsgServer(*vaultKeeper)

@@ -1,4 +1,4 @@
-<h1 align="center">Comdex : Democratizing Finance </h1>
+<h1 align="center">usatom : Democratizing Finance </h1>
 
 <p align="center">
   <img src="./logo.svg" width="300">
@@ -11,7 +11,7 @@
 A DeFi infrastructure layer for the Cosmos ecosystem
 A layer-1 infrastructure for seamless deployment of DeFi applications in the Cosmos ecosystem, powering DeFi in the multi-chain future.
 
-Plug & play customizable Comdex modules to deliver bleeding edge dApps
+Plug & play customizable usatom modules to deliver bleeding edge dApps
 
 ## Docs
 
@@ -24,7 +24,7 @@ Commodo : [docs.commodo.one](http://docs.commodo.one).
 cSwap :  [docs.cswap.one](https://docs.cswap.one).
 
 
-If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
+If you have technical questions or concerns, ask a developer or community member in the [usatom discord](https://discord.com/invite/7vjPvWKKMT).
 
 ### Installation
 
@@ -46,13 +46,13 @@ To verify latest testnet and main net version check
 [Version](https://github.com/petri-official/networks/blob/main/README.md)
 
 For further information on joining the testnet, head over to the
-[Comdex Networks TestNet](https://github.com/petri-official/networks/tree/main/testnet).
+[usatom Networks TestNet](https://github.com/petri-official/networks/tree/main/testnet).
 
 The explorer for this chain is hosted [Meteor - TestNet Explorer](https://meteor-explorer.petri.one)
 
 ## Main Net
 For further information on joining the mainnet, head over to the
-[Comdex Networks MainNet](https://github.com/petri-official/networks/tree/main/mainnet).
+[usatom Networks MainNet](https://github.com/petri-official/networks/tree/main/mainnet).
 
 
 ## Main Net Explorers
@@ -69,7 +69,7 @@ The explorer for this chain is hosted
 
 ## License
 
-Copyright © Comdex Technologies Pte Ltd. All rights reserved.
+Copyright © usatom Technologies Pte Ltd. All rights reserved.
 
 Licensed under the [petri license](LICENSE).
 
@@ -80,5 +80,5 @@ state and is being actively developed.](https://img.shields.io/badge/repo%20stat
 [![API Reference](https://godoc.org/github.com/petrichormoney/petri?status.svg)](https://godoc.org/github.com/petrichormoney/petri)
 [![GitHub](https://img.shields.io/github/license/petrichormoney/petri.svg)](https://github.com/petrichormoney/petri/blob/development/LICENSE)
 [![Lines Of Code](https://img.shields.io/tokei/lines/github/petrichormoney/petri?style=flat-square)](https://github.com/petrichormoney/petri)
-[![Twitter Follow](https://img.shields.io/twitter/follow/ComdexOfficial?label=Follow&style=social)](https://twitter.com/ComdexOfficial)
+[![Twitter Follow](https://img.shields.io/twitter/follow/usatomOfficial?label=Follow&style=social)](https://twitter.com/usatomOfficial)
 [![Discord Chat](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.com/invite/7vjPvWKKMT)

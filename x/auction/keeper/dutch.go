@@ -27,11 +27,11 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 		}
 		pair, _ := k.asset.GetPair(ctx, extendedPair.PairId)
 
-		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn) // collateral(cmdx)
+		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn) // collateral(petri)
 
 		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut) // debt(cmst)
 
-		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn) // cmdx
+		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn) // petri
 		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())        // cmst
 
 		liquidationPenalty := extendedPair.LiquidationPenalty
@@ -46,11 +46,11 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
-	outFlowToken sdk.Coin, // cmdx
+	outFlowToken sdk.Coin, // petri
 	inFlowToken sdk.Coin, // cmst
 	appID uint64,
 	assetInID uint64, // cmst
-	assetOutID uint64, // cmdx
+	assetOutID uint64, // petri
 	lockedVaultID uint64,
 	lockedVaultOwner string,
 	liquidationPenalty sdk.Dec,
@@ -130,7 +130,7 @@ func (k Keeper) StartDutchAuction(
 		AuctionMappingId:          auctionParams.DutchId,
 		AppId:                     appID,
 		AssetInId:                 assetInID,  // cmst
-		AssetOutId:                assetOutID, // cmdx
+		AssetOutId:                assetOutID, // petri
 		LockedVaultId:             lockedVaultID,
 		VaultOwner:                vaultOwner,
 		LiquidationPenalty:        liquidationPenalty,
@@ -185,16 +185,16 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 
 	// slice tells amount of collateral user should be given
 	// using ceil as we need extract more from users
-	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice // cmdx
+	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice // petri
 	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice   // cmst
 
-	slice := bid.Amount // cmdx
+	slice := bid.Amount // petri
 
 	a := auction.InflowTokenTargetAmount.Amount
 	b := auction.InflowTokenCurrentAmount.Amount
 	tab := a.Sub(b) // leftover cmst
 
-	// owe is $cmdx to be given to user
+	// owe is $petri to be given to user
 
 	owe, inFlowTokenAmount, err := k.vault.GetAmountOfOtherToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, slice, auction.AssetInId, inFlowTokenCurrentPrice)
 	if err != nil {
@@ -217,7 +217,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
 
 	// required target cmst to raise in usd * 10**-12
-	// here we are multiplying each upetri with uusd so cmdx tokens price will be calculated amount * 10**-12
+	// here we are multiplying each upetri with uusd so petri tokens price will be calculated amount * 10**-12
 
 	lockedVault, found := k.liquidation.GetLockedVault(ctx, appID, auction.LockedVaultId)
 	if !found {
@@ -241,7 +241,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	}
 	amountLeftInPUSD := outLeft.Sub(owe)
 	amountLeftInPUSDforDebt := outLeftDebt.Sub(owe)
-	// convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting upetri to cmdx
+	// convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting upetri to petri
 
 	// check if bid in usd*10**-12 is greater than required target cmst in usd*10**-12
 	// if user wants to buy more than target cmst then user should be sold only required cmst amount
@@ -518,7 +518,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 
 				if status {
 					// check user mapping of if vault exists for user
-					// if not create new vault of user with cmdx cmst
+					// if not create new vault of user with petri cmst
 					// if exists append in existing
 					// close auction func call
 					inflowLeft := dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)

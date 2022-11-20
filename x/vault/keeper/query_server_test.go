@@ -17,8 +17,8 @@ func (s *KeeperTestSuite) TestQueryAllVaults() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		Address             sdk.AccAddress
@@ -86,8 +86,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		Address             sdk.AccAddress
@@ -151,8 +151,8 @@ func (s *KeeperTestSuite) TestQueryVault() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -291,8 +291,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -321,7 +321,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX-C",
+					ExtendedPairName: "PETRI-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -343,7 +343,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX-C",
+					ExtendedPairName: "PETRI-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -365,7 +365,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr1.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX-C",
+					ExtendedPairName: "PETRI-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -387,7 +387,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 					Owner:            addr2.String(),
 					Collateral:       newInt(1000000000),
 					Debt:             newInt(200000000),
-					ExtendedPairName: "CMDX-C",
+					ExtendedPairName: "PETRI-C",
 					AssetInDenom:     "uasset1",
 					AssetOutDenom:    "uasset2",
 				},
@@ -442,8 +442,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -473,7 +473,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX-C",
+						ExtendedPairName: "PETRI-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -497,7 +497,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX-C",
+						ExtendedPairName: "PETRI-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -521,7 +521,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr1.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX-C",
+						ExtendedPairName: "PETRI-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -545,7 +545,7 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 						Owner:            addr2.String(),
 						Collateral:       newInt(1000000000),
 						Debt:             newInt(200000000),
-						ExtendedPairName: "CMDX-C",
+						ExtendedPairName: "PETRI-C",
 						AssetInDenom:     "uasset1",
 						AssetOutDenom:    "uasset2",
 					},
@@ -601,8 +601,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -761,8 +761,8 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -869,8 +869,8 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -976,8 +976,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1083,8 +1083,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1184,8 +1184,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedAssetWiseByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1299,8 +1299,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1412,8 +1412,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByAppAndExtendedPair() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1525,8 +1525,8 @@ func (s *KeeperTestSuite) TestQueryTotalValueLockedByAppAndExtendedPair() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1636,8 +1636,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairIDsByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -1743,8 +1743,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, true, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, true, true)
 
 	newVaults := []struct {
 		SkipStableMintVaultCreation bool
@@ -1832,8 +1832,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, true, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, true, true)
 
 	newVaults := []struct {
 		SkipStableMintVaultCreation bool
@@ -1925,8 +1925,8 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, true, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, true, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, true, true)
 
 	newVaults := []struct {
 		SkipStableMintVaultCreation bool
@@ -2014,8 +2014,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2144,8 +2144,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2282,8 +2282,8 @@ func (s *KeeperTestSuite) TestQueryTVLByAppOfAllExtendedPairs() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2404,8 +2404,8 @@ func (s *KeeperTestSuite) TestQueryTVLByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2511,8 +2511,8 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2633,8 +2633,8 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
@@ -2768,8 +2768,8 @@ func (s *KeeperTestSuite) TestQueryPairsLockedAndMintedStatisticByApp() {
 	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
 	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
-	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("CMDX-C", appID2, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("PETRI-C", appID1, pairID, false, true)
+	extendedVaultPairID2 := s.CreateNewExtendedVaultPair("PETRI-C", appID2, pairID, false, true)
 
 	newVaults := []struct {
 		SkipVaultCreation   bool
