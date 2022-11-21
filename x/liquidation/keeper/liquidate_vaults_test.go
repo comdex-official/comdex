@@ -21,7 +21,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		asset2            uint64
 	}{
 		{
-			"Add Pair , Extended Pair Vault : petri cmst",
+			"Add Pair , Extended Pair Vault : petri fust",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,

@@ -25,7 +25,7 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 		asset2            uint64
 	}{
 		{
-			"Add Pair , Extended Pair Vault : petri cmst",
+			"Add Pair , Extended Pair Vault : petri fust",
 			assetTypes.Pair{
 				AssetIn:  1,
 				AssetOut: 2,
@@ -201,7 +201,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			"Add Asset 2",
 			assetTypes.Asset{
 				Name:          "FUST",
-				Denom:         "ucmst",
+				Denom:         "ufust",
 				Decimals:      sdk.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
@@ -369,7 +369,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			auctionTypes.MsgPlaceDutchBidRequest{
 				AuctionId:        1,
 				Bidder:           userAddress1,
-				Amount:           ParseCoin("1000ucmst"),
+				Amount:           ParseCoin("1000ufust"),
 				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
@@ -424,7 +424,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 			s.Require().NoError(err)
 			beforeCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 			s.Require().NoError(err)
-			beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+			beforeCmstBalance, err := s.getBalance(userAddress1, "ufust")
 			s.Require().NoError(err)
 
 			// dont expect error
@@ -437,7 +437,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 
 				afterCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 				s.Require().NoError(err)
-				afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+				afterCmstBalance, err := s.getBalance(userAddress1, "ufust")
 				s.Require().NoError(err)
 
 				afterAuction, err := k.GetDutchAuction(*ctx, appID, auctionMappingID, auctionID)
@@ -445,7 +445,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 
 				userBid, err := k.GetDutchUserBidding(*ctx, userAddress1, appID, biddingID)
 				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
-				userOutflowCoin := sdk.NewCoin("ucmst", userReceivableAmount)
+				userOutflowCoin := sdk.NewCoin("ufust", userReceivableAmount)
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
@@ -477,7 +477,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	s.Require().NoError(err)
 	beforeCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 	s.Require().NoError(err)
-	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	beforeCmstBalance, err := s.getBalance(userAddress1, "ufust")
 	s.Require().NoError(err)
 
 	_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx),
@@ -495,7 +495,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	s.Require().Error(err)
 	afterCmdxBalance, err := s.getBalance(userAddress1, "upetri")
 	s.Require().NoError(err)
-	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	afterCmstBalance, err := s.getBalance(userAddress1, "ufust")
 	s.Require().NoError(err)
 	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
@@ -521,15 +521,15 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	server := auctionKeeper.NewMsgServiceServer(*k)
 	beforeAuction, err := k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
-	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	beforeCmstBalance, err := s.getBalance(userAddress1, "ufust")
 	s.Require().NoError(err)
 	s.advanceseconds(250)
 
 	auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 
-	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 10000000)
+	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ufust", 10000000)
 	s.Require().NoError(err1)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ufust", sdk.NewInt(10000000))))
 	s.Require().NoError(err)
 
 	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdk.NewInt(10000000))
@@ -549,7 +549,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	_, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().Error(err)
 
-	afterCmstBalance, err := s.getBalance(userAddress1, "ucmst")
+	afterCmstBalance, err := s.getBalance(userAddress1, "ufust")
 	s.Require().NoError(err)
 	afterAuction, err := k.GetHistoryDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)

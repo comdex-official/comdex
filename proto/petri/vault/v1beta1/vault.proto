@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cmd/petri.vault.v1beta1;
+package petri.vault.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";

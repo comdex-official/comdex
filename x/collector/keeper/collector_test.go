@@ -59,7 +59,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg3 := assetTypes.Asset{
 		Name:      "FUST",
-		Denom:     "ucmst",
+		Denom:     "ufust",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
@@ -378,7 +378,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 			2,
 			sdk.NewIntFromUint64(52),
 			100,
-			"ucmst",
+			"ufust",
 			false,
 		},
 		{
@@ -387,7 +387,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 			2,
 			sdk.NewIntFromUint64(101),
 			100,
-			"ucmst",
+			"ufust",
 			true,
 		},
 	} {

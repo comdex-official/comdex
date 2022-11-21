@@ -53,7 +53,7 @@ func NewRootCmd() (*cobra.Command, petri.EncodingConfig) {
 	cobra.EnableCommandSorting = false
 	root := &cobra.Command{
 		Use:   "petri",
-		Short: "Petri - Decentralised Synthetic Asset Exchange",
+		Short: "Comdex - Decentralised Synthetic Asset Exchange",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := client.SetCmdClientContextHandler(context, cmd); err != nil {
 				return err

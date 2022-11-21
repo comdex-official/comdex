@@ -29,10 +29,10 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 
 		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn) // collateral(petri)
 
-		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut) // debt(cmst)
+		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut) // debt(fust)
 
 		outflowToken := sdk.NewCoin(assetIn.Denom, lockedVault.AmountIn) // petri
-		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())        // cmst
+		inflowToken := sdk.NewCoin(assetOut.Denom, sdk.ZeroInt())        // fust
 
 		liquidationPenalty := extendedPair.LiquidationPenalty
 
@@ -47,9 +47,9 @@ func (k Keeper) DutchActivator(ctx sdk.Context, lockedVault liquidationtypes.Loc
 func (k Keeper) StartDutchAuction(
 	ctx sdk.Context,
 	outFlowToken sdk.Coin, // petri
-	inFlowToken sdk.Coin, // cmst
+	inFlowToken sdk.Coin, // fust
 	appID uint64,
-	assetInID uint64, // cmst
+	assetInID uint64, // fust
 	assetOutID uint64, // petri
 	lockedVaultID uint64,
 	lockedVaultOwner string,
@@ -129,7 +129,7 @@ func (k Keeper) StartDutchAuction(
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
 		AppId:                     appID,
-		AssetInId:                 assetInID,  // cmst
+		AssetInId:                 assetInID,  // fust
 		AssetOutId:                assetOutID, // petri
 		LockedVaultId:             lockedVaultID,
 		VaultOwner:                vaultOwner,
@@ -186,13 +186,13 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// slice tells amount of collateral user should be given
 	// using ceil as we need extract more from users
 	outFlowTokenCurrentPrice := auction.OutflowTokenCurrentPrice // petri
-	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice   // cmst
+	inFlowTokenCurrentPrice := auction.InflowTokenCurrentPrice   // fust
 
 	slice := bid.Amount // petri
 
 	a := auction.InflowTokenTargetAmount.Amount
 	b := auction.InflowTokenCurrentAmount.Amount
-	tab := a.Sub(b) // leftover cmst
+	tab := a.Sub(b) // leftover fust
 
 	// owe is $petri to be given to user
 
@@ -216,7 +216,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	}
 	inFlowTokenCoin := sdk.NewCoin(auction.InflowTokenTargetAmount.Denom, inFlowTokenAmount)
 
-	// required target cmst to raise in usd * 10**-12
+	// required target fust to raise in usd * 10**-12
 	// here we are multiplying each upetri with uusd so petri tokens price will be calculated amount * 10**-12
 
 	lockedVault, found := k.liquidation.GetLockedVault(ctx, appID, auction.LockedVaultId)
@@ -243,10 +243,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	amountLeftInPUSDforDebt := outLeftDebt.Sub(owe)
 	// convert amountLeft to uusd from pusd(10**-12) so we can compare dust and amountLeft in UUSD . this happens by converting upetri to petri
 
-	// check if bid in usd*10**-12 is greater than required target cmst in usd*10**-12
-	// if user wants to buy more than target cmst then user should be sold only required cmst amount
+	// check if bid in usd*10**-12 is greater than required target fust in usd*10**-12
+	// if user wants to buy more than target fust then user should be sold only required fust amount
 	// so we need to divide tab by outflow token current price and we get outflowtoken amount to be sold to user
-	// if user is not buying more than required cmst then we check for dust
+	// if user is not buying more than required fust then we check for dust
 	// here tab is divided by price again so price ration is only considered , we are not using owe again in this function so no problem
 	// As tab is the amount calculated from difference of target and current inflow token we will be using same as inflow token
 
@@ -291,10 +291,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// calculate inflow amount and outflow amount if  user  transaction successful
 	auction.OutflowTokenCurrentAmount = auction.OutflowTokenCurrentAmount.Sub(outFlowTokenCoin)
 	auction.InflowTokenCurrentAmount = auction.InflowTokenCurrentAmount.Add(inFlowTokenCoin)
-	// collateral not over but target cmst reached then send remaining collateral to owner
+	// collateral not over but target fust reached then send remaining collateral to owner
 	// if inflow token current amount >= InflowTokenTargetAmount
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) {
-		// send left overcollateral to vault owner as target cmst reached and also
+		// send left overcollateral to vault owner as target fust reached and also
 
 		total := auction.OutflowTokenCurrentAmount
 		if total.Amount.GT(sdk.ZeroInt()) {
@@ -518,7 +518,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, appID uint64) error {
 
 				if status {
 					// check user mapping of if vault exists for user
-					// if not create new vault of user with petri cmst
+					// if not create new vault of user with petri fust
 					// if exists append in existing
 					// close auction func call
 					inflowLeft := dutchAuction.InflowTokenTargetAmount.Amount.Sub(dutchAuction.InflowTokenCurrentAmount.Amount)

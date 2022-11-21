@@ -63,7 +63,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg4 := assetTypes.Asset{
 		Name:      "FUST",
-		Denom:     "ucmst",
+		Denom:     "ufust",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}

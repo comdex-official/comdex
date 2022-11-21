@@ -75,9 +75,9 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 		AppId:         1,
 		BreakerEnable: false,
 	}
-	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 1000000000)
+	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ufust", 1000000000)
 	s.Require().NoError(err2)
-	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
+	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ufust", sdk.NewIntFromUint64(1000000000))))
 	s.Require().NoError(err3)
 	err1 := k.SurplusActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
@@ -205,7 +205,7 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 			s.Require().NoError(err)
 			beforeHarborBalance, err := s.getBalance(tc.msg.Bidder, "uharbor")
 			s.Require().NoError(err)
-			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
+			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ufust")
 			s.Require().NoError(err)
 			previousUserAddress := ""
 			bidToken := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
@@ -235,7 +235,7 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 
 				afterHarborBalance, err := s.getBalance(tc.msg.Bidder, "uharbor")
 				s.Require().NoError(err)
-				afterCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
+				afterCmstBalance, err := s.getBalance(tc.msg.Bidder, "ufust")
 				s.Require().NoError(err)
 
 				afterAuction, err := k.GetSurplusAuction(*ctx, appID, auctionMappingID, auctionID)
@@ -308,7 +308,7 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			beforeCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
+			beforeCmstBalance, err := s.getBalance(winnerAddress, "ufust")
 			s.Require().NoError(err)
 
 			surplusAuction, err := k.GetSurplusAuction(*ctx, appID, auctionMappingID, auctionID)
@@ -318,7 +318,7 @@ func (s *KeeperTestSuite) TestCloseSurplusAuction() {
 			auction.BeginBlocker(*ctx, s.app.AuctionKeeper, s.app.AssetKeeper, s.app.CollectorKeeper, s.app.EsmKeeper)
 			s.Require().NoError(err)
 
-			afterCmstBalance, err := s.getBalance(winnerAddress, "ucmst")
+			afterCmstBalance, err := s.getBalance(winnerAddress, "ufust")
 			// s.Require().NoError(err)
 			// s.Require().Equal(beforeHarborBalance.Add(auction.ExpectedMintedToken), afterHarborBalance)
 			if tc.isErrorExpected {

@@ -18,17 +18,17 @@ import (
 )
 
 func RegisterCustomPlugins(
-		locker *lockerkeeper.Keeper,
-		tokenMint *tokenMintkeeper.Keeper,
-		asset *assetkeeper.Keeper,
-		rewards *rewardsKeeper.Keeper,
-		collector *collectorKeeper.Keeper,
-		liquidation *liquidationKeeper.Keeper,
-		auction *auctionKeeper.Keeper,
-		esm *esmKeeper.Keeper,
-		vault *vaultKeeper.Keeper,
-		lend *lendKeeper.Keeper,
-		liquidity *liquidityKeeper.Keeper,
+	locker *lockerkeeper.Keeper,
+	tokenMint *tokenMintkeeper.Keeper,
+	asset *assetkeeper.Keeper,
+	rewards *rewardsKeeper.Keeper,
+	collector *collectorKeeper.Keeper,
+	liquidation *liquidationKeeper.Keeper,
+	auction *auctionKeeper.Keeper,
+	esm *esmKeeper.Keeper,
+	vault *vaultKeeper.Keeper,
+	lend *lendKeeper.Keeper,
+	liquidity *liquidityKeeper.Keeper,
 ) []wasmkeeper.Option {
 	petriQueryPlugin := NewQueryPlugin(asset, locker, tokenMint, rewards, collector, liquidation, esm, vault, lend, liquidity)
 

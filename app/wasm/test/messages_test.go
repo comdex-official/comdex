@@ -478,7 +478,7 @@ func TestMsgBurnGovTokensForApp(t *testing.T) {
 			msg: &bindings.MsgBurnGovTokensForApp{
 				AppID:  1,
 				From:   addr,
-				Amount: sdk.NewCoin("ufury", sdk.NewInt(100)),
+				Amount: sdk.NewCoin("uharbor", sdk.NewInt(100)),
 			},
 			isErrorExpected: false,
 		},

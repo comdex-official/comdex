@@ -29,7 +29,7 @@ Sample json content
 	"is_on_chain" :"0",
 	"asset_oracle_price" :"1",
 	"title" :"Add assets for applications to be deployed on petri testnet",
-	"description" :"This proposal it to add following assets ATOM to be then used on harbor, commodo and usatom apps",
+	"description" :"This proposal it to add following assets ATOM to be then used on harbor, commodo and cswap apps",
 	"deposit" :"1000000000upetri"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error {

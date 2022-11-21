@@ -43,7 +43,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 
 	msg4 := assetTypes.Asset{
 		Name:      "FUST",
-		Denom:     "ucmst",
+		Denom:     "ufust",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
@@ -267,7 +267,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			if tc.msg.AssetId == 1 {
 				s.fundAddr(userAddress, sdk.NewCoin("upetri", sdk.NewIntFromUint64(tc.fundAmount)))
 			} else {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ufust", sdk.NewIntFromUint64(tc.fundAmount)))
 			}
 			_, err := server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.ExpErr != nil {
@@ -450,7 +450,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			if tc.msg.AssetId == 1 {
 				s.fundAddr(userAddress, sdk.NewCoin("upetri", sdk.NewIntFromUint64(tc.fundAmount)))
 			} else {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ufust", sdk.NewIntFromUint64(tc.fundAmount)))
 			}
 			lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 			s.Require().NoError(err)

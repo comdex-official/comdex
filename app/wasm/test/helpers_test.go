@@ -28,7 +28,7 @@ func SetupCustomApp() (*app.App, *sdk.Context) {
 
 func CreateTestInput() (*app.App, *sdk.Context) {
 	petri := app.Setup(false)
-	ctx := petri.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "redsun-1", Time: time.Now().UTC()})
+	ctx := petri.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "petri-1", Time: time.Now().UTC()})
 	return petri, &ctx
 }
 
@@ -56,13 +56,13 @@ func RandomBech32AccountAddress() string {
 	return RandomAccountAddress().String()
 }
 
-func AddAppAsset(app, *app.App, ctx1 sdk.Context) {
+func AddAppAsset(app *app.App, ctx1 sdk.Context) {
 	assetKeeper, ctx := &app.AssetKeeper, &ctx1
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	genesisSupply := sdk.NewIntFromUint64(9000000)
 	msg1 := assetTypes.AppData{
-		Name:             "ATOM",
-		ShortName:        "usatom",
+		Name:             "cswap",
+		ShortName:        "cswap",
 		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
@@ -95,8 +95,8 @@ func AddAppAsset(app, *app.App, ctx1 sdk.Context) {
 	_ = assetKeeper.AddAssetRecords(*ctx, msg3)
 
 	msg4 := assetTypes.Asset{
-		Name:          "FURY",
-		Denom:         "ufury",
+		Name:          "HARBOR",
+		Denom:         "uharbor",
 		Decimals:      sdk.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,

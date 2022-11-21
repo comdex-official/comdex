@@ -269,12 +269,12 @@ func (s *KeeperTestSuite) TestDebtBid() {
 		isErrorExpected bool
 	}{
 		{
-			"TestDebtBid : Less ExpectedUserToken AppID 1 Asset 2 21000ucmst",
+			"TestDebtBid : Less ExpectedUserToken AppID 1 Asset 2 21000ufust",
 			auctionTypes.MsgPlaceDebtBidRequest{
 				AuctionId:         1,
 				Bidder:            userAddress1,
 				Bid:               ParseCoin("2000000uharbor"),
-				ExpectedUserToken: ParseCoin("21000ucmst"),
+				ExpectedUserToken: ParseCoin("21000ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -282,12 +282,12 @@ func (s *KeeperTestSuite) TestDebtBid() {
 			true,
 		},
 		{
-			"TestDebtBid : More ExpectedUserToken AppID 1 Asset 2 200001ucmst",
+			"TestDebtBid : More ExpectedUserToken AppID 1 Asset 2 200001ufust",
 			auctionTypes.MsgPlaceDebtBidRequest{
 				AuctionId:         1,
 				Bidder:            userAddress1,
 				Bid:               ParseCoin("2000000uharbor"),
-				ExpectedUserToken: ParseCoin("200001ucmst"),
+				ExpectedUserToken: ParseCoin("200001ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -300,7 +300,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				AuctionId:         1,
 				Bidder:            userAddress1,
 				Bid:               ParseCoin("2000001uharbor"),
-				ExpectedUserToken: ParseCoin("200000ucmst"),
+				ExpectedUserToken: ParseCoin("200000ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -313,7 +313,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				AuctionId:         1,
 				Bidder:            userAddress1,
 				Bid:               ParseCoin("2000000uharbor"),
-				ExpectedUserToken: ParseCoin("200000ucmst"),
+				ExpectedUserToken: ParseCoin("200000ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -326,7 +326,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				AuctionId:         1,
 				Bidder:            userAddress2,
 				Bid:               ParseCoin("1980001uharbor"),
-				ExpectedUserToken: ParseCoin("200000ucmst"),
+				ExpectedUserToken: ParseCoin("200000ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -339,7 +339,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				AuctionId:         1,
 				Bidder:            userAddress2,
 				Bid:               ParseCoin("1980000uharbor"),
-				ExpectedUserToken: ParseCoin("200000ucmst"),
+				ExpectedUserToken: ParseCoin("200000ufust"),
 				AppId:             appID,
 				AuctionMappingId:  auctionMappingID,
 			},
@@ -353,14 +353,14 @@ func (s *KeeperTestSuite) TestDebtBid() {
 			s.Require().NoError(err)
 			beforeHarborBalance, err := s.getBalance(tc.msg.Bidder, "uharbor")
 			s.Require().NoError(err)
-			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
+			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ufust")
 			s.Require().NoError(err)
 			previousUserAddress := ""
 			mintedToken := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
 			beforeCmstBalance2 := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
 			if tc.bidID != uint64(1) {
 				previousUserAddress = beforeAuction.Bidder.String()
-				beforeCmstBalance2, err = s.getBalance(previousUserAddress, "ucmst")
+				beforeCmstBalance2, err = s.getBalance(previousUserAddress, "ufust")
 				s.Require().NoError(err)
 				userBid3, err := k.GetDebtUserBidding(*ctx, previousUserAddress, appID, tc.bidID-uint64(1))
 				s.Require().NoError(err)
@@ -375,7 +375,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				s.Require().NoError(err)
 
 				if tc.bidID != uint64(1) {
-					afterCmstBalance2, err := s.getBalance(previousUserAddress, "ucmst")
+					afterCmstBalance2, err := s.getBalance(previousUserAddress, "ufust")
 					s.Require().NoError(err)
 
 					s.Require().Equal(beforeCmstBalance2.Add(mintedToken), afterCmstBalance2)
@@ -383,7 +383,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 
 				afterHarborBalance, err := s.getBalance(tc.msg.Bidder, "uharbor")
 				s.Require().NoError(err)
-				afterCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
+				afterCmstBalance, err := s.getBalance(tc.msg.Bidder, "ufust")
 				s.Require().NoError(err)
 
 				afterAuction, err := k.GetDebtAuction(*ctx, appID, auctionMappingID, auctionID)
