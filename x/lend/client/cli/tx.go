@@ -572,17 +572,12 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 	moduleName := newLendPool.ModuleName
 	cPoolName := newLendPool.CPoolName
 
-	reserveFunds, err := strconv.ParseUint(newLendPool.ReserveFunds, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
-
 	assetID, err := ParseUint64SliceFromString(newLendPool.AssetID, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
-	supplyCap, err := ParseUint64SliceFromString(newLendPool.SupplyCap, ",")
+	supplyCap, err := ParseDecSliceFromString(newLendPool.SupplyCap, ",")
 	if err != nil {
 		return txf, nil, err
 	}
@@ -603,10 +598,9 @@ func NewCreateLendPool(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSe
 		assetData = append(assetData, &assetDataNew)
 	}
 	pool = types.Pool{
-		ModuleName:   moduleName,
-		CPoolName:    cPoolName,
-		ReserveFunds: reserveFunds,
-		AssetData:    assetData,
+		ModuleName: moduleName,
+		CPoolName:  cPoolName,
+		AssetData:  assetData,
 	}
 
 	from := clientCtx.GetFromAddress()
