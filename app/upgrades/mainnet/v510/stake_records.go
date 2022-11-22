@@ -7,11 +7,7 @@ package v510
 
 var recordsJSONString = `[
  {
-    "address": "",
-    "amount": ""
+    "address": "comdex1g9wqptyaxlkzaryt8dezq4eed566kkfpswxjm9",
+    "amount": "15000000"
   },
-  {
-    "address": "",
-    "amount": ""
-  }
 ]`

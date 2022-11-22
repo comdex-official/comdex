@@ -19,7 +19,7 @@ type CosMints struct {
 }
 
 var (
-	cosValidatorAddress = "comdexvaloper1ndslxsucavg3eglqe4mzge74tdx67rcnd7dawq"
+	cosValidatorAddress = "comdexvaloper1g9wqptyaxlkzaryt8dezq4eed566kkfpreuq9y"
 	cosConsensusAddress = ""
 )
 
