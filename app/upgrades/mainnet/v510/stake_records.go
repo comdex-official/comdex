@@ -9,5 +9,5 @@ var recordsJSONString = `[
  {
     "address": "comdex1g9wqptyaxlkzaryt8dezq4eed566kkfpswxjm9",
     "amount": "15000000"
-  },
+  }
 ]`
