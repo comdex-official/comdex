@@ -19,7 +19,7 @@ var recordsJSONString = `[
     "amount": "5000000"
   },
   {
-    "address": "comdex1phq8yxpagpcmtdv7jymvvyxeekk5y2nx5arlfu",
+    "address": "comdex1ejkheua45564tk6wkytg3e6h57kq8eq6svj9zj",
     "amount": "5000000"
   },
   {
