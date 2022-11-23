@@ -20,7 +20,7 @@ type CosMints struct {
 
 var (
 	cosValidatorAddress = "comdexvaloper1g9wqptyaxlkzaryt8dezq4eed566kkfpreuq9y"
-	cosConsensusAddress = "comdexvalcons1wtzad70kr7qfwly0nkh6x4gcffnlep4km4ssdc"
+	cosConsensusAddress = "comdexvalcons1ceug65dgfak4jxj6lwrh2z3r03zye9ad6e55tf"
 )
 
 func mintLostTokens(
@@ -51,12 +51,12 @@ func mintLostTokens(
 			panic(fmt.Sprintf("error parsing mint of %sucmdx to %s", mintRecord.Amountucmdx, mintRecord.Address))
 		}
 
-		coin := sdk.NewCoin("ucmdx", coinAmount)
+		coin := sdk.NewCoin("stake", coinAmount)
 		coins := sdk.NewCoins(coin)
 
 		err = mintKeeper.MintCoins(ctx, coins)
 		if err != nil {
-			panic(fmt.Sprintf("error minting %sucmdx to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
+			panic(fmt.Sprintf("error minting %sstake to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
 		}
 
 		delegatorAccount, err := sdk.AccAddressFromBech32(mintRecord.Address)
