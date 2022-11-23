@@ -2,6 +2,7 @@ package v510
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -19,7 +20,6 @@ func CreateUpgradeHandler(
 	mintkeeper mintkeeper.Keeper,
 	bankkeeper bankkeeper.Keeper,
 	stakingkeeper stakingkeeper.Keeper,
-
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running revert of tombstoning")

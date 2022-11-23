@@ -87,10 +87,10 @@ func revertTombstone(ctx sdk.Context, slashingKeeper slashingkeeper.Keeper) erro
 		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
 	}
 
-	cosConsAddress, err := sdk.ConsAddressFromBech32(cosConsensusAddress)
-	if err != nil {
-		panic(fmt.Sprintf("consensus address is not valid bech32: %s", cosValAddress))
-	}
+	cosConsAddress := sdk.ConsAddress(cosValAddress)
+	// if err != nil {
+	// 	panic(fmt.Sprintf("consensus address is not valid bech32: %s", cosValAddress))
+	// }
 
 	// Revert Tombstone info
 	slashingKeeper.RevertTombstone(ctx, cosConsAddress)
