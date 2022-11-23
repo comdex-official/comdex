@@ -1558,18 +1558,37 @@ func (k Keeper) CalculateBorrowInterestForLiquidation(ctx sdk.Context, borrowID 
 	if !found {
 		return borrowPos, types.ErrBorrowNotFound
 	}
-	indexGlobalCurrent, reserveGlobalIndex, err := k.IterateBorrow(ctx, borrowID)
+	borrowPos, err := k.IterateBorrowForLiq(ctx, borrowPos)
 	if err != nil {
 		return borrowPos, err
 	}
-	borrowPos, found = k.GetBorrow(ctx, borrowID)
-	if !found {
-		return borrowPos, types.ErrBorrowNotFound
-	}
-	borrowPos.GlobalIndex = indexGlobalCurrent
-	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
-	borrowPos.LastInteractionTime = ctx.BlockTime()
 	return borrowPos, nil
+}
+func (k Keeper) IterateBorrowForLiq(ctx sdk.Context, borrow types.BorrowAsset) (types.BorrowAsset, error) {
+	pair, _ := k.GetLendPair(ctx, borrow.PairID)
+	reserveRates, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	if err != nil {
+		return borrow, err
+	}
+	currBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
+	interestPerInteraction, indexGlobalCurrent, _, reserveGlobalIndex, err := k.CalculateBorrowInterest(ctx, borrow.AmountOut.Amount.String(), currBorrowAPR, reserveRates, borrow)
+	if err != nil {
+		return borrow, err
+	}
+
+	if !borrow.IsStableBorrow {
+		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(interestPerInteraction)
+	} else {
+		stableInterestPerBlock, err := k.CalculateStableInterest(ctx, borrow.AmountOut.Amount.String(), borrow)
+		if err != nil {
+			return borrow, err
+		}
+		borrow.InterestAccumulated = borrow.InterestAccumulated.Add(stableInterestPerBlock)
+	}
+	borrow.GlobalIndex = indexGlobalCurrent
+	borrow.ReserveGlobalIndex = reserveGlobalIndex
+	borrow.LastInteractionTime = ctx.BlockTime()
+	return borrow, nil
 }
 
 func (k Keeper) MsgCalculateLendRewards(ctx sdk.Context, addr string, lendID uint64) error {
