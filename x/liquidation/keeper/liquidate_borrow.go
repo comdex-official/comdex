@@ -44,7 +44,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			if !found {
 				return fmt.Errorf("lend Pos Not Found in Liquidation, liquidate_borrow.go for ID %d", borrowPos.LendingID)
 			}
-
+			killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
+			if killSwitchParams.BreakerEnable {
+				return fmt.Errorf("kill Switch is enabled in Liquidation, liquidate_borrow.go for ID %d", lendPos.AppID)
+			}
 			// calculating and updating the interest accumulated before checking for liquidations
 			err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
 			if err != nil {
@@ -57,16 +60,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					return fmt.Errorf("error in re-balance stable rate check before liquidation")
 				}
 			}
+			/// make clone of calc borrow
 
-			killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
-			if killSwitchParams.BreakerEnable {
-				return fmt.Errorf("kill Switch is enabled in Liquidation, liquidate_borrow.go for ID %d", lendPos.AppID)
-			}
-			// calculating and updating the interest accumulated before checking for liquidations
-			err1 := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
-			if err1 != nil {
-				return fmt.Errorf("error in calculating Borrow Interest before liquidation, liquidate_borrow.go for ID %d", borrowPos.ID)
-			}
 			pool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
 			assetIn, _ := k.asset.GetAsset(ctx, lendPair.AssetIn)
 			assetOut, _ := k.asset.GetAsset(ctx, lendPair.AssetOut)
