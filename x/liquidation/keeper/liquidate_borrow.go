@@ -86,7 +86,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) { // first condition
 				currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
 				if err != nil {
-					return fmt.Errorf("error in CalculateCollateralizationRatio for borrow pos ")
+					return err
 				}
 				if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 					// after checking the currentCollateralizationRatio with LiquidationThreshold if borrow is to be liquidated then
@@ -104,7 +104,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				}
 			} else {
 				if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-					currentCollateralizationRatio, _ = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+					currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+					if err != nil {
+						return err
+					}
 					if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
 						lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 						if err != nil {
@@ -118,7 +121,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						}
 					}
 				} else {
-					currentCollateralizationRatio, _ = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+					currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
+					if err != nil {
+						return err
+					}
 
 					if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
 						lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
