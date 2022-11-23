@@ -20,10 +20,10 @@ type CosMints struct {
 
 var (
 	cosValidatorAddress = "comdexvaloper1g9wqptyaxlkzaryt8dezq4eed566kkfpreuq9y"
-	cosConsensusAddress = "comdexvalcons1rm4pedkp9et340d0knat5a9mfam9h4knwlzmep"
+	cosConsensusAddress = "comdexvalcons1m0y62svpzk7ss6fmwjggueydrxhdy5a5yn0ysn"
 )
 
-func mintLostTokens(
+func MintLostTokens(
 	ctx sdk.Context,
 	bankKeeper bankkeeper.Keeper,
 	stakingKeeper stakingkeeper.Keeper,
