@@ -20,7 +20,7 @@ type CosMints struct {
 
 var (
 	cosValidatorAddress = "comdexvaloper1g9wqptyaxlkzaryt8dezq4eed566kkfpreuq9y"
-	cosConsensusAddress = "comdexvalcons19akcks3v9cneglacrtlhmj3s4atg24l6mfnzxy"
+	cosConsensusAddress = "comdexvalcons1mqn3mha86y27dxu92aa8v3ajdjhqmvxn980469"
 )
 
 func mintLostTokens(
