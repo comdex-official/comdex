@@ -160,7 +160,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 			BridgedAssetAmount: borrow.BridgedAssetAmount,
 		},
 	}
-	value := types.LockedVault{
+	lockedVault := types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
 		AppId:                        appID,
 		OriginalVaultId:              borrow.ID,
@@ -180,9 +180,7 @@ func (k Keeper) CreateLockedBorrow(ctx sdk.Context, borrow lendtypes.BorrowAsset
 		InterestAccumulated:          sdk.ZeroInt(),
 		Kind:                         kind,
 	}
-	k.SetLockedVault(ctx, value)
-	k.SetLockedVaultID(ctx, value.LockedVaultId)
-	return value, nil
+	return lockedVault, nil
 }
 
 func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVault) error {
@@ -312,6 +310,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, lockedVault types.LockedVau
 			updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
 			updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
 			k.SetLockedVault(ctx, updatedLockedVault)
+			k.SetLockedVaultID(ctx, updatedLockedVault.LockedVaultId)
 		}
 		// now the auction will be started from the auction module for the lockedVault
 
