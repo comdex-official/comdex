@@ -49,19 +49,16 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				return fmt.Errorf("kill Switch is enabled in Liquidation, liquidate_borrow.go for ID %d", lendPos.AppID)
 			}
 			// calculating and updating the interest accumulated before checking for liquidations
-			err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+			borrowPos, err := k.lend.CalculateBorrowInterestForLiquidation(ctx, borrowPos.ID)
 			if err != nil {
 				return fmt.Errorf("error in calculating Borrow Interest before liquidation")
 			}
-			borrowPos, _ = k.lend.GetBorrow(ctx, newBorrowIDs[l])
 			if !borrowPos.StableBorrowRate.Equal(sdk.ZeroDec()) {
 				borrowPos, err = k.lend.ReBalanceStableRates(ctx, borrowPos)
 				if err != nil {
 					return fmt.Errorf("error in re-balance stable rate check before liquidation")
 				}
 			}
-			/// make clone of calc borrow
-
 			pool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
 			assetIn, _ := k.asset.GetAsset(ctx, lendPair.AssetIn)
 			assetOut, _ := k.asset.GetAsset(ctx, lendPair.AssetOut)

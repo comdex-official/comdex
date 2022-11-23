@@ -365,7 +365,7 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 		return types.ErrLendAccessUnauthorized
 	}
 	getAsset, _ := k.Asset.GetAsset(ctx, lendPos.AssetID)
-	
+
 	if deposit.Denom != getAsset.Denom {
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, deposit.Denom)
 	}
@@ -1551,6 +1551,25 @@ func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string,
 	borrowPos.LastInteractionTime = ctx.BlockTime()
 	k.SetBorrow(ctx, borrowPos)
 	return nil
+}
+
+func (k Keeper) CalculateBorrowInterestForLiquidation(ctx sdk.Context, borrowID uint64) (types.BorrowAsset, error) {
+	borrowPos, found := k.GetBorrow(ctx, borrowID)
+	if !found {
+		return borrowPos, types.ErrBorrowNotFound
+	}
+	indexGlobalCurrent, reserveGlobalIndex, err := k.IterateBorrow(ctx, borrowID)
+	if err != nil {
+		return borrowPos, err
+	}
+	borrowPos, found = k.GetBorrow(ctx, borrowID)
+	if !found {
+		return borrowPos, types.ErrBorrowNotFound
+	}
+	borrowPos.GlobalIndex = indexGlobalCurrent
+	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
+	borrowPos.LastInteractionTime = ctx.BlockTime()
+	return borrowPos, nil
 }
 
 func (k Keeper) MsgCalculateLendRewards(ctx sdk.Context, addr string, lendID uint64) error {
