@@ -21,13 +21,5 @@ var recordsJSONString = `[
   {
     "address": "comdex1ejkheua45564tk6wkytg3e6h57kq8eq6svj9zj",
     "amount": "5000000"
-  },
-  {
-    "address": "comdex10gh5u4qey4xxewyjwcq6jcp0h8vfqusw3y7nku",
-    "amount": "5000000"
-  },
-  {
-    "address": "comdex1t4f654txl5hdzghz932cesjz47j7088kka96m9",
-    "amount": "5000000"
   }
 ]`

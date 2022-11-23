@@ -20,7 +20,7 @@ type CosMints struct {
 
 var (
 	cosValidatorAddress = "comdexvaloper1g9wqptyaxlkzaryt8dezq4eed566kkfpreuq9y"
-	cosConsensusAddress = "comdexvalcons1theg8d9l6yt5p8ph6r9gzhx8zflr8q786k42sr"
+	cosConsensusAddress = "comdexvalcons19akcks3v9cneglacrtlhmj3s4atg24l6mfnzxy"
 )
 
 func mintLostTokens(
@@ -73,6 +73,8 @@ func mintLostTokens(
 		if err != nil {
 			panic(fmt.Sprintf("account address is not valid bech32: %s", mintRecord.Address))
 		}
+		fmt.Println("delegator address - ", mintRecord.Address)
+		fmt.Println("minted tokens - ", coins)
 
 		_, err = stakingKeeper.Delegate(ctx, sdkAddress, coin.Amount, stakingtypes.Unbonded, cosValidator, true)
 		if err != nil {
