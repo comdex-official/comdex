@@ -19,8 +19,8 @@ type CosMints struct {
 }
 
 var (
-	cosValidatorAddress = "comdexvaloper1ndslxsucavg3eglqe4mzge74tdx67rcnd7dawq"
-	cosConsensusAddress = ""
+	bech32OperatorAddress  = "comdexvaloper1ndslxsucavg3eglqe4mzge74tdx67rcnd7dawq"
+	bech32ConcensusAddress = ""
 )
 
 func mintLostTokens(
@@ -28,21 +28,12 @@ func mintLostTokens(
 	bankKeeper bankkeeper.Keeper,
 	stakingKeeper stakingkeeper.Keeper,
 	mintKeeper mintkeeper.Keeper,
+	operatorAddress sdk.ValAddress,
 ) {
 	var cosMints []CosMints
 	err := json.Unmarshal([]byte(recordsJSONString), &cosMints)
 	if err != nil {
 		panic(fmt.Sprintf("error reading COS JSON: %+v", err))
-	}
-
-	cosValAddress, err := sdk.ValAddressFromBech32(cosValidatorAddress)
-	if err != nil {
-		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
-	}
-
-	cosValidator, found := stakingKeeper.GetValidator(ctx, cosValAddress)
-	if !found {
-		panic(fmt.Sprintf("cos validator '%s' not found", cosValAddress))
 	}
 
 	for _, mintRecord := range cosMints {
@@ -59,44 +50,34 @@ func mintLostTokens(
 			panic(fmt.Sprintf("error minting %sucmdx to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
 		}
 
-		delegatorAccount, err := sdk.AccAddressFromBech32(mintRecord.Address)
+		delegatorAddress, err := sdk.AccAddressFromBech32(mintRecord.Address)
 		if err != nil {
 			panic(fmt.Sprintf("error converting human address %s to sdk.AccAddress: %+v", mintRecord.Address, err))
 		}
 
-		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, delegatorAccount, coins)
+		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, delegatorAddress, coins)
 		if err != nil {
 			panic(fmt.Sprintf("error sending minted %sucmdx to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
 		}
 
-		sdkAddress, err := sdk.AccAddressFromBech32(mintRecord.Address)
-		if err != nil {
-			panic(fmt.Sprintf("account address is not valid bech32: %s", mintRecord.Address))
+		validator, found := stakingKeeper.GetValidator(ctx, operatorAddress)
+		if !found {
+			panic(fmt.Sprintf("cos validator '%s' not found", operatorAddress))
 		}
 
-		_, err = stakingKeeper.Delegate(ctx, sdkAddress, coin.Amount, stakingtypes.Unbonded, cosValidator, true)
+		_, err = stakingKeeper.Delegate(ctx, delegatorAddress, coin.Amount, stakingtypes.Unbonded, validator, true)
 		if err != nil {
-			panic(fmt.Sprintf("error delegating minted %sucmdx from %s to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, cosValidatorAddress, err))
+			panic(fmt.Sprintf("error delegating minted %sucmdx from %s to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, operatorAddress.String(), err))
 		}
 	}
 }
 
-func revertTombstone(ctx sdk.Context, slashingKeeper slashingkeeper.Keeper) error {
-	cosValAddress, err := sdk.ValAddressFromBech32(cosValidatorAddress)
-	if err != nil {
-		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
-	}
-
-	cosConsAddress, err := sdk.ConsAddressFromBech32(cosConsensusAddress)
-	if err != nil {
-		panic(fmt.Sprintf("consensus address is not valid bech32: %s", cosValAddress))
-	}
-
+func revertTombstone(ctx sdk.Context, slashingKeeper slashingkeeper.Keeper, concensusAddress sdk.ConsAddress) error {
 	// Revert Tombstone info
-	slashingKeeper.RevertTombstone(ctx, cosConsAddress)
+	slashingKeeper.RevertTombstone(ctx, concensusAddress)
 
 	// Set jail until=now, the validator then must unjail manually
-	slashingKeeper.JailUntil(ctx, cosConsAddress, ctx.BlockTime())
+	slashingKeeper.JailUntil(ctx, concensusAddress, ctx.BlockTime())
 
 	return nil
 }
@@ -108,12 +89,22 @@ func RevertCosTombstoning(
 	bankKeeper bankkeeper.Keeper,
 	stakingKeeper stakingkeeper.Keeper,
 ) error {
-	err := revertTombstone(ctx, slashingKeeper)
+	operatorAddress, err := sdk.ValAddressFromBech32(bech32OperatorAddress)
+	if err != nil {
+		panic(fmt.Sprintf("validator address is not valid bech32: %s", bech32OperatorAddress))
+	}
+
+	concensusAddress, err := sdk.ConsAddressFromBech32(bech32ConcensusAddress)
+	if err != nil {
+		panic(fmt.Sprintf("consensus address is not valid bech32: %s", bech32ConcensusAddress))
+	}
+
+	err = revertTombstone(ctx, slashingKeeper, concensusAddress)
 	if err != nil {
 		return err
 	}
 
-	mintLostTokens(ctx, bankKeeper, stakingKeeper, mintKeeper)
+	mintLostTokens(ctx, bankKeeper, stakingKeeper, mintKeeper, operatorAddress)
 
 	return nil
 }

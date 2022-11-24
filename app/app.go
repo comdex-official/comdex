@@ -166,6 +166,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
+	mv510 "github.com/comdex-official/comdex/app/upgrades/mainnet/v510"
 )
 
 const (
@@ -1191,10 +1192,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	/*a.UpgradeKeeper.SetUpgradeHandler(
-		mv5.UpgradeName,
-		mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
-	)*/
+	a.UpgradeKeeper.SetUpgradeHandler(
+		mv510.UpgradeName,
+		mv510.CreateUpgradeHandler(a.mm, a.configurator, a.SlashingKeeper, a.MintKeeper, a.BankKeeper, a.StakingKeeper),
+	)
 
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1238,6 +1239,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				authz.ModuleName,
 			},
 		}
+	case upgradeInfo.Name == mv510.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 
 	return storeUpgrades
