@@ -19,8 +19,8 @@ type CosMints struct {
 }
 
 var (
-	cosValidatorAddress = "comdexvaloper1fqatruvkmqqsmdsfd9tr2u2xvene6we7j0hhn2"
-	cosConsensusAddress = "comdexvalcons1crfgdd44s9ctxdzmtwvwtt770jvnrhy22vd6q0"
+	cosValidatorAddress = "comdexvaloper1ecs9qaljfp375qk6cyldytq6yv4d6q2e6sg5cj"
+	cosConsensusAddress = "comdexvalcons15jefn5ysat285xw5xazf5nrlxns2tm3l0c765n"
 )
 
 func MintLostTokens(
@@ -40,12 +40,12 @@ func MintLostTokens(
 		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
 	}
 
-	cosValidator, found := stakingKeeper.GetValidator(ctx, cosValAddress)
-	if !found {
-		panic(fmt.Sprintf("cos validator '%s' not found", cosValAddress))
-	}
-
 	for _, mintRecord := range cosMints {
+		cosValidator, found := stakingKeeper.GetValidator(ctx, cosValAddress)
+		if !found {
+			panic(fmt.Sprintf("cos validator '%s' not found", cosValAddress))
+		}
+
 		coinAmount, mintOk := sdk.NewIntFromString(mintRecord.Amountucmdx)
 		if !mintOk {
 			panic(fmt.Sprintf("error parsing mint of %sucmdx to %s", mintRecord.Amountucmdx, mintRecord.Address))
@@ -83,25 +83,25 @@ func MintLostTokens(
 	}
 }
 
-func revertTombstone(ctx sdk.Context, slashingKeeper slashingkeeper.Keeper) error {
-	cosValAddress, err := sdk.ValAddressFromBech32(cosValidatorAddress)
-	if err != nil {
-		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
-	}
+// func revertTombstone(ctx sdk.Context, slashingKeeper slashingkeeper.Keeper) error {
+// 	cosValAddress, err := sdk.ValAddressFromBech32(cosValidatorAddress)
+// 	if err != nil {
+// 		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
+// 	}
 
-	cosConsAddress, err := sdk.ConsAddressFromBech32(cosConsensusAddress)
-	if err != nil {
-		panic(fmt.Sprintf("consensus address is not valid bech32: %s", cosValAddress))
-	}
+// 	cosConsAddress, err := sdk.ConsAddressFromBech32(cosConsensusAddress)
+// 	if err != nil {
+// 		panic(fmt.Sprintf("consensus address is not valid bech32: %s", cosValAddress))
+// 	}
 
-	// Revert Tombstone info
-	slashingKeeper.RevertTombstone(ctx, cosConsAddress)
+// 	// Revert Tombstone info
+// 	slashingKeeper.RevertTombstone(ctx, cosConsAddress)
 
-	// Set jail until=now, the validator then must unjail manually
-	slashingKeeper.JailUntil(ctx, cosConsAddress, ctx.BlockTime())
+// 	// Set jail until=now, the validator then must unjail manually
+// 	slashingKeeper.JailUntil(ctx, cosConsAddress, ctx.BlockTime())
 
-	return nil
-}
+// 	return nil
+// }
 
 func RevertCosTombstoning(
 	ctx sdk.Context,
@@ -115,7 +115,7 @@ func RevertCosTombstoning(
 	// 	return err
 	// }
 
-	MintLostTokens(ctx, bankKeeper, stakingKeeper, mintKeeper)
+	// MintLostTokens(ctx, bankKeeper, stakingKeeper, mintKeeper)
 
 	return nil
 }
