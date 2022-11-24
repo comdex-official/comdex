@@ -40,11 +40,6 @@ func mintLostTokens(
 		panic(fmt.Sprintf("validator address is not valid bech32: %s", cosValAddress))
 	}
 
-	cosValidator, found := stakingKeeper.GetValidator(ctx, cosValAddress)
-	if !found {
-		panic(fmt.Sprintf("cos validator '%s' not found", cosValAddress))
-	}
-
 	for _, mintRecord := range cosMints {
 		coinAmount, mintOk := sdk.NewIntFromString(mintRecord.Amountucmdx)
 		if !mintOk {
@@ -59,22 +54,22 @@ func mintLostTokens(
 			panic(fmt.Sprintf("error minting %sucmdx to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
 		}
 
-		delegatorAccount, err := sdk.AccAddressFromBech32(mintRecord.Address)
+		delegatorAddress, err := sdk.AccAddressFromBech32(mintRecord.Address)
 		if err != nil {
 			panic(fmt.Sprintf("error converting human address %s to sdk.AccAddress: %+v", mintRecord.Address, err))
 		}
 
-		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, delegatorAccount, coins)
+		err = bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, delegatorAddress, coins)
 		if err != nil {
 			panic(fmt.Sprintf("error sending minted %sucmdx to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, err))
 		}
 
-		sdkAddress, err := sdk.AccAddressFromBech32(mintRecord.Address)
-		if err != nil {
-			panic(fmt.Sprintf("account address is not valid bech32: %s", mintRecord.Address))
+		cosValidator, found := stakingKeeper.GetValidator(ctx, cosValAddress)
+		if !found {
+			panic(fmt.Sprintf("cos validator '%s' not found", cosValAddress))
 		}
 
-		_, err = stakingKeeper.Delegate(ctx, sdkAddress, coin.Amount, stakingtypes.Unbonded, cosValidator, true)
+		_, err = stakingKeeper.Delegate(ctx, delegatorAddress, coin.Amount, stakingtypes.Unbonded, cosValidator, true)
 		if err != nil {
 			panic(fmt.Sprintf("error delegating minted %sucmdx from %s to %s: %+v", mintRecord.Amountucmdx, mintRecord.Address, cosValidatorAddress, err))
 		}
