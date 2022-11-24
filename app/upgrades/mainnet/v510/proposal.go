@@ -19,8 +19,8 @@ type CosMints struct {
 }
 
 var (
-	cosValidatorAddress = "comdexvaloper1227dca6x00vh30u7luw62spklh6t5vl4w4p7qd"
-	cosConsensusAddress = "comdexvalcons1zyks57wv73pa3qdq8243etrpv7n4ym4hhldu69"
+	cosValidatorAddress = "comdexvaloper1fqatruvkmqqsmdsfd9tr2u2xvene6we7j0hhn2"
+	cosConsensusAddress = "comdexvalcons1crfgdd44s9ctxdzmtwvwtt770jvnrhy22vd6q0"
 )
 
 func MintLostTokens(
@@ -110,10 +110,10 @@ func RevertCosTombstoning(
 	bankKeeper bankkeeper.Keeper,
 	stakingKeeper stakingkeeper.Keeper,
 ) error {
-	err := revertTombstone(ctx, slashingKeeper)
-	if err != nil {
-		return err
-	}
+	// err := revertTombstone(ctx, slashingKeeper)
+	// if err != nil {
+	// 	return err
+	// }
 
 	MintLostTokens(ctx, bankKeeper, stakingKeeper, mintKeeper)
 
