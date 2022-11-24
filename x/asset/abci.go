@@ -7,7 +7,6 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	mv510 "github.com/comdex-official/comdex/app/upgrades/mainnet/v510"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 )
 
@@ -18,7 +17,7 @@ func BeginBlocker(ctx sdk.Context,
 	staking stakingkeeper.Keeper,
 	mint mintkeeper.Keeper,
 ) {
-	if ctx.BlockHeight() == 100 {
-		mv510.MintLostTokens(ctx, bank, staking, mint)
-	}
+	// if ctx.BlockHeight() == 100 {
+	// 	mv510.MintLostTokens(ctx, bank, staking, mint)
+	// }
 }
