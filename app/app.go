@@ -833,7 +833,7 @@ func New(
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		asset.NewAppModule(app.cdc, app.AssetKeeper, app.BankKeeper, app.StakingKeeper, app.MintKeeper),
+		asset.NewAppModule(app.cdc, app.AssetKeeper),
 		vault.NewAppModule(app.cdc, app.VaultKeeper),
 		oracleModule,
 		bandoracleModule,

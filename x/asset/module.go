@@ -19,10 +19,6 @@ import (
 	"github.com/comdex-official/comdex/x/asset/client/cli"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/asset/types"
-
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
 var (
@@ -33,17 +29,10 @@ var (
 
 type AppModuleBasic struct{ cdc codec.BinaryCodec }
 
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,
-	bank bankkeeper.Keeper,
-	staking stakingkeeper.Keeper,
-	mint mintkeeper.Keeper,
-) AppModule {
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
-		bankKeeper:     bank,
-		stakingKeeper:  staking,
-		mintKeeper:     mint,
 	}
 }
 
@@ -92,11 +81,8 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	_             codec.JSONCodec
-	keeper        keeper.Keeper
-	bankKeeper    bankkeeper.Keeper
-	stakingKeeper stakingkeeper.Keeper
-	mintKeeper    mintkeeper.Keeper
+	_      codec.JSONCodec
+	keeper keeper.Keeper
 }
 
 func (a AppModule) ConsensusVersion() uint64 {
@@ -132,7 +118,7 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 }
 
 func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {
-	BeginBlocker(ctx, req, a.keeper, a.bankKeeper, a.stakingKeeper, a.mintKeeper)
+	BeginBlocker(ctx, req, a.keeper)
 }
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
