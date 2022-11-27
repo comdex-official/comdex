@@ -256,7 +256,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 
 			bonusToBidderAmount := (selloffAmount.Mul(assetRatesStats.LiquidationBonus)).Quo(aip)
 			penaltyToReserveAmount := (selloffAmount.Mul(assetRatesStats.LiquidationPenalty)).Quo(aip)
-			err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.NewInt(bonusToBidderAmount.TruncateInt64()))))
+			sellOffAmt := selloffAmount.Quo(aip)
+			err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.NewInt(bonusToBidderAmount.Add(sellOffAmt).TruncateInt64()))))
 			if err != nil {
 				return err
 			}
@@ -266,7 +267,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			}
 			cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 			// totalDeduction is the sum of liquidationDeductionAmount and selloffAmount
-			sellOffAmt := selloffAmount.Quo(aip)
 			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(sellOffAmt.TruncateInt()) // Total deduction from amountIn also reduce to lend Position amountIn
 			borrowPos, _ := k.lend.GetBorrow(ctx, updatedLockedVault.OriginalVaultId)
 			borrowPos.IsLiquidated = true
@@ -291,7 +291,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			}
 
 			// users cToken present in pool's module will be burnt
-			// TODO: Burn all cTokens here
 			// update borrow position
 			// update lend position
 			err = k.bank.BurnCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, totalDeduction)))
