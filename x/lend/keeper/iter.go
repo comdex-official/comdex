@@ -9,7 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-// To calculate pending rewards from last interaction
+// IterateLends To calculate pending rewards from last interaction
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	// to calculate lend rewards on the amount lent
 	// check if the interest accumulated is sufficient for that assetID and poolID
