@@ -186,11 +186,11 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	// dust is in usd * 10*-6 (uusd)
 	dust := sdk.NewIntFromUint64(ExtendedPairVault.MinUsdValueLeft)
 	// here subtracting current amount and slice to get amount left in auction and also converting it to usd * 10**-12
-	outLeft, err := k.CalcDollarValueForToken(ctx, auction.AssetOutId, outFlowTokenCurrentPrice, auction.OutflowTokenCurrentAmount.Amount)
+	outLeft, err := k.CalcDollarValueForToken(ctx, auction.AssetInId, outFlowTokenCurrentPrice, auction.OutflowTokenCurrentAmount.Amount)
 	if err != nil {
 		return err
 	}
-	outLeftDebt, err := k.CalcDollarValueForToken(ctx, auction.AssetInId, inFlowTokenCurrentPrice, tab)
+	outLeftDebt, err := k.CalcDollarValueForToken(ctx, auction.AssetOutId, inFlowTokenCurrentPrice, tab)
 	if err != nil {
 		return err
 	}
@@ -468,9 +468,8 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 					return auctiontypes.ErrorPrices
 				}
 				OutFlowTokenCurrentPrice := twaData.Twa
-				timeNow := ctx.BlockTime()
-				dutchAuction.StartTime = timeNow
-				dutchAuction.EndTime = timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+				dutchAuction.StartTime = ctx.BlockTime()
+				dutchAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 				outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(OutFlowTokenCurrentPrice), auctionParams.Buffer)
 				outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 				dutchAuction.OutflowTokenInitialPrice = outFlowTokenInitialPrice
@@ -481,7 +480,6 @@ func (k Keeper) RestartDutchLendAuctions(ctx sdk.Context, appID uint64) error {
 					return err
 				}
 				// SET initial price fetched from market module and also end price , start time , end time
-				// outFlowTokenCurrentPrice := sdk.NewIntFromUint64(10)
 			}
 			return nil
 		})
