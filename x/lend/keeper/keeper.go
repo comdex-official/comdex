@@ -1449,11 +1449,12 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	AssetInPool, _ := k.GetPool(ctx, lendPos.PoolID)
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
 	assetInRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
-	borrowPos.IsLiquidated = false
 
 	amoutOutDiff := borrowPos.AmountOut.Amount.Sub(liqBorrow.AmountOut)
 	borrowPos.AmountOut.Amount = liqBorrow.AmountOut
 	borrowPos.AmountIn.Amount = liqBorrow.AmountIn
+	borrowPos.LastInteractionTime = ctx.BlockTime()
+	borrowPos.IsLiquidated = false
 
 	var firstTransitAssetID, secondTransitAssetID uint64
 	for _, data := range AssetInPool.AssetData {
@@ -1467,49 +1468,47 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	// Adjusting bridged asset qty after auctions
 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-		priceAssetIn, _ := k.Market.GetTwa(ctx, pair.AssetIn)
-		adjustedBridgedAssetAmt := borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
-		amtIn := adjustedBridgedAssetAmt.TruncateInt().Mul(sdk.NewIntFromUint64(priceAssetIn.Twa))
-		priceFirstBridgedAsset, _ := k.Market.GetTwa(ctx, firstTransitAssetID)
-		priceSecondBridgedAsset, _ := k.Market.GetTwa(ctx, secondTransitAssetID)
+		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv).TruncateInt())
+		priceFirstBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, firstTransitAssetID, sdk.OneInt())
+		priceSecondBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, secondTransitAssetID, sdk.OneInt())
 		firstBridgedAsset, _ := k.Asset.GetAsset(ctx, firstTransitAssetID)
 
 		if kind.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
-			firstBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceFirstBridgedAsset.Twa))
-			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty)
+			firstBridgedAssetQty := amtIn.Quo(priceFirstBridgedAsset)
+			diff := borrowPos.BridgedAssetAmount.Amount.Sub(firstBridgedAssetQty.TruncateInt())
 			if diff.GT(sdk.ZeroInt()) {
 				err := k.bank.SendCoinsFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
 				if err != nil {
 					return
 				}
-				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+				borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty.TruncateInt()
 			} else {
-				newDiff := firstBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+				newDiff := firstBridgedAssetQty.TruncateInt().Sub(borrowPos.BridgedAssetAmount.Amount)
 				if newDiff.GT(sdk.ZeroInt()) {
 					err := k.bank.SendCoinsFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
 					if err != nil {
 						return
 					}
-					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty
+					borrowPos.BridgedAssetAmount.Amount = firstBridgedAssetQty.TruncateInt()
 				}
 			}
 		} else {
-			secondBridgedAssetQty := amtIn.Quo(sdk.NewIntFromUint64(priceSecondBridgedAsset.Twa))
-			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty)
+			secondBridgedAssetQty := amtIn.Quo(priceSecondBridgedAsset)
+			diff := borrowPos.BridgedAssetAmount.Amount.Sub(secondBridgedAssetQty.TruncateInt())
 			if diff.GT(sdk.ZeroInt()) {
 				err := k.bank.SendCoinsFromModuleToModule(ctx, AssetOutPool.ModuleName, AssetInPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, diff)))
 				if err != nil {
 					return
 				}
-				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+				borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty.TruncateInt()
 			} else {
-				newDiff := secondBridgedAssetQty.Sub(borrowPos.BridgedAssetAmount.Amount)
+				newDiff := secondBridgedAssetQty.TruncateInt().Sub(borrowPos.BridgedAssetAmount.Amount)
 				if newDiff.GT(sdk.ZeroInt()) {
 					err := k.bank.SendCoinsFromModuleToModule(ctx, AssetInPool.ModuleName, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(borrowPos.BridgedAssetAmount.Denom, newDiff)))
 					if err != nil {
 						return
 					}
-					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty
+					borrowPos.BridgedAssetAmount.Amount = secondBridgedAssetQty.TruncateInt()
 				}
 			}
 		}

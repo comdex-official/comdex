@@ -77,27 +77,25 @@ func (k Keeper) StartLendDutchAuction(
 	if !found || !twaData.IsPriceActive {
 		return auctiontypes.ErrorPrices
 	}
-	outFlowTokenPrice := twaData.Twa
-	// These prices are in uusd
-	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(outFlowTokenPrice), auctionParams.Buffer)
+
+	outFlowTokenInitialPrice := k.getOutflowTokenInitialPrice(sdk.NewIntFromUint64(twaData.Twa), auctionParams.Buffer)
 	outFlowTokenEndPrice := k.getOutflowTokenEndPrice(outFlowTokenInitialPrice, auctionParams.Cusp)
 	borrowOwner, err := sdk.AccAddressFromBech32(lockedVault.Owner)
 	if err != nil {
 		return err
 	}
-	timeNow := ctx.BlockTime()
-	inFlowTokenCurrentAmount := sdk.NewCoin(inFlowToken.Denom, sdk.NewIntFromUint64(0))
+
 	auction := auctiontypes.DutchAuction{
 		OutflowTokenInitAmount:    outFlowToken,
 		OutflowTokenCurrentAmount: outFlowToken,
 		InflowTokenTargetAmount:   inFlowToken,
-		InflowTokenCurrentAmount:  inFlowTokenCurrentAmount,
+		InflowTokenCurrentAmount:  sdk.NewCoin(inFlowToken.Denom, sdk.NewIntFromUint64(0)),
 		OutflowTokenInitialPrice:  outFlowTokenInitialPrice,
 		OutflowTokenCurrentPrice:  outFlowTokenInitialPrice,
 		OutflowTokenEndPrice:      outFlowTokenEndPrice,
 		InflowTokenCurrentPrice:   sdk.NewDecFromInt(sdk.NewIntFromUint64(inFlowTokenPrice)),
-		StartTime:                 timeNow,
-		EndTime:                   timeNow.Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+		StartTime:                 ctx.BlockTime(),
+		EndTime:                   ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		AuctionStatus:             auctiontypes.AuctionStartNoBids,
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
@@ -210,13 +208,11 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 	// Dust check for collateral
 	if amountLeftInPUSD.LT(sdk.NewDecFromInt(dust)) && !amountLeftInPUSD.Equal(sdk.ZeroDec()) && !TargetReachedFlag {
 		coll := auction.OutflowTokenCurrentAmount.Amount.Uint64()
-		dust := dust.Uint64()
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Either bid all the collateral amount %d (UTOKEN) or bid amount by leaving dust greater than %d USD", coll, dust)
 	}
 
 	// Dust check for debt
 	if amountLeftInPUSDforDebt.LT(sdk.NewDecFromInt(dust)) && !amountLeftInPUSDforDebt.Equal(sdk.ZeroDec()) && !amountLeftInPUSD.Equal(sdk.ZeroDec()) {
-		dust := dust.Uint64()
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Minimum amount left to be recovered should not be less than %d ", dust)
 	}
 
@@ -285,6 +281,10 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		pairID := lockedVault.ExtendedPairId
 		lendPair, _ := k.lend.GetLendPair(ctx, pairID)
 		inFlowTokenAssetID := lendPair.AssetOut
+		err = k.bank.SendCoinsFromModuleToModule(ctx, lendtypes.ModuleName, assetOutPool.ModuleName, sdk.NewCoins(requiredAmount))
+		if err != nil {
+			return err
+		}
 
 		err = k.lend.UpdateReserveBalances(ctx, inFlowTokenAssetID, lendtypes.ModuleName, requiredAmount, false)
 		if err != nil {
@@ -322,6 +322,11 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 			return err
 		}
 	} else {
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(totalAmountToBidder))
+		if err != nil {
+			return err
+		}
+
 		err = k.SetDutchLendAuction(ctx, auction)
 		if err != nil {
 			return err

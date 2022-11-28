@@ -223,7 +223,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			}
 
 			assetInTotal, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, updatedLockedVault.AmountIn)
-			assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, updatedLockedVault.AmountOut)
+			assetOutTotal, _ := k.market.CalcAssetPrice(ctx, assetOut.Id, updatedLockedVault.UpdatedAmountOut)
 
 			deductionPercentage, _ := sdk.NewDecFromStr("1.0")
 
@@ -247,9 +247,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			denominator := deductionPercentage.Sub(factor2)
 			selloffAmount := numerator.Quo(denominator) // Dollar Value
 
-			// using this check as we want to deduct the liquidation penalty and auction bonus from the borrower position only once
-
-			// TODO: revisit :
 			aip, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, sdk.OneInt())
 			liquidationDeductionAmt := selloffAmount.Mul(assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus))
 			liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip) // To be subtracted from AmountIn along with sellOff amt
