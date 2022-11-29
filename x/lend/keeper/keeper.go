@@ -1563,6 +1563,7 @@ func (k Keeper) CalculateBorrowInterestForLiquidation(ctx sdk.Context, borrowID 
 	}
 	return borrowPos, nil
 }
+
 func (k Keeper) IterateBorrowForLiq(ctx sdk.Context, borrow types.BorrowAsset) (types.BorrowAsset, error) {
 	pair, _ := k.GetLendPair(ctx, borrow.PairID)
 	reserveRates, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)

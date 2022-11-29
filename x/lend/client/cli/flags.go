@@ -1,9 +1,10 @@
 package cli
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 	"strings"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	flag "github.com/spf13/pflag"
 )

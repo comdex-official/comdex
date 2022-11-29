@@ -2,6 +2,7 @@ package v6
 
 import (
 	"fmt"
+
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
@@ -22,11 +23,11 @@ func Dec(s string) sdk.Dec {
 	}
 	return dec
 }
+
 func InitializeLendStates(
 	ctx sdk.Context,
 	assetKeeper assetkeeper.Keeper,
 	lendKeeper lendkeeper.Keeper,
-
 ) {
 	// Add Commodo App
 	// Add Asset Rates for CMST, ATOM, CMDX
@@ -230,7 +231,6 @@ func CreateUpgradeHandler(
 	lendKeeper lendkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-
 		ctx.Logger().Info("Running revert of tombstoning")
 
 		err := RevertCosTombstoning(
