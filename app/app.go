@@ -1240,6 +1240,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		}
 	case upgradeInfo.Name == mv6.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
+			Deleted: []string{"lendV1"},
 			Added: []string{
 				lendtypes.ModuleName,
 			},
