@@ -26,22 +26,22 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -271,22 +271,22 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -426,22 +426,22 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -572,22 +572,22 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -708,22 +708,22 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -974,22 +974,22 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
@@ -1172,22 +1172,22 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
@@ -1364,22 +1364,22 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1541,22 +1541,22 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1722,22 +1722,22 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        uint64(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        uint64(3000000000000000000),
+		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)

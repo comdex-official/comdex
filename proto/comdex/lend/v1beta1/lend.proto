@@ -60,6 +60,11 @@ message LendAsset {
     (gogoproto.customname) = "CPoolName",
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
+
+  string total_rewards= 12 [ 
+    (gogoproto.moretags) = "yaml:\"total_rewards\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false];
 }
 
 message BorrowAsset {
@@ -161,11 +166,13 @@ message Pool {
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
 
-  uint64 reserve_funds = 4 [
-    (gogoproto.moretags) = "yaml:\"reserve_funds\""
-  ];
+  // string reserve_funds = 4 [
+  //   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  //   (gogoproto.nullable) = false,
+  //   (gogoproto.moretags) = "yaml:\"reserve_funds\""
+  // ];
 
-  repeated AssetDataPoolMapping asset_data = 5 [
+  repeated AssetDataPoolMapping asset_data = 4 [
     (gogoproto.customname) = "AssetData",
     (gogoproto.moretags) = "yaml:\"asset_data\""
   ];
@@ -189,8 +196,9 @@ message AssetDataPoolMapping{
   uint64 asset_transit_type = 2 [
     (gogoproto.moretags) = "yaml:\"asset_transit_type\""
   ];
-  uint64 supply_cap = 3 [
-    (gogoproto.customname) = "SupplyCap",
+  string supply_cap = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"supply_cap\""
   ];
 }

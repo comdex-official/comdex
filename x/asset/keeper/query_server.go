@@ -373,3 +373,35 @@ func (q QueryServer) QueryAllExtendedPairStableVaultsByApp(c context.Context, re
 		Pagination:   pagination,
 	}, nil
 }
+
+func (q QueryServer) QueryExtendedPairVaultsByAppWithoutStable(c context.Context, req *types.QueryExtendedPairVaultsByAppWithoutStableRequest) (*types.QueryExtendedPairVaultsByAppWithoutStableResponse, error) {
+	var (
+		items []types.ExtendedPairVault
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), types.PairsVaultKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.ExtendedPairVault
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate && (item.AppId == req.AppId) && !(item.IsStableMintVault) {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryExtendedPairVaultsByAppWithoutStableResponse{
+		ExtendedPair: items,
+		Pagination:   pagination,
+	}, nil
+}

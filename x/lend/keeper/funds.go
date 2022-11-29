@@ -6,10 +6,6 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-func (k Keeper) GetReserveFunds(_ sdk.Context, pool types.Pool) sdk.Int {
-	return sdk.NewInt(int64(pool.ReserveFunds))
-}
-
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
 	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
 	reserve, found := k.GetReserveBuybackAssetData(ctx, assetID)

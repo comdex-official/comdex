@@ -23,6 +23,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 	cmd.AddCommand(CmdFetchPriceResult())
 	cmd.AddCommand(CmdLastFetchPriceID())
+	cmd.AddCommand(CmdFetchPriceData())
+	cmd.AddCommand(CmdDiscardData())
 
 	return cmd
 }

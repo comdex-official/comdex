@@ -5,8 +5,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
-var _ sdk.Msg = (*MsgLiquidateBorrowRequest)(nil)
+var (
+	_ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
+	_ sdk.Msg = (*MsgLiquidateBorrowRequest)(nil)
+)
 
 func NewMsgLiquidateRequest(
 	from sdk.AccAddress,

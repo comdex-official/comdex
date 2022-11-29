@@ -364,7 +364,7 @@ def CreateState():
             exit("Invalid pairs configs")
         AddPair(pair[0], pair[1])
         Vote("yes")
-    
+
     AddAssetInAppsAndVote(1, 9)
     contractAddresses = StoreAndIntantiateWasmContract()
     for wasmProp in WASM_PROPOSALS:

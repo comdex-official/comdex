@@ -106,11 +106,6 @@ func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address string, pairI
 }
 
 func (k Keeper) GetBorrows(ctx sdk.Context) (borrowIds []uint64, found bool) {
-	// assetStats := k.GetAllAssetStatsByPoolIDAndAssetID(ctx)
-	// for _, data := range assetStats {
-	// 	borrowIds = append(borrowIds, data.BorrowIds...)
-	// }
-	// return borrowIds, true
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
