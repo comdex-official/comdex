@@ -27,6 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		queryAllExtendedPairStableVaultsIDByApp(),
 		queryGovTokenByApp(),
 		queryAllExtendedPairStableVaultsByApp(),
+		queryExtendedPairStableVaultsByAppWithoutStable(),
 	)
 
 	return cmd

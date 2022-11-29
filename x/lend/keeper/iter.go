@@ -9,7 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-// To calculate pending rewards from last interaction
+// IterateLends To calculate pending rewards from last interaction
 func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	// to calculate lend rewards on the amount lent
 	// check if the interest accumulated is sufficient for that assetID and poolID
@@ -38,12 +38,13 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	// checking if the rewards accumulated is greater than equal to 1
 	if lendRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
 		newInterestPerInteraction = lendRewardsTracker.RewardsAccumulated.TruncateInt()
-		newRewardDec := sdk.NewDec(newInterestPerInteraction.Int64())
+		newRewardDec := sdk.NewDecFromInt(newInterestPerInteraction)
 		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec) // not losing decimal precision
 	}
 	k.SetLendRewardTracker(ctx, lendRewardsTracker) // setting the remaining decimal part
 
 	// checking if sufficient cTokens are there to give out as rewards to user
+	// TODO revisit
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
 	if newInterestPerInteraction.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
 		return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
@@ -65,8 +66,10 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		if err != nil {
 			return sdk.Dec{}, err
 		}
+		lend.TotalRewards = lend.TotalRewards.Add(cToken.Amount)
 		// subtracting newInterestPerInteraction from global lend and interest accumulated
 		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
+		poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 		k.SetLend(ctx, lend)
 	}

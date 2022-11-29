@@ -53,16 +53,4 @@ type LiquidationKeeper interface {
 	GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault)
 }
 
-type AuctionKeeper interface {
-	LendDutchActivator(ctx sdk.Context, lockedVault types.LockedVault) error
-	StartLendDutchAuction(
-		ctx sdk.Context,
-		outFlowToken sdk.Coin,
-		inFlowToken sdk.Coin,
-		appID uint64,
-		assetInID, assetOutID uint64,
-		lockedVaultID uint64,
-		lockedVaultOwner string,
-		liquidationPenalty sdk.Dec,
-	) error
-}
+type AuctionKeeper interface{}

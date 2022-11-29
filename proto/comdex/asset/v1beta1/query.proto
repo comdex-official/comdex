@@ -159,6 +159,21 @@ message QueryAllExtendedPairStableVaultsByAppResponse {
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
+message QueryExtendedPairVaultsByAppWithoutStableRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExtendedPairVaultsByAppWithoutStableResponse {
+  repeated ExtendedPairVault extended_pair = 1 [
+    (gogoproto.moretags) = "yaml:\"extended_pair\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/assets";
@@ -195,6 +210,9 @@ service Query {
   }
   rpc QueryAllExtendedPairStableVaultsByApp(QueryAllExtendedPairStableVaultsByAppRequest) returns (QueryAllExtendedPairStableVaultsByAppResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_data/{app_id}";
+  }
+  rpc QueryExtendedPairVaultsByAppWithoutStable(QueryExtendedPairVaultsByAppWithoutStableRequest) returns (QueryExtendedPairVaultsByAppWithoutStableResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/extended_pair_stable_vault_data_without_stable/{app_id}";
   }
 
 }

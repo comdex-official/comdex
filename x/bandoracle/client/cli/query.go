@@ -67,6 +67,58 @@ func CmdLastFetchPriceID() *cobra.Command {
 	return cmd
 }
 
+// CmdFetchPriceData queries.
+func CmdFetchPriceData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fetch_price_data",
+		Short: "Query the FetchPriceData",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			r, err := queryClient.FetchPriceData(context.Background(), &types.QueryFetchPriceDataRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(r)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdDiscardData queries.
+func CmdDiscardData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "discard_data",
+		Short: "Query the DiscardData",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			r, err := queryClient.DiscardData(context.Background(), &types.QueryDiscardDataRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(r)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",

@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/bandoracle/v1beta1/fetch_price.proto";
 import "comdex/bandoracle/v1beta1/params.proto";
+import "comdex/bandoracle/v1beta1/tx.proto";
 
 
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
@@ -20,6 +21,14 @@ service Query {
 
   rpc LastFetchPriceID(QueryLastFetchPriceIdRequest) returns (QueryLastFetchPriceIdResponse) {
     option (google.api.http).get = "/comdex/bandoracle/v1beta1/last_fetch_price_id";
+  }
+
+  rpc FetchPriceData(QueryFetchPriceDataRequest) returns (QueryFetchPriceDataResponse) {
+    option (google.api.http).get = "/comdex/bandoracle/v1beta1/fetch_price_data";
+  }
+
+  rpc DiscardData(QueryDiscardDataRequest) returns (QueryDiscardDataResponse) {
+    option (google.api.http).get = "/comdex/bandoracle/v1beta1/discard_data";
   }
 }
 
@@ -42,3 +51,20 @@ message QueryLastFetchPriceIdRequest {}
 
 message QueryLastFetchPriceIdResponse {int64 request_id = 1;}
 
+message QueryFetchPriceDataRequest {}
+
+message QueryFetchPriceDataResponse {
+  MsgFetchPriceData msgFetchPriceData = 1 [
+    (gogoproto.moretags) = "yaml:\"msgFetchPriceData\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryDiscardDataRequest {}
+
+message QueryDiscardDataResponse {
+  DiscardData discardData = 1 [
+    (gogoproto.moretags) = "yaml:\"discardData\"",
+    (gogoproto.nullable) = false
+  ];
+}

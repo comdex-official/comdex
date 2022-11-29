@@ -105,11 +105,10 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	}
 
 	// calculating and updating the interest accumulated before checking for liquidations
-	err := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+	borrowPos, err := k.lend.CalculateBorrowInterestForLiquidation(ctx, borrowPos.ID)
 	if err != nil {
 		return nil, err
 	}
-	borrowPos, _ = k.lend.GetBorrow(ctx, msg.BorrowId)
 	if !borrowPos.StableBorrowRate.Equal(sdk.ZeroDec()) {
 		borrowPos, err = k.lend.ReBalanceStableRates(ctx, borrowPos)
 		if err != nil {
@@ -121,11 +120,7 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	if killSwitchParams.BreakerEnable {
 		return nil, fmt.Errorf("kill Switch is enabled in Liquidation for ID %d", lendPos.AppID)
 	}
-	// calculating and updating the interest accumulated before checking for liquidations
-	err1 := k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
-	if err1 != nil {
-		return nil, err1
-	}
+
 	pool, _ := k.lend.GetPool(ctx, lendPos.PoolID)
 	assetIn, _ := k.asset.GetAsset(ctx, lendPair.AssetIn)
 	assetOut, _ := k.asset.GetAsset(ctx, lendPair.AssetOut)

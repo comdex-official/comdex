@@ -45,11 +45,10 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 
 	poolID := k.GetPoolID(ctx)
 	newPool := types.Pool{
-		PoolID:       poolID + 1,
-		ModuleName:   pool.ModuleName,
-		CPoolName:    pool.CPoolName,
-		ReserveFunds: pool.ReserveFunds,
-		AssetData:    pool.AssetData,
+		PoolID:     poolID + 1,
+		ModuleName: pool.ModuleName,
+		CPoolName:  pool.CPoolName,
+		AssetData:  pool.AssetData,
 	}
 	for _, v := range pool.AssetData {
 		var assetStats types.PoolAssetLBMapping

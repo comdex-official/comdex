@@ -166,6 +166,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
+	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
 )
 
 const (
@@ -998,6 +999,15 @@ func New(
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
+		)
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
+
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
@@ -1191,11 +1201,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
-	/*a.UpgradeKeeper.SetUpgradeHandler(
-		mv5.UpgradeName,
-		mv5.CreateUpgradeHandler(a.mm, a.configurator, a.WasmKeeper, a.AssetKeeper, a.LiquidityKeeper, a.CollectorKeeper, a.AuctionKeeper, a.LockerKeeper, a.Rewardskeeper, a.LiquidationKeeper),
-	)*/
-
+	a.UpgradeKeeper.SetUpgradeHandler(
+		mv6.UpgradeName,
+		mv6.CreateUpgradeHandler(a.mm, a.configurator, a.SlashingKeeper, a.MintKeeper, a.BankKeeper, a.StakingKeeper, a.AssetKeeper, a.LendKeeper),
+	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
 	// This will read that value, and execute the preparations for the upgrade.
@@ -1236,6 +1245,13 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				icacontrollertypes.StoreKey,
 				icahosttypes.StoreKey,
 				authz.ModuleName,
+			},
+		}
+	case upgradeInfo.Name == mv6.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Deleted: []string{"lendV1"},
+			Added: []string{
+				lendtypes.ModuleName,
 			},
 		}
 	}

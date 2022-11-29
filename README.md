@@ -28,7 +28,7 @@ If you have technical questions or concerns, ask a developer or community member
 
 ### Installation
 
-Requires [Go 1.18+](https://golang.org/dl/)
+Requires [Go 1.19+](https://golang.org/dl/)
 
 ### Linux
 
@@ -39,16 +39,6 @@ git clone https://github.com/comdex-official/comdex.git && \
 cd ${GOPATH}/src/github.com/comdex-official/comdex/ && \
 make install
 ```
-
-## Testnet
-
-To verify latest testnet and main net version check
-[Version](https://github.com/comdex-official/networks/blob/main/README.md)
-
-For further information on joining the testnet, head over to the
-[Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
-
-The explorer for this chain is hosted [Meteor - TestNet Explorer](https://meteor-explorer.comdex.one)
 
 ## Main Net
 For further information on joining the mainnet, head over to the
@@ -63,6 +53,17 @@ The explorer for this chain is hosted
 * [Look.Chill](https://look.chillvalidation.com/comdex)
 * [Atomscan](https://atomscan.com/comdex)
 * [ZenChainLabs](https://comdex.zenscan.io/)
+* [BigDipper](https://comdex.bigdipper.live/)
+
+## Testnet
+
+To verify latest testnet and main net version check
+[Version](https://github.com/comdex-official/networks/blob/main/README.md)
+
+For further information on joining the testnet, head over to the
+[Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
+
+The explorer for this chain is hosted [Meteor - TestNet Explorer](https://meteor-explorer.comdex.one)
 
 ## want to contribute to comdex, please go through the contribution guides
 * [Contribution guides](https://github.com/comdex-official/contribution-docs)
