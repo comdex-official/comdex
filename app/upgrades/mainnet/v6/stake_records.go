@@ -1,6 +1,11 @@
 package v6
 
-// jq '.delegation_responses | map({address:.delegation.delegator_address,amount:((.balance.amount | tonumber)*0.05*((0.42/365)*13+1) | floor) | tostring})' DAN.JSON > to_mint.json
+// amount is calculated as follows eg.
+// staked_amount = 4800000, days_missed = 20, staking_apr = 36%
+
+// slashed_amount =  int(staked_amount*0.05)   i.e (240000)
+// lost_apr = int(staked_amount*((staking_apr/100)/365)*days_missed)  i.e (94684)
+// amount = slashed_amount+lost_apr   i.e (240000+94684 = 334684)
 
 // Slash was 5%
 // Lost APR is 36% for 20 days
