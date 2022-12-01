@@ -5,7 +5,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
+var (
+	_ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
+	_ sdk.Msg = (*MsgLiquidateBorrowRequest)(nil)
+)
 
 func NewMsgLiquidateRequest(
 	from sdk.AccAddress,
@@ -42,6 +45,45 @@ func (m *MsgLiquidateVaultRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgLiquidateVaultRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgLiquidateBorrowRequest(
+	from sdk.AccAddress,
+	borrowID uint64,
+) *MsgLiquidateBorrowRequest {
+	return &MsgLiquidateBorrowRequest{
+		From:     from.String(),
+		BorrowId: borrowID,
+	}
+}
+
+func (m *MsgLiquidateBorrowRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgLiquidateBorrowRequest) Type() string {
+	return TypeMsgLiquidateBorrowRequest
+}
+
+func (m *MsgLiquidateBorrowRequest) ValidateBasic() error {
+	if m.BorrowId == 0 {
+		return errors.Wrap(ErrVaultIDInvalid, "borrow_id cannot be zero")
+	}
+
+	return nil
+}
+
+func (m *MsgLiquidateBorrowRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgLiquidateBorrowRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

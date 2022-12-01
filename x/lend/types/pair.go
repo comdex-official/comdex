@@ -27,9 +27,6 @@ func (m *Pool) Validate() error {
 	if len(m.CPoolName) >= 16 {
 		return ErrInvalidLengthCPoolName
 	}
-	if m.ReserveFunds == 0 {
-		return fmt.Errorf("ReserveFunds cannot be zero")
-	}
 	if m.AssetData == nil {
 		return fmt.Errorf("AssetData cannot be nil")
 	}

@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -26,6 +28,21 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 		parsedInt = append(parsedInt, parsed)
 	}
 	return parsedInt, nil
+}
+
+func ParseDecSliceFromString(s string, separator string) ([]sdk.Dec, error) {
+	var newParsedDec []sdk.Dec
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsed, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return []sdk.Dec{}, err
+		}
+		parsedDec := sdk.NewDec(parsed)
+		newParsedDec = append(newParsedDec, parsedDec)
+	}
+	return newParsedDec, nil
 }
 
 func ParseBoolFromString(s uint64) bool {
@@ -82,7 +99,6 @@ type addLendPoolInputs struct {
 	AssetTransitType string `json:"asset_transit_type"`
 	SupplyCap        string `json:"supply_cap"`
 	CPoolName        string `json:"c_pool_name"`
-	ReserveFunds     string `json:"reserve_funds"`
 	Title            string
 	Description      string
 	Deposit          string

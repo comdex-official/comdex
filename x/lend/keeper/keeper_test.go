@@ -88,7 +88,7 @@ func newDec(i string) sdk.Dec {
 //	store.Set(key, value)
 //}
 
-func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) uint64 {
+func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,

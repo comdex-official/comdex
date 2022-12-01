@@ -469,3 +469,46 @@ func queryAllExtendedPairStableVaultsByApp() *cobra.Command {
 
 	return cmd
 }
+
+func queryExtendedPairStableVaultsByAppWithoutStable() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "extended_pair_stable_vault_data_without_stable [app_id]",
+		Short: "Query all extended pairs data without stable vault in an app",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExtendedPairVaultsByAppWithoutStable(
+				context.Background(),
+				&types.QueryExtendedPairVaultsByAppWithoutStableRequest{
+					AppId:      appID,
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "extended_pair_stable_vault_data_without_stable")
+
+	return cmd
+}

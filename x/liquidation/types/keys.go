@@ -15,6 +15,7 @@ const (
 
 var (
 	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeMsgLiquidateBorrowRequest    = ModuleName + ":liquidateBorrow"
 	LockedVaultIDKey                 = []byte{0x01}
 	LockedVaultKeyPrefix             = []byte{0x11}
 	LockedVaultKeyHistory            = []byte{0x12}

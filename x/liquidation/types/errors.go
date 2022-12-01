@@ -8,6 +8,8 @@ import (
 
 var (
 	LockedVaultDoesNotExist                         = sdkerrors.Register(ModuleName, 201, "locked vault does not exist with given id")
+	BorrowDoesNotExist                              = sdkerrors.Register(ModuleName, 202, "borrow position does not exist with given id")
+	BorrowPosAlreadyLiquidated                      = sdkerrors.Register(ModuleName, 203, "borrow position already liquidated")
 	ErrAppIDExists                                  = sdkerrors.Register(ModuleName, 1101, "App Id exists")
 	ErrAppIDDoesNotExists                           = sdkerrors.Register(ModuleName, 1102, "App Id does not exist")
 	ErrorPriceDoesNotExist                          = sdkerrors.Register(ModuleName, 1103, "Price does not exist")
