@@ -16,8 +16,8 @@ import (
 func GetQueryCmd() *cobra.Command {
 	// Group collector queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        "collector",
+		Short:                      fmt.Sprintf("Querying commands for the %s module", "collector"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,

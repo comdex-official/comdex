@@ -18,8 +18,8 @@ import (
 func GetQueryCmd() *cobra.Command {
 	// Group lend queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        "lend",
+		Short:                      fmt.Sprintf("Querying commands for the %s module", "lend"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
