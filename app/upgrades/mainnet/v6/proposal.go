@@ -20,7 +20,7 @@ type CosMints struct {
 
 var (
 	bech32OperatorAddress  = "comdexvaloper1ndslxsucavg3eglqe4mzge74tdx67rcnd7dawq"
-	bech32ConcensusAddress = ""
+	bech32ConcensusAddress = "comdexvalcons1uyn6l9vhh2yqaey9m2yuldj8vdhc2xl95g663q"
 )
 
 func mintLostTokens(
