@@ -1,8 +1,6 @@
 package v6
 
 import (
-	"fmt"
-
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
@@ -106,17 +104,17 @@ func InitializeLendStates(
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          1,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          2,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdk.NewDec(1000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          3,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdk.NewDec(5000000000000),
 	}
 
 	assetDataCMDXPool = append(assetDataCMDXPool, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -136,7 +134,7 @@ func InitializeLendStates(
 		AssetOut:        3,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, cmdxcmstPair)
 	if err != nil {
@@ -147,7 +145,7 @@ func InitializeLendStates(
 		AssetOut:        1,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, cmdxatomPair)
 	if err != nil {
@@ -158,7 +156,7 @@ func InitializeLendStates(
 		AssetOut:        2,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, atomcmdxPair)
 	if err != nil {
@@ -169,7 +167,7 @@ func InitializeLendStates(
 		AssetOut:        3,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, atomcmstPair)
 	if err != nil {
@@ -180,7 +178,7 @@ func InitializeLendStates(
 		AssetOut:        2,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, cmstcmdxPair)
 	if err != nil {
@@ -191,7 +189,7 @@ func InitializeLendStates(
 		AssetOut:        1,
 		IsInterPool:     false,
 		AssetOutPoolID:  1,
-		MinUsdValueLeft: 100000000000,
+		MinUsdValueLeft: 100000,
 	}
 	err = lendKeeper.AddLendPairsRecords(ctx, cmstatomPair)
 	if err != nil {
@@ -233,18 +231,18 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running revert of tombstoning")
 
-		err := RevertCosTombstoning(
-			ctx,
-			slashingkeeper,
-			mintkeeper,
-			bankkeeper,
-			stakingkeeper,
-		)
-		if err != nil {
-			panic(fmt.Sprintf("failed to revert tombstoning: %s", err))
-		}
+		//err := RevertCosTombstoning(
+		//	ctx,
+		//	slashingkeeper,
+		//	mintkeeper,
+		//	bankkeeper,
+		//	stakingkeeper,
+		//)
+		//if err != nil {
+		//	panic(fmt.Sprintf("failed to revert tombstoning: %s", err))
+		//}
 
-		ctx.Logger().Info("Running module migrations for v6.0.0...")
+		//ctx.Logger().Info("Running module migrations for v6.0.0...")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		InitializeLendStates(ctx, assetKeeper, lendKeeper)
 		return newVM, err

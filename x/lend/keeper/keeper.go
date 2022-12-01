@@ -906,7 +906,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 				return err
 			}
 			poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(cTokensAmount)
-			poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cTokensAmount)
+			//poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cTokensAmount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 		}
 
@@ -1270,7 +1270,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 			return err
 		}
 		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtToMint)
-		poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(amtToMint)
+		//poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(amtToMint)
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 	}
 
