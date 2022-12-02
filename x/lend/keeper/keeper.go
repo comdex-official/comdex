@@ -1549,6 +1549,14 @@ func (k Keeper) MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string,
 	borrowPos.ReserveGlobalIndex = reserveGlobalIndex
 	borrowPos.LastInteractionTime = ctx.BlockTime()
 	k.SetBorrow(ctx, borrowPos)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeBorrowInterest,
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(borrowID, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, borrowerAddr),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
 	return nil
 }
 
@@ -1612,6 +1620,14 @@ func (k Keeper) MsgCalculateLendRewards(ctx sdk.Context, addr string, lendID uin
 		return types.ErrLendAccessUnauthorized
 	}
 	k.SetLend(ctx, lendPos)
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeLendRewards,
+			sdk.NewAttribute(types.AttributeKeyLendID, strconv.FormatUint(lendID, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, addr),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
 	return nil
 }
 

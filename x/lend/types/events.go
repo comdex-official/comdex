@@ -12,6 +12,9 @@ const (
 	EventTypeDraw            = "draw"
 	EventTypeCloseBorrow     = "closeBorrow"
 	EventTypeBorrowAlternate = "borrowAlternate"
+	EventTypeFundModuleAccn  = "fundModuleAccn"
+	EventTypeBorrowInterest  = "borrowInterest"
+	EventTypeLendRewards     = "lendRewards"
 
 	AttributeKeyCreator   = "creator"
 	AttributeKeyAppID     = "appId"
