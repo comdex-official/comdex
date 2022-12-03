@@ -50,4 +50,8 @@ message GenesisState {
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];
+  repeated LendExternalRewards lendExternalRewards = 11 [
+    (gogoproto.moretags) = "yaml:\"lendExternalRewards\"",
+    (gogoproto.nullable) = false
+  ];
 }

@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(internalRewards []InternalRewards, lockerRewardsTracker []LockerRewardsTracker, vaultInterestTracker []VaultInterestTracker, lockerExternalRewards []LockerExternalRewards, vaultExternalRewards []VaultExternalRewards, appIDs []uint64, epochInfo []EpochInfo, gauge []Gauge, gaugeDuration []GaugeByTriggerDuration, params Params) *GenesisState {
+func NewGenesisState(internalRewards []InternalRewards, lockerRewardsTracker []LockerRewardsTracker, vaultInterestTracker []VaultInterestTracker, lockerExternalRewards []LockerExternalRewards, vaultExternalRewards []VaultExternalRewards, appIDs []uint64, epochInfo []EpochInfo, gauge []Gauge, gaugeDuration []GaugeByTriggerDuration, params Params, lendExternalRewards []LendExternalRewards) *GenesisState {
 	return &GenesisState{
 		InternalRewards:        internalRewards,
 		LockerRewardsTracker:   lockerRewardsTracker,
@@ -12,6 +12,7 @@ func NewGenesisState(internalRewards []InternalRewards, lockerRewardsTracker []L
 		Gauge:                  gauge,
 		GaugeByTriggerDuration: gaugeDuration,
 		Params:                 params,
+		LendExternalRewards:    lendExternalRewards,
 	}
 }
 
@@ -27,6 +28,7 @@ func DefaultGenesisState() *GenesisState {
 		[]Gauge{},
 		[]GaugeByTriggerDuration{},
 		DefaultParams(),
+		[]LendExternalRewards{},
 	)
 }
 
