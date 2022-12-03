@@ -246,7 +246,10 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			numerator := totalOut.Sub(factor1)
 			denominator := deductionPercentage.Sub(factor2)
 			selloffAmount := numerator.Quo(denominator) // Dollar Value
-
+			minUSDVal, _ := sdk.NewDecFromStr("1000000")
+			if selloffAmount.LT(minUSDVal) {
+				return types.ErrSellOffAmtLessThanExpected
+			}
 			aip, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, sdk.OneInt())
 			liquidationDeductionAmt := selloffAmount.Mul(assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus))
 			liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip) // To be subtracted from AmountIn along with sellOff amt
