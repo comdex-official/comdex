@@ -257,7 +257,7 @@ func CreateUpgradeHandler(
 		//	panic(fmt.Sprintf("failed to revert tombstoning: %s", err))
 		//}
 
-		//ctx.Logger().Info("Running module migrations for v6.0.0...")
+		// ctx.Logger().Info("Running module migrations for v6.0.0...")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		InitializeLendStates(ctx, assetKeeper, lendKeeper)
 		return newVM, err
