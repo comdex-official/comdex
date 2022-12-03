@@ -6,6 +6,7 @@ const (
 	EventTypeRestartDutchErr       = "restart_dutch_err"
 	EventTypeRestartLendDutchErr   = "restart_lend_dutch_err"
 	EventTypeDutchNewAuction       = "dutch_new_auction"
+	EventTypeLendDutchNewAuction   = "lend_dutch_new_auction"
 	AttributeKeyOwner              = "vault_owner"
 	AttributeKeyCollateral         = "collateral_token"
 	AttributeKeyDebt               = "debt_token"

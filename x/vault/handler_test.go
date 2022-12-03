@@ -162,6 +162,71 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 	s.Require().Equal(appID1, vaults[0].AppId)
 }
 
+func (s *ModuleTestSuite) TestMsgDepositAndDraw() {
+	handler := vault.NewHandler(s.keeper)
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
+
+	_, err := handler(s.ctx, msgCreate)
+	s.Require().NoError(err)
+
+	msgDepositAndDraw := types.NewMsgDepositAndDrawRequest(
+		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(69000000),
+	)
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgDepositAndDraw.Amount)))
+
+	_, err = handler(s.ctx, msgDepositAndDraw)
+	s.Require().NoError(err)
+
+	vaults := s.keeper.GetVaults(s.ctx)
+	s.Require().Len(vaults, 1)
+	s.Require().Equal(uint64(1), vaults[0].Id)
+	s.Require().Equal(addr1.String(), vaults[0].Owner)
+	s.Require().Equal(msgCreate.AmountIn.Add(msgDepositAndDraw.Amount), vaults[0].AmountIn)
+	s.Require().Equal(extendedVaultPairID1, vaults[0].ExtendedPairVaultID)
+	s.Require().Equal(appID1, vaults[0].AppId)
+}
+
+func (s *ModuleTestSuite) TestMsgVaultInterestCalcRequest() {
+	handler := vault.NewHandler(s.keeper)
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asseOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asseTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
+	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
+
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
+
+	_, err := handler(s.ctx, msgCreate)
+	s.Require().NoError(err)
+
+	msgVaultInterestCalcRequest := types.NewMsgVaultInterestCalcRequest(
+		addr1, appID1, 1,
+	)
+
+	_, err = handler(s.ctx, msgVaultInterestCalcRequest)
+	s.Require().NoError(err)
+
+	vaults := s.keeper.GetVaults(s.ctx)
+	s.Require().Len(vaults, 1)
+	s.Require().Equal(uint64(1), vaults[0].Id)
+	s.Require().Equal(addr1.String(), vaults[0].Owner)
+	s.Require().Equal(msgCreate.AmountIn, vaults[0].AmountIn)
+	s.Require().Equal(extendedVaultPairID1, vaults[0].ExtendedPairVaultID)
+	s.Require().Equal(appID1, vaults[0].AppId)
+}
+
 func (s *ModuleTestSuite) TestMsgRepay() {
 	handler := vault.NewHandler(s.keeper)
 	addr1 := s.addr(1)
