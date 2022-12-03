@@ -215,6 +215,21 @@ func InitializeLendStates(
 		PairID:  []uint64{5, 6},
 	}
 	lendKeeper.SetAssetToPair(ctx, map3)
+
+	auctionParams := types.AuctionParams{
+		AppId:                  3,
+		AuctionDurationSeconds: 21600,
+		Buffer:                 Dec("1.2"),
+		Cusp:                   Dec("0.7"),
+		Step:                   sdk.NewInt(360),
+		PriceFunctionType:      1,
+		DutchId:                3,
+		BidDurationSeconds:     3600,
+	}
+	err = lendKeeper.AddAuctionParamsData(ctx, auctionParams)
+	if err != nil {
+		return
+	}
 }
 
 // CreateUpgradeHandler creates an SDK upgrade handler for v5
