@@ -17,5 +17,4 @@ var (
 	ErrAppIDInvalid                                 = sdkerrors.Register(ModuleName, 1105, "App Id invalid")
 	ErrVaultIDInvalid                               = sdkerrors.Register(ModuleName, 1106, "Vault Id invalid")
 	ErrorUnknownMsgType                             = sdkerrors.Register(ModuleName, 1107, "Unknown msg type")
-	ErrSellOffAmtLessThanExpected                   = sdkerrors.Register(ModuleName, 1108, "Sell Off Amt Less Than Expected $ value")
 )

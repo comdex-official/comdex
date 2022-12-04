@@ -533,6 +533,12 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return types.ErrBadOfferCoinType
 	}
 
+	minUSDVal, _ := sdk.NewDecFromStr(types.DollarOneValue)
+	loanValue, err := k.Market.CalcAssetPrice(ctx, pair.AssetOut, loan.Amount)
+	if loanValue.LT(minUSDVal) || err != nil {
+		return types.ErrBorrowLessThanMinAmount
+	}
+
 	if k.HasBorrowForAddressByPair(ctx, addr, pairID) {
 		return types.ErrorDuplicateBorrow
 	}
@@ -558,7 +564,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return sdkerrors.Wrap(types.ErrStableBorrowDisabled, loan.String())
 	}
 
-	err := k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
+	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
 	if err != nil {
 		return err
 	}

@@ -62,4 +62,5 @@ var (
 	ErrorAssetRatesParamsAlreadyExists       = sdkerrors.Register(ModuleName, 1169, "Asset Rates Params already exists")
 	ErrorLBMappingNotFound                   = sdkerrors.Register(ModuleName, 1170, "Asset LB Mapping Not found")
 	ErrInsufficientFundsInPool               = sdkerrors.Register(ModuleName, 1171, "Insufficient Funds in Pool")
+	ErrBorrowLessThanMinAmount               = sdkerrors.Register(ModuleName, 1171, "The Borrow amount requested is less than the min borrow limit of 1$")
 )
