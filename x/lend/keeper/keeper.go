@@ -939,7 +939,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		}
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
-		cTokensAmount := borrowPos.InterestAccumulated.TruncateInt().Sub(reservePoolRecords.ReservePoolInterest.TruncateInt())
+		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
 		if cTokensAmount.LT(sdk.ZeroInt()) {
 			return types.ErrReserveRatesNotFound
 		}
