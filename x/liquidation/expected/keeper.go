@@ -85,6 +85,9 @@ type LendKeeper interface {
 	CalculateBorrowInterestForLiquidation(ctx sdk.Context, borrowID uint64) (lendtypes.BorrowAsset, error)
 	ReBalanceStableRates(ctx sdk.Context, borrowPos lendtypes.BorrowAsset) (lendtypes.BorrowAsset, error)
 	DeleteBorrow(ctx sdk.Context, ID uint64)
+	DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfID bool)
+	DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64)
+	DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64)
 }
 
 type RewardsKeeper interface {

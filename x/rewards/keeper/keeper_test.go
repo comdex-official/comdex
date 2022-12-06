@@ -3,8 +3,12 @@ package keeper_test
 import (
 	"encoding/binary"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
+	utils "github.com/comdex-official/comdex/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	"github.com/comdex-official/comdex/x/liquidity"
+	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
@@ -33,6 +37,7 @@ type KeeperTestSuite struct {
 	collector     collectorKeeper.Keeper
 	rewardsKeeper rewardsKeeper.Keeper
 	vaultKeeper   vaultKeeper.Keeper
+	lendKeeper    lendkeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -49,6 +54,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.collector = s.app.CollectorKeeper
 	s.rewardsKeeper = s.app.Rewardskeeper
 	s.vaultKeeper = s.app.VaultKeeper
+	s.lendKeeper = s.app.LendKeeper
 }
 
 func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
@@ -57,6 +63,14 @@ func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 	s.Require().NoError(err)
 	addr1, err := sdk.AccAddressFromBech32(addr)
 	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, lockerTypes.ModuleName, addr1, sdk.NewCoins(amt))
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) fundAddr2(addr sdk.AccAddress, amt sdk.Coins) {
+	s.T().Helper()
+	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, amt)
+	s.Require().NoError(err)
+	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, types.ModuleName, addr, amt)
 	s.Require().NoError(err)
 }
 
@@ -124,4 +138,60 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 	}
 	s.Require().NotZero(extendedVaultPairID)
 	return extendedVaultPairID
+}
+
+func (s *KeeperTestSuite) CreateNewLiquidityPair(appID uint64, creator sdk.AccAddress, baseCoinDenom, quoteCoinDenom string) types.Pair {
+	params, err := s.app.LiquidityKeeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	s.fundAddr2(creator, params.PairCreationFee)
+
+	msg := types.NewMsgCreatePair(appID, creator, baseCoinDenom, quoteCoinDenom)
+	pair, err := s.app.LiquidityKeeper.CreatePair(s.ctx, msg, false)
+
+	s.Require().NoError(err)
+	s.Require().IsType(types.Pair{}, pair)
+
+	return pair
+}
+
+func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string) types.Pool {
+	params, err := s.app.LiquidityKeeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	parsedDepositCoins := utils.ParseCoins(depositCoins)
+
+	s.fundAddr2(creator, params.PoolCreationFee)
+	s.fundAddr2(creator, parsedDepositCoins)
+	msg := types.NewMsgCreatePool(appID, creator, pairID, parsedDepositCoins)
+	pool, err := s.app.LiquidityKeeper.CreatePool(s.ctx, msg)
+	s.Require().NoError(err)
+	s.Require().IsType(types.Pool{}, pool)
+
+	return pool
+}
+
+func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress, depositCoins string) types.DepositRequest {
+	msg := types.NewMsgDeposit(
+		appID, depositor, poolID, utils.ParseCoins(depositCoins),
+	)
+	s.fundAddr2(depositor, msg.DepositCoins)
+	req, err := s.app.LiquidityKeeper.Deposit(s.ctx, msg)
+	s.Require().NoError(err)
+	s.Require().IsType(types.DepositRequest{}, req)
+	return req
+}
+
+func (s *KeeperTestSuite) Farm(appID, poolID uint64, farmer sdk.AccAddress, farmingCoin string) {
+	msg := types.NewMsgFarm(
+		appID, poolID, farmer, utils.ParseCoin(farmingCoin),
+	)
+	s.fundAddr2(farmer, sdk.NewCoins(msg.FarmingPoolCoin))
+	err := s.app.LiquidityKeeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) nextBlock() {
+	liquidity.EndBlocker(s.ctx, s.app.LiquidityKeeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.app.LiquidityKeeper, s.app.AssetKeeper)
 }

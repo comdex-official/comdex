@@ -119,7 +119,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa1 := markettypes.TimeWeightedAverage{
 		AssetID:       1,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -127,7 +127,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa2 := markettypes.TimeWeightedAverage{
 		AssetID:       2,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa3 := markettypes.TimeWeightedAverage{
 		AssetID:       3,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa4 := markettypes.TimeWeightedAverage{
 		AssetID:       4,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           10000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,

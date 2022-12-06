@@ -899,7 +899,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		},
 		{
 			Name:               "success valid case 2",
-			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(10))),
+			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(1))),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgBorrowResponse{},
 			QueryResponseIndex: 0,
@@ -915,7 +915,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		},
 		{
 			Name:               "success valid case 3",
-			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 2, 13, false, sdk.NewCoin("ucasset2", newInt(1000000000)), sdk.NewCoin("uasset4", newInt(100000000))),
+			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 2, 13, false, sdk.NewCoin("ucasset2", newInt(1000000000)), sdk.NewCoin("uasset4", newInt(1000000))),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgBorrowResponse{},
 			QueryResponseIndex: 0,
@@ -1251,8 +1251,8 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	_, _ = s.msgServer.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg7)
 	_, _ = s.msgServer.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg8)
 
-	msg2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 3, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset2", newInt(10)))
-	msgBorrow2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(10)))
+	msg2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 3, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset2", newInt(1)))
+	msgBorrow2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(1)))
 
 	_, _ = s.msgServer.Borrow(sdk.WrapSDKContext(s.ctx), msg2)
 	_, _ = s.msgServer.Borrow(sdk.WrapSDKContext(s.ctx), msgBorrow2)
@@ -1621,8 +1621,8 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	_, _ = s.msgServer.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg7)
 	_, _ = s.msgServer.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg8)
 
-	msg2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 3, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset2", newInt(10)))
-	borrowMsg3 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(10)))
+	msg2 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 3, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset2", newInt(1)))
+	borrowMsg3 := types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 15, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset4", newInt(1)))
 	_, _ = s.msgServer.Borrow(sdk.WrapSDKContext(s.ctx), msg2)
 	_, _ = s.msgServer.Borrow(sdk.WrapSDKContext(s.ctx), borrowMsg3)
 

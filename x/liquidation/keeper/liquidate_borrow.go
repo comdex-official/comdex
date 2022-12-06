@@ -230,12 +230,12 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			var c sdk.Dec
 			if !borrowMetaData.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
 				if borrowMetaData.BridgedAssetAmount.Denom == firstBridgeAsset.Denom {
-					c = assetRatesStats.LiquidationThreshold.Mul(firstBridgeAssetStats.Ltv)
+					c = assetRatesStats.Ltv.Mul(firstBridgeAssetStats.Ltv)
 				} else {
-					c = assetRatesStats.LiquidationThreshold.Mul(secondBridgeAssetStats.Ltv)
+					c = assetRatesStats.Ltv.Mul(secondBridgeAssetStats.Ltv)
 				}
 			} else {
-				c = assetRatesStats.LiquidationThreshold
+				c = assetRatesStats.Ltv
 			}
 			// calculations for finding selloff amount and liquidationDeductionAmount
 			b := deductionPercentage.Add(assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus))
@@ -246,10 +246,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			numerator := totalOut.Sub(factor1)
 			denominator := deductionPercentage.Sub(factor2)
 			selloffAmount := numerator.Quo(denominator) // Dollar Value
-			minUSDVal, _ := sdk.NewDecFromStr("1000000")
-			if selloffAmount.LT(minUSDVal) {
-				return types.ErrSellOffAmtLessThanExpected
-			}
 			aip, _ := k.market.CalcAssetPrice(ctx, assetIn.Id, sdk.OneInt())
 			liquidationDeductionAmt := selloffAmount.Mul(assetRatesStats.LiquidationPenalty.Add(assetRatesStats.LiquidationBonus))
 			liquidationDeductionAmount := liquidationDeductionAmt.Quo(aip) // To be subtracted from AmountIn along with sellOff amt
@@ -257,11 +253,11 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			bonusToBidderAmount := (selloffAmount.Mul(assetRatesStats.LiquidationBonus)).Quo(aip)
 			penaltyToReserveAmount := (selloffAmount.Mul(assetRatesStats.LiquidationPenalty)).Quo(aip)
 			sellOffAmt := selloffAmount.Quo(aip)
-			err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, sdk.NewInt(bonusToBidderAmount.Add(sellOffAmt).TruncateInt64()))))
+			err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctiontypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, bonusToBidderAmount.Add(sellOffAmt).TruncateInt())))
 			if err != nil {
 				return err
 			}
-			err = k.lend.UpdateReserveBalances(ctx, pair.AssetIn, pool.ModuleName, sdk.NewCoin(assetIn.Denom, sdk.NewInt(penaltyToReserveAmount.TruncateInt64())), true)
+			err = k.lend.UpdateReserveBalances(ctx, pair.AssetIn, pool.ModuleName, sdk.NewCoin(assetIn.Denom, penaltyToReserveAmount.TruncateInt()), true)
 			if err != nil {
 				return err
 			}
@@ -368,7 +364,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 					}
 				}
 				if lockedVault.AmountIn.IsZero() {
+					k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+					k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
 					k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+					k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
 					return nil
 				}
 				newCalculatedCollateralizationRatio, _ := k.lend.CalculateCollateralizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
