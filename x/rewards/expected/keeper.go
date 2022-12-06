@@ -30,6 +30,7 @@ type LiquidityKeeper interface {
 	GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer liquiditytypes.ActiveFarmer, found bool)
 	GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error)
 	CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
+	GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer liquiditytypes.QueuedFarmer, found bool)
 }
 
 type AssetKeeper interface {

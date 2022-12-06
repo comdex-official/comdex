@@ -738,86 +738,125 @@ func (s *KeeperTestSuite) TestCreateLend() {
 	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
 	_, err := server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg2)
 	s.Require().NoError(err)
+	msg3 := lendtypes.MsgBorrowAlternate{
+		Lender:         "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp",
+		AssetId:        1,
+		PoolId:         1,
+		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		PairId:         3,
+		IsStableBorrow: false,
+		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
+		AppId:          3,
+	}
+
+	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg3)
+	s.Require().NoError(err)
+	s.TestCreateLiquidityPoolAndAddLiquidity()
 }
 
-//func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
-//	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
-//	s.ctx = s.ctx.WithBlockHeight(10)
-//	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-//	amt, _ := sdk.NewIntFromString("1000000000000000000000")
-//	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", amt)))
-//
-//	s.TestCreateLend()
-//	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
-//	server := keeper.NewMsgServerImpl(*rewardsKeeper)
-//	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewInt(1234567890)))
-//	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//	fmt.Println("bal at t0 ", availableBalances)
-//
-//	for _, tc := range []struct {
-//		name          string
-//		msg           types.ActivateExternalRewardsLend
-//		expectedError bool
-//		ExpErr        error
-//	}{
-//		{
-//			"ActivateExternalRewardsLockers : success",
-//			types.ActivateExternalRewardsLend{
-//				AppMappingId:         3,
-//				CPoolId:              1,
-//				AssetId:              []uint64{2},
-//				CSwapAppId:           1,
-//				CSwapMinLockAmount:   0,
-//				TotalRewards:         sdk.NewCoin("ucmst", sdk.NewInt(1234567890)),
-//				MasterPoolId:         1,
-//				DurationDays:         4,
-//				MinLockupTimeSeconds: 1,
-//				Depositor:            "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-//			},
-//			false,
-//			nil,
-//		},
-//	} {
-//		s.Run(tc.name, func() {
-//
-//			_, err := server.ExternalRewardsLend(sdk.WrapSDKContext(*ctx), &tc.msg)
-//			if tc.ExpErr != nil {
-//				s.Require().Error(err)
-//				s.Require().EqualError(err, tc.ExpErr.Error())
-//			} else {
-//				s.Require().NoError(err)
-//				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//				fmt.Println("bal when created ext rewards", availableBalances)
-//			}
-//		})
-//	}
-//
-//	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
-//	s.ctx = s.ctx.WithBlockHeight(11)
-//	req := abci.RequestBeginBlock{}
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//	fmt.Println("bal at first day", availableBalances)
-//
-//	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
-//	s.ctx = s.ctx.WithBlockHeight(12)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//	fmt.Println("bal at second day", availableBalances)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//
-//	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:12:00Z"))
-//	s.ctx = s.ctx.WithBlockHeight(15)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//	fmt.Println("bal at third day", availableBalances)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//
-//	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:15:00Z"))
-//	s.ctx = s.ctx.WithBlockHeight(15)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
-//	fmt.Println("bal at fourth day", availableBalances)
-//	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-//
-//}
+func (s *KeeperTestSuite) TestCreateLiquidityPoolAndAddLiquidity() {
+	addr1 := s.addr(1)
+	app1pair := s.CreateNewLiquidityPair(1, addr1, "uatom", "ucmdx")
+	_, err := s.app.LiquidityKeeper.GetGenericParams(s.ctx, 1)
+	s.Require().NoError(err)
+	s.fundAddr2(addr1, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))))
+	s.CreateNewLiquidityPool(1, app1pair.Id, addr1, "1000000000000uatom,1000000000000ucmdx")
+
+	// Adding Liquidity
+	a, _ := sdk.AccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t")
+	b, _ := sdk.AccAddressFromBech32("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp")
+	s.Deposit(1, 1, a, "10000000uatom,10000000ucmdx")
+	s.Deposit(1, 1, b, "10000000uatom,10000000ucmdx")
+	s.nextBlock()
+	s.Farm(1, 1, a, "100000000pool1-1")
+	s.Farm(1, 1, b, "100000000pool1-1")
+	s.nextBlock()
+
+}
+
+func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(10)
+	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
+	amt, _ := sdk.NewIntFromString("1000000000000000000000")
+	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", amt)))
+
+	s.TestCreateLend()
+	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
+	server := keeper.NewMsgServerImpl(*rewardsKeeper)
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewInt(1234567890)))
+	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at t0 ", availableBalances)
+
+	for _, tc := range []struct {
+		name          string
+		msg           types.ActivateExternalRewardsLend
+		expectedError bool
+		ExpErr        error
+	}{
+		{
+			"ActivateExternalRewardsLockers : success",
+			types.ActivateExternalRewardsLend{
+				AppMappingId:         3,
+				CPoolId:              1,
+				AssetId:              []uint64{2},
+				CSwapAppId:           1,
+				CSwapMinLockAmount:   100000000,
+				TotalRewards:         sdk.NewCoin("ucmst", sdk.NewInt(1234567890)),
+				MasterPoolId:         1,
+				DurationDays:         3,
+				MinLockupTimeSeconds: 1,
+				Depositor:            "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
+			},
+			false,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			_, err := server.ExternalRewardsLend(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+				fmt.Println("bal when created ext rewards", availableBalances)
+			}
+		})
+	}
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(11)
+	req := abci.RequestBeginBlock{}
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at first day", availableBalances)
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(12)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at second day", availableBalances)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:12:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at third day", availableBalances)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:15:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at fourth day", availableBalances)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:17:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
+	rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
+	fmt.Println("rew", rew)
+
+}

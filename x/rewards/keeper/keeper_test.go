@@ -7,6 +7,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -179,4 +180,18 @@ func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress
 	s.Require().NoError(err)
 	s.Require().IsType(types.DepositRequest{}, req)
 	return req
+}
+
+func (s *KeeperTestSuite) Farm(appID, poolID uint64, farmer sdk.AccAddress, farmingCoin string) {
+	msg := types.NewMsgFarm(
+		appID, poolID, farmer, utils.ParseCoin(farmingCoin),
+	)
+	s.fundAddr2(farmer, sdk.NewCoins(msg.FarmingPoolCoin))
+	err := s.app.LiquidityKeeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) nextBlock() {
+	liquidity.EndBlocker(s.ctx, s.app.LiquidityKeeper, s.app.AssetKeeper)
+	liquidity.BeginBlocker(s.ctx, s.app.LiquidityKeeper, s.app.AssetKeeper)
 }
