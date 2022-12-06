@@ -495,7 +495,7 @@ func (k Keeper) WasmHasBorrowForAddressAndAsset(ctx sdk.Context, assetID uint64,
 	mappingData := k.GetUserTotalMappingData(ctx, address)
 	for _, data := range mappingData {
 		lend, _ := k.GetLend(ctx, data.LendId)
-		if lend.AssetID == assetID && len(data.BorrowId) > 0 {
+		if lend.AssetID == assetID {
 			return true
 		}
 	}

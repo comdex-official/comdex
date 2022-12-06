@@ -241,7 +241,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					}
 					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
 					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
-					var inverseRatesSum sdk.Dec
+					inverseRatesSum := sdk.ZeroDec()
 					// inverting the rate to enable low apr for assets which are more borrowed
 					for _, assetID := range rewardsAssetPoolData.AssetId {
 						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
@@ -271,11 +271,10 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 							numerator := totalAPR.Mul(inverseRate)
 							finalAPR := numerator.Quo(inverseRatesSum)
 							finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
-							daysInYear, _ := sdk.NewDecFromStr(types.DaysInYear)
-							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(daysInYear)
+							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays))
 
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
-								amountRewardedTracker = amountRewardedTracker.Sub(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
+								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
 								err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
 								if err != nil {
 									continue
@@ -311,17 +310,21 @@ func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRew
 }
 
 func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, amount sdk.Int) bool {
-	farmedCoin, found := k.liquidityKeeper.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
+	farmedCoin, found := k.liquidityKeeper.GetQueuedFarmer(ctx, appID, uint64(masterPoolID), addr)
 	if !found {
 		return false
+	}
+	amt := sdk.ZeroInt()
+	for _, v := range farmedCoin.QueudCoins {
+		amt = amt.Add(v.FarmedPoolCoin.Amount)
 	}
 
 	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return false
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount)
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, sdk.NewCoin(pool.PoolCoinDenom, amt))
 	if err != nil {
 		return false
 	}

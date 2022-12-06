@@ -46,7 +46,7 @@ func InitializeLendStates(
 		UOptimal:             Dec("0.8"),
 		Base:                 Dec("0.002"),
 		Slope1:               Dec("0.06"),
-		Slope2:               Dec("0.06"),
+		Slope2:               Dec("0.6"),
 		EnableStableBorrow:   false,
 		StableBase:           Dec("0.0"),
 		StableSlope1:         Dec("0.0"),

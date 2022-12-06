@@ -23,12 +23,13 @@ const (
 )
 
 const (
-	AppName    = "commodo"
-	AppID      = uint64(3)
-	Uint64Zero = uint64(0)
-	Uint64Two  = uint64(2)
-	Perc1      = string("0.2")
-	Perc2      = string("0.9")
+	AppName        = "commodo"
+	AppID          = uint64(3)
+	Uint64Zero     = uint64(0)
+	Uint64Two      = uint64(2)
+	Perc1          = string("0.2")
+	Perc2          = string("0.9")
+	DollarOneValue = string("1000000")
 )
 
 // ParamKeyTable the param key table for launch module.

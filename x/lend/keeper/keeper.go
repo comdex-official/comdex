@@ -533,6 +533,12 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return types.ErrBadOfferCoinType
 	}
 
+	minUSDVal, _ := sdk.NewDecFromStr(types.DollarOneValue)
+	loanValue, err := k.Market.CalcAssetPrice(ctx, pair.AssetOut, loan.Amount)
+	if loanValue.LT(minUSDVal) || err != nil {
+		return types.ErrBorrowLessThanMinAmount
+	}
+
 	if k.HasBorrowForAddressByPair(ctx, addr, pairID) {
 		return types.ErrorDuplicateBorrow
 	}
@@ -558,7 +564,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return sdkerrors.Wrap(types.ErrStableBorrowDisabled, loan.String())
 	}
 
-	err := k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
+	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
 	if err != nil {
 		return err
 	}
@@ -933,7 +939,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		}
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
-		cTokensAmount := borrowPos.InterestAccumulated.TruncateInt().Sub(reservePoolRecords.ReservePoolInterest.TruncateInt())
+		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
 		if cTokensAmount.LT(sdk.ZeroInt()) {
 			return types.ErrReserveRatesNotFound
 		}
