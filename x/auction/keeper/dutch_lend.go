@@ -23,7 +23,7 @@ func (k Keeper) LendDutchActivator(ctx sdk.Context, lockedVault liquidationtypes
 		if !found {
 			return auctiontypes.ErrorInvalidPair
 		}
-		assetIn, _ := k.asset.GetAsset(ctx, extendedPair.AssetIn)   //collateral
+		assetIn, _ := k.asset.GetAsset(ctx, extendedPair.AssetIn)   // collateral
 		assetOut, _ := k.asset.GetAsset(ctx, extendedPair.AssetOut) // debt
 
 		AssetInPrice, err := k.market.CalcAssetPrice(ctx, assetIn.Id, sdk.OneInt())
@@ -101,8 +101,8 @@ func (k Keeper) StartLendDutchAuction(
 		BiddingIds:                []*auctiontypes.BidOwnerMapping{},
 		AuctionMappingId:          auctionParams.DutchId,
 		AppId:                     lockedVault.AppId,
-		AssetInId:                 assetInID,  //debt
-		AssetOutId:                assetOutID, //collateral
+		AssetInId:                 assetInID,  // debt
+		AssetOutId:                assetOutID, // collateral
 		LockedVaultId:             lockedVault.LockedVaultId,
 		VaultOwner:                borrowOwner,
 		LiquidationPenalty:        liquidationPenalty,
