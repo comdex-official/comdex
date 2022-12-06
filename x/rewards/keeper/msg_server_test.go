@@ -752,13 +752,10 @@ func (s *KeeperTestSuite) TestCreateLend() {
 	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg3)
 	s.Require().NoError(err)
-	s.TestCreateLiquidityPoolAndAddLiquidity()
-}
 
-func (s *KeeperTestSuite) TestCreateLiquidityPoolAndAddLiquidity() {
 	addr1 := s.addr(1)
 	app1pair := s.CreateNewLiquidityPair(1, addr1, "uatom", "ucmdx")
-	_, err := s.app.LiquidityKeeper.GetGenericParams(s.ctx, 1)
+	_, err = s.app.LiquidityKeeper.GetGenericParams(s.ctx, 1)
 	s.Require().NoError(err)
 	s.fundAddr2(addr1, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))))
 	s.CreateNewLiquidityPool(1, app1pair.Id, addr1, "1000000000000uatom,1000000000000ucmdx")
@@ -772,7 +769,6 @@ func (s *KeeperTestSuite) TestCreateLiquidityPoolAndAddLiquidity() {
 	s.Farm(1, 1, a, "100000000pool1-1")
 	s.Farm(1, 1, b, "100000000pool1-1")
 	s.nextBlock()
-
 }
 
 func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
