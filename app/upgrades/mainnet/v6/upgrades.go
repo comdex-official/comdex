@@ -1,6 +1,7 @@
 package v6
 
 import (
+	"fmt"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
@@ -246,18 +247,18 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running revert of tombstoning")
 
-		//err := RevertCosTombstoning(
-		//	ctx,
-		//	slashingkeeper,
-		//	mintkeeper,
-		//	bankkeeper,
-		//	stakingkeeper,
-		//)
-		//if err != nil {
-		//	panic(fmt.Sprintf("failed to revert tombstoning: %s", err))
-		//}
+		err := RevertCosTombstoning(
+			ctx,
+			slashingkeeper,
+			mintkeeper,
+			bankkeeper,
+			stakingkeeper,
+		)
+		if err != nil {
+			panic(fmt.Sprintf("failed to revert tombstoning: %s", err))
+		}
 
-		// ctx.Logger().Info("Running module migrations for v6.0.0...")
+		ctx.Logger().Info("Running module migrations for v6.0.0...")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		InitializeLendStates(ctx, assetKeeper, lendKeeper)
 		return newVM, err
