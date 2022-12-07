@@ -1,9 +1,10 @@
 package v6
 
 const (
-	UpgradeName   = "v6.0.0"
-	UpgradeHeight = ""
-	UpgradeInfo   = `'{
+	UpgradeName        = "v6.0.0"
+	UpgradeNameTestnet = "v6.0.0.beta"
+	UpgradeHeight      = ""
+	UpgradeInfo        = `'{
 		"binaries": {
 			"darwin/arm64":"",
 			"darwin/x86_64":"",
