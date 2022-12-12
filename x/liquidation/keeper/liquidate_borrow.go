@@ -266,6 +266,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(sellOffAmt.TruncateInt()) // Total deduction from amountIn also reduce to lend Position amountIn
 			borrowPos, _ := k.lend.GetBorrow(ctx, updatedLockedVault.OriginalVaultId)
 			borrowPos.IsLiquidated = true
+			k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
 			if totalDeduction.GTE(updatedLockedVault.AmountIn) { // rare case only
 				lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(updatedLockedVault.AmountIn)
 				// also global lend data is subtracted by totalDeduction amount

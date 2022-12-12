@@ -1461,6 +1461,32 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	borrowPos.AmountIn.Amount = liqBorrow.AmountIn
 	borrowPos.LastInteractionTime = ctx.BlockTime()
 	borrowPos.IsLiquidated = false
+	k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, true)
+	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	assetStats, _ := k.GetAssetRatesParams(ctx, pair.AssetOut)
+	cAsset, _ := k.Asset.GetAsset(ctx, assetStats.CAssetID)
+	reservePoolRecords, _ := k.GetBorrowInterestTracker(ctx, borrowPos.ID)
+	amtToReservePool := reservePoolRecords.ReservePoolInterest
+	assetOut, _ := k.Asset.GetAsset(ctx, pair.AssetOut)
+	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+		amount := sdk.NewCoin(assetOut.Denom, amtToReservePool.TruncateInt())
+		err := k.UpdateReserveBalances(ctx, pair.AssetOut, AssetOutPool.ModuleName, amount, true)
+		if err != nil {
+			return
+		}
+	}
+	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
+	if amtToMint.GT(sdk.ZeroInt()) {
+		err := k.bank.MintCoins(ctx, AssetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, amtToMint)))
+		if err != nil {
+			return
+		}
+		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtToMint)
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+	}
+	borrowPos.InterestAccumulated = borrowPos.InterestAccumulated.Sub(sdk.NewDecFromInt(borrowPos.InterestAccumulated.TruncateInt()))
+	reservePoolRecords.ReservePoolInterest = reservePoolRecords.ReservePoolInterest.Sub(sdk.NewDecFromInt(amtToReservePool.TruncateInt())) // the decimal precision is maintained
+	k.SetBorrowInterestTracker(ctx, reservePoolRecords)
 
 	var firstTransitAssetID, secondTransitAssetID uint64
 	for _, data := range AssetInPool.AssetData {

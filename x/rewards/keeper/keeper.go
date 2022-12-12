@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"fmt"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	"time"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -279,6 +282,29 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 	id := k.GetExternalRewardsLendID(ctx)
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(msg.DurationDays*types.SecondsPerDay))
 	epochID := k.GetEpochTimeID(ctx)
+	_, found := k.liquidityKeeper.GetPool(ctx, msg.CSwapAppId, uint64(msg.MasterPoolId))
+	if !found {
+		return liquiditytypes.ErrInvalidPoolID
+	}
+	for _, assetID := range msg.AssetId {
+		_, found = k.asset.GetAsset(ctx, assetID)
+		if !found {
+			return assettypes.ErrorAssetDoesNotExist
+		}
+	}
+
+	_, found = k.lend.GetPool(ctx, msg.CPoolId)
+	if !found {
+		return lendtypes.ErrPoolNotFound
+	}
+
+	_, found = k.asset.GetAssetForDenom(ctx, msg.TotalRewards.Denom)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+	if msg.DurationDays == 0 {
+		return types.ErrInvalidDuration
+	}
 
 	RewardsAssetPoolData := types.RewardsAssetPoolData{
 		CPoolId:            msg.CPoolId,
