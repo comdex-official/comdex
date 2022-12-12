@@ -539,3 +539,35 @@ func (q QueryServer) QueryModuleBalance(c context.Context, req *types.QueryModul
 		ModuleBalance: modBal,
 	}, nil
 }
+
+func (q QueryServer) QueryFundModBal(c context.Context, req *types.QueryFundModBalRequest) (*types.QueryFundModBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetFundModBal(ctx)
+	if !found {
+		return &types.QueryFundModBalResponse{}, nil
+	}
+
+	return &types.QueryFundModBalResponse{
+		FundModBalance: modBal,
+	}, nil
+}
+
+func (q QueryServer) QueryFundReserveBal(c context.Context, req *types.QueryFundReserveBalRequest) (*types.QueryFundReserveBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	resBal, found := q.GetFundReserveBal(ctx)
+	if !found {
+		return &types.QueryFundReserveBalResponse{}, nil
+	}
+
+	return &types.QueryFundReserveBalResponse{
+		FundReserveBalance: resBal,
+	}, nil
+}

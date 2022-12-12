@@ -2,16 +2,14 @@ package keeper
 
 import (
 	"fmt"
-	"strconv"
-
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
+	"strconv"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
@@ -1437,6 +1435,49 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr s
 	if err != nil {
 		return err
 	}
+
+	modBal := types.FundModBal{
+		AssetID:     assetID,
+		PoolID:      poolID,
+		AmountIn:    payment,
+		DepositTime: ctx.BlockTime(),
+		Funder:      string(lenderAddr),
+	}
+	modBals, found := k.GetFundModBal(ctx)
+	if !found {
+		modBals = types.ModBal{FundModuleBalance: nil}
+	}
+	modBals.FundModuleBalance = append(modBals.FundModuleBalance, modBal)
+	k.SetFundModBal(ctx, modBals)
+
+	return nil
+}
+
+func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+	asset, found := k.Asset.GetAsset(ctx, assetID)
+	if !found {
+		return types.ErrLendNotFound
+	}
+
+	if asset.Denom != payment.Denom {
+		return types.ErrBadOfferCoinType
+	}
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, sdk.NewCoins(payment)); err != nil {
+		return err
+	}
+
+	resBal := types.FundReserveBal{
+		AssetID:     assetID,
+		AmountIn:    payment,
+		DepositTime: ctx.BlockTime(),
+		Funder:      string(lenderAddr),
+	}
+	resBals, found := k.GetFundReserveBal(ctx)
+	if !found {
+		resBals = types.ReserveBal{FundReserveBalance: nil}
+	}
+	resBals.FundReserveBalance = append(resBals.FundReserveBalance, resBal)
 
 	return nil
 }

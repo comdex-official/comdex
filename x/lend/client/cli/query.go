@@ -51,6 +51,8 @@ func GetQueryCmd() *cobra.Command {
 		// queryBorrowStats(),
 		queryAuctionParams(),
 		QueryModuleBalance(), //
+		QueryFundModuleBalance(),
+		QueryFundReserveBalance(),
 	)
 
 	return cmd
@@ -824,7 +826,7 @@ func queryAuctionParams() *cobra.Command {
 func QueryModuleBalance() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "module-balance [pool-id]",
-		Short: "borrows list for a owner",
+		Short: "queries module balance of a pool",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -842,6 +844,56 @@ func QueryModuleBalance() *cobra.Command {
 			res, err := queryClient.QueryModuleBalance(cmd.Context(), &types.QueryModuleBalanceRequest{
 				PoolId: poolID,
 			})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryFundModuleBalance() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fund-module-balance ",
+		Short: "queries fund module balance history",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryFundModBal(cmd.Context(), &types.QueryFundModBalRequest{})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryFundReserveBalance() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fund-reserve-balance ",
+		Short: "queries fund reserve balance history",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryFundReserveBal(cmd.Context(), &types.QueryFundReserveBalRequest{})
 			if err != nil {
 				return err
 			}

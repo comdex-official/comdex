@@ -520,3 +520,53 @@ func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Module
 	}
 	return ModuleBalance, true
 }
+
+func (k Keeper) SetFundModBal(ctx sdk.Context, modBal types.ModBal) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundModBal
+		value = k.cdc.MustMarshal(&modBal)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundModBal(ctx sdk.Context) (modBal types.ModBal, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundModBal
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return modBal, false
+	}
+
+	k.cdc.MustUnmarshal(value, &modBal)
+	return modBal, true
+}
+
+func (k Keeper) SetFundReserveBal(ctx sdk.Context, resBal types.ReserveBal) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundReserveBal
+		value = k.cdc.MustMarshal(&resBal)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundReserveBal
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return resBal, false
+	}
+
+	k.cdc.MustUnmarshal(value, &resBal)
+	return resBal, true
+}

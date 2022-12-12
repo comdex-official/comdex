@@ -264,3 +264,26 @@ func (m msgServer) CalculateInterestAndRewards(goCtx context.Context, rewards *t
 
 	return &types.MsgCalculateInterestAndRewardsResponse{}, nil
 }
+
+func (m msgServer) FundReserveAccounts(goCtx context.Context, accounts *types.MsgFundReserveAccounts) (*types.MsgFundReserveAccountsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	lenderAddr, err := sdk.AccAddressFromBech32(accounts.Lender)
+	if err != nil {
+		return nil, err
+	}
+	if err = m.keeper.FundReserveAcc(ctx, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeFundModuleAccn,
+			sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(accounts.AssetId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, accounts.Lender),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, accounts.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
+
+	return &types.MsgFundReserveAccountsResponse{}, nil
+}
