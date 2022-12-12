@@ -89,6 +89,8 @@ type LendKeeper interface {
 	DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64)
 	DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64)
 	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool)
+	GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest lendtypes.BorrowInterestTracker, found bool)
+	SetBorrowInterestTracker(ctx sdk.Context, interest lendtypes.BorrowInterestTracker)
 }
 
 type RewardsKeeper interface {

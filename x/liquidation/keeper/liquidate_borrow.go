@@ -343,12 +343,44 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 		firstBridgedAsset, _ := k.asset.GetAsset(ctx, firstTransitAssetID)
 		userAddress, _ := sdk.AccAddressFromBech32(lockedVault.Owner)
 		pair, _ := k.lend.GetLendPair(ctx, lockedVault.ExtendedPairId)
+		assetOutPool, found := k.lend.GetPool(ctx, pair.AssetOutPoolID)
+		if !found {
+			return lendtypes.ErrPoolNotFound
+		}
 		assetStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetIn)
 		assetIn, _ := k.asset.GetAsset(ctx, pair.AssetIn)
 		assetOut, _ := k.asset.GetAsset(ctx, pair.AssetOut)
 		cAssetIn, _ := k.asset.GetAsset(ctx, assetStats.CAssetID)
 
 		if lockedVault.IsAuctionComplete {
+			// clearing borrow interest from borrow position after auction
+			poolAssetLBMappingData, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+			assetOutStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetOut)
+			cAsset, _ := k.asset.GetAsset(ctx, assetOutStats.CAssetID)
+			reservePoolRecords, _ := k.lend.GetBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+			borrowPos, _ := k.lend.GetBorrow(ctx, lockedVault.OriginalVaultId)
+			amtToReservePool := reservePoolRecords.ReservePoolInterest
+			if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+				amount := sdk.NewCoin(assetOut.Denom, amtToReservePool.TruncateInt())
+				err := k.lend.UpdateReserveBalances(ctx, pair.AssetOut, assetOutPool.ModuleName, amount, true)
+				if err != nil {
+					return err
+				}
+			}
+			amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
+			if amtToMint.GT(sdk.ZeroInt()) {
+				err := k.bank.MintCoins(ctx, assetOutPool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, amtToMint)))
+				if err != nil {
+					return err
+				}
+				poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtToMint)
+				k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+			}
+			borrowPos.InterestAccumulated = borrowPos.InterestAccumulated.Sub(sdk.NewDecFromInt(borrowPos.InterestAccumulated.TruncateInt()))
+			reservePoolRecords.ReservePoolInterest = reservePoolRecords.ReservePoolInterest.Sub(sdk.NewDecFromInt(amtToReservePool.TruncateInt())) // the decimal precision is maintained
+			k.lend.SetBorrowInterestTracker(ctx, reservePoolRecords)
+			k.lend.SetBorrow(ctx, borrowPos)
+
 			if borrowMetadata.BridgedAssetAmount.IsZero() {
 				// also calculate the current collaterlization ratio to ensure there is no sudden changes
 				liqThreshold, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetIn)
