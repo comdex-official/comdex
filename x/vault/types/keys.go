@@ -64,10 +64,10 @@ func UserKey(address string) []byte {
 	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
 }
 
-func StableMintVaultRewardsKey(appID uint64, pairVaultID uint64, address string, blockHeight int64) []byte {
-	return append(append(append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...), address...,), sdk.Int64ToBigEndian(blockHeight)...)
+func StableMintVaultRewardsKey(appID uint64, pairVaultID uint64, address string, blockHeight uint64) []byte {
+	return append(append(append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...), address...), sdk.Uint64ToBigEndian(blockHeight)...)
 }
 
 func StableMintRewardsKey(appID uint64, pairVaultID uint64, address string) []byte {
-	return append(append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...), address...,)
+	return append(append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...), address...)
 }

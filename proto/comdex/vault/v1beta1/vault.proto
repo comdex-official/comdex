@@ -151,7 +151,7 @@ message StableMintVaultRewards {
   string user = 3 [
     (gogoproto.moretags) = "yaml:\"user\""
   ];
-  int64 block_height = 4 [
+  uint64 block_height = 4 [
     (gogoproto.moretags)   = "yaml:\"block_height\""
   ];
 
