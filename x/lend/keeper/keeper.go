@@ -1450,7 +1450,7 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lender strin
 		PoolID:      poolID,
 		AmountIn:    payment,
 		DepositTime: ctx.BlockTime(),
-		Funder:      string(lenderAddr),
+		Funder:      lender,
 	}
 	modBals, found := k.GetFundModBal(ctx)
 	if !found {
@@ -1497,7 +1497,7 @@ func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lender string, p
 		AssetID:     assetID,
 		AmountIn:    payment,
 		DepositTime: ctx.BlockTime(),
-		Funder:      string(lenderAddr),
+		Funder:      lender,
 	}
 	resBals, found := k.GetFundReserveBal(ctx)
 	if !found {
