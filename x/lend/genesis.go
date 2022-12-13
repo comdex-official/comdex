@@ -88,5 +88,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetLendPairs(ctx),
 		k.GetAllAddAuctionParamsData(ctx),
 		k.GetAllAssetRatesParams(ctx),
+		k.GetAllFundModBal(ctx),
+		k.GetAllFundReserveBal(ctx),
+		k.GetTotalReserveStatsByAssetID(ctx),
 	)
 }
