@@ -381,10 +381,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 				if err != nil {
 					return err
 				}
-				allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetIn)
+				allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetOut)
 				if !found {
 					allReserveStats = lendtypes.AllReserveStats{
-						AssetID:                        pair.AssetIn,
+						AssetID:                        pair.AssetOut,
 						AmountOutFromReserveToLenders:  sdk.ZeroInt(),
 						AmountOutFromReserveForAuction: sdk.ZeroInt(),
 						AmountInFromLiqPenalty:         sdk.ZeroInt(),
