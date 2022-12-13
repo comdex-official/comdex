@@ -1202,8 +1202,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv6.UpgradeName,
-		mv6.CreateUpgradeHandler(a.mm, a.configurator, a.SlashingKeeper, a.MintKeeper, a.BankKeeper, a.StakingKeeper, a.AssetKeeper, a.LendKeeper),
+		mv6.UpgradeName610,
+		mv6.CreateUpgradeHandler610(a.mm, a.configurator),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1254,6 +1254,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				lendtypes.ModuleName,
 			},
 		}
+	case upgradeInfo.Name == mv6.UpgradeName610 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 
 	return storeUpgrades

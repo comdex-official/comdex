@@ -265,3 +265,14 @@ func CreateUpgradeHandler(
 		return newVM, err
 	}
 }
+
+func CreateUpgradeHandler610(
+	mm *module.Manager,
+	configurator module.Configurator,
+) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+		return newVM, err
+	}
+}
