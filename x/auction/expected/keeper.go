@@ -109,4 +109,6 @@ type LendKeeper interface {
 	ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int
 	UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error
 	SetLend(ctx sdk.Context, lend lendtypes.LendAsset)
+	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
+	GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats lendtypes.AllReserveStats, found bool)
 }

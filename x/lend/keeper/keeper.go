@@ -882,6 +882,8 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
+
 	} else if payment.Amount.GT(amtToReservePool.TruncateInt()) && payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// from reservePoolRecords amount send tokens to reserve pool
 		// send remaining payment back to cPool and mint additional tokens for that amount
@@ -898,6 +900,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := payment.Amount.Sub(amtToReservePool.TruncateInt())
@@ -935,6 +938,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
@@ -1266,6 +1270,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
 	}
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 	if amtToMint.GT(sdk.ZeroInt()) {
@@ -1466,6 +1471,19 @@ func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lenderAddr sdk.A
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, sdk.NewCoins(payment)); err != nil {
 		return err
 	}
+
+	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+	reserve, found := k.GetReserveBuybackAssetData(ctx, assetID)
+	if !found {
+		reserve.AssetID = assetID
+		reserve.BuybackAmount = sdk.ZeroInt()
+		reserve.ReserveAmount = sdk.ZeroInt()
+	}
+
+	reserve.BuybackAmount = reserve.BuybackAmount.Add(newAmount)
+	reserve.ReserveAmount = reserve.ReserveAmount.Add(newAmount)
+
+	k.SetReserveBuybackAssetData(ctx, reserve)
 
 	resBal := types.FundReserveBal{
 		AssetID:     assetID,
@@ -1711,4 +1729,19 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 		}
 	}
 	return nil
+}
+
+func (k Keeper) UpdateReserverAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
+	allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, id)
+	if !found {
+		allReserveStats = types.AllReserveStats{
+			AssetID:                        id,
+			AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+			AmountOutFromReserveForAuction: sdk.ZeroInt(),
+			AmountInFromLiqPenalty:         sdk.ZeroInt(),
+			AmountInFromRepayments:         sdk.ZeroInt(),
+		}
+	}
+	allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amt)
+	k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 }

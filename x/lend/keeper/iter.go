@@ -84,6 +84,33 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 			poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 			k.SetLend(ctx, lend)
+
+			// updating reserve
+			newAmount := newInterestPerInteraction.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+			reserve, found := k.GetReserveBuybackAssetData(ctx, lend.AssetID)
+			if !found {
+				reserve.AssetID = lend.AssetID
+				reserve.BuybackAmount = sdk.ZeroInt()
+				reserve.ReserveAmount = sdk.ZeroInt()
+			}
+
+			reserve.BuybackAmount = reserve.BuybackAmount.Sub(newAmount)
+			reserve.ReserveAmount = reserve.ReserveAmount.Sub(newAmount)
+
+			k.SetReserveBuybackAssetData(ctx, reserve)
+
+			allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, lend.AssetID)
+			if !found {
+				allReserveStats = types.AllReserveStats{
+					AssetID:                        lend.AssetID,
+					AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+					AmountOutFromReserveForAuction: sdk.ZeroInt(),
+					AmountInFromLiqPenalty:         sdk.ZeroInt(),
+					AmountInFromRepayments:         sdk.ZeroInt(),
+				}
+			}
+			allReserveStats.AmountOutFromReserveToLenders = allReserveStats.AmountOutFromReserveToLenders.Add(newInterestPerInteraction)
+			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 		} else {
 
 			// updating user's balance

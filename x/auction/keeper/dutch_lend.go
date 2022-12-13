@@ -298,12 +298,8 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		pairID := lockedVault.ExtendedPairId
 		lendPair, _ := k.lend.GetLendPair(ctx, pairID)
 		inFlowTokenAssetID := lendPair.AssetOut
-		err = k.bank.SendCoinsFromModuleToModule(ctx, lendtypes.ModuleName, assetOutPool.ModuleName, sdk.NewCoins(requiredAmount))
-		if err != nil {
-			return err
-		}
 
-		err = k.lend.UpdateReserveBalances(ctx, inFlowTokenAssetID, lendtypes.ModuleName, requiredAmount, false)
+		err = k.lend.UpdateReserveBalances(ctx, inFlowTokenAssetID, assetOutPool.ModuleName, requiredAmount, false)
 		if err != nil {
 			return err
 		}
@@ -316,7 +312,18 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 		if err != nil {
 			return err
 		}
-
+		allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, inFlowTokenAssetID)
+		if !found {
+			allReserveStats = lendtypes.AllReserveStats{
+				AssetID:                        inFlowTokenAssetID,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         sdk.ZeroInt(),
+			}
+		}
+		allReserveStats.AmountOutFromReserveForAuction = allReserveStats.AmountOutFromReserveForAuction.Add(requiredAmount.Amount)
+		k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 		// remove dutch auction
 		err = k.CloseDutchLendAuction(ctx, auction)
 		if err != nil {

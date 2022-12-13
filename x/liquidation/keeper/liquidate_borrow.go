@@ -261,6 +261,20 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			if err != nil {
 				return err
 			}
+
+			allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetIn)
+			if !found {
+				allReserveStats = lendtypes.AllReserveStats{
+					AssetID:                        pair.AssetIn,
+					AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+					AmountOutFromReserveForAuction: sdk.ZeroInt(),
+					AmountInFromLiqPenalty:         sdk.ZeroInt(),
+					AmountInFromRepayments:         sdk.ZeroInt(),
+				}
+			}
+			allReserveStats.AmountInFromLiqPenalty = allReserveStats.AmountInFromLiqPenalty.Add(penaltyToReserveAmount.TruncateInt())
+			k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
+
 			cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 			// totalDeduction is the sum of liquidationDeductionAmount and selloffAmount
 			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(sellOffAmt.TruncateInt()) // Total deduction from amountIn also reduce to lend Position amountIn
@@ -366,6 +380,18 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 				if err != nil {
 					return err
 				}
+				allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetIn)
+				if !found {
+					allReserveStats = lendtypes.AllReserveStats{
+						AssetID:                        pair.AssetIn,
+						AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+						AmountOutFromReserveForAuction: sdk.ZeroInt(),
+						AmountInFromLiqPenalty:         sdk.ZeroInt(),
+						AmountInFromRepayments:         sdk.ZeroInt(),
+					}
+				}
+				allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amount.Amount)
+				k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 			}
 			amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 			if amtToMint.GT(sdk.ZeroInt()) {

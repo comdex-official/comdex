@@ -238,9 +238,7 @@ func (m *ActivateExternalRewardsLend) ValidateBasic() error {
 	if m.DurationDays <= 0 {
 		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
 	}
-	if m.MinLockupTimeSeconds <= 0 {
-		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
-	}
+
 	return nil
 }
 

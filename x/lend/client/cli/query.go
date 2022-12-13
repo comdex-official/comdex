@@ -53,6 +53,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryModuleBalance(), //
 		QueryFundModuleBalance(),
 		QueryFundReserveBalance(),
+		QueryAllReserveStats(),
 	)
 
 	return cmd
@@ -894,6 +895,36 @@ func QueryFundReserveBalance() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryFundReserveBal(cmd.Context(), &types.QueryFundReserveBalRequest{})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func QueryAllReserveStats() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "all-reserve-stats [id]",
+		Short: "queries all reserve stats of an asset id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.QueryAllReserveStats(cmd.Context(), &types.QueryAllReserveStatsRequest{AssetId: assetID})
 			if err != nil {
 				return err
 			}

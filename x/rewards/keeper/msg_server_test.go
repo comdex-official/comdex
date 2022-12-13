@@ -779,6 +779,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", amt)))
 
 	s.TestCreateLend()
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
 	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
 	server := keeper.NewMsgServerImpl(*rewardsKeeper)
 	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewInt(1234567890)))
@@ -823,36 +824,36 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 		})
 	}
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:10:10Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
 	req := abci.RequestBeginBlock{}
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:12:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:12:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at third day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:15:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:15:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at fourth day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:17:00Z"))
-	s.ctx = s.ctx.WithBlockHeight(15)
-	rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
-	fmt.Println("rew", rew)
+	//s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-07T12:17:00Z"))
+	//s.ctx = s.ctx.WithBlockHeight(15)
+	//rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
+	//fmt.Println("rew", rew)
 
 }

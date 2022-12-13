@@ -571,3 +571,17 @@ func (q QueryServer) QueryFundReserveBal(c context.Context, req *types.QueryFund
 		FundReserveBalance: resBal,
 	}, nil
 }
+
+func (q QueryServer) QueryAllReserveStats(c context.Context, req *types.QueryAllReserveStatsRequest) (*types.QueryAllReserveStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	allReserveStats, found := q.GetAllReserveStatsByAssetID(ctx, req.AssetId)
+	if !found {
+		return &types.QueryAllReserveStatsResponse{}, nil
+	}
+
+	return &types.QueryAllReserveStatsResponse{AllReserveStats: allReserveStats}, nil
+}

@@ -570,3 +570,28 @@ func (k Keeper) GetFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal, fou
 	k.cdc.MustUnmarshal(value, &resBal)
 	return resBal, true
 }
+
+func (k Keeper) SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats types.AllReserveStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AllReserveStatsKey(allReserveStats.AssetID)
+		value = k.cdc.MustMarshal(&allReserveStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats types.AllReserveStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AllReserveStatsKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return allReserveStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &allReserveStats)
+	return allReserveStats, true
+}
