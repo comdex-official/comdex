@@ -1026,7 +1026,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
-	amountToUser := sdk.Int
+	var amountToUser sdk.Int
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
@@ -1095,7 +1095,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	stableRewards.AppId = msg.AppId
 	stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId
 	stableRewards.User = msg.From
-	stableRewards.BlockHeight = ctx.blockHeight.Uint64()
+	stableRewards.BlockHeight = uint64(ctx.BlockHeight())
 	stableRewards.Amount = amountToUser
 	k.SetStableMintVaultRewards(ctx, stableRewards)
 
@@ -1191,7 +1191,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
-	amountToUser := sdk.Int
+	var amountToUser sdk.Int
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
@@ -1251,7 +1251,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	stableRewards.AppId = msg.AppId
 	stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId
 	stableRewards.User = msg.From
-	stableRewards.BlockHeight = ctx.blockHeight.Uint64()
+	stableRewards.BlockHeight = uint64(ctx.BlockHeight())
 	stableRewards.Amount = amountToUser
 	k.SetStableMintVaultRewards(ctx, stableRewards)
 
