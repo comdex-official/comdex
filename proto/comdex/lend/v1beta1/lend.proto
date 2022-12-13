@@ -556,4 +556,10 @@ message AllReserveStats {
     (gogoproto.moretags) = "yaml:\"amount_in_from_repayments\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
+
+  string total_amount_out_to_lenders = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_amount_out_to_lenders\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
 }

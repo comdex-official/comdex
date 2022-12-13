@@ -860,7 +860,7 @@ func QueryFundModuleBalance() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fund-module-balance ",
 		Short: "queries fund module balance history",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -885,7 +885,7 @@ func QueryFundReserveBalance() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fund-reserve-balance ",
 		Short: "queries fund reserve balance history",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

@@ -930,7 +930,7 @@ func txFundReserveAccounts() *cobra.Command {
 		Short: "Deposit amount to the reserve module account",
 		Long: `This is a liquidity bootstrapping function only for the protocol admins. 
 				No user should run this transaction as it will lead to loss of funds.`,
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {

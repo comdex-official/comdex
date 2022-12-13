@@ -270,6 +270,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 					AmountOutFromReserveForAuction: sdk.ZeroInt(),
 					AmountInFromLiqPenalty:         sdk.ZeroInt(),
 					AmountInFromRepayments:         sdk.ZeroInt(),
+					TotalAmountOutToLenders:        sdk.ZeroInt(),
 				}
 			}
 			allReserveStats.AmountInFromLiqPenalty = allReserveStats.AmountInFromLiqPenalty.Add(penaltyToReserveAmount.TruncateInt())
@@ -388,6 +389,7 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						AmountOutFromReserveForAuction: sdk.ZeroInt(),
 						AmountInFromLiqPenalty:         sdk.ZeroInt(),
 						AmountInFromRepayments:         sdk.ZeroInt(),
+						TotalAmountOutToLenders:        sdk.ZeroInt(),
 					}
 				}
 				allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amount.Amount)

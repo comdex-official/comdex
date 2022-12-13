@@ -233,11 +233,7 @@ func (m msgServer) BorrowAlternate(goCtx context.Context, alternate *types.MsgBo
 func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.MsgFundModuleAccounts) (*types.MsgFundModuleAccountsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	lenderAddr, err := sdk.AccAddressFromBech32(accounts.Lender)
-	if err != nil {
-		return nil, err
-	}
-	if err = m.keeper.FundModAcc(ctx, accounts.PoolId, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
+	if err := m.keeper.FundModAcc(ctx, accounts.PoolId, accounts.AssetId, accounts.Lender, accounts.Amount); err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -268,11 +264,7 @@ func (m msgServer) CalculateInterestAndRewards(goCtx context.Context, rewards *t
 func (m msgServer) FundReserveAccounts(goCtx context.Context, accounts *types.MsgFundReserveAccounts) (*types.MsgFundReserveAccountsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	lenderAddr, err := sdk.AccAddressFromBech32(accounts.Lender)
-	if err != nil {
-		return nil, err
-	}
-	if err = m.keeper.FundReserveAcc(ctx, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
+	if err := m.keeper.FundReserveAcc(ctx, accounts.AssetId, accounts.Lender, accounts.Amount); err != nil {
 		return nil, err
 	}
 	ctx.EventManager().EmitEvents(sdk.Events{

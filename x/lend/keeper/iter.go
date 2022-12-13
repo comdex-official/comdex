@@ -46,6 +46,17 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 	asset, _ := k.Asset.GetAsset(ctx, lend.AssetID)
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
 	if newInterestPerInteraction.GT(sdk.ZeroInt()) {
+		allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, lend.AssetID)
+		if !found {
+			allReserveStats = types.AllReserveStats{
+				AssetID:                        lend.AssetID,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
+			}
+		}
 		if newInterestPerInteraction.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
 			modBal := k.ModuleBalance(ctx, types.ModuleName, asset.Denom)
 			if modBal.LT(newInterestPerInteraction) {
@@ -99,17 +110,8 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 
 			k.SetReserveBuybackAssetData(ctx, reserve)
 
-			allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, lend.AssetID)
-			if !found {
-				allReserveStats = types.AllReserveStats{
-					AssetID:                        lend.AssetID,
-					AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-					AmountOutFromReserveForAuction: sdk.ZeroInt(),
-					AmountInFromLiqPenalty:         sdk.ZeroInt(),
-					AmountInFromRepayments:         sdk.ZeroInt(),
-				}
-			}
 			allReserveStats.AmountOutFromReserveToLenders = allReserveStats.AmountOutFromReserveToLenders.Add(newInterestPerInteraction)
+			allReserveStats.TotalAmountOutToLenders = allReserveStats.TotalAmountOutToLenders.Add(newInterestPerInteraction)
 			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 		} else {
 
@@ -132,6 +134,8 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 			poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
 			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 			k.SetLend(ctx, lend)
+			allReserveStats.TotalAmountOutToLenders = allReserveStats.TotalAmountOutToLenders.Add(newInterestPerInteraction)
+			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 		}
 	}
 

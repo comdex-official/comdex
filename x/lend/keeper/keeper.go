@@ -1409,7 +1409,11 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	return nil
 }
 
-func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lender string, payment sdk.Coin) error {
+	lenderAddr, err := sdk.AccAddressFromBech32(lender)
+	if err != nil {
+		return err
+	}
 	pool, found := k.GetPool(ctx, poolID)
 	if !found {
 		return types.ErrPoolNotFound
@@ -1436,7 +1440,7 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr s
 		return assettypes.ErrorAssetDoesNotExist
 	}
 
-	err := k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, payment.Amount)))
+	err = k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, payment.Amount)))
 	if err != nil {
 		return err
 	}
@@ -1458,7 +1462,11 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr s
 	return nil
 }
 
-func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lender string, payment sdk.Coin) error {
+	lenderAddr, err := sdk.AccAddressFromBech32(lender)
+	if err != nil {
+		return err
+	}
 	asset, found := k.Asset.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrLendNotFound
@@ -1496,6 +1504,7 @@ func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lenderAddr sdk.A
 		resBals = types.ReserveBal{FundReserveBalance: nil}
 	}
 	resBals.FundReserveBalance = append(resBals.FundReserveBalance, resBal)
+	k.SetFundReserveBal(ctx, resBals)
 
 	return nil
 }
@@ -1740,6 +1749,7 @@ func (k Keeper) UpdateReserverAmtFromRepayments(ctx sdk.Context, id uint64, amt 
 			AmountOutFromReserveForAuction: sdk.ZeroInt(),
 			AmountInFromLiqPenalty:         sdk.ZeroInt(),
 			AmountInFromRepayments:         sdk.ZeroInt(),
+			TotalAmountOutToLenders:        sdk.ZeroInt(),
 		}
 	}
 	allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amt)

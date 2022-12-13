@@ -320,6 +320,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 				AmountOutFromReserveForAuction: sdk.ZeroInt(),
 				AmountInFromLiqPenalty:         sdk.ZeroInt(),
 				AmountInFromRepayments:         sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
 			}
 		}
 		allReserveStats.AmountOutFromReserveForAuction = allReserveStats.AmountOutFromReserveForAuction.Add(requiredAmount.Amount)
