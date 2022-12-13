@@ -683,3 +683,39 @@ func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec
 	// return sdk.Int(tokenAmount), nil
 	return t1dAmount, tokenAmount.TruncateInt(), nil
 }
+
+func (k Keeper) SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards types.StableMintVaultRewards) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight )
+		value = k.cdc.MustMarshal(&stableMintVaultRewards)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64, user string) (mappingData []types.StableMintVaultRewards, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableMintRewardsKey(appID, pairVaultID, user)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.StableMintVaultRewards
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		mappingData = append(mappingData, mapData)
+	}
+	if mappingData == nil {
+		return nil, false
+	}
+
+	return mappingData, true
+}

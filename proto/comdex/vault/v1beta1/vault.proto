@@ -140,3 +140,25 @@ message PairStatisticData {
     (gogoproto.customname) = "ExtendedPairVaultID",
     (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
 }
+
+message StableMintVaultRewards {
+  uint64 app_id = 1[
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+
+  uint64 stable_extended_pair_id = 2 [(gogoproto.moretags) = "yaml:\"stable_extended_pair_id\""];
+
+  string user = 3 [
+    (gogoproto.moretags) = "yaml:\"user\""
+  ];
+  int64 block_height = 4 [
+    (gogoproto.moretags)   = "yaml:\"block_height\""
+  ];
+
+  string amount = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false
+  ];
+
+}
