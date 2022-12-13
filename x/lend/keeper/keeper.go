@@ -1524,7 +1524,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
 	assetInRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
 
-	amoutOutDiff := borrowPos.AmountOut.Amount.Sub(liqBorrow.AmountOut)
 	borrowPos.AmountOut.Amount = liqBorrow.AmountOut
 	borrowPos.AmountIn.Amount = liqBorrow.AmountIn
 	borrowPos.LastInteractionTime = ctx.BlockTime()
@@ -1589,7 +1588,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		}
 	}
 
-	k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, amoutOutDiff, false)
 	k.SetBorrow(ctx, borrowPos)
 }
 

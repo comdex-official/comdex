@@ -445,16 +445,16 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	}
 
 	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000))))
-	err = lendKeeper.FundModAcc(s.ctx, 1, 1, sdk.AccAddress(userAddress), sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddress, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
 	s.Require().NoError(err)
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000))))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 2, sdk.AccAddress(userAddress), sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddress, sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
 	s.Require().NoError(err)
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000))))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 3, sdk.AccAddress(userAddress), sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddress, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
 	s.Require().NoError(err)
 }
 
