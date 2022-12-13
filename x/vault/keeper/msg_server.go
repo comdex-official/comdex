@@ -1026,6 +1026,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
+	amountToUser := sdk.Int
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
@@ -1066,7 +1067,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 
 		// and send the rest to the user
 		// amountToUser := msg.Amount.Sub(collectorShare)
-		amountToUser := tokenOutAmount.Sub(collectorShare)
+		amountToUser = tokenOutAmount.Sub(collectorShare)
 		if amountToUser.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
@@ -1090,6 +1091,13 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	k.SetIDForStableVault(ctx, newID)
 	// update Locker Data 	//Update Amount
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, stableVault)
+	var stableRewards types.StableMintVaultRewards
+	stableRewards.AppId = msg.AppId
+	stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId
+	stableRewards.User = msg.From
+	stableRewards.BlockHeight = ctx.blockHeight.Uint64()
+	stableRewards.Amount = amountToUser
+	k.SetStableMintVaultRewards(ctx, stableRewards)
 
 	ctx.GasMeter().ConsumeGas(types.CreateStableVaultGas, "CreateStableVaultGas")
 
@@ -1183,6 +1191,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
+	amountToUser := sdk.Int
 
 	if msg.Amount.GT(sdk.ZeroInt()) {
 		// Take amount from user
@@ -1223,7 +1232,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 
 		// and send the rest to the user
 		// amountToUser := msg.Amount.Sub(collectorShare)
-		amountToUser := tokenOutAmount.Sub(collectorShare)
+		amountToUser = tokenOutAmount.Sub(collectorShare)
 		if amountToUser.GT(sdk.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
@@ -1238,6 +1247,13 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, true)
+	var stableRewards types.StableMintVaultRewards
+	stableRewards.AppId = msg.AppId
+	stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId
+	stableRewards.User = msg.From
+	stableRewards.BlockHeight = ctx.blockHeight.Uint64()
+	stableRewards.Amount = amountToUser
+	k.SetStableMintVaultRewards(ctx, stableRewards)
 
 	ctx.GasMeter().ConsumeGas(types.DepositStableVaultGas, "DepositStableVaultGas")
 	return &types.MsgDepositStableMintResponse{}, nil
