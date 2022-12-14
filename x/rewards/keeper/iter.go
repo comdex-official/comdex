@@ -343,7 +343,8 @@ func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poo
 		if err != nil {
 			return sdk.ZeroDec(), false
 		}
-		minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, sdk.AccAddress(lendPos.Owner), masterPoolID, appID, borrowAmt)
+		addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
+		minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, addr, masterPoolID, appID, borrowAmt)
 		if !found {
 			continue
 		}
