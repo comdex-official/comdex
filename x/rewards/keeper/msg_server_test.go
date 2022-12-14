@@ -2,11 +2,14 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -856,4 +859,41 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 	//rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
 	//fmt.Println("rew", rew)
 
+}
+
+func (s *KeeperTestSuite) TestFarmSetup() {
+	creator := s.addr(0)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000uasset1,1000000000000uasset2")
+
+	liquidityProvider1 := s.addr(1)
+	s.Deposit(appID1, pool.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset2")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+
+	currentTime := s.ctx.BlockTime()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	msg := liquiditytypes.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-1"))
+	err := s.app.LiquidityKeeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+	queuedFarmers := s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
+	s.Require().Len(queuedFarmers, 1)
+	activeFarmers := s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
+	s.Require().Len(activeFarmers, 0)
+	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Hour * 25))
+	s.nextBlock()
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
+	s.Require().Len(activeFarmers, 1)
+
+	activeFarmer, found := s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(liquiditytypes.ActiveFarmer{}, activeFarmer)
+	fmt.Println(activeFarmer)
 }
