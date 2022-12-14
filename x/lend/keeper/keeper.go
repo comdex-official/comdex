@@ -1670,3 +1670,29 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 	}
 	return nil
 }
+
+func (k Keeper) UserCMSTLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool) {
+	var (
+		lendIDs []uint64
+	)
+	amount := sdk.ZeroInt()
+	mappingData := k.GetUserTotalMappingData(ctx, addr)
+
+	for _, data := range mappingData {
+		lendIDs = append(lendIDs, data.LendId)
+	}
+	if len(lendIDs) == 0 {
+		return amount, false
+	}
+
+	for _, lendID := range lendIDs {
+		lendPos, found := k.GetLend(ctx, lendID)
+		if !found {
+			continue
+		}
+		if lendPos.AssetID == assetID {
+			amount = amount.Add(lendPos.AmountIn.Amount)
+		}
+	}
+	return amount, true
+}
