@@ -657,26 +657,15 @@ func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserial
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-
 	if req.AppId == 0 {
 		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
 	}
-
 	ctx := sdk.UnwrapSDKContext(c)
-
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, req.AppId, req.PoolId)
+	farmedCoins, err := k.DeserializePoolCoinHelper(ctx, req.AppId, req.PoolId, req.PoolCoinAmount)
 	if err != nil {
 		return nil, err
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(req.PoolCoinAmount)))
-	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
-	if err != nil {
-		return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{sdk.NewCoin(pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(pair.BaseCoinDenom, sdk.NewInt(0))}}, nil
-	}
-	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-
-	return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{quoteCoin, baseCoin}}, nil
+	return &types.QueryDeserializePoolCoinResponse{Coins: farmedCoins}, nil
 }
 
 // PoolIncentives provides insights about available pool incentives.
