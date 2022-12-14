@@ -687,7 +687,7 @@ func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec
 func (k Keeper) SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards types.StableMintVaultRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight )
+		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
 		value = k.cdc.MustMarshal(&stableMintVaultRewards)
 	)
 
@@ -697,13 +697,11 @@ func (k Keeper) SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultReward
 func (k Keeper) DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards types.StableMintVaultRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight )
-		
+		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
 	)
 
 	store.Delete(key)
 }
-
 
 func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64, user string) (mappingData []types.StableMintVaultRewards, found bool) {
 	var (
@@ -731,28 +729,25 @@ func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVau
 	return mappingData, true
 }
 
-func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, pairVaultID uint64, user string,quanitity sdk.Int)  {
-	stableVaultRewards, found := k.GetStableMintVaultRewards(ctx, appID,pairVaultID,user)
+func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, pairVaultID uint64, user string, quanitity sdk.Int) {
+	stableVaultRewards, found := k.GetStableMintVaultRewards(ctx, appID, pairVaultID, user)
 
-	if found{
+	if found {
 
-		for _ , userRewards :=range stableVaultRewards{
-			if userRewards.Amount.GTE(quanitity){
-				userRewards.Amount=userRewards.Amount.Sub(quanitity)
+		for _, userRewards := range stableVaultRewards {
+			if userRewards.Amount.GTE(quanitity) {
+				userRewards.Amount = userRewards.Amount.Sub(quanitity)
 				k.SetStableMintVaultRewards(ctx, userRewards)
 				break
 
-			}else if userRewards.Amount.LT(quanitity){
-					quanitity=quanitity.Sub(userRewards.Amount)
-					k.DeleteStableMintVaultRewards(ctx, userRewards)
+			} else if userRewards.Amount.LT(quanitity) {
+				quanitity = quanitity.Sub(userRewards.Amount)
+				k.DeleteStableMintVaultRewards(ctx, userRewards)
 
 			}
-			
-
-
 
 		}
 
 	}
-	
+
 }

@@ -1411,7 +1411,8 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, updatedAmount, false)
 
 	//Function that deletes the entries in the stable mint rewards structure.
-	
+	k.DeleteUserStableRewardEntries(ctx,appExtendedPairVaultData.AppId,appExtendedPairVaultData.ExtendedPairId,msg.From,updatedAmount)
+
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")
 
