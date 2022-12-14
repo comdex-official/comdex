@@ -731,23 +731,42 @@ func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVau
 
 func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, pairVaultID uint64, user string, quanitity sdk.Int) {
 	stableVaultRewards, found := k.GetStableMintVaultRewards(ctx, appID, pairVaultID, user)
-
 	if found {
-
 		for _, userRewards := range stableVaultRewards {
 			if userRewards.Amount.GTE(quanitity) {
 				userRewards.Amount = userRewards.Amount.Sub(quanitity)
 				k.SetStableMintVaultRewards(ctx, userRewards)
 				break
-
 			} else if userRewards.Amount.LT(quanitity) {
 				quanitity = quanitity.Sub(userRewards.Amount)
 				k.DeleteStableMintVaultRewards(ctx, userRewards)
-
 			}
-
 		}
+	}
+}
 
+func (k Keeper) GetAllStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64) (mappingData []types.StableMintVaultRewards, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableMintRewardsWithoutUserKey(appID, pairVaultID)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.StableMintVaultRewards
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		mappingData = append(mappingData, mapData)
+	}
+	if mappingData == nil {
+		return nil, false
 	}
 
+	return mappingData, true
 }

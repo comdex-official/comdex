@@ -40,6 +40,7 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetPair(ctx sdk.Context, id uint64) (pair assettypes.Pair, found bool)
 }
 
 type MarketKeeper interface {
@@ -80,6 +81,7 @@ type VaultKeeper interface {
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool)
+	GetAllStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
 }
 
 type BankKeeper interface {
@@ -94,6 +96,7 @@ type BankKeeper interface {
 
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
 type EsmKeeper interface {
