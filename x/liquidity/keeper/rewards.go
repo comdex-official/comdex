@@ -42,6 +42,21 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 	return x, y, nil
 }
 
+func (k Keeper) DeserializePoolCoinHelper(ctx sdk.Context, appID, poolID, poolCoinAmount uint64) (sdk.Coins, error) {
+	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+	if err != nil {
+		return nil, err
+	}
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(poolCoinAmount)))
+	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+	if err != nil {
+		return []sdk.Coin{sdk.NewCoin(pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(pair.BaseCoinDenom, sdk.NewInt(0))}, nil
+	}
+	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
+	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+	return []sdk.Coin{quoteCoin, baseCoin}, nil
+}
+
 func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool, assettypes.Asset) {
 	asset, found := k.assetKeeper.GetAssetForDenom(ctx, denom)
 	if !found {
@@ -477,4 +492,37 @@ func (k Keeper) ProcessQueuedFarmers(ctx sdk.Context, appID uint64) {
 			}
 		}
 	}
+}
+
+func (k Keeper) GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error) {
+	totalAmountFarmed := sdk.ZeroInt()
+	asset, found := k.assetKeeper.GetAsset(ctx, assetID)
+	if !found {
+		return totalAmountFarmed, assettypes.ErrorAssetDoesNotExist
+	}
+	allPools := k.GetAllPools(ctx, appID)
+	requiredAssetPoolIds := []uint64{}
+	for _, pool := range allPools {
+		rx, ry := k.GetPoolBalances(ctx, pool)
+		if types.ItemExists([]string{rx.Denom, ry.Denom}, asset.Denom) {
+			requiredAssetPoolIds = append(requiredAssetPoolIds, pool.Id)
+		}
+	}
+	for _, poolID := range requiredAssetPoolIds {
+		activeFarmer, found := k.GetActiveFarmer(ctx, appID, poolID, farmer)
+		if !found {
+			continue
+		}
+		assetsFarmed, err := k.DeserializePoolCoinHelper(ctx, appID, poolID, activeFarmer.FarmedPoolCoin.Amount.Uint64())
+		if err != nil {
+			continue
+		}
+		for _, coin := range assetsFarmed {
+			if coin.Denom == asset.Denom {
+				totalAmountFarmed = totalAmountFarmed.Add(coin.Amount)
+				break
+			}
+		}
+	}
+	return totalAmountFarmed, nil
 }
