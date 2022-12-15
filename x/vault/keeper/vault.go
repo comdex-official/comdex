@@ -687,7 +687,7 @@ func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec
 func (k Keeper) SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards types.StableMintVaultRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
+		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
 		value = k.cdc.MustMarshal(&stableMintVaultRewards)
 	)
 
@@ -697,16 +697,41 @@ func (k Keeper) SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultReward
 func (k Keeper) DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards types.StableMintVaultRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.StableExtendedPairId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
+		key   = types.StableMintVaultRewardsKey(stableMintVaultRewards.AppId, stableMintVaultRewards.User, stableMintVaultRewards.BlockHeight)
 	)
 
 	store.Delete(key)
 }
 
-func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64, user string) (mappingData []types.StableMintVaultRewards, found bool) {
+func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, user string) (mappingData []types.StableMintVaultRewards, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.StableMintRewardsKey(appID, pairVaultID, user)
+		key   = types.StableMintRewardsKey(appID, user)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.StableMintVaultRewards
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		mappingData = append(mappingData, mapData)
+	}
+	if mappingData == nil {
+		return nil, false
+	}
+
+	return mappingData, true
+}
+func (k Keeper) GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []types.StableMintVaultRewards, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableMintRewardsAppKey(appID)
 		iter  = sdk.KVStorePrefixIterator(store, key)
 	)
 
@@ -729,8 +754,8 @@ func (k Keeper) GetStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVau
 	return mappingData, true
 }
 
-func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, pairVaultID uint64, user string, quanitity sdk.Int) {
-	stableVaultRewards, found := k.GetStableMintVaultRewards(ctx, appID, pairVaultID, user)
+func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64,  user string, quanitity sdk.Int) {
+	stableVaultRewards, found := k.GetStableMintVaultRewards(ctx, appID, user)
 	if found {
 		for _, userRewards := range stableVaultRewards {
 			if userRewards.Amount.GTE(quanitity) {
@@ -770,3 +795,5 @@ func (k Keeper) GetAllStableMintVaultRewards(ctx sdk.Context, appID uint64, pair
 
 	return mappingData, true
 }
+
+
