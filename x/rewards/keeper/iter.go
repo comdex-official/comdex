@@ -361,8 +361,21 @@ func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
 	
 	for _, extRewardAppData:= range extRewardAllAppData {
 
-		appExtendedPairVaultData, found := k.vault.GetStableMintVaultRewardsByApp(ctx,extRewardAppData.AppId)
+		appStableVaultsData, found := k.vault.GetStableMintVaultRewardsByApp(ctx,extRewardAppData.AppId)
 		if found{
+
+			for _, appStableVaultData:= range appStableVaultsData {
+				if appStableVaultData.BlockHeight.GT(accepted blockheight){
+
+					//usig address from one user value to get all  , then checking the epoch duration limit, and for those who have crosssed it , joining it together.
+					userStableVaultsData, found := k.vault.GetStableMintVaultRewards(ctx,appStableVaultData.AppId,appStableVaultData.User)
+					//****looping over the different data, but keeping in ming to ignore the une being used as initial data (appStableVaultData)****
+
+				}
+			
+
+			}
+
 			
 		}
 
