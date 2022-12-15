@@ -773,7 +773,7 @@ func (k Keeper) GetExternalRewardsLendID(ctx sdk.Context) uint64 {
 func (k Keeper) SetExternalRewardStableVault(ctx sdk.Context, VaultExternalRewards types.StableVaultExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ExternalRewardsStableVaultMappingKey(VaultExternalRewards.Id)
+		key   = types.ExternalRewardsStableVaultMappingKey(VaultExternalRewards.AppId)
 		value = k.cdc.MustMarshal(&VaultExternalRewards)
 	)
 	store.Set(key, value)

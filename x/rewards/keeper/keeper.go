@@ -327,7 +327,6 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	totalRewards sdk.Coin,
 	depositor sdk.AccAddress,
 ) error {
-	id := k.GetExternalRewardsVaultID(ctx)
 
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
 
@@ -339,7 +338,6 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	}
 
 	msg := types.StableVaultExternalRewards{
-		Id:                   id + 1,
 		AppId:                appID,
 		CswapAppId:           cswapAppID,
 		CommodoAppId:         commodoAppID,
