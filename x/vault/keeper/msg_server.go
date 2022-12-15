@@ -1091,8 +1091,8 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	k.SetIDForStableVault(ctx, newID)
 	// update Locker Data 	//Update Amount
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, stableVault)
-	_, found = k.rewards.GetExternalRewardStableVault(ctx, msg.AppId)
-	if found {
+	extRewardData,found := k.rewards.GetExternalRewardStableVault(ctx, msg.AppId)
+	if found && extRewardData.IsActive {
 		var stableRewards types.StableMintVaultRewards
 		stableRewards.AppId = msg.AppId
 		stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId
@@ -1250,8 +1250,9 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, true)
-	_, found = k.rewards.GetExternalRewardStableVault(ctx, msg.AppId)
-	if found {
+	extRewardData, found := k.rewards.GetExternalRewardStableVault(ctx, msg.AppId)
+	if found && extRewardData.IsActive  {
+		
 		var stableRewards types.StableMintVaultRewards
 		stableRewards.AppId = msg.AppId
 		stableRewards.StableExtendedPairId = msg.ExtendedPairVaultId

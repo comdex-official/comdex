@@ -357,8 +357,17 @@ func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
 	//after combining them delete ther one, ignore ones that have not completed an epoch
 	//do this for all positions. 
 
-	extRewards := k.GetExternalRewardLends(ctx)
-	for _, v := range extRewards {
+	extRewardAllAppData := k.GetExternalRewardStableVault(ctx)
+	
+	for _, extRewardAppData:= range extRewardAllAppData {
+
+		appExtendedPairVaultData, found := k.vault.GetStableMintVaultRewardsByApp(ctx,extRewardAppData.AppId)
+		if found{
+			
+		}
+
+
+
 
 	}
 	return error
