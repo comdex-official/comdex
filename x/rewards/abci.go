@@ -28,6 +28,10 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 		if err != nil {
 			ctx.Logger().Error("error in DistributeExtRewardLend")
 		}
+		err = k.CombinePSMUserPositions(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in CombinePSMUserPositions")
+		}
 		return nil
 	})
 }
