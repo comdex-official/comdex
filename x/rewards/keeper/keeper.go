@@ -319,3 +319,47 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }
+
+func (k Keeper) ActExternalRewardsStableVaults(
+	ctx sdk.Context,
+	appID uint64, cswapAppID, commodoAppID uint64,
+	durationDays, minLockupTimeSeconds int64,
+	totalRewards sdk.Coin,
+	depositor sdk.AccAddress,
+) error {
+	id := k.GetExternalRewardsVaultID(ctx)
+
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
+
+	epochID := k.GetEpochTimeID(ctx)
+	epoch := types.EpochTime{
+		Id:           epochID + 1,
+		AppMappingId: appID,
+		StartingTime: ctx.BlockTime().Unix() + types.SecondsPerDay,
+	}
+
+	msg := types.StableVaultExternalRewards{
+		Id:                   id + 1,
+		AppId:                appID,
+		CswapAppId:           cswapAppID,
+		CommodoAppId:         commodoAppID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
+		IsActive:             true,
+		AvailableRewards:     totalRewards,
+		Depositor:            depositor.String(),
+		StartTimestamp:       ctx.BlockTime(),
+		EndTimestamp:         endTime,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
+		EpochId:              epoch.Id,
+	}
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(totalRewards)); err != nil {
+		return err
+	}
+
+	k.SetEpochTimeID(ctx, msg.EpochId)
+	k.SetExternalRewardStableVault(ctx, msg)
+	k.SetEpochTime(ctx, epoch)
+	return nil
+}
