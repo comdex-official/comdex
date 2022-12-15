@@ -295,10 +295,14 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	// if inflow token current amount >= InflowTokenTargetAmount
 	if auction.InflowTokenCurrentAmount.IsGTE(auction.InflowTokenTargetAmount) {
 		// send left overcollateral to vault owner as target cmst reached and also
+		vaultHolder, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+		if err != nil {
+			panic(err)
+		}
 
 		total := auction.OutflowTokenCurrentAmount
 		if total.Amount.GT(sdk.ZeroInt()) {
-			err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(lockedVault.Owner), sdk.NewCoins(total))
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, vaultHolder, sdk.NewCoins(total))
 			if err != nil {
 				return err
 			}
