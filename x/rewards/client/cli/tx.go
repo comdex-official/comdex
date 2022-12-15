@@ -32,6 +32,7 @@ func GetTxCmd() *cobra.Command {
 		txActivateExternalRewardsLockers(),
 		txActivateExternalRewardsVaults(),
 		txActivateExternalRewardsLend(),
+		txActivateExternalRewardsStableVaults(),
 	)
 
 	return cmd
@@ -343,6 +344,65 @@ func txActivateExternalRewardsLend() *cobra.Command {
 				cSwapMinLockAmount,
 				totalRewards,
 				masterPoolID,
+				durationDays,
+				minLockupTimeSeconds,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txActivateExternalRewardsStableVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-stable-vault [appID] [cswapAppID] [commodoAppID] [totalRewards] [durationDays] [minLockupTimeSeconds]",
+		Short: "activate external reward for stable vaults of an app",
+		Args:  cobra.ExactArgs(6),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cswapAppID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			commodoAppID, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			totalRewards, err := sdk.ParseCoinNormalized(args[3])
+			if err != nil {
+				return err
+			}
+
+			durationDays, err := strconv.ParseInt(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			minLockupTimeSeconds, err := strconv.ParseInt(args[5], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalRewardsStableVault(
+				appID,
+				cswapAppID,
+				commodoAppID,
+				totalRewards,
 				durationDays,
 				minLockupTimeSeconds,
 				ctx.GetFromAddress(),

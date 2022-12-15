@@ -256,3 +256,59 @@ func (m *ActivateExternalRewardsLend) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgActivateExternalRewardsStableVault(
+	appID uint64,
+	cswapAppID uint64,
+	commodoAppID uint64,
+	totalRewards sdk.Coin,
+	durationDays, minLockupTimeSeconds int64,
+	from sdk.AccAddress,
+) *ActivateExternalRewardsStableMint {
+	return &ActivateExternalRewardsStableMint{
+		AppId:                appID,
+		CswapAppId:           cswapAppID,
+		CommodoAppId:         commodoAppID,
+		TotalRewards:         totalRewards,
+		DurationDays:         durationDays,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
+		Depositor:            from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsStableMint) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsStableMint) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsStableMint) ValidateBasic() error {
+	if m.AppId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.MinLockupTimeSeconds <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	}
+	return nil
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

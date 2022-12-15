@@ -217,3 +217,53 @@ message RewardsAssetPoolData{
     (gogoproto.moretags) = "yaml:\"c_swap_min_lock_amount\""
   ];
 }
+
+message StableVaultExternalRewards{
+  uint64 id = 1 [
+    (gogoproto.moretags) = "yaml:\"id\""
+  ];
+  uint64 app_id = 2 [
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 cswap_app_id = 3 [
+    (gogoproto.moretags) = "yaml:\"cswap_app_id\""
+  ];
+  uint64 commodo_app_id = 4 [
+    (gogoproto.moretags) = "yaml:\"commodo_app_id\""
+  ];
+  cosmos.base.v1beta1.Coin total_rewards = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_rewards\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  int64 duration_days = 6 [
+    (gogoproto.moretags) = "yaml:\"duration_days\""
+  ];
+  bool is_active = 7 [
+    (gogoproto.moretags) = "yaml:\"is_active\""
+  ];
+  cosmos.base.v1beta1.Coin available_rewards = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"available_rewards\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  string depositor = 9 [
+    (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+  google.protobuf.Timestamp start_timestamp = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"start_timestamp\""
+  ];
+  google.protobuf.Timestamp end_timestamp = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"end_timestamp\""
+  ];
+  int64 min_lockup_time_seconds = 12 [
+    (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
+  ];
+  uint64 epoch_id = 13 [
+    (gogoproto.moretags) = "yaml:\"epoch_id\""
+  ];
+}

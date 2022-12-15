@@ -372,7 +372,4 @@ func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
 //3. Using that 1. DS , the CombinePSMUserPositions runs for those apps and combine the rewards for addresses that have completeed  min1 epoch (app specific)
 //4. Reward function will run and check epoch deadline, (balance + lockerbal + lpFarming+ commodo)>=mint balance , then give rewards on whichever is less.
 
-
-
-
-
+}

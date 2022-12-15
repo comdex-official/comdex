@@ -75,3 +75,7 @@ func StableMintRewardsKey(appID uint64,address string) []byte {
 func StableMintRewardsAppKey(appID uint64) []byte {
 	return append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
+
+func StableMintRewardsWithoutUserKey(appID uint64, pairVaultID uint64) []byte {
+	return append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(pairVaultID)...)
+}
