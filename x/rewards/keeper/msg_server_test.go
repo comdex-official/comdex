@@ -752,7 +752,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 
 func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.TestFarmSetup()
 	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
 	server := keeper.NewMsgServerImpl(*rewardsKeeper)
