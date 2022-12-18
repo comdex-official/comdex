@@ -41,4 +41,5 @@ var (
 
 	ErrorNotPositiveAmont = sdkerrors.Register(ModuleName, 34, "amount should be positive")
 	ErrTooManyPools       = sdkerrors.Register(ModuleName, 35, "too many pools in the pair")
+	ErrPriceNotOnTicks    = sdkerrors.Register(ModuleName, 36, "price is not on ticks")
 )

@@ -201,14 +201,35 @@ message PoolResponse {
 
   string pool_coin_denom = 4;
 
-  repeated cosmos.base.v1beta1.Coin balances = 5
-  [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  PoolBalances balances = 5 [(gogoproto.nullable) = false];
 
   uint64 last_deposit_request_id = 6;
 
   uint64 last_withdraw_request_id = 7;
 
   uint64 app_id = 8;
+
+  PoolType type = 9;
+
+  string creator = 10;
+
+  string pool_coin_supply = 11
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+
+  string min_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string max_price = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string price = 14 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  bool disabled = 15;
+
+}
+
+message PoolBalances {
+  cosmos.base.v1beta1.Coin base_coin = 1 [(gogoproto.nullable) = false];
+
+  cosmos.base.v1beta1.Coin quote_coin = 2 [(gogoproto.nullable) = false];
 }
 
 // QueryFarmerRequest is request type for the Query/Farmer RPC method.

@@ -17,6 +17,10 @@ func CalculateSwapFeeAmount(ctx sdk.Context, params types.GenericParams, calcula
 	return calculatedOfferCoinAmt.ToDec().MulTruncate(params.SwapFeeRate).TruncateInt()
 }
 
+func (k Keeper) PriceLimits(ctx sdk.Context, lastPrice sdk.Dec, params types.GenericParams) (lowest, highest sdk.Dec) {
+	return types.PriceLimits(lastPrice, params.MaxPriceLimitRatio, int(params.TickPrecision))
+}
+
 // ValidateMsgLimitOrder validates types.MsgLimitOrder with state and returns
 // calculated offer coin and price that is fit into ticks.
 func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (offerCoin sdk.Coin, swapFeeCoin sdk.Coin, price sdk.Dec, err error) {
@@ -31,6 +35,13 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrap(err, "params retreval failed")
 	}
 
+	spendable := k.bankKeeper.SpendableCoins(ctx, msg.GetOrderer())
+	if spendableAmt := spendable.AmountOf(msg.OfferCoin.Denom); spendableAmt.LT(msg.OfferCoin.Amount) {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
+			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
+			sdk.NewCoin(msg.OfferCoin.Denom, spendableAmt), msg.OfferCoin)
+	}
+
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
 			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
@@ -43,9 +54,7 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 
 	var upperPriceLimit, lowerPriceLimit sdk.Dec
 	if pair.LastPrice != nil {
-		lastPrice := *pair.LastPrice
-		upperPriceLimit = lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
-		lowerPriceLimit = lastPrice.Mul(sdk.OneDec().Sub(params.MaxPriceLimitRatio))
+		lowerPriceLimit, upperPriceLimit = k.PriceLimits(ctx, *pair.LastPrice, params)
 	} else {
 		upperPriceLimit = amm.HighestTick(int(params.TickPrecision))
 		lowerPriceLimit = amm.LowestTick(int(params.TickPrecision))
@@ -156,6 +165,13 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrap(err, "params retreval failed")
 	}
 
+	spendable := k.bankKeeper.SpendableCoins(ctx, msg.GetOrderer())
+	if spendableAmt := spendable.AmountOf(msg.OfferCoin.Denom); spendableAmt.LT(msg.OfferCoin.Amount) {
+		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{}, sdkerrors.Wrapf(
+			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
+			sdk.NewCoin(msg.OfferCoin.Denom, spendableAmt), msg.OfferCoin)
+	}
+
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdk.Dec{},
 			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
@@ -238,7 +254,7 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
 			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
 			sdk.NewAttribute(types.AttributeKeyOrderDirection, msg.Direction.String()),
-			sdk.NewAttribute(types.AttributeKeyOfferCoin, msg.OfferCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyOfferCoin, offerCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyDemandCoinDenom, msg.DemandCoinDenom),
 			sdk.NewAttribute(types.AttributeKeyPrice, price.String()),
 			sdk.NewAttribute(types.AttributeKeyAmount, msg.Amount.String()),
@@ -250,6 +266,176 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 	})
 
 	return order, nil
+}
+
+func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.Order, err error) {
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	params, err := k.GetGenericParams(ctx, msg.AppId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
+	tickPrec := int(params.TickPrecision)
+
+	if msg.SellAmount.IsPositive() {
+		if !amm.PriceToDownTick(msg.MinSellPrice, tickPrec).Equal(msg.MinSellPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "min sell price is not on ticks")
+		}
+		if !amm.PriceToDownTick(msg.MaxSellPrice, tickPrec).Equal(msg.MaxSellPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "max sell price is not on ticks")
+		}
+	}
+	if msg.BuyAmount.IsPositive() {
+		if !amm.PriceToDownTick(msg.MinBuyPrice, tickPrec).Equal(msg.MinBuyPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "min buy price is not on ticks")
+		}
+		if !amm.PriceToDownTick(msg.MaxBuyPrice, tickPrec).Equal(msg.MaxBuyPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "max buy price is not on ticks")
+		}
+	}
+
+	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
+	if !found {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+	}
+
+	var lowestPrice, highestPrice sdk.Dec
+	if pair.LastPrice != nil {
+		lowestPrice, highestPrice = types.PriceLimits(*pair.LastPrice, params.MaxPriceLimitRatio, tickPrec)
+	} else {
+		lowestPrice = amm.LowestTick(tickPrec)
+		highestPrice = amm.HighestTick(tickPrec)
+	}
+
+	if msg.SellAmount.IsPositive() {
+		if msg.MinSellPrice.LT(lowestPrice) || msg.MinSellPrice.GT(highestPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "min sell price is out of range [%s, %s]", lowestPrice, highestPrice)
+		}
+		if msg.MaxSellPrice.LT(lowestPrice) || msg.MaxSellPrice.GT(highestPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "max sell price is out of range [%s, %s]", lowestPrice, highestPrice)
+		}
+	}
+	if msg.BuyAmount.IsPositive() {
+		if msg.MinBuyPrice.LT(lowestPrice) || msg.MinBuyPrice.GT(highestPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "min buy price is out of range [%s, %s]", lowestPrice, highestPrice)
+		}
+		if msg.MaxBuyPrice.LT(lowestPrice) || msg.MaxBuyPrice.GT(highestPrice) {
+			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "max buy price is out of range [%s, %s]", lowestPrice, highestPrice)
+		}
+	}
+
+	maxNumTicks := int(params.MaxNumMarketMakingOrderTicks)
+
+	var buyTicks, sellTicks []types.MMOrderTick
+	offerBaseCoin := sdk.NewInt64Coin(pair.BaseCoinDenom, 0)
+	offerQuoteCoin := sdk.NewInt64Coin(pair.QuoteCoinDenom, 0)
+	if msg.BuyAmount.IsPositive() {
+		buyTicks = types.MMOrderTicks(
+			types.OrderDirectionBuy, msg.MinBuyPrice, msg.MaxBuyPrice, msg.BuyAmount, maxNumTicks, tickPrec)
+		for _, tick := range buyTicks {
+			offerQuoteCoin = offerQuoteCoin.AddAmount(tick.OfferCoinAmount)
+		}
+	}
+	if msg.SellAmount.IsPositive() {
+		sellTicks = types.MMOrderTicks(
+			types.OrderDirectionSell, msg.MinSellPrice, msg.MaxSellPrice, msg.SellAmount, maxNumTicks, tickPrec)
+		for _, tick := range sellTicks {
+			offerBaseCoin = offerBaseCoin.AddAmount(tick.OfferCoinAmount)
+		}
+	}
+
+	orderer := msg.GetOrderer()
+	spendable := k.bankKeeper.SpendableCoins(ctx, orderer)
+	if spendableAmt := spendable.AmountOf(pair.BaseCoinDenom); spendableAmt.LT(offerBaseCoin.Amount) {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
+			sdk.NewCoin(pair.BaseCoinDenom, spendableAmt), offerBaseCoin)
+	}
+	if spendableAmt := spendable.AmountOf(pair.QuoteCoinDenom); spendableAmt.LT(offerQuoteCoin.Amount) {
+		return nil, sdkerrors.Wrapf(
+			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
+			sdk.NewCoin(pair.QuoteCoinDenom, spendableAmt), offerQuoteCoin)
+	}
+
+	maxOrderLifespan := params.MaxOrderLifespan
+	if msg.OrderLifespan > maxOrderLifespan {
+		return nil, sdkerrors.Wrapf(
+			types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, maxOrderLifespan)
+	}
+
+	// First, cancel existing market making orders in the pair from the orderer.
+	canceledOrderIds, err := k.cancelMMOrder(ctx, msg.AppId, orderer, pair, true)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := k.bankKeeper.SendCoins(ctx, orderer, pair.GetEscrowAddress(), sdk.NewCoins(offerBaseCoin, offerQuoteCoin)); err != nil {
+		return nil, err
+	}
+
+	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
+	lastOrderId := pair.LastOrderId
+
+	var orderIds []uint64
+	for _, tick := range buyTicks {
+		lastOrderId++
+		offerCoin := sdk.NewCoin(pair.QuoteCoinDenom, tick.OfferCoinAmount)
+		order := types.NewOrder(
+			types.OrderTypeMM,
+			lastOrderId, msg.AppId,
+			pair,
+			orderer,
+			offerCoin,
+			tick.Price,
+			tick.Amount,
+			expireAt,
+			ctx.BlockHeight(),
+		)
+		k.SetOrder(ctx, order.AppId, order)
+		k.SetOrderIndex(ctx, order.AppId, order)
+		orders = append(orders, order)
+		orderIds = append(orderIds, order.Id)
+	}
+	for _, tick := range sellTicks {
+		lastOrderId++
+		offerCoin := sdk.NewCoin(pair.BaseCoinDenom, tick.OfferCoinAmount)
+		order := types.NewOrder(
+			types.OrderTypeMM,
+			lastOrderId, msg.AppId,
+			pair,
+			orderer,
+			offerCoin,
+			tick.Price,
+			tick.Amount,
+			expireAt,
+			ctx.BlockHeight(),
+		)
+		k.SetOrder(ctx, order.AppId, order)
+		k.SetOrderIndex(ctx, order.AppId, order)
+		orders = append(orders, order)
+		orderIds = append(orderIds, order.Id)
+	}
+
+	pair.LastOrderId = lastOrderId
+	k.SetPair(ctx, pair)
+
+	k.SetMMOrderIndex(ctx, msg.AppId, types.NewMMOrderIndex(orderer, msg.AppId, pair.Id, orderIds))
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeMMOrder,
+			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(msg.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyBatchID, strconv.FormatUint(pair.CurrentBatchId, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderIds, types.FormatUint64s(orderIds)),
+			sdk.NewAttribute(types.AttributeKeyCanceledOrderIds, types.FormatUint64s(canceledOrderIds)),
+		),
+	})
+	return
 }
 
 // ValidateMsgCancelOrder validates types.MsgCancelOrder and returns the order.
@@ -319,53 +505,45 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 		return err
 	}
 
-	var canceledOrderIds []string
-	//nolint
-	cb := func(pair types.Pair, order types.Order) (stop bool, err error) {
-		if order.Orderer == msg.Orderer && order.Status != types.OrderStatusCanceled && order.BatchId < pair.CurrentBatchId {
-			if err := k.FinishOrder(ctx, order, types.OrderStatusCanceled); err != nil {
-				return false, err
-			}
-			canceledOrderIds = append(canceledOrderIds, strconv.FormatUint(order.Id, 10))
+	orderPairCache := map[uint64]types.Pair{} // maps order's pair id to pair, to cache the result
+	pairIdSet := map[uint64]struct{}{}        // set of pairs where to cancel orders
+	var pairIds []string                      // needed to emit an event
+	for _, pairId := range msg.PairIds {
+		pair, found := k.GetPair(ctx, msg.AppId, pairId)
+		if !found { // check if the pair exists
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairId)
 		}
-		return false, nil
+		pairIdSet[pairId] = struct{}{} // add pair id to the set
+		pairIds = append(pairIds, strconv.FormatUint(pairId, 10))
+		orderPairCache[pairId] = pair // also cache the pair to use at below
 	}
 
-	var pairIDs []string
-	if len(msg.PairIds) == 0 {
-		pairMap := map[uint64]types.Pair{}
-		if err := k.IterateAllOrders(ctx, msg.AppId, func(order types.Order) (stop bool, err error) {
-			pair, ok := pairMap[order.PairId]
+	var canceledOrderIds []string
+	if err := k.IterateOrdersByOrderer(ctx, msg.AppId, msg.GetOrderer(), func(order types.Order) (stop bool, err error) {
+		_, ok := pairIdSet[order.PairId] // is the pair included in the pair set?
+		if len(pairIdSet) == 0 || ok {   // pair ids not specified(cancel all), or the pair is in the set
+			pair, ok := orderPairCache[order.PairId]
 			if !ok {
 				pair, _ = k.GetPair(ctx, msg.AppId, order.PairId)
-				pairMap[order.PairId] = pair
+				orderPairCache[order.PairId] = pair
 			}
-			return cb(pair, order)
-		}); err != nil {
-			return err
-		}
-	} else {
-		for _, pairID := range msg.PairIds {
-			pairIDs = append(pairIDs, strconv.FormatUint(pairID, 10))
-			pair, found := k.GetPair(ctx, msg.AppId, pairID)
-			if !found {
-				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
-			}
-			if err := k.IterateOrdersByPair(ctx, msg.AppId, pairID, func(req types.Order) (stop bool, err error) {
-				return cb(pair, req)
-			}); err != nil {
-				return err
+			if order.Status != types.OrderStatusCanceled && order.BatchId < pair.CurrentBatchId {
+				if err := k.FinishOrder(ctx, order, types.OrderStatusCanceled); err != nil {
+					return false, err
+				}
+				canceledOrderIds = append(canceledOrderIds, strconv.FormatUint(order.Id, 10))
 			}
 		}
+		return false, nil
+	}); err != nil {
+		return err
 	}
-
-	ctx.GasMeter().ConsumeGas(types.CancelAllOrdersGas, "CancelAllOrdersGas")
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCancelAllOrders,
 			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
-			sdk.NewAttribute(types.AttributeKeyPairIds, strings.Join(pairIDs, ",")),
+			sdk.NewAttribute(types.AttributeKeyPairIds, strings.Join(pairIds, ",")),
 			sdk.NewAttribute(types.AttributeKeyCanceledOrderIds, strings.Join(canceledOrderIds, ",")),
 		),
 	})
@@ -373,14 +551,64 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 	return nil
 }
 
+func (k Keeper) cancelMMOrder(ctx sdk.Context, appID uint64, orderer sdk.AccAddress, pair types.Pair, skipIfNotFound bool) (canceledOrderIds []uint64, err error) {
+	index, found := k.GetMMOrderIndex(ctx, orderer, appID, pair.Id)
+	if found {
+		for _, orderId := range index.OrderIds {
+			order, found := k.GetOrder(ctx, pair.Id, appID, orderId)
+			if !found {
+				// The order has already been deleted from store.
+				continue
+			}
+			if order.BatchId == pair.CurrentBatchId {
+				return nil, sdkerrors.Wrap(types.ErrSameBatch, "couldn't cancel previously placed orders")
+			}
+			if order.Status.CanBeCanceled() {
+				if err := k.FinishOrder(ctx, order, types.OrderStatusCanceled); err != nil {
+					return nil, err
+				}
+				canceledOrderIds = append(canceledOrderIds, order.Id)
+			}
+		}
+		k.DeleteMMOrderIndex(ctx, appID, index)
+	} else if !skipIfNotFound {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "previous market making orders not found")
+	}
+	return
+}
+
+// CancelMMOrder handles types.MsgCancelMMOrder and cancels previous market making
+// orders.
+func (k Keeper) CancelMMOrder(ctx sdk.Context, msg *types.MsgCancelMMOrder) (canceledOrderIds []uint64, err error) {
+	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
+	if !found {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+	}
+
+	canceledOrderIds, err = k.cancelMMOrder(ctx, msg.AppId, msg.GetOrderer(), pair, false)
+	if err != nil {
+		return
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCancelMMOrder,
+			sdk.NewAttribute(types.AttributeKeyOrderer, msg.Orderer),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(pair.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyCanceledOrderIds, types.FormatUint64s(canceledOrderIds)),
+		),
+	})
+
+	return canceledOrderIds, nil
+}
+
 func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 	params, err := k.GetGenericParams(ctx, pair.AppId)
 	if err != nil {
 		return sdkerrors.Wrap(err, "params retreval failed")
 	}
-
 	ob := amm.NewOrderBook()
-	skip := true // Whether to skip the matching since there is no orders.
+
 	if err := k.IterateOrdersByPair(ctx, pair.AppId, pair.Id, func(order types.Order) (stop bool, err error) {
 		switch order.Status {
 		case types.OrderStatusNotExecuted,
@@ -392,12 +620,12 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 				}
 				return false, nil
 			}
-			ob.Add(types.NewUserOrder(order))
+			// TODO: add orders only when price is in the range?
+			ob.AddOrder(types.NewUserOrder(order))
 			if order.Status == types.OrderStatusNotExecuted {
 				order.SetStatus(types.OrderStatusNotMatched)
 				k.SetOrder(ctx, pair.AppId, order)
 			}
-			skip = false
 		case types.OrderStatusCanceled:
 		default:
 			return false, fmt.Errorf("invalid order status: %s", order.Status)
@@ -407,97 +635,188 @@ func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 		return err
 	}
 
-	if skip {
-		return nil
-	}
-
-	var poolOrderSources []amm.OrderSource
+	var pools []*types.PoolOrderer
 	_ = k.IteratePoolsByPair(ctx, pair.AppId, pair.Id, func(pool types.Pool) (stop bool, err error) {
+		if pool.Disabled {
+			return false, nil
+		}
 		rx, ry := k.getPoolBalances(ctx, pool, pair)
 		ps := k.GetPoolCoinSupply(ctx, pool)
-		ammPool := amm.NewBasicPool(rx.Amount, ry.Amount, ps)
+		ammPool := types.NewPoolOrderer(
+			pool.AMMPool(rx.Amount, ry.Amount, ps),
+			pool.Id, pool.GetReserveAddress(), pair.BaseCoinDenom, pair.QuoteCoinDenom)
 		if ammPool.IsDepleted() {
 			k.MarkPoolAsDisabled(ctx, pool)
 			return false, nil
 		}
-		poolOrderSource := types.NewBasicPoolOrderSource(ammPool, pool.Id, pool.GetReserveAddress(), pair.BaseCoinDenom, pair.QuoteCoinDenom)
-		poolOrderSources = append(poolOrderSources, poolOrderSource)
+		pools = append(pools, ammPool)
 		return false, nil
 	})
 
-	os := amm.MergeOrderSources(append(poolOrderSources, ob)...)
-
-	matchPrice, found := amm.FindMatchPrice(os, int(params.TickPrecision))
-	if found {
-		buyOrders := os.BuyOrdersOver(matchPrice)
-		sellOrders := os.SellOrdersUnder(matchPrice)
-
-		types.SortOrders(buyOrders, types.PriceDescending)
-		types.SortOrders(sellOrders, types.PriceAscending)
-
-		quoteCoinDust, matched := amm.MatchOrders(buyOrders, sellOrders, matchPrice)
-		if matched {
-			if err := k.ApplyMatchResult(ctx, pair, append(buyOrders, sellOrders...), quoteCoinDust); err != nil {
-				return err
-			}
-			pair.LastPrice = &matchPrice
+	matchPrice, quoteCoinDiff, matched := k.Match(ctx, params, ob, pools, pair.LastPrice)
+	if matched {
+		orders := ob.Orders()
+		if err := k.ApplyMatchResult(ctx, pair, orders, quoteCoinDiff); err != nil {
+			return err
 		}
+		pair.LastPrice = &matchPrice
 	}
 
 	pair.CurrentBatchId++
 	k.SetPair(ctx, pair)
 
-	// TODO: emit an event?
 	return nil
 }
 
-func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.Order, quoteCoinDust sdk.Int) error {
+func (k Keeper) Match(ctx sdk.Context, params types.GenericParams, ob *amm.OrderBook, pools []*types.PoolOrderer, lastPrice *sdk.Dec) (matchPrice sdk.Dec, quoteCoinDiff sdk.Int, matched bool) {
+	tickPrec := int(params.TickPrecision)
+	if lastPrice == nil {
+		ov := amm.MultipleOrderViews{ob.MakeView()}
+		for _, pool := range pools {
+			ov = append(ov, pool)
+		}
+		var found bool
+		matchPrice, found = amm.FindMatchPrice(ov, tickPrec)
+		if !found {
+			return sdk.Dec{}, sdk.Int{}, false
+		}
+		for _, pool := range pools {
+			buyAmt := pool.BuyAmountOver(matchPrice, true)
+			if buyAmt.IsPositive() {
+				ob.AddOrder(pool.Order(amm.Buy, matchPrice, buyAmt))
+			}
+			sellAmt := pool.SellAmountUnder(matchPrice, true)
+			if sellAmt.IsPositive() {
+				ob.AddOrder(pool.Order(amm.Sell, matchPrice, sellAmt))
+			}
+		}
+		quoteCoinDiff, matched = ob.MatchAtSinglePrice(matchPrice)
+	} else {
+		lowestPrice, highestPrice := k.PriceLimits(ctx, *lastPrice, params)
+		for _, pool := range pools {
+			poolOrders := amm.PoolOrders(pool, pool, lowestPrice, highestPrice, tickPrec)
+			ob.AddOrder(poolOrders...)
+		}
+		matchPrice, quoteCoinDiff, matched = ob.Match(*lastPrice)
+	}
+	return
+}
+
+func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.Order, quoteCoinDiff sdk.Int) error {
 	params, err := k.GetGenericParams(ctx, pair.AppId)
 	if err != nil {
 		return sdkerrors.Wrap(err, "params retreval failed")
 	}
 	bulkOp := types.NewBulkSendCoinsOperation()
-	for _, order := range orders {
+	for _, order := range orders { // TODO: need optimization to filter matched orders only
+		order, ok := order.(*types.PoolOrder)
+		if !ok {
+			continue
+		}
 		if !order.IsMatched() {
 			continue
 		}
-		if order, ok := order.(*types.PoolOrder); ok {
-			paidCoin := order.OfferCoin.Sub(order.RemainingOfferCoin)
-			bulkOp.QueueSendCoins(order.ReserveAddress, pair.GetEscrowAddress(), sdk.NewCoins(paidCoin))
-		}
+		paidCoin := sdk.NewCoin(order.OfferCoinDenom, order.PaidOfferCoinAmount)
+		bulkOp.QueueSendCoins(order.ReserveAddress, pair.GetEscrowAddress(), sdk.NewCoins(paidCoin))
 	}
 	if err := bulkOp.Run(ctx, k.bankKeeper); err != nil {
 		return err
 	}
 	bulkOp = types.NewBulkSendCoinsOperation()
+	type PoolMatchResult struct {
+		PoolId         uint64
+		OrderDirection types.OrderDirection
+		PaidCoin       sdk.Coin
+		ReceivedCoin   sdk.Coin
+		MatchedAmount  sdk.Int
+	}
+	poolMatchResultById := map[uint64]*PoolMatchResult{}
+	var poolMatchResults []*PoolMatchResult
 	for _, order := range orders {
 		if !order.IsMatched() {
 			continue
 		}
+
+		matchedAmt := order.GetAmount().Sub(order.GetOpenAmount())
+
 		switch order := order.(type) {
 		case *types.UserOrder:
+			paidCoin := sdk.NewCoin(order.OfferCoinDenom, order.PaidOfferCoinAmount)
+			receivedCoin := sdk.NewCoin(order.DemandCoinDenom, order.ReceivedDemandCoinAmount)
+
 			o, _ := k.GetOrder(ctx, pair.AppId, pair.Id, order.OrderID)
-			o.OpenAmount = o.OpenAmount.Sub(order.Amount.Sub(order.OpenAmount))
-			o.RemainingOfferCoin = o.RemainingOfferCoin.Sub(order.OfferCoin.Sub(order.RemainingOfferCoin))
-			o.ReceivedCoin = o.ReceivedCoin.Add(order.ReceivedDemandCoin)
+			o.OpenAmount = o.OpenAmount.Sub(matchedAmt)
+			o.RemainingOfferCoin = o.RemainingOfferCoin.Sub(paidCoin)
+			o.ReceivedCoin = o.ReceivedCoin.Add(receivedCoin)
+
 			if o.OpenAmount.IsZero() {
 				if err := k.FinishOrder(ctx, o, types.OrderStatusCompleted); err != nil {
 					return err
 				}
 			} else {
 				o.SetStatus(types.OrderStatusPartiallyMatched)
-				k.SetOrder(ctx, pair.AppId, o)
-				// TODO: emit an event?
+				k.SetOrder(ctx, o.AppId, o)
 			}
-			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.Orderer, sdk.NewCoins(order.ReceivedDemandCoin))
+			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.Orderer, sdk.NewCoins(receivedCoin))
+
+			ctx.EventManager().EmitEvents(sdk.Events{
+				sdk.NewEvent(
+					types.EventTypeUserOrderMatched,
+					sdk.NewAttribute(types.AttributeKeyOrderDirection, types.OrderDirectionFromAMM(order.Direction).String()),
+					sdk.NewAttribute(types.AttributeKeyOrderer, order.Orderer.String()),
+					sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(pair.Id, 10)),
+					sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(order.OrderID, 10)),
+					sdk.NewAttribute(types.AttributeKeyMatchedAmount, matchedAmt.String()),
+					sdk.NewAttribute(types.AttributeKeyPaidCoin, paidCoin.String()),
+					sdk.NewAttribute(types.AttributeKeyReceivedCoin, receivedCoin.String()),
+				),
+			})
 		case *types.PoolOrder:
-			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.ReserveAddress, sdk.NewCoins(order.ReceivedDemandCoin))
+			paidCoin := sdk.NewCoin(order.OfferCoinDenom, order.PaidOfferCoinAmount)
+			receivedCoin := sdk.NewCoin(order.DemandCoinDenom, order.ReceivedDemandCoinAmount)
+
+			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.ReserveAddress, sdk.NewCoins(receivedCoin))
+
+			r, ok := poolMatchResultById[order.PoolID]
+			if !ok {
+				r = &PoolMatchResult{
+					PoolId:         order.PoolID,
+					OrderDirection: types.OrderDirectionFromAMM(order.Direction),
+					PaidCoin:       sdk.NewCoin(paidCoin.Denom, sdk.ZeroInt()),
+					ReceivedCoin:   sdk.NewCoin(receivedCoin.Denom, sdk.ZeroInt()),
+					MatchedAmount:  sdk.ZeroInt(),
+				}
+				poolMatchResultById[order.PoolID] = r
+				poolMatchResults = append(poolMatchResults, r)
+			}
+			dir := types.OrderDirectionFromAMM(order.Direction)
+			if r.OrderDirection != dir {
+				panic(fmt.Errorf("wrong order direction: %s != %s", dir, r.OrderDirection))
+			}
+			r.PaidCoin = r.PaidCoin.Add(paidCoin)
+			r.ReceivedCoin = r.ReceivedCoin.Add(receivedCoin)
+			r.MatchedAmount = r.MatchedAmount.Add(matchedAmt)
+		default:
+			panic(fmt.Errorf("invalid order type: %T", order))
 		}
 	}
 	dustCollectorAddr, _ := sdk.AccAddressFromBech32(params.DustCollectorAddress)
-	bulkOp.QueueSendCoins(pair.GetEscrowAddress(), dustCollectorAddr, sdk.NewCoins(sdk.NewCoin(pair.QuoteCoinDenom, quoteCoinDust)))
+	bulkOp.QueueSendCoins(pair.GetEscrowAddress(), dustCollectorAddr, sdk.NewCoins(sdk.NewCoin(pair.QuoteCoinDenom, quoteCoinDiff)))
 	if err := bulkOp.Run(ctx, k.bankKeeper); err != nil {
 		return err
+	}
+	for _, r := range poolMatchResults {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypePoolOrderMatched,
+				sdk.NewAttribute(types.AttributeKeyOrderDirection, r.OrderDirection.String()),
+				sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(pair.Id, 10)),
+				sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(r.PoolId, 10)),
+				sdk.NewAttribute(types.AttributeKeyMatchedAmount, r.MatchedAmount.String()),
+				sdk.NewAttribute(types.AttributeKeyPaidCoin, r.PaidCoin.String()),
+				sdk.NewAttribute(types.AttributeKeyReceivedCoin, r.ReceivedCoin.String()),
+			),
+		})
 	}
 	return nil
 }
@@ -553,16 +872,13 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeOrderResult,
-			sdk.NewAttribute(types.AttributeKeyRequestID, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderDirection, order.Direction.String()),
 			sdk.NewAttribute(types.AttributeKeyOrderer, order.Orderer),
 			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(order.PairId, 10)),
-			sdk.NewAttribute(types.AttributeKeyOrderDirection, order.Direction.String()),
-
-			// TODO: include these attributes?
-			// sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
-			// sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),
-			// sdk.NewAttribute(types.AttributeKeyOpenAmount, order.OpenAmount.String()),
-			// sdk.NewAttribute(types.AttributeKeyPrice, order.Price.String()),
+			sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyOpenAmount, order.OpenAmount.String()),
+			sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyRemainingOfferCoin, order.RemainingOfferCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyReceivedCoin, order.ReceivedCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyStatus, order.Status.String()),
