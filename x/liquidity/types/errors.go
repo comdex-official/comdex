@@ -40,4 +40,5 @@ var (
 	ErrorLengthMismatch                = sdkerrors.Register(ModuleName, 33, "keys and values list length mismatch")
 
 	ErrorNotPositiveAmont = sdkerrors.Register(ModuleName, 34, "amount should be positive")
+	ErrTooManyPools       = sdkerrors.Register(ModuleName, 35, "too many pools in the pair")
 )
