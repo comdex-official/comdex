@@ -59,4 +59,8 @@ message GenericParams {
         [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
     
     uint64 app_id = 18;
+
+    uint32 max_num_market_making_order_ticks = 19;
+
+    uint32 max_num_active_pools_per_pair = 20;
 }

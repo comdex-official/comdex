@@ -308,6 +308,41 @@ message QueryFarmedPoolCoinResponse {
   ];
 }
 
+// QueryOrderBooksRequest is request type for the Query/OrderBooks RPC method.
+message QueryOrderBooksRequest {
+  uint64 app_id = 1;
+  repeated uint64 pair_ids = 2;
+  repeated uint32 price_unit_powers = 3;
+  uint32 num_ticks = 4;
+}
+
+// QueryOrderBooksResponse is response type for Query/OrderBooks RPC method.
+message QueryOrderBooksResponse {
+  repeated OrderBookPairResponse pairs = 2 [(gogoproto.nullable) = false];
+}
+
+message OrderBookPairResponse {
+  uint64 pair_id    = 1;
+  string base_price = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookResponse order_books = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookResponse {
+  string price_unit = 1
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookTickResponse sells = 2 [(gogoproto.nullable) = false];
+  repeated OrderBookTickResponse buys  = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookTickResponse {
+  string price = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string user_order_amount = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string pool_order_amount = 3
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
@@ -403,5 +438,9 @@ service Query {
   // FarmedPoolCoin returns the total farmed pool coins.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
+  }
+
+  rpc OrderBooks(QueryOrderBooksRequest) returns (QueryOrderBooksResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/order_books/{app_id}";
   }
 }

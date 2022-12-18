@@ -31,6 +31,8 @@ message AppGenesisState {
   repeated ActiveFarmer active_farmers = 10 [(gogoproto.nullable) = false];
   
   repeated QueuedFarmer queued_farmers = 11 [(gogoproto.nullable) = false];
+
+  repeated MMOrderIndex market_making_order_indexes = 12 [(gogoproto.nullable) = false];
 }
 
 
