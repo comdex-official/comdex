@@ -478,6 +478,19 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(cAssetIn.Denom, lockedVault.AmountIn))); err != nil {
 							return err
 						}
+						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+						return nil
+					}
+					if lockedVault.AmountIn.IsZero() {
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+						return nil
 					}
 					newCalculatedCollateralizationRatio, _ := k.lend.CalculateCollateralizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
 					if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
@@ -514,6 +527,19 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(cAssetIn.Denom, lockedVault.AmountIn))); err != nil {
 							return err
 						}
+						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+						return nil
+					}
+					if lockedVault.AmountIn.IsZero() {
+						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+						k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+						return nil
 					}
 					newCalculatedCollateralizationRatio, _ := k.lend.CalculateCollateralizationRatio(ctx, lockedVault.AmountIn, assetIn, lockedVault.UpdatedAmountOut, assetOut)
 					if newCalculatedCollateralizationRatio.GT(unliquidatePointPercentage) {
