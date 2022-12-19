@@ -1,9 +1,9 @@
-package v6
+package v7
 
 const (
-	UpgradeName   = "v6.0.0"
-	UpgradeHeight = ""
-	UpgradeInfo   = `'{
+	UpgradeName700   = "v7.0.0"
+	UpgradeHeight700 = ""
+	UpgradeInfo700   = `'{
 		"binaries": {
 			"darwin/arm64":"",
 			"darwin/x86_64":"",
