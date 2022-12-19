@@ -23,6 +23,15 @@ var (
 	poolCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]-[1-9]\d*)$`)
 )
 
+type PoolTokenDeserializerKit struct {
+	Pair                 Pair
+	Pool                 Pool
+	PoolCoinSupply       sdk.Int
+	QuoteCoinPoolBalance sdk.Coin
+	BaseCoinPoolBalance  sdk.Coin
+	AmmPoolObject        amm.Pool
+}
+
 // PoolReserveAddress returns a unique pool reserve account address for each pool.
 func PoolReserveAddress(appID, poolID uint64) sdk.AccAddress {
 	return DeriveAddress(

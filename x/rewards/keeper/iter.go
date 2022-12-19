@@ -319,18 +319,18 @@ func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, ma
 		amt = amt.Add(v.FarmedPoolCoin.Amount)
 	}
 
-	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
+	deserializerKit, err := k.liquidityKeeper.GetPoolTokenDesrializerKit(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return false
 	}
 
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, sdk.NewCoin(pool.PoolCoinDenom, amt))
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, amt))
 	if err != nil {
 		return false
 	}
 
-	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
-	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.BaseCoinDenom)
+	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.QuoteCoinDenom)
+	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.BaseCoinDenom)
 	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
 	if err != nil {
 		return false

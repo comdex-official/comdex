@@ -14,28 +14,37 @@ import (
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
-func (k Keeper) GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*types.Pool, *types.Pair, *amm.BasicPool, error) {
+func (k Keeper) GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (types.PoolTokenDeserializerKit, error) {
 	pool, found := k.GetPool(ctx, appID, poolID)
 	if !found {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool %d is invalid", poolID)
+		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool %d is invalid", poolID)
 	}
 	if pool.Disabled {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolID)
+		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolID)
 	}
-
 	pair, _ := k.GetPair(ctx, pool.AppId, pool.PairId)
 	rx, ry := k.getPoolBalances(ctx, pool, pair)
 	ps := k.GetPoolCoinSupply(ctx, pool)
-	ammPool := amm.NewBasicPool(rx.Amount, ry.Amount, ps)
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, ps)
 	if ammPool.IsDepleted() {
-		return nil, nil, nil, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolID)
+		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolID)
 	}
-	return &pool, &pair, ammPool, nil
+
+	deserializerKit := types.PoolTokenDeserializerKit{
+		Pair:                 pair,
+		Pool:                 pool,
+		PoolCoinSupply:       ps,
+		QuoteCoinPoolBalance: rx,
+		BaseCoinPoolBalance:  ry,
+		AmmPoolObject:        ammPool,
+	}
+
+	return deserializerKit, nil
 }
 
-func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
-	// ammPool.Withdraw implemets the actual logic for pool token ratio calculation
-	x, y := ammPool.Withdraw(poolCoin.Amount, sdk.NewDec(0))
+func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit types.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
+	// amm.Withdraw implemets the actual logic for pool token ratio calculation
+	x, y := amm.Withdraw(deserializerKit.QuoteCoinPoolBalance.Amount, deserializerKit.BaseCoinPoolBalance.Amount, deserializerKit.PoolCoinSupply, poolCoin.Amount, sdk.ZeroDec())
 	if x.IsZero() && y.IsZero() {
 		return sdk.NewInt(0), sdk.NewInt(0), types.ErrCalculatedPoolAmountIsZero
 	}
@@ -43,17 +52,18 @@ func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool,
 }
 
 func (k Keeper) DeserializePoolCoinHelper(ctx sdk.Context, appID, poolID, poolCoinAmount uint64) (sdk.Coins, error) {
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+	deserializerKit, err := k.GetPoolTokenDesrializerKit(ctx, appID, poolID)
 	if err != nil {
 		return nil, err
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(poolCoinAmount)))
-	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+
+	poolCoin := sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, sdk.NewInt(int64(poolCoinAmount)))
+	x, y, err := k.CalculateXYFromPoolCoin(ctx, deserializerKit, poolCoin)
 	if err != nil {
-		return []sdk.Coin{sdk.NewCoin(pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(pair.BaseCoinDenom, sdk.NewInt(0))}, nil
+		return []sdk.Coin{sdk.NewCoin(deserializerKit.Pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(deserializerKit.Pair.BaseCoinDenom, sdk.NewInt(0))}, nil
 	}
-	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
+	quoteCoin := sdk.NewCoin(deserializerKit.Pair.QuoteCoinDenom, x)
+	baseCoin := sdk.NewCoin(deserializerKit.Pair.BaseCoinDenom, y)
 	return []sdk.Coin{quoteCoin, baseCoin}, nil
 }
 
@@ -85,10 +95,11 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 	poolSupplyData := make(map[string]sdk.Dec)
 
 	for _, poolID := range poolIds {
-		_, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, poolID)
+		deserializerKit, err := k.GetPoolTokenDesrializerKit(ctx, appID, poolID)
 		if err != nil {
 			continue
 		}
+		pair := deserializerKit.Pair
 
 		asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
 		if err != nil {
@@ -100,7 +111,7 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 			if !found {
 				continue
 			}
-			x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, activeFarmer.FarmedPoolCoin)
+			x, y, err := k.CalculateXYFromPoolCoin(ctx, deserializerKit, activeFarmer.FarmedPoolCoin)
 			if err != nil {
 				continue
 			}
@@ -128,10 +139,13 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 }
 
 func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDistribute sdk.Coin, liquidityGaugeData rewardstypes.LiquidtyGaugeMetaData) ([]rewardstypes.RewardDistributionDataCollector, error) {
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, appID, liquidityGaugeData.PoolId)
+	deserializerKit, err := k.GetPoolTokenDesrializerKit(ctx, appID, liquidityGaugeData.PoolId)
 	if err != nil {
 		return nil, err
 	}
+
+	pair := deserializerKit.Pair
+	pool := deserializerKit.Pool
 
 	asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	if err != nil {
@@ -147,7 +161,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		if err != nil {
 			continue
 		}
-		x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, activeFarmer.FarmedPoolCoin)
+		x, y, err := k.CalculateXYFromPoolCoin(ctx, deserializerKit, activeFarmer.FarmedPoolCoin)
 		if err != nil {
 			continue
 		}
