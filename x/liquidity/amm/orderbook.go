@@ -227,7 +227,7 @@ func (ticks orderBookTicks) ordersAt(price sdk.Dec) []Order {
 	return ticks[i].orders
 }
 
-// nolint
+//nolint
 func (ticks orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	if len(ticks) == 0 {
 		return sdk.Dec{}, 0, false
@@ -240,7 +240,7 @@ func (ticks orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	return sdk.Dec{}, 0, false
 }
 
-// nolint
+//nolint
 func (ticks orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
 	if len(ticks) == 0 {
 		return sdk.Dec{}, 0, false
