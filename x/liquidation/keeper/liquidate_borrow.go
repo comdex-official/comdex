@@ -79,6 +79,7 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 			liqThresholdBridgedAssetOne, _ := k.lend.GetAssetRatesParams(ctx, firstTransitAssetID)
 			liqThresholdBridgedAssetTwo, _ := k.lend.GetAssetRatesParams(ctx, secondTransitAssetID)
 			firstBridgedAsset, _ := k.asset.GetAsset(ctx, firstTransitAssetID)
+			pair, _ := k.lend.GetLendPair(ctx, borrowPos.PairID)
 			// there are three possible cases
 			// 	a. if borrow is from same pool
 			//  b. if borrow is from first transit asset
@@ -99,6 +100,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					if err != nil {
 						return fmt.Errorf("error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 					}
+					k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
+
 				}
 			} else {
 				if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
@@ -115,6 +118,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						if err != nil {
 							return fmt.Errorf("error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						}
+						k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
+
 					}
 				} else {
 					currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
@@ -131,6 +136,8 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						if err != nil {
 							return fmt.Errorf("error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						}
+						k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
+
 					}
 				}
 			}
@@ -281,7 +288,6 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			totalDeduction := liquidationDeductionAmount.Add(sellOffAmt).TruncateInt() // Total deduction from amountIn also reduce to lend Position amountIn
 			borrowPos, _ := k.lend.GetBorrow(ctx, updatedLockedVault.OriginalVaultId)
 			borrowPos.IsLiquidated = true
-			k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
 			if totalDeduction.GTE(updatedLockedVault.AmountIn) { // rare case only
 				lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(updatedLockedVault.AmountIn)
 				// also global lend data is subtracted by totalDeduction amount
