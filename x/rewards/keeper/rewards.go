@@ -779,7 +779,7 @@ func (k Keeper) SetExternalRewardStableVault(ctx sdk.Context, VaultExternalRewar
 	store.Set(key, value)
 }
 
-func (k Keeper) GetExternalRewardStableVault(ctx sdk.Context, appID uint64) (VaultExternalRewards types.StableVaultExternalRewards, found bool) {
+func (k Keeper) GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards types.StableVaultExternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ExternalRewardsStableVaultMappingKey(appID)

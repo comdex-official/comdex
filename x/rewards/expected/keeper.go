@@ -87,6 +87,9 @@ type VaultKeeper interface {
 	GetAllStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
 	SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
 	GetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	GetStableMintVaultRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
 }
 
 type BankKeeper interface {
