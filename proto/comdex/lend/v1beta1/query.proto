@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/lend/v1beta1/lend.proto";
 import "comdex/lend/v1beta1/params.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
 option (gogoproto.equal_all) = false;
@@ -229,40 +230,6 @@ message QueryPoolAssetLBMappingResponse {
     (gogoproto.moretags) = "yaml:\"pool_asset_lb_mapping\""];
 }
 
-// message QueryModuleBalanceRequest {
-//   uint64 pool_id = 1 [(gogoproto.moretags) = "yaml:\"pool_id\""];
-// }
-
-// message QueryModuleBalanceResponse {
-//   ModuleBalance ModuleBalance = 1 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"module_balance\""];
-// }
-
-// message QueryDepositStatsRequest {}
-
-// message QueryDepositStatsResponse {
-//   DepositStats DepositStats = 1 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"deposit_stats\""];
-// }
-
-// message QueryUserDepositStatsRequest {}
-
-// message QueryUserDepositStatsResponse {
-//   DepositStats UserDepositStats = 1 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"user_deposit_stats\""];
-// }
-
-// message QueryReserveDepositStatsRequest {}
-
-// message QueryReserveDepositStatsResponse {
-//   DepositStats ReserveDepositStats = 1 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"reserve_deposit_stats\""];
-// }
-
 message QueryReserveBuybackAssetDataRequest {
   uint64 asset_id = 1;
 }
@@ -272,14 +239,6 @@ message QueryReserveBuybackAssetDataResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"reserve_buyback_asset_data\""];
 }
-
-// message QueryBorrowStatsRequest {}
-
-// message QueryBorrowStatsResponse {
-//   DepositStats BorrowStats = 1 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"borrow_stats\""];
-// }
 
 message QueryAuctionParamRequest {
   uint64 app_id = 1;
@@ -325,6 +284,19 @@ message QueryAllReserveStatsResponse {
   AllReserveStats AllReserveStats = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"all_reserve_stats\""];
+}
+
+message QueryFundModBalByAssetPoolRequest {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  uint64 pool_id  = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+}
+
+message QueryFundModBalByAssetPoolResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
 }
 
 service Query {
@@ -394,29 +366,9 @@ service Query {
     option (google.api.http).get = "/comdex/lend/v1beta1/pool_asset_lb_mapping/{asset_id}/{pool_id}";
   };
 
-  // rpc QueryModuleBalance(QueryModuleBalanceRequest) returns (QueryModuleBalanceResponse) {
-  //   option (google.api.http).get = "/comdex/lend/v1beta1/module_balance/{pool_id}";
-  // };
-
-  // rpc QueryDepositStats(QueryDepositStatsRequest) returns (QueryDepositStatsResponse) {
-  //   option (google.api.http).get = "/comdex/lend/v1beta1/deposit_stats";
-  // }
-
-  // rpc QueryUserDepositStats(QueryUserDepositStatsRequest) returns (QueryUserDepositStatsResponse) {
-  //   option (google.api.http).get = "/comdex/lend/v1beta1/user_deposit_stats";
-  // }
-
-  // rpc QueryReserveDepositStats(QueryReserveDepositStatsRequest) returns (QueryReserveDepositStatsResponse) {
-  //   option (google.api.http).get = "/comdex/lend/v1beta1/reserve_deposit_stats";
-  // }
-
   rpc QueryReserveBuybackAssetData(QueryReserveBuybackAssetDataRequest) returns (QueryReserveBuybackAssetDataResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/reserve_buyback_asset_data/{asset_id}";
   }
-
-  // rpc QueryBorrowStats(QueryBorrowStatsRequest) returns (QueryBorrowStatsResponse) {
-  //   option (google.api.http).get = "/comdex/lend/v1beta1/borrow_stats";
-  // }
 
   rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
@@ -435,6 +387,10 @@ service Query {
 
   rpc QueryAllReserveStats(QueryAllReserveStatsRequest) returns (QueryAllReserveStatsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/all_reserve_stats/{asset_id}";
+  };
+
+  rpc QueryFundModBalByAssetPool(QueryFundModBalByAssetPoolRequest) returns (QueryFundModBalByAssetPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/fund_mod_bal_by_asset_pool/{asset_id}/{pool_id}";
   };
 }
 

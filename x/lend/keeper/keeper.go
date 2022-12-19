@@ -1458,6 +1458,13 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lender strin
 	}
 	modBals.FundModuleBalance = append(modBals.FundModuleBalance, modBal)
 	k.SetFundModBal(ctx, modBals)
+	amt, found := k.GetFundModBalByAssetPool(ctx, assetID, poolID)
+	if found {
+		amt = amt.Add(payment)
+	} else {
+		amt = payment
+	}
+	k.SetFundModBalByAssetPool(ctx, assetID, poolID, amt)
 
 	return nil
 }

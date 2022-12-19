@@ -68,6 +68,7 @@ var (
 	KeyFundModBal                         = []byte{0x48}
 	KeyFundReserveBal                     = []byte{0x49}
 	AllReserveStatsPrefix                 = []byte{0x50}
+	AssetAndPoolWiseModBalKeyPrefix       = []byte{0x51}
 )
 
 func LendUserKey(ID uint64) []byte {
@@ -125,4 +126,8 @@ func ReserveBuybackAssetDataKey(ID uint64) []byte {
 
 func AllReserveStatsKey(ID uint64) []byte {
 	return append(AllReserveStatsPrefix, sdk.Uint64ToBigEndian(ID)...)
+}
+
+func FundModBalanceKey(assetID, poolID uint64) []byte {
+	return append(append(AssetAndPoolWiseModBalKeyPrefix, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolID)...)
 }

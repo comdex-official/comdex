@@ -650,3 +650,28 @@ func (k Keeper) GetTotalReserveStatsByAssetID(ctx sdk.Context) (reserve []types.
 	}
 	return reserve
 }
+
+func (k Keeper) SetFundModBalByAssetPool(ctx sdk.Context, assetID, poolID uint64, amt sdk.Coin) {
+	var (
+		store = k.Store(ctx)
+		key   = types.FundModBalanceKey(assetID, poolID)
+		value = k.cdc.MustMarshal(&amt)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundModBalByAssetPool(ctx sdk.Context, assetID, poolID uint64) (amt sdk.Coin, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.FundModBalanceKey(assetID, poolID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return amt, false
+	}
+
+	k.cdc.MustUnmarshal(value, &amt)
+	return amt, true
+}
