@@ -81,10 +81,12 @@ type VaultKeeper interface {
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool)
-	GetStableMintVaultRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool) 
+	GetStableMintVaultUserRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool) 
 	GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool) 
 	DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
 	GetAllStableMintVaultRewards(ctx sdk.Context, appID uint64, pairVaultID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	GetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
 }
 
 type BankKeeper interface {
