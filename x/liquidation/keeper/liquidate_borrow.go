@@ -92,6 +92,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 				if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 					// after checking the currentCollateralizationRatio with LiquidationThreshold if borrow is to be liquidated then
 					// CreateLockedBorrow function is called
+					err = k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+					if err != nil {
+						return fmt.Errorf("error in MsgCalculateBorrowInterest, liquidate_borrow.go for ID %d", borrowPos.ID)
+					}
 					lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 					if err != nil {
 						return fmt.Errorf("error in first condition CreateLockedBorrow in Liquidation, liquidate_borrow.go for ID %d", borrowPos.LendingID)
@@ -110,6 +114,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						return err
 					}
 					if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
+						err = k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+						if err != nil {
+							return fmt.Errorf("error in MsgCalculateBorrowInterest, liquidate_borrow.go for ID %d", borrowPos.ID)
+						}
 						lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 						if err != nil {
 							return fmt.Errorf("error in second condition CreateLockedBorrow in Liquidation, liquidate_borrow.go for ID %d", borrowPos.LendingID)
@@ -128,6 +136,10 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 					}
 
 					if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
+						err = k.lend.MsgCalculateBorrowInterest(ctx, lendPos.Owner, borrowPos.ID)
+						if err != nil {
+							return fmt.Errorf("error in MsgCalculateBorrowInterest, liquidate_borrow.go for ID %d", borrowPos.ID)
+						}
 						lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 						if err != nil {
 							return fmt.Errorf("error in third condition CreateLockedBorrow in Liquidation, liquidate_borrow.go for ID %d", borrowPos.LendingID)

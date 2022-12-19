@@ -93,6 +93,7 @@ type LendKeeper interface {
 	SetBorrowInterestTracker(ctx sdk.Context, interest lendtypes.BorrowInterestTracker)
 	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
 	GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats lendtypes.AllReserveStats, found bool)
+	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
 }
 
 type RewardsKeeper interface {
