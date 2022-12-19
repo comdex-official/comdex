@@ -44,6 +44,15 @@ func InitializeLendReservesStates(
 	lendKeeper.SetAllReserveStatsByAssetID(ctx, reserveStat1)
 	lendKeeper.SetAllReserveStatsByAssetID(ctx, reserveStat2)
 	lendKeeper.SetAllReserveStatsByAssetID(ctx, reserveStat3)
+	borrows := lendKeeper.GetAllBorrow(ctx)
+	for _, v := range borrows {
+		if v.IsLiquidated {
+			pair, _ := lendKeeper.GetLendPair(ctx, v.PairID)
+			assetStats, _ := lendKeeper.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Sub(v.AmountOut.Amount)
+			lendKeeper.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+		}
+	}
 }
 
 func CreateUpgradeHandler700(
