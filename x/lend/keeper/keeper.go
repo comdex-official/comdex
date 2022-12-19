@@ -1671,7 +1671,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 	return nil
 }
 
-func (k Keeper) UserCMSTLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool) {
+func (k Keeper) UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool) {
 	var (
 		lendIDs []uint64
 	)

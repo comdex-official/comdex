@@ -1163,3 +1163,121 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataZeroLPs() {
 	s.Require().IsType([]rewardtypes.RewardDistributionDataCollector{}, rewardDistrData)
 	s.Require().Len(rewardDistrData, 0)
 }
+
+func (s *KeeperTestSuite) TestGetAmountFarmedForAssetID() {
+	creator := s.addr(0)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
+	asset3 := s.CreateNewAsset("ASSETTHREE", "uasset3", 1000000)
+	asset4 := s.CreateNewAsset("ASSETFOUR", "uasset4", 1000000)
+
+	pair1 := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+	pair2 := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset3.Denom)
+	pair3 := s.CreateNewLiquidityPair(appID1, creator, asset2.Denom, asset3.Denom)
+	pair4 := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset4.Denom)
+
+	pool1 := s.CreateNewLiquidityPool(appID1, pair1.Id, creator, "1000000000000uasset1,1000000000000uasset2")
+	pool2 := s.CreateNewLiquidityPool(appID1, pair2.Id, creator, "1000000000000uasset1,1000000000000uasset3")
+	pool3 := s.CreateNewLiquidityPool(appID1, pair3.Id, creator, "1000000000000uasset2,1000000000000uasset3")
+	pool4 := s.CreateNewLiquidityPool(appID1, pair4.Id, creator, "1000000000000uasset1,1000000000000uasset4")
+
+	liquidityProvider1 := s.addr(1)
+
+	s.Deposit(appID1, pool1.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset2")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+
+	s.Deposit(appID1, pool2.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset3")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1,10000000000pool1-2").IsEqual(s.getBalances(liquidityProvider1)))
+
+	s.Deposit(appID1, pool3.Id, liquidityProvider1, "1000000000uasset2,1000000000uasset3")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1,10000000000pool1-2,10000000000pool1-3").IsEqual(s.getBalances(liquidityProvider1)))
+
+	s.Deposit(appID1, pool4.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset4")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1,10000000000pool1-2,10000000000pool1-3,10000000000pool1-4").IsEqual(s.getBalances(liquidityProvider1)))
+
+	currentTime := s.ctx.BlockTime()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	msg1 := types.NewMsgFarm(appID1, pool1.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-1"))
+	msg2 := types.NewMsgFarm(appID1, pool2.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-2"))
+	msg3 := types.NewMsgFarm(appID1, pool3.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-3"))
+	msg4 := types.NewMsgFarm(appID1, pool4.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-4"))
+
+	err := s.app.LiquidityKeeper.Farm(s.ctx, msg1)
+	s.Require().NoError(err)
+	err = s.app.LiquidityKeeper.Farm(s.ctx, msg2)
+	s.Require().NoError(err)
+	err = s.app.LiquidityKeeper.Farm(s.ctx, msg3)
+	s.Require().NoError(err)
+	err = s.app.LiquidityKeeper.Farm(s.ctx, msg4)
+	s.Require().NoError(err)
+
+	queuedFarmers := s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, appID1, pool1.Id)
+	s.Require().Len(queuedFarmers, 1)
+	queuedFarmers = s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, appID1, pool2.Id)
+	s.Require().Len(queuedFarmers, 1)
+	queuedFarmers = s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, appID1, pool3.Id)
+	s.Require().Len(queuedFarmers, 1)
+	queuedFarmers = s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, appID1, pool4.Id)
+	s.Require().Len(queuedFarmers, 1)
+
+	activeFarmers := s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool1.Id)
+	s.Require().Len(activeFarmers, 0)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool2.Id)
+	s.Require().Len(activeFarmers, 0)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool3.Id)
+	s.Require().Len(activeFarmers, 0)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool4.Id)
+	s.Require().Len(activeFarmers, 0)
+
+	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Hour * 25))
+	s.nextBlock()
+
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool1.Id)
+	s.Require().Len(activeFarmers, 1)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool2.Id)
+	s.Require().Len(activeFarmers, 1)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool3.Id)
+	s.Require().Len(activeFarmers, 1)
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, appID1, pool4.Id)
+	s.Require().Len(activeFarmers, 1)
+
+	activeFarmer, found := s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, appID1, pool1.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(types.ActiveFarmer{}, activeFarmer)
+
+	activeFarmer, found = s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, appID1, pool2.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(types.ActiveFarmer{}, activeFarmer)
+
+	activeFarmer, found = s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, appID1, pool3.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(types.ActiveFarmer{}, activeFarmer)
+
+	activeFarmer, found = s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, appID1, pool4.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(types.ActiveFarmer{}, activeFarmer)
+
+	quantityFarmed, err := s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset1.Id, liquidityProvider1)
+	s.Require().NoError(err)
+	s.Require().Equal(sdk.NewInt(2999999997), quantityFarmed)
+
+	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset2.Id, liquidityProvider1)
+	s.Require().NoError(err)
+	s.Require().Equal(sdk.NewInt(1999999998), quantityFarmed)
+
+	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset3.Id, liquidityProvider1)
+	s.Require().NoError(err)
+	s.Require().Equal(sdk.NewInt(1999999998), quantityFarmed)
+
+	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset4.Id, liquidityProvider1)
+	s.Require().NoError(err)
+	s.Require().Equal(sdk.NewInt(999999999), quantityFarmed)
+}

@@ -31,6 +31,7 @@ type LiquidityKeeper interface {
 	GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error)
 	CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
 	GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer liquiditytypes.QueuedFarmer, found bool)
+	GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error)
 }
 
 type AssetKeeper interface {
@@ -110,4 +111,5 @@ type LendKeeper interface {
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool)
+	UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool)
 }
