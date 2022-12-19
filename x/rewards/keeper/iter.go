@@ -345,51 +345,46 @@ func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, ma
 	return false
 }
 
-
-
-
-
 func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
 	//Step 3 Elaborated
 	//call app function
 	//call all adddresses app wise
 	//Join user positions for psm rewards that have completed the 1 day epoch
 	//after combining them delete ther one, ignore ones that have not completed an epoch
-	//do this for all positions. 
+	//do this for all positions.
 
-	extRewardAllAppData := k.GetExternalRewardStableVault(ctx)
-	
-	for _, extRewardAppData:= range extRewardAllAppData {
-
-		appStableVaultsData, found := k.vault.GetStableMintVaultRewardsByApp(ctx,extRewardAppData.AppId)
-		if found{
-
-			for _, appStableVaultData:= range appStableVaultsData {
-				if appStableVaultData.BlockHeight.GT(accepted blockheight){
-
+	extRewardAllAppData := k.GetAllExternalRewardStableVault(ctx)
+	for _, extRewardAppData := range extRewardAllAppData {
+		appStableVaultsData, found := k.vault.GetStableMintVaultRewardsByApp(ctx, extRewardAppData.AppId)
+		if found {
+			for _, appStableVaultData := range appStableVaultsData {
+				if (uint64(ctx.BlockHeight()) - appStableVaultData.BlockHeight) > uint64(extRewardAppData.AcceptedBlockHeight) {
+					//First checking if that exists or deleted
+					_, found := k.vault.GetStableMintVaultRewards(ctx, appStableVaultData)
+					if !found {
+						continue
+					}
 					//usig address from one user value to get all  , then checking the epoch duration limit, and for those who have crosssed it , joining it together.
-					userStableVaultsData, found := k.vault.GetStableMintVaultRewards(ctx,appStableVaultData.AppId,appStableVaultData.User)
-					//****looping over the different data, but keeping in ming to ignore the une being used as initial data (appStableVaultData)****
-
+					userStableVaultsData, found := k.vault.GetStableMintVaultUserRewards(ctx, appStableVaultData.AppId, appStableVaultData.User)
+					if !found {
+						continue
+					}
+					//****looping over the different data, but keeping in mind to ignore the one being used as initial data (appStableVaultData)****
+					for _, individualVault := range userStableVaultsData {
+						if (individualVault.BlockHeight-uint64(ctx.BlockHeight())) > (uint64(extRewardAppData.AcceptedBlockHeight)) && individualVault.BlockHeight != appStableVaultData.BlockHeight {
+							appStableVaultData.Amount = appStableVaultData.Amount.Add(individualVault.Amount)
+							k.vault.DeleteStableMintVaultRewards(ctx, individualVault)
+						}
+					}
+					k.vault.SetStableMintVaultRewards(ctx, appStableVaultData)
 				}
-			
-
 			}
-
-			
 		}
-
-
-
-
 	}
-	return error
+	return nil
 }
 
-
-
-
-//Stable Mint Rewards Rewards 
+//Stable Mint Rewards Rewards
 //1. Make a DS that take app ID for activating rewards, along with other necessary params (eg. cswap id , commodo id, else they could be 0) along with rewards quantity and epoch
 //2. Create, Deposit, Withdraw fucntions only save data if DS in 1. is active.
 //3. Using that 1. DS , the CombinePSMUserPositions runs for those apps and combine the rewards for addresses that have completeed  min1 epoch (app specific)
@@ -397,65 +392,78 @@ func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
 
 func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 	// Give external rewards to users who mint via stable vault with specific assetID
-	extRewards := k.GetExternalRewardVaults(ctx)
-	for _, v := range extRewards {
-		extPair, _ := k.asset.GetPairsVault(ctx, v.ExtendedPairId)
-		if !extPair.IsStableMintVault{
-			continue
-		}
-		pair, _ := k.asset.GetPair(ctx, extPair.PairId)
-		asset, _ := k.asset.GetAsset(ctx, pair.AssetOut)
-		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
-		if klwsParams.BreakerEnable {
-			return esmtypes.ErrCircuitBreakerEnabled
-		}
-		esmStatus, found := k.esm.GetESMStatus(ctx, v.AppMappingId)
-		status := false
-		if found {
-			status = esmStatus.Status
-		}
-		if status {
-			return esmtypes.ErrESMAlreadyExecuted
-		}
-		// checking if rewards are active
-		if v.IsActive {
-			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
-			et := epoch.StartingTime
-			timeNow := ctx.BlockTime().Unix()
-
-			// here the epoch starting time is set to the next day whenever any external vault reward is distributed
-			// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
-
-			if et < timeNow {
-				if epoch.Count < uint64(v.DurationDays) { // rewards will be given till the duration defined in the ext rewards
-					// appExtPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
-					stableRewardsData, _ := k.vault.GetAllStableMintVaultRewards(ctx, v.AppMappingId, v.ExtendedPairId)
-					appExtendedPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
-
-					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
-					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
-
-					for _, stableRewardsUserData := range stableRewardsData{
-						totalRewards := v.AvailableRewards
-						
+	// extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, appID)
+	// extRewardsProp, _ := k.GetExternalRewardStableVaultByApp(ctx, appID)
+	extRewardsProp := k.GetAllExternalRewardStableVault(ctx)
+	for _, extRew := range extRewardsProp {
+		extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, extRew.AppId)
+		for _, userReward := range extRewards {
+			extPair, _ := k.asset.GetPairsVault(ctx, userReward.StableExtendedPairId)
+			pair, _ := k.asset.GetPair(ctx, extPair.Id)
+			asset, _ := k.asset.GetAsset(ctx, pair.AssetOut)
+			if extRew.IsActive {
+				epoch, _ := k.GetEpochTime(ctx, extRew.EpochId)
+				et := epoch.StartingTime
+				timeNow := ctx.BlockTime().Unix()
+	
+				// here the epoch starting time is set to the next day whenever any external vault reward is distributed
+				// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
+				// checking if rewards are active
+				if et < timeNow {
+					if epoch.Count < uint64(extRew.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+						// initializing amountRewardedTracker to keep a track of daily rewards given to stableVault users
+						amountRewardedTracker := sdk.NewCoin(extRew.TotalRewards.Denom, sdk.ZeroInt())
+						totalRewards := extRew.AvailableRewards
+	
 						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
 						// last day don't check min lockup time, so we should have no remaining amount left
-						if int64(epoch.Count) != v.DurationDays-1 {
-							if timeNow-userVault.CreatedAt.Unix() < v.MinLockupTimeSeconds {
+						if int64(epoch.Count) != extRew.DurationDays-1 {
+							if ctx.BlockHeight()-int64(userReward.BlockHeight) < extRew.AcceptedBlockHeight {
 								continue
 							}
 						}
-						user, _ := sdk.AccAddressFromBech32(stableRewardsUserData.User)
-						userBalance := k.bank.GetBalance(ctx, user, asset.Denom)
-					
+						user, err := sdk.AccAddressFromBech32(userReward.User)
+						if err != nil {
+							return err
+						}
+						userBalance := k.bank.GetBalance(ctx, user, asset.Denom)                                                        //userbal
+						farmedAmount, err := k.liquidityKeeper.GetAmountFarmedForAssetID(ctx, extRew.CswapAppId, asset.Id, user) //cswap farm
+						if err != nil {
+							farmedAmount = sdk.ZeroInt()
+						}
+						lendAsset, found := k.lend.UserAssetLends(ctx, user.String(), asset.Id) // commodo lend pos
+						if !found {
+							lendAsset = sdk.ZeroInt()
+						}
+						lockerAmt := sdk.ZeroInt()
+						lockerLookupData, found := k.locker.GetUserLockerAssetMapping(ctx, user.String(), extRew.AppId, asset.Id) //locker data
+						if found {
+							lockerData, _ := k.locker.GetLocker(ctx, lockerLookupData.LockerId)
+							lockerAmt = lockerData.NetBalance
+						}
+	
+						eligibleRewardAmt := sdk.ZeroInt()
+						if (userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)).GTE(userReward.Amount) {
+							eligibleRewardAmt = userReward.Amount
+						} else {
+							eligibleRewardAmt = userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)
+						}
 						
-						individualUserShare := stableRewardsUserData.Amount.ToDec().Quo(sdk.NewDecFromInt(appExtendedPairVaultData.TokenMintedAmount)) // getting share percentage
-						Duration := v.DurationDays - int64(epoch.Count)                                                                  // duration left (total duration - current count)
+						totalMintedData := sdk.ZeroInt()
+						getAllExtpairData, _ := k.asset.GetPairsVaults(ctx)
+						for _, stableExtPairData := range getAllExtpairData {
+							if stableExtPairData.AppId == extRew.AppId && stableExtPairData.IsStableMintVault {
+								appExtPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, stableExtPairData.AppId, stableExtPairData.Id)
+								totalMintedData = totalMintedData.Add(appExtPairVaultData.TokenMintedAmount) 
+							}
+						}
+
+						individualUserShare := eligibleRewardAmt.ToDec().Quo(sdk.NewDecFromInt(totalMintedData)) // getting share percentage
+						Duration := extRew.DurationDays - int64(epoch.Count)                                     // duration left (total duration - current count)
 						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
-
-						
+	
 						if finalDailyRewards.GT(sdk.ZeroInt()) {
 							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
 							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, finalDailyRewards)))
@@ -463,21 +471,19 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 								continue
 							}
 						}
-						
+						// after all the vault owners are rewarded
+						// setting the starting time to next day
+						epoch.Count = epoch.Count + types.UInt64One
+						epoch.StartingTime = timeNow + types.SecondsPerDay
+						k.SetEpochTime(ctx, epoch)
+	
+						// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
+						extRew.AvailableRewards.Amount = extRew.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
+						k.SetExternalRewardStableVault(ctx, extRew)
+					} else {
+						extRew.IsActive = false
+						k.SetExternalRewardStableVault(ctx, extRew)
 					}
-					// after all the vault owners are rewarded
-					// setting the starting time to next day
-					epoch.Count = epoch.Count + types.UInt64One
-					epoch.StartingTime = timeNow + types.SecondsPerDay
-					k.SetEpochTime(ctx, epoch)
-
-					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
-					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
-
-					k.SetExternalRewardVault(ctx, v)
-				} else {
-					v.IsActive = false
-					k.SetExternalRewardVault(ctx, v)
 				}
 			}
 		}

@@ -773,16 +773,16 @@ func (k Keeper) GetExternalRewardsLendID(ctx sdk.Context) uint64 {
 func (k Keeper) SetExternalRewardStableVault(ctx sdk.Context, VaultExternalRewards types.StableVaultExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ExternalRewardsStableVaultMappingKey(VaultExternalRewards.AppId)
+		key   = types.ExternalRewardsStableVaultMappingKey(VaultExternalRewards.Id)
 		value = k.cdc.MustMarshal(&VaultExternalRewards)
 	)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards types.StableVaultExternalRewards, found bool) {
+func (k Keeper) GetExternalRewardStableVaultByApp(ctx sdk.Context, id uint64) (VaultExternalRewards types.StableVaultExternalRewards, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ExternalRewardsStableVaultMappingKey(appID)
+		key   = types.ExternalRewardsStableVaultMappingKey(id)
 		value = store.Get(key)
 	)
 	if value == nil {
@@ -790,4 +790,67 @@ func (k Keeper) GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64)
 	}
 	k.cdc.MustUnmarshal(value, &VaultExternalRewards)
 	return VaultExternalRewards, true
+}
+
+func (k Keeper) GetAllExternalRewardStableVault(ctx sdk.Context) (VaultExternalRewards []types.StableVaultExternalRewards) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsStableVaultKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var vaultExternalRewards types.StableVaultExternalRewards
+		k.cdc.MustUnmarshal(iter.Value(), &vaultExternalRewards)
+		VaultExternalRewards = append(VaultExternalRewards, vaultExternalRewards)
+	}
+
+	return VaultExternalRewards
+}
+
+func (k Keeper) SetExternalRewardsStableVault(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtRewardsStableVaultIDKey
+		value = k.cdc.MustMarshal(
+			&protobuftypes.UInt64Value{
+				Value: id,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetExternalRewardsStableVault(ctx sdk.Context) uint64 {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExtRewardsStableVaultIDKey
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return 0
+	}
+
+	var id protobuftypes.UInt64Value
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
+
+func (k Keeper) VerifyAppIdInRewards(ctx sdk.Context, appID uint64) bool {
+	allRewardsData := k.GetAllExternalRewardStableVault(ctx)
+	for _, data := range allRewardsData {
+		if data.AppId == appID && data.IsActive{
+			return true
+		}
+	}
+	return false
 }

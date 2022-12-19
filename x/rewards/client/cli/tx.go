@@ -359,7 +359,7 @@ func txActivateExternalRewardsLend() *cobra.Command {
 
 func txActivateExternalRewardsStableVaults() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "activate-external-rewards-stable-vault [appID] [cswapAppID] [commodoAppID] [totalRewards] [durationDays] [minLockupTimeSeconds]",
+		Use:   "activate-external-rewards-stable-vault [appID] [cswapAppID] [commodoAppID] [totalRewards] [durationDays] [acceptedBlockHeight]",
 		Short: "activate external reward for stable vaults of an app",
 		Args:  cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -393,7 +393,7 @@ func txActivateExternalRewardsStableVaults() *cobra.Command {
 				return err
 			}
 
-			minLockupTimeSeconds, err := strconv.ParseInt(args[5], 10, 64)
+			acceptedBlockHeight, err := strconv.ParseInt(args[5], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -404,7 +404,7 @@ func txActivateExternalRewardsStableVaults() *cobra.Command {
 				commodoAppID,
 				totalRewards,
 				durationDays,
-				minLockupTimeSeconds,
+				acceptedBlockHeight,
 				ctx.GetFromAddress(),
 			)
 

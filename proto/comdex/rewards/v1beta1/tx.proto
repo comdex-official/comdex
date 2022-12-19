@@ -211,8 +211,8 @@ message ActivateExternalRewardsStableMint {
   string depositor = 6 [
     (gogoproto.moretags) = "yaml:\"depositor\""
   ];
-  int64 min_lockup_time_seconds = 7 [
-    (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
+  int64 accepted_block_height = 7 [
+    (gogoproto.moretags) = "yaml:\"accepted_block_height\""
   ];
 }
 

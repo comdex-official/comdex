@@ -42,6 +42,7 @@ type AssetKeeper interface {
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 	GetPair(ctx sdk.Context, id uint64) (pair assettypes.Pair, found bool)
+	GetPairsVaults(ctx sdk.Context) (apps []assettypes.ExtendedPairVault, found bool)
 }
 
 type MarketKeeper interface {
@@ -59,6 +60,7 @@ type LockerKeeper interface {
 	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
 	GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool)
 	SetLockerLookupTable(ctx sdk.Context, lockerLookupData lockertypes.LockerLookupTableData)
+	GetUserLockerAssetMapping(ctx sdk.Context, address string, appID, assetID uint64) (userLockerAssetData lockertypes.UserAppAssetLockerMapping, found bool)
 }
 
 type CollectorKeeper interface {
@@ -82,9 +84,12 @@ type VaultKeeper interface {
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool)
-	GetStableMintVaultRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
-	GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultUserRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
 	DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	GetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards) (mappingData vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultRewardsOfAllApps(ctx sdk.Context) (mappingData []vaulttypes.StableMintVaultRewards)
 }
 
 type BankKeeper interface {

@@ -323,10 +323,11 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 func (k Keeper) ActExternalRewardsStableVaults(
 	ctx sdk.Context,
 	appID uint64, cswapAppID, commodoAppID uint64,
-	durationDays, minLockupTimeSeconds int64,
+	durationDays, acceptedBlockHeight int64,
 	totalRewards sdk.Coin,
 	depositor sdk.AccAddress,
 ) error {
+	id := k.GetExternalRewardsStableVault(ctx)
 
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
 
@@ -338,6 +339,7 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	}
 
 	msg := types.StableVaultExternalRewards{
+		Id:                   id + 1,
 		AppId:                appID,
 		CswapAppId:           cswapAppID,
 		CommodoAppId:         commodoAppID,
@@ -348,7 +350,7 @@ func (k Keeper) ActExternalRewardsStableVaults(
 		Depositor:            depositor.String(),
 		StartTimestamp:       ctx.BlockTime(),
 		EndTimestamp:         endTime,
-		MinLockupTimeSeconds: minLockupTimeSeconds,
+		AcceptedBlockHeight:  acceptedBlockHeight,
 		EpochId:              epoch.Id,
 	}
 
@@ -358,6 +360,7 @@ func (k Keeper) ActExternalRewardsStableVaults(
 
 	k.SetEpochTimeID(ctx, msg.EpochId)
 	k.SetExternalRewardStableVault(ctx, msg)
+	k.SetExternalRewardsStableVault(ctx, msg.Id)
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }

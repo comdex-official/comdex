@@ -262,17 +262,17 @@ func NewMsgActivateExternalRewardsStableVault(
 	cswapAppID uint64,
 	commodoAppID uint64,
 	totalRewards sdk.Coin,
-	durationDays, minLockupTimeSeconds int64,
+	durationDays, acceptedBlockHeight int64,
 	from sdk.AccAddress,
 ) *ActivateExternalRewardsStableMint {
 	return &ActivateExternalRewardsStableMint{
-		AppId:                appID,
-		CswapAppId:           cswapAppID,
-		CommodoAppId:         commodoAppID,
-		TotalRewards:         totalRewards,
-		DurationDays:         durationDays,
-		MinLockupTimeSeconds: minLockupTimeSeconds,
-		Depositor:            from.String(),
+		AppId:               appID,
+		CswapAppId:          cswapAppID,
+		CommodoAppId:        commodoAppID,
+		TotalRewards:        totalRewards,
+		DurationDays:        durationDays,
+		AcceptedBlockHeight: acceptedBlockHeight,
+		Depositor:           from.String(),
 	}
 }
 
@@ -294,8 +294,8 @@ func (m *ActivateExternalRewardsStableMint) ValidateBasic() error {
 	if m.DurationDays <= 0 {
 		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
 	}
-	if m.MinLockupTimeSeconds <= 0 {
-		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	if m.AcceptedBlockHeight <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.AcceptedBlockHeight)
 	}
 	return nil
 }

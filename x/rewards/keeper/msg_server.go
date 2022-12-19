@@ -135,7 +135,7 @@ func (m msgServer) ExternalRewardsStableMint(goCtx context.Context, msg *types.A
 	if err != nil {
 		return nil, err
 	}
-	if err := m.Keeper.ActExternalRewardsStableVaults(ctx, msg.AppId, msg.CswapAppId, msg.CommodoAppId, msg.DurationDays, msg.MinLockupTimeSeconds, msg.TotalRewards, Depositor); err != nil {
+	if err := m.Keeper.ActExternalRewardsStableVaults(ctx, msg.AppId, msg.CswapAppId, msg.CommodoAppId, msg.DurationDays, msg.AcceptedBlockHeight, msg.TotalRewards, Depositor); err != nil {
 		return nil, err
 	}
 	return &types.ActivateExternalRewardsStableMintResponse{}, nil
