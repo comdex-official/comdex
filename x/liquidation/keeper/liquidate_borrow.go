@@ -371,7 +371,13 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 			poolAssetLBMappingData, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
 			assetOutStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetOut)
 			cAsset, _ := k.asset.GetAsset(ctx, assetOutStats.CAssetID)
-			reservePoolRecords, _ := k.lend.GetBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+			reservePoolRecords, found := k.lend.GetBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+			if !found {
+				reservePoolRecords = lendtypes.BorrowInterestTracker{
+					BorrowingId:         lockedVault.OriginalVaultId,
+					ReservePoolInterest: sdk.ZeroDec(),
+				}
+			}
 			borrowPos, _ := k.lend.GetBorrow(ctx, lockedVault.OriginalVaultId)
 			amtToReservePool := reservePoolRecords.ReservePoolInterest
 			if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
