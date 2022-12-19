@@ -11,10 +11,12 @@ import (
 
 // Liquidity params default values.
 const (
-	DefaultBatchSize        uint64 = 1
-	DefaultTickPrecision    uint64 = 6
-	DefaultMaxOrderLifespan        = 24 * time.Hour
-	DefaultFeeDenom         string = "ucmdx"
+	DefaultBatchSize                    uint64 = 1
+	DefaultTickPrecision                uint64 = 6
+	DefaultMaxOrderLifespan                    = 24 * time.Hour
+	DefaultFeeDenom                     string = "ucmdx"
+	DefaultMaxNumMarketMakingOrderTicks uint64 = 10
+	DefaultMaxNumActivePoolsPerPair     uint64 = 20
 )
 
 // Liquidity params default values.
@@ -34,24 +36,26 @@ var (
 )
 
 var (
-	AppID                    = "AppId"
-	BatchSize                = "BatchSize"
-	TickPrecision            = "TickPrecision"
-	FeeCollectorAddress      = "FeeCollectorAddress"
-	DustCollectorAddress     = "DustCollectorAddress"
-	MinInitialPoolCoinSupply = "MinInitialPoolCoinSupply"
-	PairCreationFee          = "PairCreationFee"
-	PoolCreationFee          = "PoolCreationFee"
-	MinInitialDepositAmount  = "MinInitialDepositAmount"
-	MaxPriceLimitRatio       = "MaxPriceLimitRatio"
-	MaxOrderLifespan         = "MaxOrderLifespan"
-	SwapFeeRate              = "SwapFeeRate"
-	WithdrawFeeRate          = "WithdrawFeeRate"
-	DepositExtraGas          = "DepositExtraGas"
-	WithdrawExtraGas         = "WithdrawExtraGas"
-	OrderExtraGas            = "OrderExtraGas"
-	SwapFeeDistrDenom        = "SwapFeeDistrDenom"
-	SwapFeeBurnRate          = "SwapFeeBurnRate"
+	AppID                        = "AppId"
+	BatchSize                    = "BatchSize"
+	TickPrecision                = "TickPrecision"
+	FeeCollectorAddress          = "FeeCollectorAddress"
+	DustCollectorAddress         = "DustCollectorAddress"
+	MinInitialPoolCoinSupply     = "MinInitialPoolCoinSupply"
+	PairCreationFee              = "PairCreationFee"
+	PoolCreationFee              = "PoolCreationFee"
+	MinInitialDepositAmount      = "MinInitialDepositAmount"
+	MaxPriceLimitRatio           = "MaxPriceLimitRatio"
+	MaxOrderLifespan             = "MaxOrderLifespan"
+	SwapFeeRate                  = "SwapFeeRate"
+	WithdrawFeeRate              = "WithdrawFeeRate"
+	DepositExtraGas              = "DepositExtraGas"
+	WithdrawExtraGas             = "WithdrawExtraGas"
+	OrderExtraGas                = "OrderExtraGas"
+	SwapFeeDistrDenom            = "SwapFeeDistrDenom"
+	SwapFeeBurnRate              = "SwapFeeBurnRate"
+	MaxNumMarketMakingOrderTicks = "MaxNumMarketMakingOrderTicks"
+	MaxNumActivePoolsPerPair     = "MaxNumActivePoolsPerPair"
 )
 
 var UpdatableKeys = []string{
@@ -70,6 +74,8 @@ var UpdatableKeys = []string{
 	OrderExtraGas,
 	SwapFeeDistrDenom,
 	SwapFeeBurnRate,
+	MaxNumMarketMakingOrderTicks,
+	MaxNumActivePoolsPerPair,
 }
 
 // DeriveFeeCollectorAddress returns a unique address of the fee collector.
@@ -91,47 +97,51 @@ func DeriveDustCollectorAddress(appID uint64) sdk.AccAddress {
 // DefaultGenericParams returns a default params for the liquidity module.
 func DefaultGenericParams(appID uint64) GenericParams {
 	return GenericParams{
-		AppId:                    appID,
-		BatchSize:                DefaultBatchSize,
-		TickPrecision:            DefaultTickPrecision,
-		FeeCollectorAddress:      DeriveFeeCollectorAddress(appID).String(),
-		DustCollectorAddress:     DeriveDustCollectorAddress(appID).String(),
-		MinInitialPoolCoinSupply: DefaultMinInitialPoolCoinSupply,
-		PairCreationFee:          DefaultPairCreationFee,
-		PoolCreationFee:          DefaultPoolCreationFee,
-		MinInitialDepositAmount:  DefaultMinInitialDepositAmount,
-		MaxPriceLimitRatio:       DefaultMaxPriceLimitRatio,
-		MaxOrderLifespan:         DefaultMaxOrderLifespan,
-		SwapFeeRate:              DefaultSwapFeeRate,
-		WithdrawFeeRate:          DefaultWithdrawFeeRate,
-		DepositExtraGas:          DefaultDepositExtraGas,
-		WithdrawExtraGas:         DefaultWithdrawExtraGas,
-		OrderExtraGas:            DefaultOrderExtraGas,
-		SwapFeeDistrDenom:        DefaultSwapFeeDistrDenom,
-		SwapFeeBurnRate:          DefaultSwapFeeBurnRate,
+		AppId:                        appID,
+		BatchSize:                    DefaultBatchSize,
+		TickPrecision:                DefaultTickPrecision,
+		FeeCollectorAddress:          DeriveFeeCollectorAddress(appID).String(),
+		DustCollectorAddress:         DeriveDustCollectorAddress(appID).String(),
+		MinInitialPoolCoinSupply:     DefaultMinInitialPoolCoinSupply,
+		PairCreationFee:              DefaultPairCreationFee,
+		PoolCreationFee:              DefaultPoolCreationFee,
+		MinInitialDepositAmount:      DefaultMinInitialDepositAmount,
+		MaxPriceLimitRatio:           DefaultMaxPriceLimitRatio,
+		MaxOrderLifespan:             DefaultMaxOrderLifespan,
+		SwapFeeRate:                  DefaultSwapFeeRate,
+		WithdrawFeeRate:              DefaultWithdrawFeeRate,
+		DepositExtraGas:              DefaultDepositExtraGas,
+		WithdrawExtraGas:             DefaultWithdrawExtraGas,
+		OrderExtraGas:                DefaultOrderExtraGas,
+		SwapFeeDistrDenom:            DefaultSwapFeeDistrDenom,
+		SwapFeeBurnRate:              DefaultSwapFeeBurnRate,
+		MaxNumMarketMakingOrderTicks: DefaultMaxNumMarketMakingOrderTicks,
+		MaxNumActivePoolsPerPair:     DefaultMaxNumActivePoolsPerPair,
 	}
 }
 
 func KeyParseValidateFuncMap() map[string][]interface{} {
 	return map[string][]interface{}{
-		AppID:                    {ParseStringToUint, validateAppID},
-		BatchSize:                {ParseStringToUint, validateBatchSize},
-		TickPrecision:            {ParseStringToUint, validateTickPrecision},
-		FeeCollectorAddress:      {ParseString, validateFeeCollectorAddress},
-		DustCollectorAddress:     {ParseString, validateDustCollectorAddress},
-		MinInitialPoolCoinSupply: {ParseStringToInt, validateMinInitialPoolCoinSupply},
-		PairCreationFee:          {ParseStringToCoins, validatePairCreationFee},
-		PoolCreationFee:          {ParseStringToCoins, validatePoolCreationFee},
-		MinInitialDepositAmount:  {ParseStringToInt, validateMinInitialDepositAmount},
-		MaxPriceLimitRatio:       {ParseStringToDec, validateMaxPriceLimitRatio},
-		MaxOrderLifespan:         {ParseStringToDuration, validateMaxOrderLifespan},
-		SwapFeeRate:              {ParseStringToDec, validateSwapFeeRate},
-		WithdrawFeeRate:          {ParseStringToDec, validateWithdrawFeeRate},
-		DepositExtraGas:          {ParseStringToGas, validateExtraGas},
-		WithdrawExtraGas:         {ParseStringToGas, validateExtraGas},
-		OrderExtraGas:            {ParseStringToGas, validateExtraGas},
-		SwapFeeDistrDenom:        {ParseString, validateSwapFeeDistrDenom},
-		SwapFeeBurnRate:          {ParseStringToDec, validateSwapFeeBurnRate},
+		AppID:                        {ParseStringToUint, validateAppID},
+		BatchSize:                    {ParseStringToUint, validateBatchSize},
+		TickPrecision:                {ParseStringToUint, validateTickPrecision},
+		FeeCollectorAddress:          {ParseString, validateFeeCollectorAddress},
+		DustCollectorAddress:         {ParseString, validateDustCollectorAddress},
+		MinInitialPoolCoinSupply:     {ParseStringToInt, validateMinInitialPoolCoinSupply},
+		PairCreationFee:              {ParseStringToCoins, validatePairCreationFee},
+		PoolCreationFee:              {ParseStringToCoins, validatePoolCreationFee},
+		MinInitialDepositAmount:      {ParseStringToInt, validateMinInitialDepositAmount},
+		MaxPriceLimitRatio:           {ParseStringToDec, validateMaxPriceLimitRatio},
+		MaxOrderLifespan:             {ParseStringToDuration, validateMaxOrderLifespan},
+		SwapFeeRate:                  {ParseStringToDec, validateSwapFeeRate},
+		WithdrawFeeRate:              {ParseStringToDec, validateWithdrawFeeRate},
+		DepositExtraGas:              {ParseStringToGas, validateExtraGas},
+		WithdrawExtraGas:             {ParseStringToGas, validateExtraGas},
+		OrderExtraGas:                {ParseStringToGas, validateExtraGas},
+		SwapFeeDistrDenom:            {ParseString, validateSwapFeeDistrDenom},
+		SwapFeeBurnRate:              {ParseStringToDec, validateSwapFeeBurnRate},
+		MaxNumMarketMakingOrderTicks: {ParseStringToUint, validateMaxNumMarketMakingOrderTicks},
+		MaxNumActivePoolsPerPair:     {ParseStringToUint, validateMaxNumActivePoolsPerPair},
 	}
 }
 
@@ -159,6 +169,8 @@ func (genericParams GenericParams) Validate() error {
 		{genericParams.OrderExtraGas, validateExtraGas},
 		{genericParams.SwapFeeDistrDenom, validateSwapFeeDistrDenom},
 		{genericParams.SwapFeeBurnRate, validateSwapFeeBurnRate},
+		{genericParams.MaxNumMarketMakingOrderTicks, validateMaxNumMarketMakingOrderTicks},
+		{genericParams.MaxNumActivePoolsPerPair, validateMaxNumActivePoolsPerPair},
 	} {
 		if err := field.validateFunc(field.val); err != nil {
 			return err
@@ -412,5 +424,26 @@ func validateSwapFeeBurnRate(i interface{}) error {
 		return fmt.Errorf("swap fee burn rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 
+	return nil
+}
+
+func validateMaxNumMarketMakingOrderTicks(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("max number of market making order ticks must be positive: %d", v)
+	}
+
+	return nil
+}
+
+func validateMaxNumActivePoolsPerPair(i interface{}) error {
+	_, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
 	return nil
 }
