@@ -278,7 +278,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 
 			cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 			// totalDeduction is the sum of liquidationDeductionAmount and selloffAmount
-			totalDeduction := liquidationDeductionAmount.TruncateInt().Add(sellOffAmt.TruncateInt()) // Total deduction from amountIn also reduce to lend Position amountIn
+			totalDeduction := liquidationDeductionAmount.Add(sellOffAmt).TruncateInt() // Total deduction from amountIn also reduce to lend Position amountIn
 			borrowPos, _ := k.lend.GetBorrow(ctx, updatedLockedVault.OriginalVaultId)
 			borrowPos.IsLiquidated = true
 			k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
@@ -311,15 +311,8 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, updatedLockedVault types.Lo
 			}
 			k.lend.SetLend(ctx, lendPos)
 			k.lend.SetBorrow(ctx, borrowPos)
-			var collateralToBeAuctioned sdk.Dec
-
-			if selloffAmount.GTE(totalIn) {
-				collateralToBeAuctioned = totalIn
-			} else {
-				collateralToBeAuctioned = selloffAmount
-			}
 			updatedLockedVault.CurrentCollaterlisationRatio = collateralizationRatio
-			updatedLockedVault.CollateralToBeAuctioned = collateralToBeAuctioned
+			updatedLockedVault.CollateralToBeAuctioned = selloffAmount
 			k.SetLockedVault(ctx, updatedLockedVault)
 			k.SetLockedVaultID(ctx, updatedLockedVault.LockedVaultId)
 		}
@@ -423,8 +416,14 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 					if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(cAssetIn.Denom, lockedVault.AmountIn))); err != nil {
 						return err
 					}
+					k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
+					k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
+					k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
+					k.lend.DeleteBorrowInterestTracker(ctx, lockedVault.OriginalVaultId)
+					return nil
 				}
 				if lockedVault.AmountIn.IsZero() {
+					k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 					k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
 					k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
 					k.lend.DeleteBorrow(ctx, lockedVault.OriginalVaultId)
