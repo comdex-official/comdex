@@ -63,7 +63,7 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 				return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
 			}
 
-			//return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
+			// return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
 			// check reserve moduleBalance
 			// from reserve to pool and mint cToken
 			// give cToken to user
@@ -114,7 +114,6 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 			allReserveStats.TotalAmountOutToLenders = allReserveStats.TotalAmountOutToLenders.Add(newInterestPerInteraction)
 			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 		} else {
-
 			// updating user's balance
 			lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
 			Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)

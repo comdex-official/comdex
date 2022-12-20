@@ -105,7 +105,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 						return fmt.Errorf("error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 					}
 					k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
-
 				}
 			} else {
 				if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
@@ -127,7 +126,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 							return fmt.Errorf("error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						}
 						k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
-
 					}
 				} else {
 					currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
@@ -149,7 +147,6 @@ func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 							return fmt.Errorf("error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID %d", lockedVault.LockedVaultId)
 						}
 						k.lend.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
-
 					}
 				}
 			}
