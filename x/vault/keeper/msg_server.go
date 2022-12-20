@@ -1091,7 +1091,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	k.SetIDForStableVault(ctx, newID)
 	// update Locker Data 	//Update Amount
 	k.UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(ctx, stableVault)
-	found = k.rewards.VerifyAppIdInRewards(ctx, msg.AppId)
+	found = k.rewards.VerifyAppIDInRewards(ctx, msg.AppId)
 	if found {
 		var stableRewards types.StableMintVaultRewards
 		stableRewards.AppId = msg.AppId
@@ -1250,7 +1250,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	appExtendedPairVaultData, _ := k.GetAppExtendedPairVaultMappingData(ctx, appMapping.Id, msg.ExtendedPairVaultId)
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, msg.Amount, true)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, true)
-	found = k.rewards.VerifyAppIdInRewards(ctx, msg.AppId)
+	found = k.rewards.VerifyAppIDInRewards(ctx, msg.AppId)
 	if found {
 		var stableRewards types.StableMintVaultRewards
 		stableRewards.AppId = msg.AppId
@@ -1416,7 +1416,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 	k.UpdateCollateralLockedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, tokenOutAmount, false)
 	k.UpdateTokenMintedAmountLockerMapping(ctx, appExtendedPairVaultData.AppId, appExtendedPairVaultData.ExtendedPairId, updatedAmount, false)
 
-	//Function that deletes the entries in the stable mint rewards structure.
+	// Function that deletes the entries in the stable mint rewards structure.
 	k.DeleteUserStableRewardEntries(ctx, appExtendedPairVaultData.AppId, msg.From, updatedAmount)
 
 	ctx.GasMeter().ConsumeGas(types.WithdrawStableVaultGas, "WithdrawStableVaultGas")

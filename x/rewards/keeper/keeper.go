@@ -339,19 +339,19 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	}
 
 	msg := types.StableVaultExternalRewards{
-		Id:                   id + 1,
-		AppId:                appID,
-		CswapAppId:           cswapAppID,
-		CommodoAppId:         commodoAppID,
-		TotalRewards:         totalRewards,
-		DurationDays:         durationDays,
-		IsActive:             true,
-		AvailableRewards:     totalRewards,
-		Depositor:            depositor.String(),
-		StartTimestamp:       ctx.BlockTime(),
-		EndTimestamp:         endTime,
-		AcceptedBlockHeight:  acceptedBlockHeight,
-		EpochId:              epoch.Id,
+		Id:                  id + 1,
+		AppId:               appID,
+		CswapAppId:          cswapAppID,
+		CommodoAppId:        commodoAppID,
+		TotalRewards:        totalRewards,
+		DurationDays:        durationDays,
+		IsActive:            true,
+		AvailableRewards:    totalRewards,
+		Depositor:           depositor.String(),
+		StartTimestamp:      ctx.BlockTime(),
+		EndTimestamp:        endTime,
+		AcceptedBlockHeight: acceptedBlockHeight,
+		EpochId:             epoch.Id,
 	}
 
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(totalRewards)); err != nil {

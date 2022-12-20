@@ -1672,9 +1672,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 }
 
 func (k Keeper) UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool) {
-	var (
-		lendIDs []uint64
-	)
+	var lendIDs []uint64
 	amount := sdk.ZeroInt()
 	mappingData := k.GetUserTotalMappingData(ctx, addr)
 

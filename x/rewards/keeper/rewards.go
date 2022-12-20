@@ -845,10 +845,10 @@ func (k Keeper) GetExternalRewardsStableVault(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k Keeper) VerifyAppIdInRewards(ctx sdk.Context, appID uint64) bool {
+func (k Keeper) VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool {
 	allRewardsData := k.GetAllExternalRewardStableVault(ctx)
 	for _, data := range allRewardsData {
-		if data.AppId == appID && data.IsActive{
+		if data.AppId == appID && data.IsActive {
 			return true
 		}
 	}
