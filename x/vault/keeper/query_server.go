@@ -730,3 +730,16 @@ func (q QueryServer) QueryPairsLockedAndMintedStatisticByApp(c context.Context, 
 		PairStatisticData: pairStatistics,
 	}, nil
 }
+
+func (q QueryServer) QueryAllStableMintVaultRewards(c context.Context, req *types.QueryAllStableMintVaultRewardsRequest) (*types.QueryAllStableMintVaultRewardsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	stableRewardsData := q.GetStableMintVaultRewardsOfAllApps(ctx)
+
+	return &types.QueryAllStableMintVaultRewardsResponse{
+		StableMintVaultRewards: stableRewardsData,
+	}, nil
+}
