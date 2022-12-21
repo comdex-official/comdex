@@ -24,6 +24,7 @@ type ComdexMessages struct {
 	MsgFoundationEmission                *MsgFoundationEmission                `json:"msg_foundation_emission,omitempty"`
 	MsgRebaseMint                        *MsgRebaseMint                        `json:"msg_rebase_mint,omitempty"`
 	MsgGetSurplusFund                    *MsgGetSurplusFund                    `json:"msg_get_surplus_fund,omitempty"`
+	MsgEmissionPoolRewards               *MsgEmissionPoolRewards               `json:"msg_emission_pool_rewards,omitempty"`
 }
 
 type MsgWhiteListAssetLocker struct {
@@ -174,4 +175,12 @@ type MsgGetSurplusFund struct {
 	AssetID      uint64         `json:"asset_id"`
 	ContractAddr sdk.AccAddress `json:"contract_addr"`
 	Amount       sdk.Coin       `json:"amount"`
+}
+
+type MsgEmissionPoolRewards struct {
+	AppID       uint64    `json:"app_id"`
+	CswapAppID  uint64    `json:"cswap_app_id"`
+	Amount      sdk.Int   `json:"amount"`
+	Pools       []uint64  `json:"pools"`
+	VotingRatio []sdk.Int `json:"voting_ratio"`
 }

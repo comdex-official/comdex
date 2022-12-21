@@ -38,6 +38,7 @@ type AssetKeeper interface {
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetAsset(ctx sdk.Context, id uint64) (asset assettypes.Asset, found bool)
 }
 
 type MarketKeeper interface {
@@ -49,4 +50,8 @@ type RewardsKeeper interface {
 	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []rewardstypes.Gauge)
 	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo rewardstypes.EpochInfo, found bool)
 	CreateNewGauge(ctx sdk.Context, msg *rewardstypes.MsgCreateGauge, forSwapFee bool) error
+}
+
+type TokenMintKeeper interface {
+	UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int)
 }

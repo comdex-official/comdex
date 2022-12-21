@@ -29,6 +29,7 @@ type ComdexQuery struct {
 	CheckVaultCreated                      *CheckVaultCreated                      `json:"check_vault_created,omitempty"`
 	CheckBorrowed                          *CheckBorrowed                          `json:"check_borrowed,omitempty"`
 	CheckLiquidityProvided                 *CheckLiquidityProvided                 `json:"check_liquidity_provided,omitempty"`
+	GetPoolByApp                           *GetPoolByApp                           `json:"get_pool_by_app,omitempty"`
 }
 
 type AppData struct {
@@ -281,4 +282,12 @@ type CheckLiquidityProvided struct {
 
 type LiquidityProvidedResponse struct {
 	IsCompleted bool `json:"is_completed"`
+}
+
+type GetPoolByApp struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type GetPoolByAppResponse struct {
+	Pools []uint64 `json:"pools"`
 }
