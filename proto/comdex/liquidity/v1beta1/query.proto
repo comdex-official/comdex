@@ -428,12 +428,12 @@ service Query {
 
   // Orders returns all orders within the pair.
   rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}";
   }
 
   // Order returns the specific order.
   rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}/{id}";
   }
 
   // OrdersByOrderer returns orders made by an orderer.
