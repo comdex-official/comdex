@@ -399,7 +399,7 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 		extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, extRew.AppId)
 		for _, userReward := range extRewards {
 			extPair, _ := k.asset.GetPairsVault(ctx, userReward.StableExtendedPairId)
-			pair, _ := k.asset.GetPair(ctx, extPair.Id)
+			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
 			asset, _ := k.asset.GetAsset(ctx, pair.AssetOut)
 			if extRew.IsActive {
 				epoch, _ := k.GetEpochTime(ctx, extRew.EpochId)
