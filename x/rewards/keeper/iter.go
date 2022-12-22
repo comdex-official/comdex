@@ -397,15 +397,14 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 	extRewardsProp := k.GetAllExternalRewardStableVault(ctx)
 	for _, extRew := range extRewardsProp {
 		extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, extRew.AppId)
+		epoch, _ := k.GetEpochTime(ctx, extRew.EpochId)
+		et := epoch.StartingTime
+		timeNow := ctx.BlockTime().Unix()
 		for _, userReward := range extRewards {
 			extPair, _ := k.asset.GetPairsVault(ctx, userReward.StableExtendedPairId)
 			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
 			asset, _ := k.asset.GetAsset(ctx, pair.AssetOut)
 			if extRew.IsActive {
-				epoch, _ := k.GetEpochTime(ctx, extRew.EpochId)
-				et := epoch.StartingTime
-				timeNow := ctx.BlockTime().Unix()
-
 				// here the epoch starting time is set to the next day whenever any external vault reward is distributed
 				// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
 				// checking if rewards are active
@@ -471,11 +470,6 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 								continue
 							}
 						}
-						// after all the vault owners are rewarded
-						// setting the starting time to next day
-						epoch.Count = epoch.Count + types.UInt64One
-						epoch.StartingTime = timeNow + types.SecondsPerDay
-						k.SetEpochTime(ctx, epoch)
 
 						// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
 						extRew.AvailableRewards.Amount = extRew.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
@@ -487,6 +481,11 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 				}
 			}
 		}
+		// after all the vault owners are rewarded
+		// setting the starting time to next day
+		epoch.Count = epoch.Count + types.UInt64One
+		epoch.StartingTime = timeNow + types.SecondsPerDay
+		k.SetEpochTime(ctx, epoch)
 	}
 	return nil
 }
