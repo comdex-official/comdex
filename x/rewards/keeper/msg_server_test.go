@@ -682,7 +682,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 		{
 			"ActivateExternalRewardsLockers : success",
 			types.ActivateExternalRewardsVault{
-				AppMappingId:         1,
+				AppMappingId:         2,
 				ExtendedPairId:       1,
 				TotalRewards:         sdk.NewCoin("btc", amt),
 				DurationDays:         3,
