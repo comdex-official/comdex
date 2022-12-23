@@ -578,12 +578,13 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 		farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 		individualVote := votingRatio[j]
-		votingR := individualVote.Quo(totalVote)
-		shareByPool := votingR.Mul(amount)
+		votingR := individualVote.ToDec().Quo(totalVote.ToDec())
+		shareByPool := votingR.Mul(amount.ToDec())
 		if farmedCoins.IsZero() {
 			continue
 		}
-		perUserShareByAmt = shareByPool.Quo(farmedCoins.Amount)
+		perUserShareByAmtDec := shareByPool.Quo(farmedCoins.Amount.ToDec())
+		perUserShareByAmt = perUserShareByAmtDec.TruncateInt()
 		allActiveFarmer := k.GetAllActiveFarmers(ctx, cswapAppID, extP)
 
 		for _, farmerDetail := range allActiveFarmer {
