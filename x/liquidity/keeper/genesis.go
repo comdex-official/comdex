@@ -47,6 +47,10 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) {
 			k.SetOrderIndex(ctx, appState.AppId, order)
 		}
 
+		for _, mmOrderIndex := range appState.MarketMakingOrderIndexes {
+			k.SetMMOrderIndex(ctx, appState.AppId, mmOrderIndex)
+		}
+
 		for _, activeFarmer := range appState.ActiveFarmers {
 			k.SetActiveFarmer(ctx, activeFarmer)
 		}
@@ -100,17 +104,18 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *types.GenesisState {
 			}
 			allActiveFarmers, allQueuedFarmers := k.GetActiveAndQueuedFarmersForGenesis(ctx, app.Id)
 			appGenesisState = append(appGenesisState, types.AppGenesisState{
-				AppId:            app.Id,
-				GenericParams:    genericParams,
-				LastPairId:       k.GetLastPairID(ctx, app.Id),
-				LastPoolId:       k.GetLastPoolID(ctx, app.Id),
-				Pairs:            k.GetAllPairs(ctx, app.Id),
-				Pools:            k.GetAllPools(ctx, app.Id),
-				DepositRequests:  k.GetAllDepositRequests(ctx, app.Id),
-				WithdrawRequests: k.GetAllWithdrawRequests(ctx, app.Id),
-				Orders:           k.GetAllOrders(ctx, app.Id),
-				ActiveFarmers:    allActiveFarmers,
-				QueuedFarmers:    allQueuedFarmers,
+				AppId:                    app.Id,
+				GenericParams:            genericParams,
+				LastPairId:               k.GetLastPairID(ctx, app.Id),
+				LastPoolId:               k.GetLastPoolID(ctx, app.Id),
+				Pairs:                    k.GetAllPairs(ctx, app.Id),
+				Pools:                    k.GetAllPools(ctx, app.Id),
+				DepositRequests:          k.GetAllDepositRequests(ctx, app.Id),
+				WithdrawRequests:         k.GetAllWithdrawRequests(ctx, app.Id),
+				Orders:                   k.GetAllOrders(ctx, app.Id),
+				ActiveFarmers:            allActiveFarmers,
+				QueuedFarmers:            allQueuedFarmers,
+				MarketMakingOrderIndexes: k.GetAllMMOrderIndexes(ctx, app.Id),
 			})
 		}
 	}

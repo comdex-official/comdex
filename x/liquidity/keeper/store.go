@@ -607,26 +607,30 @@ func (k Keeper) GetMMOrderIndex(ctx sdk.Context, orderer sdk.AccAddress, appID, 
 	if bz == nil {
 		return
 	}
-	k.cdc.MustUnmarshal(bz, &index)
+	index = types.MustUnmarshalMMOrderIndex(k.cdc, bz)
 	return index, true
 }
 
 // SetMMOrderIndex stores a market making order index.
 func (k Keeper) SetMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrderIndex) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&index)
+	bz := types.MustMarshaMMOrderIndex(k.cdc, index)
 	store.Set(types.GetMMOrderIndexKey(index.GetOrderer(), appID, index.PairId), bz)
 }
 
 // IterateAllMMOrderIndexes iterates through all market making order indexes
 // in the store and call cb for each order.
-func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, cb func(index types.MMOrderIndex) (stop bool, err error)) error {
+func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, appID uint64, cb func(index types.MMOrderIndex) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.MMOrderIndexKeyPrefix)
-	defer iter.Close()
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllMMOrderIndexKey(appID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
-		var index types.MMOrderIndex
-		k.cdc.MustUnmarshal(iter.Value(), &index)
+		index := types.MustUnmarshalMMOrderIndex(k.cdc, iter.Value())
 		stop, err := cb(index)
 		if err != nil {
 			return err
@@ -639,9 +643,9 @@ func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, cb func(index types.MM
 }
 
 // GetAllMMOrderIndexes returns all market making order indexes in the store.
-func (k Keeper) GetAllMMOrderIndexes(ctx sdk.Context) (indexes []types.MMOrderIndex) {
+func (k Keeper) GetAllMMOrderIndexes(ctx sdk.Context, appID uint64) (indexes []types.MMOrderIndex) {
 	indexes = []types.MMOrderIndex{}
-	_ = k.IterateAllMMOrderIndexes(ctx, func(index types.MMOrderIndex) (stop bool, err error) {
+	_ = k.IterateAllMMOrderIndexes(ctx, appID, func(index types.MMOrderIndex) (stop bool, err error) {
 		indexes = append(indexes, index)
 		return false, nil
 	})

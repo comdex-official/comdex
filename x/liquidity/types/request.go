@@ -431,6 +431,28 @@ func MustUnmarshalOrder(cdc codec.BinaryCodec, value []byte) Order {
 	return msg
 }
 
+// MustMarshaMMOrderIndex returns the MMOrderIndex bytes.
+// It throws panic if it fails.
+func MustMarshaMMOrderIndex(cdc codec.BinaryCodec, mmOrderIndex MMOrderIndex) []byte {
+	return cdc.MustMarshal(&mmOrderIndex)
+}
+
+// UnmarshalMMOrderIndex returns the MMOrderIndex from bytes.
+func UnmarshalMMOrderIndex(cdc codec.BinaryCodec, value []byte) (mmOrderIndex MMOrderIndex, err error) {
+	err = cdc.Unmarshal(value, &mmOrderIndex)
+	return mmOrderIndex, err
+}
+
+// MustUnmarshalOrder returns the Order from bytes.
+// It throws panic if it fails.
+func MustUnmarshalMMOrderIndex(cdc codec.BinaryCodec, value []byte) MMOrderIndex {
+	msg, err := UnmarshalMMOrderIndex(cdc, value)
+	if err != nil {
+		panic(err)
+	}
+	return msg
+}
+
 // MustMarshalGenericLiquidityParams returns the GenericParams bytes.
 // It throws panic if it fails.
 func MustMarshalGenericLiquidityParams(cdc codec.BinaryCodec, genericLiquidityParams GenericParams) []byte {
