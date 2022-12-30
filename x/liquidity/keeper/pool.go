@@ -10,6 +10,7 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 )
 
 // getNextPoolIdWithUpdate increments pool id by one and set it.
@@ -547,4 +548,56 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, pool
 		availableBalance.Amount = sdk.NewInt(0)
 	}
 	return availableBalance, nil
+}
+
+func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID uint64, amount sdk.Int, pool []uint64, votingRatio []sdk.Int) error {
+	var assetID uint64
+	var perUserShareByAmt sdk.Int
+
+	totalVote := sdk.ZeroInt()
+	app, _ := k.assetKeeper.GetApp(ctx, appID)
+	govToken := app.GenesisToken
+	for _, v := range govToken {
+		if v.IsGovToken {
+			assetID = v.AssetId
+		}
+	}
+	asset, _ := k.assetKeeper.GetAsset(ctx, assetID)
+	if amount.GT(sdk.ZeroInt()) {
+		err := k.bankKeeper.MintCoins(ctx, tokenminttypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
+		if err != nil {
+			return err
+		}
+	}
+	k.tokenmint.UpdateAssetDataInTokenMintByApp(ctx, appID, assetID, true, amount)
+	for i := range votingRatio {
+		totalVote = totalVote.Add(votingRatio[i])
+	}
+	for j, extP := range pool {
+		pool, _ := k.GetPool(ctx, cswapAppID, extP)
+		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+		farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+		individualVote := votingRatio[j]
+		votingR := individualVote.ToDec().Quo(totalVote.ToDec())
+		shareByPool := votingR.Mul(amount.ToDec())
+		if farmedCoins.IsZero() {
+			continue
+		}
+		perUserShareByAmtDec := shareByPool.Quo(farmedCoins.Amount.ToDec())
+		perUserShareByAmt = perUserShareByAmtDec.TruncateInt()
+		allActiveFarmer := k.GetAllActiveFarmers(ctx, cswapAppID, extP)
+
+		for _, farmerDetail := range allActiveFarmer {
+			amt := farmerDetail.FarmedPoolCoin.Amount.Mul(perUserShareByAmt)
+			addr, _ := sdk.AccAddressFromBech32(farmerDetail.Farmer)
+			if amt.GT(sdk.ZeroInt()) {
+				err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt)))
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }

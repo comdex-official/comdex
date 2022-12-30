@@ -18,6 +18,7 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
@@ -26,7 +27,7 @@ import (
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper,
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper, 
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
@@ -40,6 +41,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			tokenMintKeeper:   tokenMintKeeper,
 			esmKeeper:         esmKeeper,
 			vaultKeeper:       vaultKeeper,
+			liquiditykeeper:   liquiditykeeper,
 		}
 	}
 }
@@ -55,6 +57,7 @@ type CustomMessenger struct {
 	tokenMintKeeper   tokenmintkeeper.Keeper
 	esmKeeper         esmkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
+	liquiditykeeper   liquidityKeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -123,6 +126,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgGetSurplusFund != nil {
 			return m.ExecuteMsgGetSurplusFund(ctx, contractAddr, comdexMsg.MsgGetSurplusFund)
+		}
+		if comdexMsg.MsgEmissionPoolRewards != nil {
+			return m.ExecuteAddEmissionPoolRewards(ctx, contractAddr, comdexMsg.MsgEmissionPoolRewards)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -423,10 +429,28 @@ func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAdd
 	return nil, nil, nil
 }
 
+func (m *CustomMessenger) ExecuteAddEmissionPoolRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionPoolRewards) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddEmissionPoolRewards(m.liquiditykeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Emission pool rewards error")
+	}
+	return nil, nil, nil
+}
+
 func MsgAddEmissionRewards(vaultKeeper vaultkeeper.Keeper, ctx sdk.Context,
 	a *bindings.MsgEmissionRewards,
 ) error {
 	err := vaultKeeper.WasmMsgAddEmissionRewards(ctx, a.AppID, a.Amount, a.ExtendedPair, a.VotingRatio)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MsgAddEmissionPoolRewards(liquiditykeeper liquidityKeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgEmissionPoolRewards,
+) error {
+	err := liquiditykeeper.WasmMsgAddEmissionPoolRewards(ctx, a.AppID, a.CswapAppID, a.Amount, a.Pools, a.VotingRatio)
 	if err != nil {
 		return err
 	}
