@@ -822,6 +822,9 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 }
 
 func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.OrderStatus) error {
+	if order.Type == types.OrderTypeMM {
+		return k.FinishMMOrder(ctx, order, status)
+	}
 	if order.Status == types.OrderStatusCompleted || order.Status.IsCanceledOrExpired() { // sanity check
 		return nil
 	}
@@ -862,6 +865,40 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 
 	if accumulatedSwapFee.IsPositive() {
 		if err := k.bankKeeper.SendCoins(ctx, pair.GetEscrowAddress(), pair.GetSwapFeeCollectorAddress(), sdk.NewCoins(accumulatedSwapFee)); err != nil {
+			return err
+		}
+	}
+
+	order.SetStatus(status)
+	k.SetOrder(ctx, order.AppId, order)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeOrderResult,
+			sdk.NewAttribute(types.AttributeKeyOrderDirection, order.Direction.String()),
+			sdk.NewAttribute(types.AttributeKeyOrderer, order.Orderer),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(order.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyOrderID, strconv.FormatUint(order.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmount, order.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyOpenAmount, order.OpenAmount.String()),
+			sdk.NewAttribute(types.AttributeKeyOfferCoin, order.OfferCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyRemainingOfferCoin, order.RemainingOfferCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyReceivedCoin, order.ReceivedCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyStatus, order.Status.String()),
+		),
+	})
+
+	return nil
+}
+
+func (k Keeper) FinishMMOrder(ctx sdk.Context, order types.Order, status types.OrderStatus) error {
+	if order.Status == types.OrderStatusCompleted || order.Status.IsCanceledOrExpired() { // sanity check
+		return nil
+	}
+
+	if order.RemainingOfferCoin.IsPositive() {
+		pair, _ := k.GetPair(ctx, order.AppId, order.PairId)
+		if err := k.bankKeeper.SendCoins(ctx, pair.GetEscrowAddress(), order.GetOrderer(), sdk.NewCoins(order.RemainingOfferCoin)); err != nil {
 			return err
 		}
 	}
