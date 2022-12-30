@@ -30,6 +30,15 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
 	s.Require().NoError(err)
 
+	msg2a := assetTypes.AppData{
+		Name:             "harbor",
+		ShortName:        "hbr",
+		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		GovTimeInSeconds: 900,
+	}
+	err = assetKeeper.AddAppRecords(*ctx, msg2a)
+	s.Require().NoError(err)
+
 	msg2 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
@@ -623,14 +632,15 @@ func (s *KeeperTestSuite) TestCreateVault() {
 	s.AddAppAsset()
 
 	pairID := s.CreateNewPair(addr1, 1, 2)
-	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", 1, pairID, false, true)
+	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", 2, pairID, false, true)
+	s.CreateNewExtendedVaultPair("CMDX-B", 2, pairID, true, true)
 
 	vaultKeeper, ctx := &s.vaultKeeper, &s.ctx
 	server := vaultkeeper.NewMsgServer(*vaultKeeper)
 
 	msg2 := vaulttypes.MsgCreateRequest{
 		From:                userAddress,
-		AppId:               1,
+		AppId:               2,
 		ExtendedPairVaultId: extendedVaultPairID1,
 		AmountIn:            sdk.NewInt(1000000000),
 		AmountOut:           sdk.NewInt(200000000),
@@ -642,7 +652,7 @@ func (s *KeeperTestSuite) TestCreateVault() {
 
 	msg3 := vaulttypes.MsgCreateRequest{
 		From:                userAddress1,
-		AppId:               1,
+		AppId:               2,
 		ExtendedPairVaultId: extendedVaultPairID1,
 		AmountIn:            sdk.NewInt(1000000000),
 		AmountOut:           sdk.NewInt(100000000),
@@ -672,7 +682,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 		{
 			"ActivateExternalRewardsLockers : success",
 			types.ActivateExternalRewardsVault{
-				AppMappingId:         1,
+				AppMappingId:         2,
 				ExtendedPairId:       1,
 				TotalRewards:         sdk.NewCoin("btc", amt),
 				DurationDays:         3,
@@ -855,4 +865,92 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 	rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
 	fmt.Println("rew", rew)
 
+}
+
+func (s *KeeperTestSuite) TestCreateExtRewardsStableVault() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(5)
+	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
+	amt, _ := sdk.NewIntFromString("100000000000")
+	s.fundAddr(userAddress, sdk.NewCoin("cmdx", amt))
+
+	s.TestCreateVault()
+	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
+	server := keeper.NewMsgServerImpl(*rewardsKeeper)
+	vaultKeeper, ctx := &s.vaultKeeper, &s.ctx
+	vaultServer := vaultkeeper.NewMsgServer(*vaultKeeper)
+
+	for _, tc := range []struct {
+		name          string
+		msg           types.ActivateExternalRewardsStableMint
+		expectedError bool
+		ExpErr        error
+	}{
+		{
+			"ActivateExternalRewardsLockers : success",
+			types.ActivateExternalRewardsStableMint{
+				AppId:               2,
+				CswapAppId:          1,
+				CommodoAppId:        3,
+				TotalRewards:        sdk.NewCoin("cmdx", amt),
+				DurationDays:        5,
+				Depositor:           userAddress,
+				AcceptedBlockHeight: 1,
+			},
+			false,
+			nil,
+		},
+	} {
+		s.Run(tc.name, func() {
+
+			_, err := server.ExternalRewardsStableMint(sdk.WrapSDKContext(*ctx), &tc.msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+				fmt.Println("bal when created ext rewards", availableBalances)
+			}
+		})
+	}
+	userAddress1 := "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp"
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(15)
+
+	msg4 := vaulttypes.MsgCreateStableMintRequest{
+		From:                userAddress1,
+		AppId:               2,
+		ExtendedPairVaultId: 2,
+		Amount:              sdk.NewInt(1000000000),
+	}
+	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	_, err := vaultServer.MsgCreateStableMint(sdk.WrapSDKContext(*ctx), &msg4)
+	s.Require().NoError(err)
+
+	msg5 := vaulttypes.MsgDepositStableMintRequest{
+		From:                userAddress,
+		AppId:               2,
+		ExtendedPairVaultId: 2,
+		Amount:              sdk.NewInt(1000000000),
+		StableVaultId:       1,
+	}
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	_, err = vaultServer.MsgDepositStableMint(sdk.WrapSDKContext(*ctx), &msg5)
+	s.Require().NoError(err)
+
+	req := abci.RequestBeginBlock{}
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at first day", availableBalances)
+	availableBalances1 := s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
+	fmt.Println("bal at first day second user", availableBalances1)
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(120)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at second day", availableBalances)
+	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	availableBalances1 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
+	fmt.Println("bal at second day second user", availableBalances1)
 }

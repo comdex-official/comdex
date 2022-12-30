@@ -267,3 +267,53 @@ func (k Keeper) QueryExternalRewardLends(c context.Context, req *types.QueryExte
 		LendExternalRewards: items,
 	}, nil
 }
+
+func (k Keeper) QueryExternalRewardStableMint(c context.Context, req *types.QueryExternalRewardStableMintRequest) (*types.QueryExternalRewardStableMintResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	items := k.GetAllExternalRewardStableVault(ctx)
+
+	return &types.QueryExternalRewardStableMintResponse{
+		StableMintExternalRewards: items,
+	}, nil
+}
+
+func (k Keeper) QueryEpochTime(c context.Context, req *types.QueryEpochTimeRequest) (*types.QueryEpochTimeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.EpochTime
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(k.Store(ctx), types.EpochForLockerKeyPrefix),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.EpochTime
+			if err := k.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryEpochTimeResponse{
+		EpochTime:  items,
+		Pagination: pagination,
+	}, nil
+}

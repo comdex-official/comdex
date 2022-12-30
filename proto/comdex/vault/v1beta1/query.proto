@@ -364,6 +364,18 @@ message QueryPairsLockedAndMintedStatisticByAppResponse {
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
+message QueryAllStableMintVaultRewardsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllStableMintVaultRewardsResponse {
+  repeated StableMintVaultRewards stableMintVaultRewards = 1 [(gogoproto.moretags) = "yaml:\"stable_mint_vault_rewards\"",
+    (gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc QueryVault(QueryVaultRequest) returns (QueryVaultResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/vaults/{id}";
@@ -461,5 +473,9 @@ service Query {
 
   rpc QueryPairsLockedAndMintedStatisticByApp(QueryPairsLockedAndMintedStatisticByAppRequest) returns (QueryPairsLockedAndMintedStatisticByAppResponse) {
     option (google.api.http).get = "/comdex/vault/v1beta1/pairs-locked-and-minted-statistic-by-app/{app_id}";
+  };
+
+  rpc QueryAllStableMintVaultRewards(QueryAllStableMintVaultRewardsRequest) returns (QueryAllStableMintVaultRewardsResponse) {
+    option (google.api.http).get = "/comdex/vault/v1beta1/stable_mint_vault_rewards";
   };
 }
