@@ -121,15 +121,6 @@ func (m *GenericParams) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenericParams proto.InternalMessageInfo
 
-func init() {
-	proto.RegisterType((*Params)(nil), "comdex.liquidity.v1beta1.Params")
-	proto.RegisterType((*GenericParams)(nil), "comdex.liquidity.v1beta1.GenericParams")
-}
-
-func init() {
-	proto.RegisterFile("comdex/liquidity/v1beta1/params.proto", fileDescriptor_babec35f52b1356c)
-}
-
 var fileDescriptor_babec35f52b1356c = []byte{
 	// 739 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x95, 0xc1, 0x6e, 0xeb, 0x44,

@@ -546,25 +546,6 @@ func (m *QueuedFarmer) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueuedFarmer proto.InternalMessageInfo
 
-func init() {
-	proto.RegisterEnum("comdex.liquidity.v1beta1.OrderDirection", OrderDirection_name, OrderDirection_value)
-	proto.RegisterEnum("comdex.liquidity.v1beta1.RequestStatus", RequestStatus_name, RequestStatus_value)
-	proto.RegisterEnum("comdex.liquidity.v1beta1.OrderStatus", OrderStatus_name, OrderStatus_value)
-	proto.RegisterEnum("comdex.liquidity.v1beta1.AddressType", AddressType_name, AddressType_value)
-	proto.RegisterType((*Pair)(nil), "comdex.liquidity.v1beta1.Pair")
-	proto.RegisterType((*Pool)(nil), "comdex.liquidity.v1beta1.Pool")
-	proto.RegisterType((*DepositRequest)(nil), "comdex.liquidity.v1beta1.DepositRequest")
-	proto.RegisterType((*WithdrawRequest)(nil), "comdex.liquidity.v1beta1.WithdrawRequest")
-	proto.RegisterType((*Order)(nil), "comdex.liquidity.v1beta1.Order")
-	proto.RegisterType((*ActiveFarmer)(nil), "comdex.liquidity.v1beta1.ActiveFarmer")
-	proto.RegisterType((*QueuedCoin)(nil), "comdex.liquidity.v1beta1.QueuedCoin")
-	proto.RegisterType((*QueuedFarmer)(nil), "comdex.liquidity.v1beta1.QueuedFarmer")
-}
-
-func init() {
-	proto.RegisterFile("comdex/liquidity/v1beta1/liquidity.proto", fileDescriptor_579dcc42096fa86d)
-}
-
 var fileDescriptor_579dcc42096fa86d = []byte{
 	// 1584 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x58, 0x4b, 0x6f, 0xdb, 0xca,
