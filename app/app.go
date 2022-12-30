@@ -709,6 +709,7 @@ func New(
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.Rewardskeeper,
+		&app.TokenmintKeeper,
 	)
 
 	app.Rewardskeeper = rewardskeeper.NewKeeper(

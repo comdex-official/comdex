@@ -40,6 +40,8 @@ func GetQueryCmd() *cobra.Command {
 		queryExternalRewardVaults(),
 		queryWhitelistedAppIdsVault(),
 		queryExternalRewardLends(),
+		queryExternalRewardStableMint(),
+		queryEpochTime(),
 	)
 
 	return cmd
@@ -504,6 +506,80 @@ func queryExternalRewardLends() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "lend_external_rewards")
+
+	return cmd
+}
+
+func queryExternalRewardStableMint() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stable_mint_external_rewards",
+		Short: "Query external-rewards of stable vault",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExternalRewardStableMint(
+				context.Background(),
+				&types.QueryExternalRewardStableMintRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "stable_mint_external_rewards")
+
+	return cmd
+}
+
+func queryEpochTime() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "epoch_time",
+		Short: "Query all epoch_time",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryEpochTime(
+				context.Background(),
+				&types.QueryEpochTimeRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "epoch_time")
 
 	return cmd
 }

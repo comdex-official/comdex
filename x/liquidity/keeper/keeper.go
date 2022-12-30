@@ -24,6 +24,7 @@ type Keeper struct {
 	assetKeeper   expected.AssetKeeper
 	marketKeeper  expected.MarketKeeper
 	rewardsKeeper expected.RewardsKeeper
+	tokenmint     expected.TokenMintKeeper
 }
 
 // NewKeeper creates a new liquidity Keeper instance.
@@ -36,6 +37,7 @@ func NewKeeper(
 	assetKeeper expected.AssetKeeper,
 	marketKeeper expected.MarketKeeper,
 	rewardsKeeper expected.RewardsKeeper,
+	tokenmint     expected.TokenMintKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -50,6 +52,7 @@ func NewKeeper(
 		assetKeeper:   assetKeeper,
 		marketKeeper:  marketKeeper,
 		rewardsKeeper: rewardsKeeper,
+		tokenmint:     tokenmint,
 	}
 }
 

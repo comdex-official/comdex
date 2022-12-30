@@ -116,3 +116,27 @@ func (m msgServer) ExternalRewardsLend(goCtx context.Context, msg *types.Activat
 	}
 	return &types.ActivateExternalRewardsLendResponse{}, nil
 }
+
+func (m msgServer) ExternalRewardsStableMint(goCtx context.Context, msg *types.ActivateExternalRewardsStableMint) (*types.ActivateExternalRewardsStableMintResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	klwsParams, _ := m.esm.GetKillSwitchData(ctx, msg.AppId)
+	if klwsParams.BreakerEnable {
+		return nil, esmtypes.ErrCircuitBreakerEnabled
+	}
+	esmStatus, found := m.esm.GetESMStatus(ctx, msg.AppId)
+	status := false
+	if found {
+		status = esmStatus.Status
+	}
+	if status {
+		return nil, esmtypes.ErrESMAlreadyExecuted
+	}
+	Depositor, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return nil, err
+	}
+	if err := m.Keeper.ActExternalRewardsStableVaults(ctx, msg.AppId, msg.CswapAppId, msg.CommodoAppId, msg.DurationDays, msg.AcceptedBlockHeight, msg.TotalRewards, Depositor); err != nil {
+		return nil, err
+	}
+	return &types.ActivateExternalRewardsStableMintResponse{}, nil
+}
