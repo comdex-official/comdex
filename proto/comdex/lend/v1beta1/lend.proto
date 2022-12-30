@@ -61,10 +61,10 @@ message LendAsset {
     (gogoproto.moretags) = "yaml:\"cpool_name\""
   ];
 
-  string total_rewards= 12 [ 
+  string total_rewards = 12 [
     (gogoproto.moretags) = "yaml:\"total_rewards\"",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false];
+    (gogoproto.nullable) = false];
 }
 
 message BorrowAsset {
@@ -235,7 +235,7 @@ message AssetToPairMapping{
   ];
 }
 
-message PoolAssetLBMapping{ //AssetStats
+message PoolAssetLBMapping{//AssetStats
   uint64 pool_id = 1 [
     (gogoproto.customname) = "PoolID",
     (gogoproto.moretags) = "yaml:\"pool_id\""
@@ -294,7 +294,7 @@ message PoolAssetLBMapping{ //AssetStats
   ];
 }
 
-message AssetRatesParams{ //AssetRatesStats
+message AssetRatesParams{//AssetRatesStats
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetID",
     (gogoproto.moretags) = "yaml:\"asset_id\""
@@ -369,7 +369,7 @@ message AssetRatesParams{ //AssetRatesStats
 
 }
 
-message ReserveBuybackAssetData{ // BalanceStats
+message ReserveBuybackAssetData{// BalanceStats
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetID",
     (gogoproto.moretags) = "yaml:\"asset_id\""
@@ -461,5 +461,105 @@ message ModuleBalanceStats{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"balance\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message ModBal {
+  repeated FundModBal fund_module_balance = 1[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"fund_module_balance\""
+  ];
+}
+
+message ReserveBal {
+  repeated FundReserveBal fund_reserve_balance = 1[
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"fund_reserve_balance\""
+  ];
+}
+
+message FundModBal {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+
+  uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+
+  cosmos.base.v1beta1.Coin amount_in = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+  google.protobuf.Timestamp deposit_time = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"deposit_time\""
+  ];
+
+  string funder = 5 [(gogoproto.moretags) = "yaml:\"funder\""];
+
+}
+
+message FundReserveBal {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+
+  cosmos.base.v1beta1.Coin amount_in = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_in\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+  google.protobuf.Timestamp deposit_time = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"deposit_time\""
+  ];
+
+  string funder = 4 [(gogoproto.moretags) = "yaml:\"funder\""];
+
+}
+
+message AllReserveStats {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+
+  string amount_out_from_reserve_to_lenders = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_out_from_reserve_to_lenders\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string amount_out_from_reserve_for_auction = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_out_from_reserve_for_auction\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string amount_in_from_liq_penalty = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_in_from_liq_penalty\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string amount_in_from_repayments = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount_in_from_repayments\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string total_amount_out_to_lenders = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_amount_out_to_lenders\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 }

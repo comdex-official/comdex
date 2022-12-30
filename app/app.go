@@ -167,6 +167,7 @@ import (
 
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
+	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
 )
 
 const (
@@ -1203,8 +1204,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv6.UpgradeName,
-		mv6.CreateUpgradeHandler(a.mm, a.configurator, a.SlashingKeeper, a.MintKeeper, a.BankKeeper, a.StakingKeeper, a.AssetKeeper, a.LendKeeper),
+		mv7.UpgradeName700,
+		mv7.CreateUpgradeHandler700(a.mm, a.configurator, a.LendKeeper, a.BankKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1255,6 +1256,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				lendtypes.ModuleName,
 			},
 		}
+	case upgradeInfo.Name == mv7.UpgradeName700 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 
 	return storeUpgrades

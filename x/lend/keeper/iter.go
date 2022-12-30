@@ -42,36 +42,100 @@ func (k Keeper) IterateLends(ctx sdk.Context, ID uint64) (sdk.Dec, error) {
 		lendRewardsTracker.RewardsAccumulated = lendRewardsTracker.RewardsAccumulated.Sub(newRewardDec) // not losing decimal precision
 	}
 	k.SetLendRewardTracker(ctx, lendRewardsTracker) // setting the remaining decimal part
-
-	// checking if sufficient cTokens are there to give out as rewards to user
-	// TODO revisit
+	pool, _ := k.GetPool(ctx, lend.PoolID)
+	asset, _ := k.Asset.GetAsset(ctx, lend.AssetID)
 	poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, lend.PoolID, lend.AssetID)
-	if newInterestPerInteraction.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
-		return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
-	}
 	if newInterestPerInteraction.GT(sdk.ZeroInt()) {
-		// updating user's balance
-		lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
-
-		pool, _ := k.GetPool(ctx, lend.PoolID)
-		asset, _ := k.Asset.GetAsset(ctx, lend.AssetID)
-		Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)
-		assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
-
-		cAsset, _ := k.Asset.GetAsset(ctx, assetRatesStat.CAssetID)
-		cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
-
-		addr, _ := sdk.AccAddressFromBech32(lend.Owner)
-		err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, sdk.NewCoins(cToken))
-		if err != nil {
-			return sdk.Dec{}, err
+		allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, lend.AssetID)
+		if !found {
+			allReserveStats = types.AllReserveStats{
+				AssetID:                        lend.AssetID,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
+			}
 		}
-		lend.TotalRewards = lend.TotalRewards.Add(cToken.Amount)
-		// subtracting newInterestPerInteraction from global lend and interest accumulated
-		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
-		poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
-		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
-		k.SetLend(ctx, lend)
+		if newInterestPerInteraction.GT(poolAssetLBMappingData.TotalInterestAccumulated) {
+			modBal := k.ModuleBalance(ctx, types.ModuleName, asset.Denom)
+			if modBal.LT(newInterestPerInteraction) {
+				return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
+			}
+
+			// return sdk.Dec{}, types.ErrorInsufficientCTokensForRewards
+			// check reserve moduleBalance
+			// from reserve to pool and mint cToken
+			// give cToken to user
+			// update log of token used from reserve
+
+			lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
+
+			Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)
+			assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
+
+			cAsset, _ := k.Asset.GetAsset(ctx, assetRatesStat.CAssetID)
+			cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
+			addr, _ := sdk.AccAddressFromBech32(lend.Owner)
+			// taking amount from reserve and minting cTokens
+			err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, pool.ModuleName, sdk.NewCoins(Amount))
+			if err != nil {
+				return sdk.Dec{}, err
+			}
+			err = k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(cToken))
+			if err != nil {
+				return sdk.Dec{}, err
+			}
+
+			err = k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, sdk.NewCoins(cToken))
+			if err != nil {
+				return sdk.Dec{}, err
+			}
+			lend.TotalRewards = lend.TotalRewards.Add(cToken.Amount)
+			poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+			k.SetLend(ctx, lend)
+
+			// updating reserve
+			newAmount := newInterestPerInteraction.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+			reserve, found := k.GetReserveBuybackAssetData(ctx, lend.AssetID)
+			if !found {
+				reserve.AssetID = lend.AssetID
+				reserve.BuybackAmount = sdk.ZeroInt()
+				reserve.ReserveAmount = sdk.ZeroInt()
+			}
+
+			reserve.BuybackAmount = reserve.BuybackAmount.Sub(newAmount)
+			reserve.ReserveAmount = reserve.ReserveAmount.Sub(newAmount)
+
+			k.SetReserveBuybackAssetData(ctx, reserve)
+
+			allReserveStats.AmountOutFromReserveToLenders = allReserveStats.AmountOutFromReserveToLenders.Add(newInterestPerInteraction)
+			allReserveStats.TotalAmountOutToLenders = allReserveStats.TotalAmountOutToLenders.Add(newInterestPerInteraction)
+			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
+		} else {
+			// updating user's balance
+			lend.AvailableToBorrow = lend.AvailableToBorrow.Add(newInterestPerInteraction)
+			Amount := sdk.NewCoin(asset.Denom, newInterestPerInteraction)
+			assetRatesStat, _ := k.GetAssetRatesParams(ctx, lend.AssetID)
+
+			cAsset, _ := k.Asset.GetAsset(ctx, assetRatesStat.CAssetID)
+			cToken := sdk.NewCoin(cAsset.Denom, Amount.Amount)
+
+			addr, _ := sdk.AccAddressFromBech32(lend.Owner)
+			err := k.bank.SendCoinsFromModuleToAccount(ctx, pool.ModuleName, addr, sdk.NewCoins(cToken))
+			if err != nil {
+				return sdk.Dec{}, err
+			}
+			lend.TotalRewards = lend.TotalRewards.Add(cToken.Amount)
+			// subtracting newInterestPerInteraction from global lend and interest accumulated
+			poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Sub(newInterestPerInteraction)
+			poolAssetLBMappingData.TotalLend = poolAssetLBMappingData.TotalLend.Add(cToken.Amount)
+			k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+			k.SetLend(ctx, lend)
+			allReserveStats.TotalAmountOutToLenders = allReserveStats.TotalAmountOutToLenders.Add(newInterestPerInteraction)
+			k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
+		}
 	}
 
 	return indexGlobalCurrent, nil

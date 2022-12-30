@@ -227,19 +227,18 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					totalBorrowedAmt := sdk.ZeroInt()
 					rewardsAssetPoolData := v.RewardsAssetPoolData
 					for _, assetID := range rewardsAssetPoolData.AssetId {
-						borrowByPoolIDAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-						price, err := k.marketKeeper.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
-						if err != nil {
-							return err
-						}
-						totalBorrowedAmt = totalBorrowedAmt.Add(price.TruncateInt())
+						amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
+						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt())
 					}
 					// calculating totalAPR
 					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 					if !found {
 						continue
 					}
-					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
+					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
+					if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
+						continue
+					}
 					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 					inverseRatesSum := sdk.ZeroDec()
 					// inverting the rate to enable low apr for assets which are more borrowed
@@ -263,15 +262,23 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 								continue
 							}
 							user, _ := sdk.AccAddressFromBech32(lend.Owner)
-							liqFound := k.CheckBorrowersLiquidity(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, sdk.NewIntFromUint64(rewardsAssetPoolData.CSwapMinLockAmount))
-							if !liqFound {
+							pair, found := k.lend.GetLendPair(ctx, borrow.PairID)
+							if !found {
+								continue
+							}
+							borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrow.AmountOut.Amount)
+							if err != nil {
+								continue
+							}
+							liqFound, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, borrowAmt)
+							if !found {
 								continue
 							}
 							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
 							numerator := totalAPR.Mul(inverseRate)
 							finalAPR := numerator.Quo(inverseRatesSum)
-							finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
-							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays))
+							finalDailyRewardsNumerator := sdk.NewDecFromInt(liqFound.TruncateInt()).Mul(finalAPR)
+							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
 
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
 								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
@@ -309,40 +316,71 @@ func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRew
 	return inverseRate
 }
 
-func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, amount sdk.Int) bool {
-	farmedCoin, found := k.liquidityKeeper.GetQueuedFarmer(ctx, appID, uint64(masterPoolID), addr)
+func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poolID, appID uint64, masterPoolID int64) (sdk.Dec, bool) {
+	borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	if !found {
-		return false
-	}
-	amt := sdk.ZeroInt()
-	for _, v := range farmedCoin.QueudCoins {
-		amt = amt.Add(v.FarmedPoolCoin.Amount)
+		return sdk.ZeroDec(), false
 	}
 
+	amt := sdk.ZeroDec()
+	for _, id := range borrowByPoolIDAssetID.BorrowIds {
+		borrowPos, found := k.lend.GetBorrow(ctx, id)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		lendPos, found := k.lend.GetLend(ctx, borrowPos.LendingID)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		if borrowPos.IsLiquidated {
+			continue
+		}
+		pair, found := k.lend.GetLendPair(ctx, borrowPos.PairID)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrowPos.AmountOut.Amount)
+		if err != nil {
+			return sdk.ZeroDec(), false
+		}
+		addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
+		minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, addr, masterPoolID, appID, borrowAmt)
+		if !found {
+			continue
+		}
+		amt = amt.Add(minAmt)
+	}
+
+	return amt, true
+}
+
+func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, borrowAmount sdk.Dec) (sdk.Dec, bool) {
+	farmedCoin, found := k.liquidityKeeper.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
+	if !found {
+		return sdk.ZeroDec(), false
+	}
 	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
-
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, sdk.NewCoin(pool.PoolCoinDenom, amt))
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount)
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
 
 	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
 	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.BaseCoinDenom)
 	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
 	priceBaseCoin, err := k.marketKeeper.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
-	if priceQuoteCoin.Add(priceBaseCoin).GTE(sdk.NewDecFromInt(amount)) {
-		return true
-	}
-	return false
+
+	return sdk.MinDec(priceQuoteCoin.Add(priceBaseCoin), borrowAmount), true
 }
 
 func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {

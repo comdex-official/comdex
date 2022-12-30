@@ -88,6 +88,12 @@ type LendKeeper interface {
 	DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfID bool)
 	DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64)
 	DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64)
+	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool)
+	GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest lendtypes.BorrowInterestTracker, found bool)
+	SetBorrowInterestTracker(ctx sdk.Context, interest lendtypes.BorrowInterestTracker)
+	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
+	GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats lendtypes.AllReserveStats, found bool)
+	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
 }
 
 type RewardsKeeper interface {

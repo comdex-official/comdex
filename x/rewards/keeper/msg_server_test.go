@@ -2,11 +2,14 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -454,16 +457,48 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	}
 
 	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000))))
-	err = lendKeeper.FundModAcc(s.ctx, 1, 1, sdk.AccAddress(userAddress), sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddress, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
 	s.Require().NoError(err)
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000))))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 2, sdk.AccAddress(userAddress), sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddress, sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
 	s.Require().NoError(err)
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000))))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 3, sdk.AccAddress(userAddress), sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddress, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	s.Require().NoError(err)
+
+	lendKeeper, ctx = &s.lendKeeper, &s.ctx
+	server := lendkeeper.NewMsgServerImpl(*lendKeeper)
+
+	msg20 := lendtypes.MsgBorrowAlternate{
+		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
+		AssetId:        1,
+		PoolId:         1,
+		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		PairId:         3,
+		IsStableBorrow: false,
+		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
+		AppId:          3,
+	}
+
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg20)
+	s.Require().NoError(err)
+	msg30 := lendtypes.MsgBorrowAlternate{
+		Lender:         "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp",
+		AssetId:        1,
+		PoolId:         1,
+		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		PairId:         3,
+		IsStableBorrow: false,
+		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
+		AppId:          3,
+	}
+
+	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg30)
 	s.Require().NoError(err)
 }
 
@@ -725,70 +760,10 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 	fmt.Println("bal at second day second user", availableBalances1)
 }
 
-func (s *KeeperTestSuite) TestCreateLend() {
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
-	s.ctx = s.ctx.WithBlockHeight(10)
-	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-
-	s.AddAppAssetLend()
-	lendKeeper, ctx := &s.lendKeeper, &s.ctx
-	server := lendkeeper.NewMsgServerImpl(*lendKeeper)
-
-	msg2 := lendtypes.MsgBorrowAlternate{
-		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-		AssetId:        1,
-		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
-		PairId:         3,
-		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
-		AppId:          3,
-	}
-
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
-	_, err := server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg2)
-	s.Require().NoError(err)
-	msg3 := lendtypes.MsgBorrowAlternate{
-		Lender:         "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp",
-		AssetId:        1,
-		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
-		PairId:         3,
-		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
-		AppId:          3,
-	}
-
-	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
-	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg3)
-	s.Require().NoError(err)
-
-	addr1 := s.addr(1)
-	app1pair := s.CreateNewLiquidityPair(1, addr1, "uatom", "ucmdx")
-	_, err = s.app.LiquidityKeeper.GetGenericParams(s.ctx, 1)
-	s.Require().NoError(err)
-	s.fundAddr2(addr1, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))))
-	s.CreateNewLiquidityPool(1, app1pair.Id, addr1, "1000000000000uatom,1000000000000ucmdx")
-
-	// Adding Liquidity
-	a, _ := sdk.AccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t")
-	b, _ := sdk.AccAddressFromBech32("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp")
-	s.Deposit(1, 1, a, "10000000uatom,10000000ucmdx")
-	s.Deposit(1, 1, b, "10000000uatom,10000000ucmdx")
-	s.nextBlock()
-	s.Farm(1, 1, a, "100000000pool1-1")
-	s.Farm(1, 1, b, "100000000pool1-1")
-	s.nextBlock()
-}
-
 func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
-	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-	amt, _ := sdk.NewIntFromString("1000000000000000000000")
-	s.fundAddr2(sdk.AccAddress(userAddress), sdk.NewCoins(sdk.NewCoin("uatom", amt)))
-
-	s.TestCreateLend()
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
+	s.TestFarmSetup()
 	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
 	server := keeper.NewMsgServerImpl(*rewardsKeeper)
 	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewInt(1234567890)))
@@ -833,40 +808,75 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 		})
 	}
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:10:10Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
 	req := abci.RequestBeginBlock{}
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:12:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:12:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at third day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:15:00Z"))
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:15:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at fourth day", availableBalances)
 	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
-	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:17:00Z"))
-	s.ctx = s.ctx.WithBlockHeight(15)
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-07T12:17:00Z"))
+	s.ctx = s.ctx.WithBlockHeight(16)
+	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
+	fmt.Println("bal at fifth day", availableBalances)
 	rew := s.rewardsKeeper.GetExternalRewardLends(*ctx)
 	fmt.Println("rew", rew)
 
 }
 
+func (s *KeeperTestSuite) TestFarmSetup() {
+	creator, _ := sdk.AccAddressFromBech32("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp")
+
+	s.AddAppAssetLend()
+
+	pair := s.CreateNewLiquidityPair(1, creator, "uatom", "ucmdx")
+	pool := s.CreateNewLiquidityPool(1, pair.Id, creator, "1000000000000uatom,1000000000000ucmdx")
+
+	liquidityProvider1, _ := sdk.AccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t")
+	s.Deposit(1, pool.Id, liquidityProvider1, "1000000000uatom,1000000000ucmdx")
+	s.nextBlock()
+
+	currentTime := s.ctx.BlockTime()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	msg := liquiditytypes.NewMsgFarm(1, pool.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-1"))
+	err := s.app.LiquidityKeeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+	queuedFarmers := s.app.LiquidityKeeper.GetAllQueuedFarmers(s.ctx, 1, pool.Id)
+	s.Require().Len(queuedFarmers, 1)
+	activeFarmers := s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, 1, pool.Id)
+	s.Require().Len(activeFarmers, 0)
+	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Hour * 25))
+	s.nextBlock()
+	activeFarmers = s.app.LiquidityKeeper.GetAllActiveFarmers(s.ctx, 1, pool.Id)
+	s.Require().Len(activeFarmers, 1)
+
+	activeFarmer, found := s.app.LiquidityKeeper.GetActiveFarmer(s.ctx, 1, pool.Id, liquidityProvider1)
+	s.Require().True(found)
+	s.Require().IsType(liquiditytypes.ActiveFarmer{}, activeFarmer)
+	fmt.Println(activeFarmer)
+
+}
 func (s *KeeperTestSuite) TestCreateExtRewardsStableVault() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(5)

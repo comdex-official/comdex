@@ -116,5 +116,7 @@ type LendKeeper interface {
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool)
+	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
+	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
 	UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool)
 }
