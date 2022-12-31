@@ -33,6 +33,7 @@ var (
 	VaultIDPrefix                         = []byte{0x15}
 	StableVaultIDPrefix                   = []byte{0x16}
 	VaultLengthPrefix                     = []byte{0x17}
+	StableVaultRewardsKeyPrefix           = []byte{0x18}
 )
 
 func VaultKey(vaultID uint64) []byte {
@@ -61,4 +62,16 @@ func UserAppMappingKey(address string, appID uint64) []byte {
 
 func UserKey(address string) []byte {
 	return append(UserVaultExtendedPairMappingKeyPrefix, address...)
+}
+
+func StableMintVaultRewardsKey(appID uint64, address string, blockHeight uint64) []byte {
+	return append(append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address...), sdk.Uint64ToBigEndian(blockHeight)...)
+}
+
+func StableMintRewardsKey(appID uint64, address string) []byte {
+	return append(append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address...)
+}
+
+func StableMintRewardsAppKey(appID uint64) []byte {
+	return append(StableVaultRewardsKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }

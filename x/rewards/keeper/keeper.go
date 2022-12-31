@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/expected"
 
@@ -279,6 +283,29 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 	id := k.GetExternalRewardsLendID(ctx)
 	endTime := ctx.BlockTime().Add(time.Second * time.Duration(msg.DurationDays*types.SecondsPerDay))
 	epochID := k.GetEpochTimeID(ctx)
+	_, found := k.liquidityKeeper.GetPool(ctx, msg.CSwapAppId, uint64(msg.MasterPoolId))
+	if !found {
+		return liquiditytypes.ErrInvalidPoolID
+	}
+	for _, assetID := range msg.AssetId {
+		_, found = k.asset.GetAsset(ctx, assetID)
+		if !found {
+			return assettypes.ErrorAssetDoesNotExist
+		}
+	}
+
+	_, found = k.lend.GetPool(ctx, msg.CPoolId)
+	if !found {
+		return lendtypes.ErrPoolNotFound
+	}
+
+	_, found = k.asset.GetAssetForDenom(ctx, msg.TotalRewards.Denom)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+	if msg.DurationDays == 0 {
+		return types.ErrInvalidDuration
+	}
 
 	RewardsAssetPoolData := types.RewardsAssetPoolData{
 		CPoolId:            msg.CPoolId,
@@ -316,6 +343,51 @@ func (k Keeper) AddLendExternalRewards(ctx sdk.Context, msg types.ActivateExtern
 	k.SetEpochTimeID(ctx, newMsg.EpochId)
 	k.SetExternalRewardLend(ctx, newMsg)
 	k.SetExternalRewardsLendID(ctx, newMsg.Id)
+	k.SetEpochTime(ctx, epoch)
+	return nil
+}
+
+func (k Keeper) ActExternalRewardsStableVaults(
+	ctx sdk.Context,
+	appID uint64, cswapAppID, commodoAppID uint64,
+	durationDays, acceptedBlockHeight int64,
+	totalRewards sdk.Coin,
+	depositor sdk.AccAddress,
+) error {
+	id := k.GetExternalRewardsStableVault(ctx)
+
+	endTime := ctx.BlockTime().Add(time.Second * time.Duration(durationDays*types.SecondsPerDay))
+
+	epochID := k.GetEpochTimeID(ctx)
+	epoch := types.EpochTime{
+		Id:           epochID + 1,
+		AppMappingId: appID,
+		StartingTime: ctx.BlockTime().Unix() + types.SecondsPerDay,
+	}
+
+	msg := types.StableVaultExternalRewards{
+		Id:                  id + 1,
+		AppId:               appID,
+		CswapAppId:          cswapAppID,
+		CommodoAppId:        commodoAppID,
+		TotalRewards:        totalRewards,
+		DurationDays:        durationDays,
+		IsActive:            true,
+		AvailableRewards:    totalRewards,
+		Depositor:           depositor.String(),
+		StartTimestamp:      ctx.BlockTime(),
+		EndTimestamp:        endTime,
+		AcceptedBlockHeight: acceptedBlockHeight,
+		EpochId:             epoch.Id,
+	}
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(totalRewards)); err != nil {
+		return err
+	}
+
+	k.SetEpochTimeID(ctx, msg.EpochId)
+	k.SetExternalRewardStableVault(ctx, msg)
+	k.SetExternalRewardsStableVault(ctx, msg.Id)
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }

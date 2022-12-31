@@ -41,6 +41,7 @@ var (
 	TypeDepositBorrowAssetRequest          = ModuleName + ":deposit-borrow"
 	TypeBorrowAlternateAssetRequest        = ModuleName + ":borrow-alternate"
 	TypeCalculateInterestAndRewardsRequest = ModuleName + ":calculate-interest-rewards"
+	TypeFundReserveAccountRequest          = ModuleName + ":fund-reserve"
 )
 
 var (
@@ -64,6 +65,10 @@ var (
 	UserLendBorrowMappingKeyPrefix        = []byte{0x45}
 	ReserveBuybackAssetDataKeyPrefix      = []byte{0x46}
 	NewStableBorrowIDsKeyPrefix           = []byte{0x47}
+	KeyFundModBal                         = []byte{0x48}
+	KeyFundReserveBal                     = []byte{0x49}
+	AllReserveStatsPrefix                 = []byte{0x50}
+	AssetAndPoolWiseModBalKeyPrefix       = []byte{0x51}
 )
 
 func LendUserKey(ID uint64) []byte {
@@ -117,4 +122,12 @@ func UserLendBorrowKey(owner string) []byte {
 
 func ReserveBuybackAssetDataKey(ID uint64) []byte {
 	return append(ReserveBuybackAssetDataKeyPrefix, sdk.Uint64ToBigEndian(ID)...)
+}
+
+func AllReserveStatsKey(ID uint64) []byte {
+	return append(AllReserveStatsPrefix, sdk.Uint64ToBigEndian(ID)...)
+}
+
+func FundModBalanceKey(assetID, poolID uint64) []byte {
+	return append(append(AssetAndPoolWiseModBalKeyPrefix, sdk.Uint64ToBigEndian(assetID)...), sdk.Uint64ToBigEndian(poolID)...)
 }

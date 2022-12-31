@@ -31,6 +31,7 @@ func TestInvalidMsg(t *testing.T) {
 		&app.AssetKeeper,
 		&app.MarketKeeper,
 		&app.Rewardskeeper,
+		&app.TokenmintKeeper,
 	)
 	h := liquidity.NewHandler(app.LiquidityKeeper)
 

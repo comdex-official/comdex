@@ -238,9 +238,7 @@ func (m *ActivateExternalRewardsLend) ValidateBasic() error {
 	if m.DurationDays <= 0 {
 		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
 	}
-	if m.MinLockupTimeSeconds <= 0 {
-		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
-	}
+
 	return nil
 }
 
@@ -249,6 +247,62 @@ func (m *ActivateExternalRewardsLend) GetSignBytes() []byte {
 }
 
 func (m *ActivateExternalRewardsLend) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgActivateExternalRewardsStableVault(
+	appID uint64,
+	cswapAppID uint64,
+	commodoAppID uint64,
+	totalRewards sdk.Coin,
+	durationDays, acceptedBlockHeight int64,
+	from sdk.AccAddress,
+) *ActivateExternalRewardsStableMint {
+	return &ActivateExternalRewardsStableMint{
+		AppId:               appID,
+		CswapAppId:          cswapAppID,
+		CommodoAppId:        commodoAppID,
+		TotalRewards:        totalRewards,
+		DurationDays:        durationDays,
+		AcceptedBlockHeight: acceptedBlockHeight,
+		Depositor:           from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsStableMint) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsStableMint) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsStableMint) ValidateBasic() error {
+	if m.AppId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.AcceptedBlockHeight <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.AcceptedBlockHeight)
+	}
+	return nil
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
 	if err != nil {
 		panic(err)

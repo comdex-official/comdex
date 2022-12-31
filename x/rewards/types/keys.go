@@ -28,16 +28,18 @@ const (
 )
 
 var (
-	RewardsKeyPrefix               = []byte{0x05}
-	AppIdsVaultKeyPrefix           = []byte{0x12}
-	ExternalRewardsLockerKeyPrefix = []byte{0x13}
-	ExternalRewardsVaultKeyPrefix  = []byte{0x14}
-	ExtRewardsLockerIDKey          = []byte{0x15}
-	ExtRewardsVaultIDKey           = []byte{0x16}
-	EpochTimeIDKey                 = []byte{0x17}
-	EpochForLockerKeyPrefix        = []byte{0x20}
-	ExternalRewardsLendKeyPrefix   = []byte{0x27}
-	ExtRewardsLendIDKey            = []byte{0x28}
+	RewardsKeyPrefix                    = []byte{0x05}
+	AppIdsVaultKeyPrefix                = []byte{0x12}
+	ExternalRewardsLockerKeyPrefix      = []byte{0x13}
+	ExternalRewardsVaultKeyPrefix       = []byte{0x14}
+	ExtRewardsLockerIDKey               = []byte{0x15}
+	ExtRewardsVaultIDKey                = []byte{0x16}
+	EpochTimeIDKey                      = []byte{0x17}
+	EpochForLockerKeyPrefix             = []byte{0x20}
+	ExternalRewardsLendKeyPrefix        = []byte{0x27}
+	ExtRewardsLendIDKey                 = []byte{0x28}
+	ExternalRewardsStableVaultKeyPrefix = []byte{0x29}
+	ExtRewardsStableVaultIDKey          = []byte{0x30}
 
 	// EpochInfoByDurationKeyPrefix defines the prefix to store EpochInfo by duration.
 	EpochInfoByDurationKeyPrefix = []byte{0x21}
@@ -103,4 +105,8 @@ func VaultInterestTrackerKey(id, appID uint64) []byte {
 
 func GetGaugeKey(id uint64) []byte {
 	return append(GaugeKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func ExternalRewardsStableVaultMappingKey(id uint64) []byte {
+	return append(ExternalRewardsStableVaultKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }

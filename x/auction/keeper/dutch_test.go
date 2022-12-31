@@ -477,6 +477,8 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	s.Require().NoError(err)
 	beforeCmdxBalance, err := s.getBalance(userAddress1, "ucmdx")
 	s.Require().NoError(err)
+	beforeCmdxBalanceOfOwner, err := s.getBalance(beforeAuction.VaultOwner.String(), "ucmdx")
+	s.Require().NoError(err)
 	beforeCmstBalance, err := s.getBalance(userAddress1, "ucmst")
 	s.Require().NoError(err)
 
@@ -503,7 +505,9 @@ func (s *KeeperTestSuite) TestCloseDutchAuction() {
 	userInflowCoin := beforeAuction.OutflowTokenCurrentAmount.Sub(afterAuction.OutflowTokenCurrentAmount)
 	s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 	s.Require().Equal(afterAuction.InflowTokenTargetAmount, afterAuction.InflowTokenCurrentAmount)
-	s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin), afterCmdxBalance)
+	getVaultOwnerBal, err := s.getBalance(string(afterAuction.VaultOwner.String()), "ucmdx")
+	amtToOwner := getVaultOwnerBal.Sub((beforeCmdxBalanceOfOwner).Add(userInflowCoin))
+	s.Require().Equal(beforeCmdxBalance.Add(userInflowCoin).Add(amtToOwner), afterCmdxBalance)
 	s.Require().Equal(beforeCmstBalance.Sub(userOutflowCoin), afterCmstBalance)
 }
 

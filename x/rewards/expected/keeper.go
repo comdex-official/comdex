@@ -31,6 +31,7 @@ type LiquidityKeeper interface {
 	GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error)
 	CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
 	GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer liquiditytypes.QueuedFarmer, found bool)
+	GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error)
 }
 
 type AssetKeeper interface {
@@ -40,6 +41,8 @@ type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetPair(ctx sdk.Context, id uint64) (pair assettypes.Pair, found bool)
+	GetPairsVaults(ctx sdk.Context) (apps []assettypes.ExtendedPairVault, found bool)
 }
 
 type MarketKeeper interface {
@@ -57,6 +60,7 @@ type LockerKeeper interface {
 	SetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise) error
 	GetLockerTotalRewardsByAssetAppWise(ctx sdk.Context, appID, assetID uint64) (lockerRewardsMapping lockertypes.LockerTotalRewardsByAssetAppWise, found bool)
 	SetLockerLookupTable(ctx sdk.Context, lockerLookupData lockertypes.LockerLookupTableData)
+	GetUserLockerAssetMapping(ctx sdk.Context, address string, appID, assetID uint64) (userLockerAssetData lockertypes.UserAppAssetLockerMapping, found bool)
 }
 
 type CollectorKeeper interface {
@@ -80,6 +84,12 @@ type VaultKeeper interface {
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
 	GetAppExtendedPairVaultMappingData(ctx sdk.Context, appMappingID uint64, pairVaultID uint64) (appExtendedPairVaultData vaulttypes.AppExtendedPairVaultMappingData, found bool)
+	GetStableMintVaultUserRewards(ctx sdk.Context, appID uint64, user string) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	DeleteStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	SetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards)
+	GetStableMintVaultRewards(ctx sdk.Context, stableMintVaultRewards vaulttypes.StableMintVaultRewards) (mappingData vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (mappingData []vaulttypes.StableMintVaultRewards, found bool)
+	GetStableMintVaultRewardsOfAllApps(ctx sdk.Context) (mappingData []vaulttypes.StableMintVaultRewards)
 }
 
 type BankKeeper interface {
@@ -94,6 +104,7 @@ type BankKeeper interface {
 
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
 type EsmKeeper interface {
@@ -105,4 +116,7 @@ type LendKeeper interface {
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool)
+	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
+	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
+	UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool)
 }

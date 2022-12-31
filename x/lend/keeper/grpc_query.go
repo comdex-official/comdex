@@ -539,3 +539,63 @@ func (q QueryServer) QueryModuleBalance(c context.Context, req *types.QueryModul
 		ModuleBalance: modBal,
 	}, nil
 }
+
+func (q QueryServer) QueryFundModBal(c context.Context, req *types.QueryFundModBalRequest) (*types.QueryFundModBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetFundModBal(ctx)
+	if !found {
+		return &types.QueryFundModBalResponse{}, nil
+	}
+
+	return &types.QueryFundModBalResponse{
+		FundModBalance: modBal,
+	}, nil
+}
+
+func (q QueryServer) QueryFundReserveBal(c context.Context, req *types.QueryFundReserveBalRequest) (*types.QueryFundReserveBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	resBal, found := q.GetFundReserveBal(ctx)
+	if !found {
+		return &types.QueryFundReserveBalResponse{}, nil
+	}
+
+	return &types.QueryFundReserveBalResponse{
+		FundReserveBalance: resBal,
+	}, nil
+}
+
+func (q QueryServer) QueryAllReserveStats(c context.Context, req *types.QueryAllReserveStatsRequest) (*types.QueryAllReserveStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	allReserveStats, found := q.GetAllReserveStatsByAssetID(ctx, req.AssetId)
+	if !found {
+		return &types.QueryAllReserveStatsResponse{}, nil
+	}
+
+	return &types.QueryAllReserveStatsResponse{AllReserveStats: allReserveStats}, nil
+}
+
+func (q QueryServer) QueryFundModBalByAssetPool(c context.Context, req *types.QueryFundModBalByAssetPoolRequest) (*types.QueryFundModBalByAssetPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetFundModBalByAssetPool(ctx, req.AssetId, req.PoolId)
+	if !found {
+		return &types.QueryFundModBalByAssetPoolResponse{}, nil
+	}
+
+	return &types.QueryFundModBalByAssetPoolResponse{Amount: modBal}, nil
+}
