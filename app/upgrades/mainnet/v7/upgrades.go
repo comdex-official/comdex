@@ -70,9 +70,22 @@ func InitializeLendReservesStates(
 	ctx sdk.Context,
 	lendKeeper lendkeeper.Keeper,
 ) {
-	dataAsset1, _ := lendKeeper.GetReserveBuybackAssetData(ctx, 1)
-	dataAsset2, _ := lendKeeper.GetReserveBuybackAssetData(ctx, 2)
-	dataAsset3, _ := lendKeeper.GetReserveBuybackAssetData(ctx, 3)
+	dataAsset1, found := lendKeeper.GetReserveBuybackAssetData(ctx, 1)
+	if !found {
+		dataAsset1.BuybackAmount = sdk.NewInt(0)
+		dataAsset1.ReserveAmount = sdk.NewInt(0)
+	}
+	dataAsset2, found := lendKeeper.GetReserveBuybackAssetData(ctx, 2)
+	if !found {
+		dataAsset2.BuybackAmount = sdk.NewInt(0)
+		dataAsset2.ReserveAmount = sdk.NewInt(0)
+	}
+	dataAsset3, found := lendKeeper.GetReserveBuybackAssetData(ctx, 3)
+	if !found {
+		dataAsset3.BuybackAmount = sdk.NewInt(0)
+		dataAsset3.ReserveAmount = sdk.NewInt(0)
+	}
+
 	reserveStat1 := types.AllReserveStats{
 		AssetID:                        1,
 		AmountOutFromReserveToLenders:  sdk.ZeroInt(),
