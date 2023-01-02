@@ -642,13 +642,24 @@ func (k Keeper) FinishWithdrawRequest(ctx sdk.Context, req types.WithdrawRequest
 	return nil
 }
 
-func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolID uint64) (sdk.Coin, error) {
-	pool, found := k.GetPool(ctx, appID, poolID)
+func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requestedPoolID uint64) (sdk.Coin, error) {
+	// The swap fee is a charge that is applied to users who swap between different assets using this pair.
+	// This fee is collected in a specific address that is provided by the pair.
+	// Multiple pools can be created using this pair (Basic Pools and Ranged Pools),
+	// All of the swap fees that are collected for this pair are distributed among these pools.
+	// The value of the farmed poolcoins for each pool is calculated.
+	// The swap fees are then distributed among the pools in proportion to the value of their farmed poolcoins.
+	// i.e farmed positions : pool1 -> 40$, pool2 -> 40$, pool3 -> 20$
+	// and 200 stake tokens to be distributed,
+	// therefore token allocated are -> pool1-80stake, pool2-80stake, pool3-40stake
+	// if requestedPoolId is 2, the function will return 80stake as available balance.
+
+	requestedPool, found := k.GetPool(ctx, appID, requestedPoolID)
 	if !found {
 		return sdk.Coin{}, types.ErrInvalidPoolID
 	}
 
-	pair, found := k.GetPair(ctx, appID, pool.PairId)
+	pair, found := k.GetPair(ctx, appID, requestedPool.PairId)
 	if !found {
 		return sdk.Coin{}, types.ErrInvalidPairID
 	}
@@ -660,17 +671,64 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, pool
 
 	availableBalance := k.bankKeeper.GetBalance(ctx, pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)
 
+	allPoolsForPair := k.GetPoolsByPair(ctx, appID, pair.Id)
+
+	if len(allPoolsForPair) > 1 {
+		// if calculation is failing even for one pool, cancel the function and return err
+		// there is no way to determine the pool share in the accumulated swap fee without oracle prices.
+		_, quoteAssetfound, quoteAsset := k.OraclePrice(ctx, pair.QuoteCoinDenom)
+		_, baseAssetfound, baseAsset := k.OraclePrice(ctx, pair.BaseCoinDenom)
+		// since oracle prices are required to calculate share, return error of prices not found for both the assets
+		if !(quoteAssetfound && baseAssetfound) {
+			return sdk.Coin{}, types.ErrOraclePricesNotFound
+		}
+		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+		poolLiquidityMap := make(map[uint64]sdk.Dec)
+		for _, pool := range allPoolsForPair {
+			if pool.Disabled {
+				continue
+			}
+			farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+			farmedAssets, err := k.DeserializePoolCoinHelper(ctx, appID, pool.Id, farmedCoins.Amount.Uint64())
+			if err != nil {
+				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+			}
+			if len(farmedAssets) != 2 {
+				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil
+			}
+			quoteCoinAmount := farmedAssets.AmountOf(pair.QuoteCoinDenom)
+			baseCoinAmount := farmedAssets.AmountOf(pair.BaseCoinDenom)
+			quoteValue, _ := k.marketKeeper.CalcAssetPrice(ctx, quoteAsset.Id, quoteCoinAmount)
+			baseValue, _ := k.marketKeeper.CalcAssetPrice(ctx, baseAsset.Id, baseCoinAmount)
+			totalValue := quoteValue.Add(baseValue)
+			if !totalValue.IsPositive() {
+				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil
+			}
+			poolLiquidityMap[pool.Id] = totalValue
+		}
+		totalLiquidity := sdk.ZeroDec()
+		for _, pLiquidity := range poolLiquidityMap {
+			totalLiquidity = totalLiquidity.Add(pLiquidity)
+		}
+
+		requestedPoolShare := poolLiquidityMap[requestedPoolID].Quo(totalLiquidity)
+		eligibleSwapFeeAmount := requestedPoolShare.Mul(availableBalance.Amount.ToDec())
+		availableBalance.Amount = eligibleSwapFeeAmount.RoundInt()
+	}
+
 	burnAmount := availableBalance.Amount.ToDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
 	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
-	if err != nil {
-		return sdk.Coin{}, err
-	}
+	if burnCoin.Amount.IsPositive() {
+		err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
+		if err != nil {
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+		}
 
-	err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin))
-	if err != nil {
-		return sdk.Coin{}, err
+		err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin))
+		if err != nil {
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+		}
 	}
 
 	availableBalance.Amount = availableBalance.Amount.Sub(burnCoin.Amount)
@@ -678,7 +736,7 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, pool
 	if availableBalance.IsPositive() {
 		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), rewardstypes.ModuleName, sdk.NewCoins(availableBalance))
 		if err != nil {
-			return sdk.Coin{}, err
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
 		}
 	} else {
 		// negative amount handalling
