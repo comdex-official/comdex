@@ -196,7 +196,11 @@ func (k Keeper) closeDebtAuction(
 		if err != nil {
 			return err
 		}
-		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, sdk.AccAddress(bidding.Bidder), sdk.NewCoins(debtAuction.ExpectedUserToken))
+		bidder, err := sdk.AccAddressFromBech32(bidding.Bidder)
+		if err != nil {
+			panic(err)
+		}
+		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(debtAuction.ExpectedUserToken))
 		if err != nil {
 			return err
 		}

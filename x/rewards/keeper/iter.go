@@ -227,19 +227,18 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					totalBorrowedAmt := sdk.ZeroInt()
 					rewardsAssetPoolData := v.RewardsAssetPoolData
 					for _, assetID := range rewardsAssetPoolData.AssetId {
-						borrowByPoolIDAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-						price, err := k.marketKeeper.CalcAssetPrice(ctx, assetID, borrowByPoolIDAssetID.TotalBorrowed.Add(borrowByPoolIDAssetID.TotalStableBorrowed))
-						if err != nil {
-							return err
-						}
-						totalBorrowedAmt = totalBorrowedAmt.Add(price.TruncateInt())
+						amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
+						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt())
 					}
 					// calculating totalAPR
 					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 					if !found {
 						continue
 					}
-					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.TotalRewards.Amount)
+					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
+					if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
+						continue
+					}
 					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 					inverseRatesSum := sdk.ZeroDec()
 					// inverting the rate to enable low apr for assets which are more borrowed
@@ -263,15 +262,23 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 								continue
 							}
 							user, _ := sdk.AccAddressFromBech32(lend.Owner)
-							liqFound := k.CheckBorrowersLiquidity(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, sdk.NewIntFromUint64(rewardsAssetPoolData.CSwapMinLockAmount))
-							if !liqFound {
+							pair, found := k.lend.GetLendPair(ctx, borrow.PairID)
+							if !found {
+								continue
+							}
+							borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrow.AmountOut.Amount)
+							if err != nil {
+								continue
+							}
+							liqFound, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, borrowAmt)
+							if !found {
 								continue
 							}
 							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
 							numerator := totalAPR.Mul(inverseRate)
 							finalAPR := numerator.Quo(inverseRatesSum)
-							finalDailyRewardsNumerator := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(finalAPR)
-							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays))
+							finalDailyRewardsNumerator := sdk.NewDecFromInt(liqFound.TruncateInt()).Mul(finalAPR)
+							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
 
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
 								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
@@ -309,38 +316,213 @@ func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRew
 	return inverseRate
 }
 
-func (k Keeper) CheckBorrowersLiquidity(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, amount sdk.Int) bool {
-	farmedCoin, found := k.liquidityKeeper.GetQueuedFarmer(ctx, appID, uint64(masterPoolID), addr)
+func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poolID, appID uint64, masterPoolID int64) (sdk.Dec, bool) {
+	borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	if !found {
-		return false
-	}
-	amt := sdk.ZeroInt()
-	for _, v := range farmedCoin.QueudCoins {
-		amt = amt.Add(v.FarmedPoolCoin.Amount)
+		return sdk.ZeroDec(), false
 	}
 
+	amt := sdk.ZeroDec()
+	for _, id := range borrowByPoolIDAssetID.BorrowIds {
+		borrowPos, found := k.lend.GetBorrow(ctx, id)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		lendPos, found := k.lend.GetLend(ctx, borrowPos.LendingID)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		if borrowPos.IsLiquidated {
+			continue
+		}
+		pair, found := k.lend.GetLendPair(ctx, borrowPos.PairID)
+		if !found {
+			return sdk.ZeroDec(), false
+		}
+		borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrowPos.AmountOut.Amount)
+		if err != nil {
+			return sdk.ZeroDec(), false
+		}
+		addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
+		minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, addr, masterPoolID, appID, borrowAmt)
+		if !found {
+			continue
+		}
+		amt = amt.Add(minAmt)
+	}
+
+	return amt, true
+}
+
+func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, borrowAmount sdk.Dec) (sdk.Dec, bool) {
+	farmedCoin, found := k.liquidityKeeper.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
+	if !found {
+		return sdk.ZeroDec(), false
+	}
 	deserializerKit, err := k.liquidityKeeper.GetPoolTokenDesrializerKit(ctx, appID, uint64(masterPoolID))
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
-
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, amt))
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount))
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
 
 	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.QuoteCoinDenom)
 	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.BaseCoinDenom)
 	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
 	priceBaseCoin, err := k.marketKeeper.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
 	if err != nil {
-		return false
+		return sdk.ZeroDec(), false
 	}
-	if priceQuoteCoin.Add(priceBaseCoin).GTE(sdk.NewDecFromInt(amount)) {
-		return true
+
+	return sdk.MinDec(priceQuoteCoin.Add(priceBaseCoin), borrowAmount), true
+}
+
+func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
+	// Step 3 Elaborated
+	// call app function
+	// call all adddresses app wise
+	// Join user positions for psm rewards that have completed the 1 day epoch
+	// after combining them delete there one, ignore ones that have not completed an epoch
+	// do this for all positions.
+
+	extRewardAllAppData := k.GetAllExternalRewardStableVault(ctx)
+	for _, extRewardAppData := range extRewardAllAppData {
+		appStableVaultsData, found := k.vault.GetStableMintVaultRewardsByApp(ctx, extRewardAppData.AppId)
+		if found {
+			for _, appStableVaultData := range appStableVaultsData {
+				if (uint64(ctx.BlockHeight()) - appStableVaultData.BlockHeight) > uint64(extRewardAppData.AcceptedBlockHeight) {
+					// First checking if that exists or deleted
+					_, found := k.vault.GetStableMintVaultRewards(ctx, appStableVaultData)
+					if !found {
+						continue
+					}
+					// using address from one user value to get all, then checking the epoch duration limit, and for those who have crossed it, joining it together.
+					userStableVaultsData, found := k.vault.GetStableMintVaultUserRewards(ctx, appStableVaultData.AppId, appStableVaultData.User)
+					if !found {
+						continue
+					}
+					//****looping over the different data, but keeping in mind to ignore the one being used as initial data (appStableVaultData)****
+					for _, individualVault := range userStableVaultsData {
+						if ((uint64(ctx.BlockHeight()) - individualVault.BlockHeight) > uint64(extRewardAppData.AcceptedBlockHeight)) && (individualVault.BlockHeight != appStableVaultData.BlockHeight) {
+							appStableVaultData.Amount = appStableVaultData.Amount.Add(individualVault.Amount)
+							k.vault.DeleteStableMintVaultRewards(ctx, individualVault)
+						}
+					}
+					k.vault.SetStableMintVaultRewards(ctx, appStableVaultData)
+				}
+			}
+		}
 	}
-	return false
+	return nil
+}
+
+// Stable Mint Rewards Rewards
+// 1. Make a DS that take app ID for activating rewards, along with other necessary params (eg. cswap id , commodo id, else they could be 0) along with rewards quantity and epoch
+// 2. Create, Deposit, Withdraw functions only save data if DS in 1. is active.
+// 3. Using that 1. DS , the CombinePSMUserPositions runs for those apps and combine the rewards for addresses that have completeed  min1 epoch (app specific)
+// 4. Reward function will run and check epoch deadline, (balance + lockerbal + lpFarming+ commodo)>=mint balance , then give rewards on whichever is less.
+
+func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
+	// Give external rewards to users who mint via stable vault with specific assetID
+	// extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, appID)
+	// extRewardsProp, _ := k.GetExternalRewardStableVaultByApp(ctx, appID)
+	extRewardsProp := k.GetAllExternalRewardStableVault(ctx)
+	for _, extRew := range extRewardsProp {
+		extRewards, _ := k.vault.GetStableMintVaultRewardsByApp(ctx, extRew.AppId)
+		epoch, _ := k.GetEpochTime(ctx, extRew.EpochId)
+		et := epoch.StartingTime
+		timeNow := ctx.BlockTime().Unix()
+		for _, userReward := range extRewards {
+			extPair, _ := k.asset.GetPairsVault(ctx, userReward.StableExtendedPairId)
+			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
+			asset, _ := k.asset.GetAsset(ctx, pair.AssetOut)
+			if extRew.IsActive {
+				// here the epoch starting time is set to the next day whenever any external vault reward is distributed
+				// so when the epoch starting time is less than current time then the condition becomes true and flow passes through the function
+				// checking if rewards are active
+				if et < timeNow {
+					if epoch.Count < uint64(extRew.DurationDays) { // rewards will be given till the duration defined in the ext rewards
+						// initializing amountRewardedTracker to keep a track of daily rewards given to stableVault users
+						amountRewardedTracker := sdk.NewCoin(extRew.TotalRewards.Denom, sdk.ZeroInt())
+						totalRewards := extRew.AvailableRewards
+
+						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
+						// last day don't check min lockup time, so we should have no remaining amount left
+						if int64(epoch.Count) != extRew.DurationDays-1 {
+							if ctx.BlockHeight()-int64(userReward.BlockHeight) < extRew.AcceptedBlockHeight {
+								continue
+							}
+						}
+						user, err := sdk.AccAddressFromBech32(userReward.User)
+						if err != nil {
+							return err
+						}
+						userBalance := k.bank.GetBalance(ctx, user, asset.Denom)                                                 // userbal
+						farmedAmount, err := k.liquidityKeeper.GetAmountFarmedForAssetID(ctx, extRew.CswapAppId, asset.Id, user) // cswap farm
+						if err != nil {
+							farmedAmount = sdk.ZeroInt()
+						}
+						lendAsset, found := k.lend.UserAssetLends(ctx, user.String(), asset.Id) // commodo lend pos
+						if !found {
+							lendAsset = sdk.ZeroInt()
+						}
+						lockerAmt := sdk.ZeroInt()
+						lockerLookupData, found := k.locker.GetUserLockerAssetMapping(ctx, user.String(), extRew.AppId, asset.Id) // locker data
+						if found {
+							lockerData, _ := k.locker.GetLocker(ctx, lockerLookupData.LockerId)
+							lockerAmt = lockerData.NetBalance
+						}
+
+						eligibleRewardAmt := sdk.ZeroInt()
+						if (userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)).GTE(userReward.Amount) {
+							eligibleRewardAmt = userReward.Amount
+						} else {
+							eligibleRewardAmt = userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)
+						}
+
+						totalMintedData := sdk.ZeroInt()
+						getAllExtpairData, _ := k.asset.GetPairsVaults(ctx)
+						for _, stableExtPairData := range getAllExtpairData {
+							if stableExtPairData.AppId == extRew.AppId && stableExtPairData.IsStableMintVault {
+								appExtPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, stableExtPairData.AppId, stableExtPairData.Id)
+								totalMintedData = totalMintedData.Add(appExtPairVaultData.TokenMintedAmount)
+							}
+						}
+
+						individualUserShare := eligibleRewardAmt.ToDec().Quo(sdk.NewDecFromInt(totalMintedData)) // getting share percentage
+						Duration := extRew.DurationDays - int64(epoch.Count)                                     // duration left (total duration - current count)
+						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
+						dailyRewards := individualUserShare.Mul(epochRewards)
+						finalDailyRewards := dailyRewards.TruncateInt()
+
+						if finalDailyRewards.GT(sdk.ZeroInt()) {
+							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
+							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, finalDailyRewards)))
+							if err != nil {
+								continue
+							}
+						}
+
+						// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
+						extRew.AvailableRewards.Amount = extRew.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
+						k.SetExternalRewardStableVault(ctx, extRew)
+					} else {
+						extRew.IsActive = false
+						k.SetExternalRewardStableVault(ctx, extRew)
+					}
+				}
+			}
+		}
+		// after all the vault owners are rewarded
+		// setting the starting time to next day
+		epoch.Count = epoch.Count + types.UInt64One
+		epoch.StartingTime = timeNow + types.SecondsPerDay
+		k.SetEpochTime(ctx, epoch)
+	}
+	return nil
 }

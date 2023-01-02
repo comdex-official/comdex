@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"testing"
 	"time"
 
@@ -33,6 +34,8 @@ type KeeperTestSuite struct {
 	vaultQuerier      vaultKeeper.QueryServer
 	msgServer         types.MsgServer
 	vaultMsgServer    vaultTypes.MsgServer
+	lendKeeper        lendkeeper.Keeper
+	lendQuerier       lendkeeper.QueryServer
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -50,6 +53,8 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.vaultMsgServer = vaultKeeper.NewMsgServer(s.vaultKeeper)
 	s.vaultQuerier = vaultKeeper.QueryServer{Keeper: s.vaultKeeper}
 	s.marketKeeper = s.app.MarketKeeper
+	s.lendKeeper = s.app.LendKeeper
+	s.lendQuerier = lendkeeper.QueryServer{Keeper: s.lendKeeper}
 }
 
 //

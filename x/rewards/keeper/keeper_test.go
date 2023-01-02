@@ -2,6 +2,9 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	"strings"
+	"testing"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	utils "github.com/comdex-official/comdex/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -9,10 +12,10 @@ import (
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	"testing"
 
 	"github.com/stretchr/testify/suite"
 
@@ -94,6 +97,65 @@ func (s *KeeperTestSuite) CreateNewPair(addr sdk.Address, assetIn, assetOut uint
 	}
 	s.Require().NotZero(pairID)
 	return pairID
+}
+
+func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
+	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
+		Name:             strings.ToLower(appName),
+		ShortName:        strings.ToLower(appName),
+		MinGovDeposit:    sdk.NewInt(0),
+		GovTimeInSeconds: 0,
+		GenesisToken:     []assettypes.MintGenesisToken{},
+	})
+	s.Require().NoError(err)
+	found := s.app.AssetKeeper.HasAppForName(s.ctx, appName)
+	s.Require().True(found)
+
+	apps, found := s.app.AssetKeeper.GetApps(s.ctx)
+	s.Require().True(found)
+	var appID uint64
+	for _, app := range apps {
+		if app.Name == appName {
+			appID = app.Id
+			break
+		}
+	}
+	s.Require().NotZero(appID)
+	return appID
+}
+
+func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) assettypes.Asset {
+	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              sdk.NewInt(1000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+	assets := s.app.AssetKeeper.GetAssets(s.ctx)
+	var assetObj assettypes.Asset
+	for _, asset := range assets {
+		if asset.Denom == denom {
+			assetObj = asset
+			break
+		}
+	}
+	s.Require().NotZero(assetObj.Id)
+
+	market := markettypes.TimeWeightedAverage{
+		AssetID:       assetObj.Id,
+		ScriptID:      12,
+		Twa:           price,
+		CurrentIndex:  0,
+		IsPriceActive: true,
+		PriceValue:    []uint64{price},
+	}
+	s.app.MarketKeeper.SetTwa(s.ctx, market)
+	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, assetObj.Id)
+	s.Suite.NoError(err)
+
+	return assetObj
 }
 
 func (s *KeeperTestSuite) addr(addrNum int) sdk.AccAddress {

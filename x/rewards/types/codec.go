@@ -13,6 +13,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&ActivateExternalRewardsLockers{}, "comdex/rewards/activateExternalRewardsLockers", nil)
 	cdc.RegisterConcrete(&ActivateExternalRewardsVault{}, "comdex/rewards/activateExternalRewardsVault", nil)
 	cdc.RegisterConcrete(&ActivateExternalRewardsLend{}, "comdex/rewards/activateExternalRewardsLend", nil)
+	cdc.RegisterConcrete(&ActivateExternalRewardsStableMint{}, "comdex/rewards/activateExternalRewardsStableMint", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -22,6 +23,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&ActivateExternalRewardsLockers{},
 		&ActivateExternalRewardsVault{},
 		&ActivateExternalRewardsLend{},
+		&ActivateExternalRewardsStableMint{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

@@ -32,4 +32,11 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"auctionParams\"", (gogoproto.nullable) = false ];
   repeated AssetRatesParams assetRatesParams = 12
   [ (gogoproto.moretags) = "yaml:\"assetRatesParams\"", (gogoproto.nullable) = false ];
+  ModBal modBal = 13
+  [ (gogoproto.moretags) = "yaml:\"modBal\"", (gogoproto.nullable) = false ];
+  ReserveBal reserveBal = 14
+  [ (gogoproto.moretags) = "yaml:\"reserveBal\"", (gogoproto.nullable) = false ];
+  repeated AllReserveStats allReserveStats = 15
+  [ (gogoproto.moretags) = "yaml:\"allReserveStats\"", (gogoproto.nullable) = false ];
+
 }

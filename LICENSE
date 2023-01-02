@@ -7,7 +7,8 @@ Parameters
 
 Licensor           :   Comdex Business Venture Ltd.,
 
-Licensed Work :   Harbor
+Licensed Work :   Harbor, and Commodo which includes works in the following modules - https://github.com/comdex-official/comdex/tree/development/x/lend, https://github.com/comdex-official/comdex/tree/development/x/vault, https://github.com/comdex-official/comdex/tree/development/x/collector, https://github.com/comdex-official/comdex/tree/development/x/liquidation, https://github.com/comdex-official/comdex/tree/development/x/auction, https://github.com/comdex-official/comdex/tree/development/x/locker, https://github.com/comdex-official/comdex/tree/development/x/rewards
+
                             The Licensed Work is (c) 2022 Comdex Business Venture Ltd.
 
 Release date    :   2022-08-21

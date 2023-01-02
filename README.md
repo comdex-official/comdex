@@ -61,9 +61,9 @@ To verify latest testnet and main net version check
 [Version](https://github.com/comdex-official/networks/blob/main/README.md)
 
 For further information on joining the testnet, head over to the
-[Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet).
+[Comdex Networks TestNet](https://github.com/comdex-official/networks/tree/main/testnet/testnet-2).
 
-The explorer for this chain is hosted [Meteor - TestNet Explorer](https://meteor-explorer.comdex.one)
+The explorer for this chain is hosted [TestNet Explorer](https://test2-explorer.comdex.one/comdex-test2)
 
 ## want to contribute to comdex, please go through the contribution guides
 * [Contribution guides](https://github.com/comdex-official/contribution-docs)

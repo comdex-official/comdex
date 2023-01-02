@@ -344,6 +344,17 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "LiquidityProvidedResponse query response")
 			}
 			return bz, nil
+		} else if comdexQuery.GetPoolByApp != nil {
+			AppID := comdexQuery.GetPoolByApp.AppID
+			pools := queryPlugin.WasmGetPools(ctx, AppID)
+			res := bindings.GetPoolByAppResponse{
+				Pools: pools,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "GetPoolByApp query response")
+			}
+			return bz, nil
 		}
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}

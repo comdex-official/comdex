@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -258,13 +257,13 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
-	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
-	if err != nil {
-		return err
-	}
-	lendPos, _ = k.GetLend(ctx, lendID)
-	lendPos.GlobalIndex = indexGlobalCurrent
-	lendPos.LastInteractionTime = ctx.BlockTime()
+	//indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	//if err != nil {
+	//	return err
+	//}
+	//lendPos, _ = k.GetLend(ctx, lendID)
+	//lendPos.GlobalIndex = indexGlobalCurrent
+	//lendPos.LastInteractionTime = ctx.BlockTime()
 
 	getAsset, _ := k.Asset.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
@@ -884,6 +883,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
 	} else if payment.Amount.GT(amtToReservePool.TruncateInt()) && payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// from reservePoolRecords amount send tokens to reserve pool
 		// send remaining payment back to cPool and mint additional tokens for that amount
@@ -900,6 +900,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := payment.Amount.Sub(amtToReservePool.TruncateInt())
@@ -937,6 +938,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
@@ -1268,6 +1270,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		if err != nil {
 			return err
 		}
+		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
 	}
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 	if amtToMint.GT(sdk.ZeroInt()) {
@@ -1406,7 +1409,11 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	return nil
 }
 
-func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr sdk.AccAddress, payment sdk.Coin) error {
+func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lender string, payment sdk.Coin) error {
+	lenderAddr, err := sdk.AccAddressFromBech32(lender)
+	if err != nil {
+		return err
+	}
 	pool, found := k.GetPool(ctx, poolID)
 	if !found {
 		return types.ErrPoolNotFound
@@ -1433,10 +1440,78 @@ func (k Keeper) FundModAcc(ctx sdk.Context, poolID, assetID uint64, lenderAddr s
 		return assettypes.ErrorAssetDoesNotExist
 	}
 
-	err := k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, payment.Amount)))
+	err = k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, payment.Amount)))
 	if err != nil {
 		return err
 	}
+
+	modBal := types.FundModBal{
+		AssetID:     assetID,
+		PoolID:      poolID,
+		AmountIn:    payment,
+		DepositTime: ctx.BlockTime(),
+		Funder:      lender,
+	}
+	modBals, found := k.GetFundModBal(ctx)
+	if !found {
+		modBals = types.ModBal{FundModuleBalance: nil}
+	}
+	modBals.FundModuleBalance = append(modBals.FundModuleBalance, modBal)
+	k.SetFundModBal(ctx, modBals)
+	amt, found := k.GetFundModBalByAssetPool(ctx, assetID, poolID)
+	if found {
+		amt = amt.Add(payment)
+	} else {
+		amt = payment
+	}
+	k.SetFundModBalByAssetPool(ctx, assetID, poolID, amt)
+
+	return nil
+}
+
+func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lender string, payment sdk.Coin) error {
+	lenderAddr, err := sdk.AccAddressFromBech32(lender)
+	if err != nil {
+		return err
+	}
+	asset, found := k.Asset.GetAsset(ctx, assetID)
+	if !found {
+		return types.ErrLendNotFound
+	}
+
+	if asset.Denom != payment.Denom {
+		return types.ErrBadOfferCoinType
+	}
+
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, lenderAddr, types.ModuleName, sdk.NewCoins(payment)); err != nil {
+		return err
+	}
+
+	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+	reserve, found := k.GetReserveBuybackAssetData(ctx, assetID)
+	if !found {
+		reserve.AssetID = assetID
+		reserve.BuybackAmount = sdk.ZeroInt()
+		reserve.ReserveAmount = sdk.ZeroInt()
+	}
+
+	reserve.BuybackAmount = reserve.BuybackAmount.Add(newAmount)
+	reserve.ReserveAmount = reserve.ReserveAmount.Add(newAmount)
+
+	k.SetReserveBuybackAssetData(ctx, reserve)
+
+	resBal := types.FundReserveBal{
+		AssetID:     assetID,
+		AmountIn:    payment,
+		DepositTime: ctx.BlockTime(),
+		Funder:      lender,
+	}
+	resBals, found := k.GetFundReserveBal(ctx)
+	if !found {
+		resBals = types.ReserveBal{FundReserveBalance: nil}
+	}
+	resBals.FundReserveBalance = append(resBals.FundReserveBalance, resBal)
+	k.SetFundReserveBal(ctx, resBals)
 
 	return nil
 }
@@ -1456,11 +1531,11 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 	AssetOutPool, _ := k.GetPool(ctx, pair.AssetOutPoolID)
 	assetInRatesStats, _ := k.GetAssetRatesParams(ctx, pair.AssetIn)
 
-	amoutOutDiff := borrowPos.AmountOut.Amount.Sub(liqBorrow.AmountOut)
 	borrowPos.AmountOut.Amount = liqBorrow.AmountOut
 	borrowPos.AmountIn.Amount = liqBorrow.AmountIn
 	borrowPos.LastInteractionTime = ctx.BlockTime()
 	borrowPos.IsLiquidated = false
+	k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, true)
 
 	var firstTransitAssetID, secondTransitAssetID uint64
 	for _, data := range AssetInPool.AssetData {
@@ -1520,7 +1595,6 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 		}
 	}
 
-	k.UpdateBorrowStats(ctx, pair, borrowPos.IsStableBorrow, amoutOutDiff, false)
 	k.SetBorrow(ctx, borrowPos)
 }
 
@@ -1669,4 +1743,44 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 		}
 	}
 	return nil
+}
+
+func (k Keeper) UpdateReserverAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
+	allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, id)
+	if !found {
+		allReserveStats = types.AllReserveStats{
+			AssetID:                        id,
+			AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+			AmountOutFromReserveForAuction: sdk.ZeroInt(),
+			AmountInFromLiqPenalty:         sdk.ZeroInt(),
+			AmountInFromRepayments:         sdk.ZeroInt(),
+			TotalAmountOutToLenders:        sdk.ZeroInt(),
+		}
+	}
+	allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amt)
+	k.SetAllReserveStatsByAssetID(ctx, allReserveStats)
+}
+
+func (k Keeper) UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool) {
+	var lendIDs []uint64
+	amount := sdk.ZeroInt()
+	mappingData := k.GetUserTotalMappingData(ctx, addr)
+
+	for _, data := range mappingData {
+		lendIDs = append(lendIDs, data.LendId)
+	}
+	if len(lendIDs) == 0 {
+		return amount, false
+	}
+
+	for _, lendID := range lendIDs {
+		lendPos, found := k.GetLend(ctx, lendID)
+		if !found {
+			continue
+		}
+		if lendPos.AssetID == assetID {
+			amount = amount.Add(lendPos.AmountIn.Amount)
+		}
+	}
+	return amount, true
 }

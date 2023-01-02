@@ -1,6 +1,6 @@
 package types
 
-func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowInterestTracker, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, poolAssetLBMapping []PoolAssetLBMapping, lendRewardsTracker []LendRewardsTracker, userAssetLendBorrowMapping []UserAssetLendBorrowMapping, reserveBuybackAssetData []ReserveBuybackAssetData, extendedPair []Extended_Pair, auctionParams []AuctionParams, assetRatesParams []AssetRatesParams) *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowInterestTracker, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, poolAssetLBMapping []PoolAssetLBMapping, lendRewardsTracker []LendRewardsTracker, userAssetLendBorrowMapping []UserAssetLendBorrowMapping, reserveBuybackAssetData []ReserveBuybackAssetData, extendedPair []Extended_Pair, auctionParams []AuctionParams, assetRatesParams []AssetRatesParams, modBal ModBal, reserveBal ReserveBal, allReserveStats []AllReserveStats) *GenesisState {
 	return &GenesisState{
 		BorrowAsset:                borrowAsset,
 		BorrowInterestTracker:      borrowInterestTracker,
@@ -14,6 +14,9 @@ func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowIn
 		Extended_Pair:              extendedPair,
 		AuctionParams:              auctionParams,
 		AssetRatesParams:           assetRatesParams,
+		ModBal:                     modBal,
+		ReserveBal:                 reserveBal,
+		AllReserveStats:            allReserveStats,
 	}
 }
 
@@ -31,6 +34,9 @@ func DefaultGenesisState() *GenesisState {
 		[]Extended_Pair{},
 		[]AuctionParams{},
 		[]AssetRatesParams{},
+		ModBal{},
+		ReserveBal{},
+		[]AllReserveStats{},
 	)
 }
 

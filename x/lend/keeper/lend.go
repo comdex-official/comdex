@@ -520,3 +520,158 @@ func (k Keeper) GetModuleBalanceByPoolID(ctx sdk.Context, poolID uint64) (Module
 	}
 	return ModuleBalance, true
 }
+
+func (k Keeper) SetFundModBal(ctx sdk.Context, modBal types.ModBal) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundModBal
+		value = k.cdc.MustMarshal(&modBal)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundModBal(ctx sdk.Context) (modBal types.ModBal, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundModBal
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return modBal, false
+	}
+
+	k.cdc.MustUnmarshal(value, &modBal)
+	return modBal, true
+}
+
+func (k Keeper) GetAllFundModBal(ctx sdk.Context) (modBal types.ModBal) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.KeyFundModBal)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	k.cdc.MustUnmarshal(iter.Value(), &modBal)
+	return modBal
+}
+
+func (k Keeper) SetFundReserveBal(ctx sdk.Context, resBal types.ReserveBal) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundReserveBal
+		value = k.cdc.MustMarshal(&resBal)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.KeyFundReserveBal
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return resBal, false
+	}
+
+	k.cdc.MustUnmarshal(value, &resBal)
+	return resBal, true
+}
+
+func (k Keeper) GetAllFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.KeyFundReserveBal)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	k.cdc.MustUnmarshal(iter.Value(), &resBal)
+	return resBal
+}
+
+func (k Keeper) SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats types.AllReserveStats) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AllReserveStatsKey(allReserveStats.AssetID)
+		value = k.cdc.MustMarshal(&allReserveStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats types.AllReserveStats, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AllReserveStatsKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return allReserveStats, false
+	}
+
+	k.cdc.MustUnmarshal(value, &allReserveStats)
+	return allReserveStats, true
+}
+
+func (k Keeper) GetTotalReserveStatsByAssetID(ctx sdk.Context) (reserve []types.AllReserveStats) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AllReserveStatsPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var tracker types.AllReserveStats
+		k.cdc.MustUnmarshal(iter.Value(), &tracker)
+		reserve = append(reserve, tracker)
+	}
+	return reserve
+}
+
+func (k Keeper) SetFundModBalByAssetPool(ctx sdk.Context, assetID, poolID uint64, amt sdk.Coin) {
+	var (
+		store = k.Store(ctx)
+		key   = types.FundModBalanceKey(assetID, poolID)
+		value = k.cdc.MustMarshal(&amt)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFundModBalByAssetPool(ctx sdk.Context, assetID, poolID uint64) (amt sdk.Coin, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.FundModBalanceKey(assetID, poolID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return amt, false
+	}
+
+	k.cdc.MustUnmarshal(value, &amt)
+	return amt, true
+}

@@ -50,4 +50,6 @@ type TokenMintKeeper interface {
 type RewardsKeeper interface {
 	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
+	GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards rewardstypes.StableVaultExternalRewards, found bool)
+	VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool
 }

@@ -47,6 +47,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryUserMyPositionByApp(),
 		QueryUserExtendedPairTotalData(),
 		QueryPairsLockedAndMintedStatisticByApp(),
+		QueryAllStableMintVaultRewards(),
 	)
 
 	return cmd
@@ -951,5 +952,36 @@ func QueryPairsLockedAndMintedStatisticByApp() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "pairs-locked-and-minted-statistic-by-app")
+	return cmd
+}
+
+func QueryAllStableMintVaultRewards() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stable_mint_vault_rewards",
+		Short: "Query stable mint vault rewards",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryAllStableMintVaultRewards(cmd.Context(), &types.QueryAllStableMintVaultRewardsRequest{
+				Pagination: pagination,
+			})
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "stable_mint_vault_rewards")
 	return cmd
 }
