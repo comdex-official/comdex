@@ -363,7 +363,7 @@ func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount))
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, farmedCoin.FarmedPoolCoin)
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
