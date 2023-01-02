@@ -321,6 +321,29 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 		return types.Pool{}, err
 	}
 
+	newGauge := rewardstypes.NewMsgCreateGauge(
+		msg.AppId,
+		pair.GetSwapFeeCollectorAddress(),
+		ctx.BlockTime(),
+		rewardstypes.LiquidityGaugeTypeID,
+		types.DefaultSwapFeeDistributionDuration,
+		sdk.NewCoin(params.SwapFeeDistrDenom, sdk.NewInt(0)),
+		1,
+	)
+	newGauge.Kind = &rewardstypes.MsgCreateGauge_LiquidityMetaData{
+		LiquidityMetaData: &rewardstypes.LiquidtyGaugeMetaData{
+			PoolId:       pool.Id,
+			IsMasterPool: false,
+			ChildPoolIds: []uint64{},
+		},
+	}
+	err = k.rewardsKeeper.CreateNewGauge(ctx, newGauge, true)
+	if err != nil {
+		return types.Pool{}, err
+	}
+
+	ctx.GasMeter().ConsumeGas(types.CreatePoolGas, "CreatePoolGas")
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeCreateRangedPool,
@@ -329,6 +352,7 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 			sdk.NewAttribute(types.AttributeKeyDepositCoins, msg.DepositCoins.String()),
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(pool.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyReserveAddress, pool.ReserveAddress),
+			sdk.NewAttribute(types.AttributeKeySwapFeeCollectorAddress, pair.SwapFeeCollectorAddress),
 			sdk.NewAttribute(types.AttributeKeyMintedPoolCoin, poolCoin.String()),
 		),
 	})
