@@ -177,6 +177,22 @@ func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator s
 	return pool
 }
 
+func (s *KeeperTestSuite) CreateNewLiquidityRangedPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string, minPrice, maxPrice, initialPrice sdk.Dec) types.Pool {
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	parsedDepositCoins := utils.ParseCoins(depositCoins)
+
+	s.fundAddr(creator, params.PoolCreationFee)
+	s.fundAddr(creator, parsedDepositCoins)
+	msg := types.NewMsgCreateRangedPool(appID, creator, pairID, parsedDepositCoins, minPrice, maxPrice, initialPrice)
+	pool, err := s.keeper.CreateRangedPool(s.ctx, msg)
+	s.Require().NoError(err)
+	s.Require().IsType(types.Pool{}, pool)
+
+	return pool
+}
+
 func (s *KeeperTestSuite) Deposit(appID, poolID uint64, depositor sdk.AccAddress, depositCoins string) types.DepositRequest {
 	msg := types.NewMsgDeposit(
 		appID, depositor, poolID, utils.ParseCoins(depositCoins),
