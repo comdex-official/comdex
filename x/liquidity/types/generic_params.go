@@ -12,7 +12,7 @@ import (
 // Liquidity params default values.
 const (
 	DefaultBatchSize                    uint64 = 1
-	DefaultTickPrecision                uint64 = 6
+	DefaultTickPrecision                uint64 = 4
 	DefaultMaxOrderLifespan                    = 24 * time.Hour
 	DefaultFeeDenom                     string = "ucmdx"
 	DefaultMaxNumMarketMakingOrderTicks uint64 = 10
@@ -60,7 +60,6 @@ var (
 
 var UpdatableKeys = []string{
 	BatchSize,
-	TickPrecision,
 	MinInitialPoolCoinSupply,
 	PairCreationFee,
 	PoolCreationFee,

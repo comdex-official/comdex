@@ -16,7 +16,7 @@ func MigrateGenericParams(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec
 	}
 	newGenericLiquidityParams := types.GenericParams{
 		BatchSize:                    oldGenericLiquidityParams.BatchSize,
-		TickPrecision:                oldGenericLiquidityParams.TickPrecision,
+		TickPrecision:                types.DefaultTickPrecision,
 		FeeCollectorAddress:          oldGenericLiquidityParams.FeeCollectorAddress,
 		DustCollectorAddress:         oldGenericLiquidityParams.DustCollectorAddress,
 		MinInitialPoolCoinSupply:     oldGenericLiquidityParams.MinInitialPoolCoinSupply,

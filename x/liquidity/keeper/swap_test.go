@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"math/rand"
 	"time"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -500,7 +501,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				Type:               types.OrderTypeLimit,
 			},
 			ExpOrderStatus:        types.OrderStatusCompleted,
-			ExpBalanceAfterExpire: utils.ParseCoins("2000000uasset1,2003uasset2"),
+			ExpBalanceAfterExpire: utils.ParseCoins("2000000uasset1,1986uasset2"),
 		},
 		{
 			Name: "swap at slight lower than pool price buy direction",
@@ -636,7 +637,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				Type:               types.OrderTypeLimit,
 			},
 			ExpOrderStatus:        types.OrderStatusCompleted,
-			ExpBalanceAfterExpire: utils.ParseCoins("999976uasset2"),
+			ExpBalanceAfterExpire: utils.ParseCoins("1000000uasset2"),
 		},
 	}
 
@@ -1670,16 +1671,16 @@ func (s *KeeperTestSuite) TestSwapFeeCollectionMarketOrder() {
 	s.nextBlock()
 	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, sellMarketOrder.Id)
 	s.Require().False(found)
-	s.Require().True(utils.ParseCoins("99902040denom2").IsEqual(s.getBalances(trader1)))
+	s.Require().True(utils.ParseCoins("99902053denom2").IsEqual(s.getBalances(trader1)))
 
 	buyMarketOrder := s.MarketOrder(appID1, trader2, pair.Id, types.OrderDirectionBuy, newInt(100000000), time.Second*10)
 	s.nextBlock()
 	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, buyMarketOrder.Id)
 	s.Require().False(found)
-	s.Require().True(utils.ParseCoins("100000000denom1,9908900denom2").IsEqual(s.getBalances(trader2)))
+	s.Require().True(utils.ParseCoins("100000000denom1,9908395denom2").IsEqual(s.getBalances(trader2)))
 
 	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("300000denom1,302706denom2").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("300000denom1,302707denom2").IsEqual(accumulatedSwapFee))
 
 	s.nextBlock()
 }
@@ -1740,11 +1741,77 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	// now execute the order placed in above block, this block will execute the order for 9 harbor placed above
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871844ucmdx").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1871753ucmdx").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, here 1uharbor is refunded back since it is very small amount for swap order.
 	// here all harbor tokens are converted into cmdx, since cmdx is the default distribution token for rewards
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871996ucmdx,1uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1871903ucmdx,1uharbor").IsEqual(accumulatedSwapFee))
+}
+
+func (s *KeeperTestSuite) TestPoolPreserveK() {
+	r := rand.New(rand.NewSource(0))
+
+	addr1 := s.addr(0)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+	for i := 0; i < 10; i++ {
+		minPrice := amm.RandomTick(r, utils.ParseDec("0.001"), utils.ParseDec("10.0"), int(params.TickPrecision))
+		maxPrice := amm.RandomTick(r, minPrice.Mul(utils.ParseDec("1.01")), utils.ParseDec("100.0"), int(params.TickPrecision))
+		initialPrice := amm.RandomTick(r, minPrice, maxPrice, int(params.TickPrecision))
+		p := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr2, "1_000000000000ucmdx,1_000000000000uharbor",
+			minPrice, maxPrice, initialPrice,
+		)
+		s.Require().IsType(types.Pool{}, p)
+	}
+	pools := s.keeper.GetAllPools(s.ctx, appID1)
+
+	ks := map[uint64]sdk.Dec{}
+	for _, pool := range pools {
+		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
+		transX, transY := ammPool.Translation()
+		ks[pool.Id] = rx.Amount.ToDec().Add(transX).Mul(ry.Amount.ToDec().Add(transY))
+	}
+
+	for i := 0; i < 20; i++ {
+		pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+		for j := 0; j < 50; j++ {
+			var price sdk.Dec
+			if pair.LastPrice == nil {
+				price = utils.RandomDec(r, utils.ParseDec("0.001"), utils.ParseDec("100.0"))
+			} else {
+				price = utils.RandomDec(r, utils.ParseDec("0.91"), utils.ParseDec("1.09")).Mul(*pair.LastPrice)
+			}
+			amt := utils.RandomInt(r, sdk.NewInt(10000), sdk.NewInt(1000000))
+			lifespan := time.Duration(r.Intn(60)) * time.Second
+			if r.Intn(2) == 0 {
+				s.LimitOrder(appID1, s.addr(j+2), pair.Id, types.OrderDirectionBuy, price, amt, lifespan)
+			} else {
+				s.LimitOrder(appID1, s.addr(j+2), pair.Id, types.OrderDirectionBuy, price, amt, lifespan)
+			}
+		}
+
+		s.nextBlock()
+		s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(3 * time.Second))
+		s.nextBlock()
+
+		for _, pool := range pools {
+			rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
+			transX, transY := ammPool.Translation()
+			k := rx.Amount.ToDec().Add(transX).Mul(ry.Amount.ToDec().Add(transY))
+			s.Require().True(k.GTE(ks[pool.Id].Mul(utils.ParseDec("0.99999")))) // there may be a small error
+			ks[pool.Id] = k
+		}
+	}
 }
