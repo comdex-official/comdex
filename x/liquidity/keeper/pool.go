@@ -707,24 +707,20 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 		if !(quoteAssetfound && baseAssetfound) {
 			return sdk.Coin{}, types.ErrOraclePricesNotFound
 		}
-		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+		// moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 		poolLiquidityMap := make(map[uint64]sdk.Dec)
 		for _, pool := range allPoolsForPair {
 			if pool.Disabled {
 				continue
 			}
-			farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
-			farmedAssets, err := k.DeserializePoolCoinHelper(ctx, appID, pool.Id, farmedCoins.Amount.Uint64())
-			if err != nil {
-				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+			// skip poolID less than requested pool id, since previous pools have already received their share of swap fees
+			// this function is called from gauges in an sequential order i.e pool 1 will request swap fee before pool2 and so on.
+			if pool.Id < requestedPoolID {
+				continue
 			}
-			if len(farmedAssets) != 2 {
-				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil
-			}
-			quoteCoinAmount := farmedAssets.AmountOf(pair.QuoteCoinDenom)
-			baseCoinAmount := farmedAssets.AmountOf(pair.BaseCoinDenom)
-			quoteValue, _ := k.marketKeeper.CalcAssetPrice(ctx, quoteAsset.Id, quoteCoinAmount)
-			baseValue, _ := k.marketKeeper.CalcAssetPrice(ctx, baseAsset.Id, baseCoinAmount)
+			rx, ry := k.GetPoolBalances(ctx, pool)
+			quoteValue, _ := k.marketKeeper.CalcAssetPrice(ctx, quoteAsset.Id, rx.Amount)
+			baseValue, _ := k.marketKeeper.CalcAssetPrice(ctx, baseAsset.Id, ry.Amount)
 			totalValue := quoteValue.Add(baseValue)
 			if !totalValue.IsPositive() {
 				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil

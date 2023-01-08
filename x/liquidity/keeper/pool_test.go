@@ -1467,3 +1467,168 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
 	s.Require().True(intEq(sdk.ZeroInt(), s.getBalance(s.addr(3), "denom2").Amount))
 	s.Require().True(intEq(sdk.NewInt(1000000), s.getBalance(s.addr(3), "denom1").Amount))
 }
+
+func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_OnlyBasicPool() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair)
+	p1 := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
+
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,179641uharbor"), accumulatedSwapFee))
+
+	receivedSwapFunds, err := s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p1.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("162000ucmdx"), receivedSwapFunds))
+
+	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
+}
+
+func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_OnlyRangedPool() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair)
+	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,306613uharbor"), accumulatedSwapFee))
+
+	receivedSwapFunds, err := s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p1.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("162000ucmdx"), receivedSwapFunds))
+
+	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
+}
+
+func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_MultiplePools() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair)
+	p1 := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
+	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
+	p2 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	p3 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.90"), sdk.MustNewDecFromStr("1.1"), sdk.MustNewDecFromStr("1"))
+	p4 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"))
+
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,306030uharbor"), accumulatedSwapFee))
+
+	receivedSwapFunds, err := s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p1.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("41256ucmdx"), receivedSwapFunds))
+	receivedSwapFunds, err = s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p2.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("40276ucmdx"), receivedSwapFunds))
+	receivedSwapFunds, err = s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p3.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("39342ucmdx"), receivedSwapFunds))
+	receivedSwapFunds, err = s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p4.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("41126ucmdx"), receivedSwapFunds))
+
+	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
+}
+
+func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_WithBurnRate() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair)
+	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,306613uharbor"), accumulatedSwapFee))
+
+	params.SwapFeeBurnRate = sdk.MustNewDecFromStr("0.5")
+	s.keeper.SetGenericParams(s.ctx, params)
+
+	receivedSwapFunds, err := s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p1.Id)
+	s.Require().NoError(err)
+	s.Require().True(coinEq(utils.ParseCoin("81000ucmdx"), receivedSwapFunds))
+
+	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
+}
