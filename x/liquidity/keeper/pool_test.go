@@ -739,6 +739,15 @@ func (s *KeeperTestSuite) TestWithdraw() {
 			AvailableBalance: sdk.NewCoins(),
 		},
 		{
+			Name: "error invalid pool coin denom",
+			Msg: *types.NewMsgWithdraw(
+				appID1, addr1, pool.Id, utils.ParseCoin("1000000pool1"),
+			),
+			ExpErr:           types.ErrWrongPoolCoinDenom,
+			ExpResp:          &types.WithdrawRequest{},
+			AvailableBalance: sdk.NewCoins(),
+		},
+		{
 			Name: "success valid case",
 			Msg: *types.NewMsgWithdraw(
 				appID1, addr1, pool.Id, availablePoolBalance,
@@ -859,6 +868,44 @@ func (s *KeeperTestSuite) TestWithdrawFromDisabledPool() {
 	// Now any withdrawals will result in an error.
 	_, err = s.keeper.Withdraw(s.ctx, types.NewMsgWithdraw(appID1, addr1, pool.Id, s.getBalance(addr1, pool.PoolCoinDenom)))
 	s.Require().ErrorIs(err, types.ErrDisabledPool)
+}
+
+func (s *KeeperTestSuite) TestGetDepositRequestsByDepositor() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000denom1,1000000denom2")
+	req1 := s.Deposit(appID1, pool.Id, s.addr(1), "1000000denom1,1000000denom2")
+	req2 := s.Deposit(appID1, pool.Id, s.addr(1), "1000000denom1,1000000denom2")
+	reqs := s.keeper.GetDepositRequestsByDepositor(s.ctx, appID1, s.addr(1))
+	s.Require().Len(reqs, 2)
+	s.Require().Equal(req1.PoolId, reqs[0].PoolId)
+	s.Require().Equal(req1.Id, reqs[0].Id)
+	s.Require().Equal(req2.PoolId, reqs[1].PoolId)
+	s.Require().Equal(req2.Id, reqs[1].Id)
+}
+
+func (s *KeeperTestSuite) TestWithdrawRequestsByWithdrawer() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000denom1,1000000denom2")
+	s.Deposit(appID1, pool.Id, s.addr(1), "1000000denom1,1000000denom2")
+	s.nextBlock()
+	req1 := s.Withdraw(appID1, pool.Id, s.addr(1), utils.ParseCoin("10000pool1-1"))
+	req2 := s.Withdraw(appID1, pool.Id, s.addr(1), utils.ParseCoin("10000pool1-1"))
+	reqs := s.keeper.GetWithdrawRequestsByWithdrawer(s.ctx, appID1, s.addr(1))
+	s.Require().Len(reqs, 2)
+	s.Require().Equal(req1.PoolId, reqs[0].PoolId)
+	s.Require().Equal(req1.Id, reqs[0].Id)
+	s.Require().Equal(req2.PoolId, reqs[1].PoolId)
+	s.Require().Equal(req2.Id, reqs[1].Id)
 }
 
 func (s *KeeperTestSuite) TestCreateRangedPool() {
@@ -1316,4 +1363,107 @@ func (s *KeeperTestSuite) Test3MaximumRangePoolInPair() {
 	msg := types.NewMsgCreatePool(appID1, addr1, pair.Id, parsedDepositCoins)
 	_, err = s.keeper.CreatePool(s.ctx, msg)
 	s.Require().EqualError(types.ErrTooManyPools, err.Error())
+}
+
+func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("1.0"))
+
+	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
+
+	s.Deposit(appID1, pool.Id, s.addr(2), "400000denom1,1000000denom2")
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
+	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
+
+	poolCoin := s.getBalance(s.addr(2), pool.PoolCoinDenom)
+	s.Withdraw(appID1, pool.Id, s.addr(2), poolCoin.SubAmount(poolCoin.Amount.QuoRaw(3))) // withdraw 2/3 pool coin
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
+	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
+}
+
+func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("0.5"))
+
+	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdk.NewInt(1000000), ry.Amount))
+	ps := s.keeper.GetPoolCoinSupply(s.ctx, pool)
+
+	s.Deposit(appID1, pool.Id, s.addr(2), "50000denom1")
+	s.nextBlock()
+
+	pc := s.getBalance(s.addr(2), pool.PoolCoinDenom)
+
+	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
+	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdk.NewInt(1050000), ry.Amount))
+	s.Require().True(intEq(ps.QuoRaw(20), pc.Amount))
+
+	balanceBefore := s.getBalance(s.addr(2), "denom1")
+	s.Withdraw(appID1, pool.Id, s.addr(2), sdk.NewCoin(pool.PoolCoinDenom, pc.Amount))
+	s.nextBlock()
+	balanceAfter := s.getBalance(s.addr(2), "denom1")
+
+	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdk.NewInt(50000)).LTE(sdk.OneInt()))
+
+	s.Deposit(appID1, pool.Id, s.addr(3), "1000000denom1,1000000denom2")
+	s.nextBlock()
+
+	s.Require().True(intEq(sdk.ZeroInt(), s.getBalance(s.addr(3), "denom1").Amount))
+	s.Require().True(intEq(sdk.NewInt(1000000), s.getBalance(s.addr(3), "denom2").Amount))
+}
+
+func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom2", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("2.0"))
+
+	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+	s.Require().True(intEq(sdk.NewInt(1000000), rx.Amount))
+	s.Require().True(intEq(sdk.ZeroInt(), ry.Amount))
+	ps := s.keeper.GetPoolCoinSupply(s.ctx, pool)
+
+	s.Deposit(appID1, pool.Id, s.addr(2), "50000denom2")
+	s.nextBlock()
+
+	pc := s.getBalance(s.addr(2), pool.PoolCoinDenom)
+
+	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
+	s.Require().True(intEq(sdk.NewInt(1050000), rx.Amount))
+	s.Require().True(intEq(sdk.ZeroInt(), ry.Amount))
+	s.Require().True(intEq(ps.QuoRaw(20), pc.Amount))
+
+	balanceBefore := s.getBalance(s.addr(2), "denom2")
+	s.Withdraw(appID1, pool.Id, s.addr(2), sdk.NewCoin(pool.PoolCoinDenom, pc.Amount))
+	s.nextBlock()
+	balanceAfter := s.getBalance(s.addr(2), "denom2")
+
+	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdk.NewInt(50000)).LTE(sdk.OneInt()))
+
+	s.Deposit(appID1, pool.Id, s.addr(3), "1000000denom1,1000000denom2")
+	s.nextBlock()
+
+	s.Require().True(intEq(sdk.ZeroInt(), s.getBalance(s.addr(3), "denom2").Amount))
+	s.Require().True(intEq(sdk.NewInt(1000000), s.getBalance(s.addr(3), "denom1").Amount))
 }
