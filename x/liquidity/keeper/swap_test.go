@@ -1815,3 +1815,300 @@ func (s *KeeperTestSuite) TestPoolPreserveK() {
 		}
 	}
 }
+
+func (s *KeeperTestSuite) TestPoolOrderOverflow() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000denom1,10000000000000000000000000denom2")
+
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000000000000010000"), sdk.NewInt(1e17), 0)
+	s.Require().NotPanics(func() {
+		liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	})
+}
+
+func (s *KeeperTestSuite) TestRangedLiquidity() {
+	orderPrice := utils.ParseDec("1.05")
+	orderAmt := sdk.NewInt(100000)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+	asset3 := s.CreateNewAsset("ASSETTHREE", "denom3", 1000000)
+	asset4 := s.CreateNewAsset("ASSETFOUR", "denom4", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.0")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2")
+
+	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, orderPrice, orderAmt, 0)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	order, _ = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
+	received := order.ReceivedCoin.Amount
+	s.Require().True(received.LT(orderAmt))
+	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+
+	pair = s.CreateNewLiquidityPair(appID1, s.addr(0), asset3.Denom, asset4.Denom)
+	pair.LastPrice = utils.ParseDecP("1.0")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom3,1000000denom4", utils.ParseDec("0.8"), utils.ParseDec("1.3"), utils.ParseDec("1.0"))
+	order = s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, orderPrice, orderAmt, 0)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	order, _ = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	paid = order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
+	received = order.ReceivedCoin.Amount
+	s.Require().True(intEq(orderAmt, received))
+	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+}
+
+func (s *KeeperTestSuite) TestOneSidedRangedPool() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.0")
+	s.keeper.SetPair(s.ctx, pair)
+
+	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2", utils.ParseDec("1.0"), utils.ParseDec("1.2"), utils.ParseDec("1.0"))
+	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	s.Require().True(utils.DecApproxEqual(utils.ParseDec("1.0"), ammPool.Price()))
+	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdk.NewInt(1000000), ry.Amount))
+
+	orderPrice := utils.ParseDec("1.1")
+	orderAmt := sdk.NewInt(100000)
+	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.1"), sdk.NewInt(100000), 0)
+	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
+	order, _ = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
+	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
+	received := order.ReceivedCoin.Amount
+	s.Require().True(intEq(orderAmt, received))
+	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+
+	rx, _ = s.keeper.GetPoolBalances(s.ctx, pool)
+	s.Require().True(rx.IsPositive())
+}
+
+func (s *KeeperTestSuite) TestExhaustRangedPool() {
+	r := rand.New(rand.NewSource(0))
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+
+	minPrice, maxPrice := utils.ParseDec("0.5"), utils.ParseDec("2.0")
+	initialPrice := utils.ParseDec("1.0")
+	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2", minPrice, maxPrice, initialPrice)
+
+	orderer := s.addr(2)
+	s.fundAddr(orderer, utils.ParseCoins("10000000denom1,10000000denom2"))
+
+	// Buy
+	for {
+		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		poolPrice := ammPool.Price()
+		if ry.Amount.LT(sdk.NewInt(100)) {
+			s.Require().True(utils.DecApproxEqual(maxPrice, poolPrice))
+			break
+		}
+		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdk.NewDecWithPrec(105, 2)))
+		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionBuy, orderPrice, amt, 0)
+		s.nextBlock()
+	}
+
+	// Sell
+	for {
+		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		poolPrice := ammPool.Price()
+		if rx.Amount.LT(sdk.NewInt(100)) {
+			s.Require().True(utils.DecApproxEqual(minPrice, poolPrice))
+			break
+		}
+		orderPrice := utils.RandomDec(r, poolPrice.Mul(sdk.NewDecWithPrec(95, 2)), poolPrice)
+		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionSell, orderPrice, amt, 0)
+		s.nextBlock()
+	}
+
+	// Buy again
+	for {
+		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		poolPrice := ammPool.Price()
+		if poolPrice.GTE(initialPrice) {
+			break
+		}
+		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdk.NewDecWithPrec(105, 2)))
+		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionBuy, orderPrice, amt, 0)
+		s.nextBlock()
+	}
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	s.Require().True(coinEq(rx, utils.ParseCoin("997231denom2")))
+	s.Require().True(coinEq(ry, utils.ParseCoin("984671denom1")))
+	s.Require().True(decEq(ammPool.Price(), utils.ParseDec("1.003719250732340754")))
+
+	s.Require().True(coinsEq(utils.ParseCoins("31534denom2"), s.getBalances(sdk.MustAccAddressFromBech32(params.DustCollectorAddress))))
+	s.Require().True(coinsEq(utils.ParseCoins("12546884denom1,12666562denom2"), s.getBalances(orderer)))
+}
+
+func (s *KeeperTestSuite) TestOrderBooks_edgecase1() {
+	addr1 := s.addr(0)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("0.57472")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "991883358661denom2,620800303846denom1")
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "155025981873denom2,4703143223denom1", utils.ParseDec("1.15"), utils.ParseDec("1.55"), utils.ParseDec("1.5308"))
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "223122824634denom2,26528571912denom1", utils.ParseDec("1.25"), utils.ParseDec("1.45"), utils.ParseDec("1.4199"))
+
+	resp, err := s.querier.OrderBooks(sdk.WrapSDKContext(s.ctx), &types.QueryOrderBooksRequest{
+		AppId:    appID1,
+		PairIds:  []uint64{pair.Id},
+		NumTicks: 10,
+	})
+	s.Require().NoError(err)
+	s.Require().Len(resp.Pairs, 1)
+	s.Require().Len(resp.Pairs[0].OrderBooks, 3)
+
+	s.Require().Len(resp.Pairs[0].OrderBooks[0].Buys, 2)
+	s.Require().True(decEq(utils.ParseDec("0.63219"), resp.Pairs[0].OrderBooks[0].Buys[0].Price))
+	s.Require().True(intEq(sdk.NewInt(1178846737645), resp.Pairs[0].OrderBooks[0].Buys[0].UserOrderAmount))
+	s.Require().True(decEq(utils.ParseDec("0.5187"), resp.Pairs[0].OrderBooks[0].Buys[1].Price))
+	s.Require().True(intEq(sdk.NewInt(13340086), resp.Pairs[0].OrderBooks[0].Buys[1].UserOrderAmount))
+	s.Require().Len(resp.Pairs[0].OrderBooks[0].Sells, 0)
+}
+
+func (s *KeeperTestSuite) TestSwap_edgecase1() {
+	addr1 := s.addr(0)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdk.NewInt(9995), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+
+	s.nextBlock()
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().True(decEq(utils.ParseDec("0.102"), *pair.LastPrice))
+
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdk.NewInt(9995), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+	s.nextBlock()
+}
+
+func (s *KeeperTestSuite) TestSwap_edgecase2() {
+	addr1 := s.addr(0)
+	addr2 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.6724")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1005184935980denom2,601040339855denom1")
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "17335058855denom2", utils.ParseDec("1.15"), utils.ParseDec("1.55"), utils.ParseDec("1.55"))
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "217771046279denom2", utils.ParseDec("1.25"), utils.ParseDec("1.45"), utils.ParseDec("1.45"))
+
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdk.NewInt(4336_000000), 0)
+	s.nextBlock()
+
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().True(decEq(utils.ParseDec("1.6484"), *pair.LastPrice))
+
+	s.nextBlock()
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().True(decEq(utils.ParseDec("1.6484"), *pair.LastPrice))
+
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdk.NewInt(4450_000000), 0)
+	s.nextBlock()
+
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().True(decEq(utils.ParseDec("1.6248"), *pair.LastPrice))
+}
+
+func (s *KeeperTestSuite) TestSwap_edgecase3() {
+	addr1 := s.addr(0)
+	addr2 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("0.99992")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "110001546090denom2,110013588106denom1")
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "140913832254denom2,130634675302denom1", utils.ParseDec("0.92"), utils.ParseDec("1.08"), utils.ParseDec("0.99989"))
+
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.nextBlock()
+
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().True(decEq(utils.ParseDec("0.99992"), *pair.LastPrice))
+}
+
+func (s *KeeperTestSuite) TestSwap_edgecase4() {
+	addr1 := s.addr(0)
+	addr2 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("0.99999")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000_000000denom1,100_000000denom2")
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000_000000denom1,1000_000000denom2", utils.ParseDec("0.95"), utils.ParseDec("1.05"), utils.ParseDec("1.02"))
+	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000_000000denom1,1000_000000denom2", utils.ParseDec("0.9"), utils.ParseDec("1.2"), utils.ParseDec("0.98"))
+
+	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.05"), sdk.NewInt(50_000000), 0)
+	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.97"), sdk.NewInt(100_000000), 0)
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("50150000denom1,97291000denom2").IsEqual(s.getBalances(addr2)))
+
+}
