@@ -309,6 +309,61 @@ func (s *KeeperTestSuite) MarketOrder(
 	return req
 }
 
+func (s *KeeperTestSuite) MarketMakingOrder(
+	orderer sdk.AccAddress, appID, pairId uint64,
+	maxSellPrice, minSellPrice sdk.Dec, sellAmt sdk.Int,
+	maxBuyPrice, minBuyPrice sdk.Dec, buyAmt sdk.Int,
+	orderLifespan time.Duration, fund bool) []types.Order {
+	s.T().Helper()
+	params, err := s.keeper.GetGenericParams(s.ctx, appID)
+	s.Require().NoError(err)
+
+	pair, found := s.keeper.GetPair(s.ctx, appID, pairId)
+	s.Require().True(found)
+
+	maxNumTicks := int(params.MaxNumMarketMakingOrderTicks)
+	tickPrec := int(params.TickPrecision)
+
+	var buyTicks, sellTicks []types.MMOrderTick
+	offerBaseCoin := sdk.NewInt64Coin(pair.BaseCoinDenom, 0)
+	offerQuoteCoin := sdk.NewInt64Coin(pair.QuoteCoinDenom, 0)
+	if buyAmt.IsPositive() {
+		buyTicks = types.MMOrderTicks(
+			types.OrderDirectionBuy, minBuyPrice, maxBuyPrice, buyAmt, maxNumTicks, tickPrec)
+		for _, tick := range buyTicks {
+			offerQuoteCoin = offerQuoteCoin.AddAmount(tick.OfferCoinAmount)
+		}
+	}
+	if sellAmt.IsPositive() {
+		sellTicks = types.MMOrderTicks(
+			types.OrderDirectionSell, minSellPrice, maxSellPrice, sellAmt, maxNumTicks, tickPrec)
+		for _, tick := range sellTicks {
+			offerBaseCoin = offerBaseCoin.AddAmount(tick.OfferCoinAmount)
+		}
+	}
+	s.fundAddr(orderer, sdk.NewCoins(offerBaseCoin, offerQuoteCoin))
+	msg := types.NewMsgMMOrder(
+		appID,
+		orderer, pairId,
+		maxSellPrice, minSellPrice, sellAmt,
+		maxBuyPrice, minBuyPrice, buyAmt,
+		orderLifespan)
+	s.Require().NoError(msg.ValidateBasic())
+	orders, err := s.keeper.MMOrder(s.ctx, msg)
+	s.Require().NoError(err)
+
+	index, found := s.keeper.GetMMOrderIndex(s.ctx, orderer, appID, pairId)
+	s.Require().True(found)
+	s.Require().Equal(orderer.String(), index.Orderer)
+	s.Require().Equal(pairId, index.PairId)
+	s.Require().True(len(index.OrderIds) <= maxNumTicks*2)
+	s.Require().True(len(index.OrderIds) == len(orders))
+	for i, order := range orders {
+		s.Require().Equal(order.Id, index.OrderIds[i])
+	}
+	return orders
+}
+
 func (s *KeeperTestSuite) Farm(appID, poolID uint64, farmer sdk.AccAddress, farmingCoin string) {
 	msg := types.NewMsgFarm(
 		appID, poolID, farmer, utils.ParseCoin(farmingCoin),

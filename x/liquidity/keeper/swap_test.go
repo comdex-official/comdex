@@ -1577,6 +1577,102 @@ func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
 	s.Require().Equal(types.OrderStatusNotMatched, order.Status)
 }
 
+func (s *KeeperTestSuite) TestMMOrder() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.0")
+	s.keeper.SetPair(s.ctx, pair)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	orders := s.MarketMakingOrder(
+		s.addr(1), appID1, pair.Id,
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		10*time.Second, true)
+	maxNumTicks := int(params.MaxNumMarketMakingOrderTicks)
+	s.Require().Len(orders, 2*maxNumTicks)
+
+	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
+	s.Require().EqualValues(2*maxNumTicks, pair.LastOrderId)
+
+	// failed cancel on same batch
+	cancelMsg := types.MsgCancelMMOrder{
+		Orderer: s.addr(1).String(),
+		PairId:  pair.Id,
+		AppId:   appID1,
+	}
+	_, err = s.keeper.CancelMMOrder(s.ctx, &cancelMsg)
+	s.Require().ErrorIs(err, types.ErrSameBatch)
+
+	// successful cancel on next block
+	s.nextBlock()
+	ids, err := s.keeper.CancelMMOrder(s.ctx, &cancelMsg)
+	s.Require().NoError(err)
+	for i := range ids {
+		s.Require().Equal(ids[i], orders[i].Id)
+	}
+	_, found := s.keeper.GetMMOrderIndex(s.ctx, s.addr(1), appID1, pair.Id)
+	s.Require().False(found)
+
+}
+
+func (s *KeeperTestSuite) TestMMOrderCancelPreviousOrders() {
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "denom1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.0")
+	s.keeper.SetPair(s.ctx, pair)
+
+	s.MarketMakingOrder(
+		s.addr(1), appID1, pair.Id,
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		10*time.Second, true)
+
+	// Cannot place MM orders again because it's not allowed to cancel previous
+	// orders within same batch.
+	s.fundAddr(s.addr(1), utils.ParseCoins("1000000000denom1,1000000000denom2"))
+	_, err := s.keeper.MMOrder(s.ctx, types.NewMsgMMOrder(
+		appID1, s.addr(1), pair.Id,
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		10*time.Second))
+	s.Require().ErrorIs(err, types.ErrSameBatch)
+
+	// Now it's OK to cancel previous orders and place new orders.
+	s.nextBlock()
+	s.MarketMakingOrder(
+		s.addr(1), appID1, pair.Id,
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		10*time.Second, true)
+
+	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	maxNumTicks := int(params.MaxNumMarketMakingOrderTicks)
+	s.Require().Len(orders, 2*2*maxNumTicks) // canceled previous orders + new orders
+
+	s.nextBlock()
+
+	orders = s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Len(orders, 2*maxNumTicks) // new orders
+	// Check order ids.
+	for _, order := range orders {
+		s.Require().EqualValues(2, order.BatchId)
+		s.Require().GreaterOrEqual(order.Id, uint64(2*maxNumTicks+1))
+	}
+}
+
 func (s *KeeperTestSuite) TestCancelOrder() {
 	creator := s.addr(0)
 	dummy := s.addr(1)
