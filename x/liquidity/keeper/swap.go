@@ -978,53 +978,51 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 					if !found {
 						continue
 					}
-					swappablePool, found := k.GetPool(ctx, appID, swappablePoolID)
+					_, found = k.GetPool(ctx, appID, swappablePoolID)
 					if !found {
 						continue
 					}
 
-					rx, ry := k.getPoolBalances(ctx, swappablePool, swappablePair)
-					if !rx.Amount.IsPositive() || !ry.Amount.IsPositive() {
-						continue
-					}
-					baseCoinPoolPrice := rx.Amount.ToDec().Quo(ry.Amount.ToDec())
+					swapFeeCoin := sdk.NewCoin(balance.Denom, CalculateSwapFeeAmount(ctx, params, balance.Amount))
+					swapFeeCoin.Amount = swapFeeCoin.Amount.Mul(sdk.NewInt(3))
+					// reserving extra for swap fee from the offer coin, i.e swapfee *3
+					offerCoin := sdk.NewCoin(balance.Denom, balance.Amount.Sub(swapFeeCoin.Amount))
 
 					orderDirection := types.OrderDirectionBuy
-					demandCoinDenom := swappablePair.BaseCoinDenom
-
-					// price = baseCoinPoolPrice + 1%
-					price := baseCoinPoolPrice.Add(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
-
-					// amount = (availableBalance - swapfee)/price
-					amount := balance.Amount.ToDec().Sub(CalculateSwapFeeAmount(ctx, params, balance.Amount).ToDec()).Quo(price)
-
 					// if balanceDenom is baseCoin in pair, order direction is sell (swap into quote coin)
 					// else order direction is buy (swap into base coin)
 					if balance.Denom == swappablePair.BaseCoinDenom {
 						orderDirection = types.OrderDirectionSell
-						demandCoinDenom = swappablePair.QuoteCoinDenom
-
-						// price = baseCoinPoolPrice - 1%
-						price = baseCoinPoolPrice.Sub(baseCoinPoolPrice.Quo(sdk.NewDec(100)))
-
-						// amount = amount-swapfee
-						amount = balance.Amount.ToDec().Sub(CalculateSwapFeeAmount(ctx, params, balance.Amount).ToDec())
 					}
 
-					newLimitOrderMsg := types.NewMsgLimitOrder(
+					lastPrice := *pair.LastPrice
+					var amount sdk.Int
+					var demandCoinDenom string
+					switch orderDirection {
+					case types.OrderDirectionBuy:
+						maxPrice := lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
+						amount = offerCoin.Amount.ToDec().Quo(maxPrice).TruncateInt()
+						demandCoinDenom = swappablePair.BaseCoinDenom
+					case types.OrderDirectionSell:
+						amount = offerCoin.Amount
+						demandCoinDenom = swappablePair.QuoteCoinDenom
+					}
+					offerCoin = offerCoin.Add(swapFeeCoin)
+
+					msgMarketOrderMsg := types.NewMsgMarketOrder(
 						appID,
 						pair.GetSwapFeeCollectorAddress(),
 						swappablePairID,
 						orderDirection,
-						balance,
+						offerCoin,
 						demandCoinDenom,
-						price,
-						amount.TruncateInt(),
-						time.Second*10,
+						amount,
+						0,
 					)
-					_, err := k.LimitOrder(ctx, newLimitOrderMsg)
+
+					_, err := k.MarketOrder(ctx, msgMarketOrderMsg)
 					if err != nil {
-						logger.Info(fmt.Sprintf("err occurred in ConvertAccumulatedSwapFeesWithSwapDistrToken while placing order  : %v", err))
+						logger.Info(fmt.Sprintf("warning - swap fee conversion : %v", err))
 					}
 				}
 			}

@@ -1986,23 +1986,131 @@ func (s *KeeperTestSuite) TestAccumulatedSwapFeeConversion() {
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
 	// here order is placed for swap, hence harbor tokens are reduced and this will get executed in next block
-	s.Require().True(utils.ParseCoins("936000ucmdx,9uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("936000ucmdx,5643uharbor").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, swap order for 9 uharbor placed again in next block
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1859952ucmdx").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1779250ucmdx,556uharbor").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, this block will execute the order for 9 harbor placed above
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871753ucmdx").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1862727ucmdx,54uharbor").IsEqual(accumulatedSwapFee))
 
 	// now execute the order placed in above block, here 1uharbor is refunded back since it is very small amount for swap order.
 	// here all harbor tokens are converted into cmdx, since cmdx is the default distribution token for rewards
 	s.nextBlock()
 	accumulatedSwapFee = s.getBalances(pair.GetSwapFeeCollectorAddress())
-	s.Require().True(utils.ParseCoins("1871903ucmdx,1uharbor").IsEqual(accumulatedSwapFee))
+	s.Require().True(utils.ParseCoins("1870997ucmdx,5uharbor").IsEqual(accumulatedSwapFee))
+}
+
+func (s *KeeperTestSuite) TestConvertAccumulatedSwapFeesWithSwapDistrToken_1() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair)
+	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
+	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.90"), sdk.MustNewDecFromStr("1.1"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"))
+
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+
+	_, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion via beign blocker which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,306030uharbor"), accumulatedSwapFee))
+
+	s.keeper.ConvertAccumulatedSwapFeesWithSwapDistrToken(s.ctx, appID1)
+	// swap order is placed in the above block, it will get executed in the next block
+	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,10uharbor"), s.getBalances(pair.GetSwapFeeCollectorAddress())))
+	s.nextBlock()
+	// previous order was completed and rest of the tokens are returned back again
+	s.Require().True(coinsEq(utils.ParseCoins("436622ucmdx,28661uharbor"), s.getBalances(pair.GetSwapFeeCollectorAddress())))
+}
+
+func (s *KeeperTestSuite) TestConvertAccumulatedSwapFeesWithSwapDistrToken_2() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+	asset1 := s.CreateNewAsset("ASSETONE", "ucmdx", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uharbor", 1000000)
+	asset3 := s.CreateNewAsset("ASSETTHREE", "uatom", 1000000)
+	asset4 := s.CreateNewAsset("ASSETFOUR", "stake", 1000000)
+
+	pair1 := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pair2 := s.CreateNewLiquidityPair(appID1, addr1, asset2.Denom, asset3.Denom)
+	pair3 := s.CreateNewLiquidityPair(appID1, addr1, asset3.Denom, asset4.Denom)
+	pair4 := s.CreateNewLiquidityPair(appID1, addr1, asset4.Denom, asset1.Denom)
+
+	pair1.LastPrice = utils.ParseDecP("1.01")
+	pair2.LastPrice = utils.ParseDecP("1.01")
+	pair3.LastPrice = utils.ParseDecP("1.01")
+	pair4.LastPrice = utils.ParseDecP("1.01")
+	s.keeper.SetPair(s.ctx, pair1)
+	s.keeper.SetPair(s.ctx, pair2)
+	s.keeper.SetPair(s.ctx, pair3)
+	s.keeper.SetPair(s.ctx, pair4)
+
+	_ = s.CreateNewLiquidityPool(appID1, pair1.Id, addr1, "100000000ucmdx,100000000uharbor")
+	_ = s.CreateNewLiquidityPool(appID1, pair2.Id, addr1, "100000000uharbor,100000000uatom")
+	_ = s.CreateNewLiquidityPool(appID1, pair3.Id, addr1, "100000000uatom,100000000stake")
+	_ = s.CreateNewLiquidityPool(appID1, pair4.Id, addr1, "100000000stake,100000000ucmdx")
+	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
+
+	s.MarketOrder(appID1, s.addr(2), pair1.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair2.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair3.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair4.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+
+	s.MarketOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair3.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair4.Id, types.OrderDirectionSell, sdk.NewInt(32_000000), 0)
+
+	_, err := s.keeper.GetGenericParams(s.ctx, appID1)
+	s.Require().NoError(err)
+
+	s.ctx = s.ctx.WithBlockHeight(15) // to avoid swapfee conversion via beign blocker which occurs at block height 150
+	s.nextBlock()
+	orders := s.keeper.GetAllOrders(s.ctx, appID1)
+	s.Require().Empty(orders)
+
+	s.Require().True(coinsEq(utils.ParseCoins("57000ucmdx,73592uharbor"), s.getBalances(pair1.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("85712uatom,69000uharbor"), s.getBalances(pair2.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("52157stake,36000uatom"), s.getBalances(pair3.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("65880stake,51510ucmdx"), s.getBalances(pair4.GetSwapFeeCollectorAddress())))
+
+	// doing s.nextBlock() or calling the method ConvertAccumulatedSwapFeesWithSwapDistrToken manually is same thing
+	// swap order is placed in the above block, it will get executed in the next block
+	s.keeper.ConvertAccumulatedSwapFeesWithSwapDistrToken(s.ctx, appID1)
+	s.nextBlock()
+	s.keeper.ConvertAccumulatedSwapFeesWithSwapDistrToken(s.ctx, appID1)
+	s.nextBlock()
+
+	s.Require().True(coinsEq(utils.ParseCoins("122747ucmdx,983uharbor"), s.getBalances(pair1.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("826uatom,117890ucmdx,13950uharbor"), s.getBalances(pair2.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("301uatom,70988ucmdx,5363uharbor"), s.getBalances(pair3.GetSwapFeeCollectorAddress())))
+	s.Require().True(coinsEq(utils.ParseCoins("6stake,111354ucmdx"), s.getBalances(pair4.GetSwapFeeCollectorAddress())))
 }
 
 func (s *KeeperTestSuite) TestPoolPreserveK() {
