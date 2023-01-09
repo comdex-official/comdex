@@ -164,6 +164,9 @@ import (
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
+	ccvconsumer "github.com/cosmos/interchain-security/x/ccv/consumer"
+	ccvconsumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
+	ccvconsumertypes "github.com/cosmos/interchain-security/x/ccv/consumer/types"
 
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
@@ -262,6 +265,7 @@ var (
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
+		ccvconsumer.AppModuleBasic{},
 	)
 )
 
@@ -312,6 +316,7 @@ type App struct {
 	ICAHostKeeper     icahostkeeper.Keeper
 	EvidenceKeeper    evidencekeeper.Keeper
 	IbcTransferKeeper ibctransferkeeper.Keeper
+	ConsumerKeeper    ccvconsumerkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
@@ -319,6 +324,7 @@ type App struct {
 	ScopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
 	ScopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
+	ScopedCCVConsumerKeeper capabilitykeeper.ScopedKeeper
 
 	BandoracleKeeper bandoraclemodulekeeper.Keeper
 	AssetKeeper      assetkeeper.Keeper
@@ -366,7 +372,7 @@ func New(
 			authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 			minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 			govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, icahosttypes.StoreKey, upgradetypes.StoreKey,
-			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+			evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, ccvconsumertypes.StoreKey,
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
@@ -409,6 +415,7 @@ func New(
 	app.ParamsKeeper.Subspace(crisistypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibchost.ModuleName)
+	app.ParamsKeeper.Subspace(ccvconsumertypes.ModuleName)
 	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName)
 	app.ParamsKeeper.Subspace(vaulttypes.ModuleName)
 	app.ParamsKeeper.Subspace(assettypes.ModuleName)
@@ -441,12 +448,13 @@ func New(
 
 	// grant capabilities for the ibc and ibc-transfer modules
 	var (
-		scopedIBCKeeper        = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-		scopedTransferKeeper   = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-		scopedIBCOracleKeeper  = app.CapabilityKeeper.ScopeToModule(markettypes.ModuleName)
-		scopedWasmKeeper       = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
-		scopedICAHostKeeper    = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
-		scopedBandoracleKeeper = app.CapabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
+		scopedIBCKeeper         = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+		scopedTransferKeeper    = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+		scopedIBCOracleKeeper   = app.CapabilityKeeper.ScopeToModule(markettypes.ModuleName)
+		scopedWasmKeeper        = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+		scopedCCVConsumerKeeper = app.CapabilityKeeper.ScopeToModule(ccvconsumertypes.ModuleName)
+		scopedICAHostKeeper     = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+		scopedBandoracleKeeper  = app.CapabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
 	)
 
 	// add keepers
@@ -546,6 +554,26 @@ func New(
 	)
 
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+
+	app.ConsumerKeeper = ccvconsumerkeeper.NewKeeper(
+		appCodec,
+		keys[ccvconsumertypes.StoreKey],
+		app.GetSubspace(ccvconsumertypes.ModuleName),
+		scopedCCVConsumerKeeper,
+		app.IbcKeeper.ChannelKeeper,
+		&app.IbcKeeper.PortKeeper,
+		app.IbcKeeper.ConnectionKeeper,
+		app.IbcKeeper.ClientKeeper,
+		app.SlashingKeeper,
+		app.BankKeeper,
+		app.AccountKeeper,
+		&app.IbcTransferKeeper,
+		app.IbcKeeper,
+		authtypes.FeeCollectorName,
+	)
+	app.ConsumerKeeper = *app.ConsumerKeeper.SetHooks(app.SlashingKeeper.Hooks())
+	consumerModule := ccvconsumer.NewAppModule(app.ConsumerKeeper)
+
 	app.AssetKeeper = assetkeeper.NewKeeper(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
@@ -797,6 +825,7 @@ func New(
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper))
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
+	ibcRouter.AddRoute(ccvconsumertypes.ModuleName, consumerModule)
 	app.IbcKeeper.SetRouter(ibcRouter)
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -833,6 +862,7 @@ func New(
 		authzmodule.NewAppModule(app.cdc, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IbcKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
+		consumerModule,
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
@@ -865,6 +895,7 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
+		ccvconsumertypes.ModuleName,
 		govtypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
@@ -903,6 +934,7 @@ func New(
 		evidencetypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		ccvconsumertypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		authtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -943,6 +975,7 @@ func New(
 		minttypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		ccvconsumertypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -1032,6 +1065,7 @@ func New(
 	app.ScopedIBCOracleKeeper = scopedIBCOracleKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedBandoracleKeeper = scopedBandoracleKeeper
+	app.ScopedCCVConsumerKeeper = scopedCCVConsumerKeeper
 
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	return app
@@ -1177,28 +1211,30 @@ func (a *App) RegisterTendermintService(ctx client.Context) {
 
 func (a *App) ModuleAccountsPermissions() map[string][]string {
 	return map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		distrtypes.ModuleName:          nil,
-		govtypes.ModuleName:            {authtypes.Burner},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
-		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
-		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
-		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		esmtypes.ModuleName:            {authtypes.Burner},
-		wasm.ModuleName:                {authtypes.Burner},
-		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		icatypes.ModuleName:            nil,
+		authtypes.FeeCollectorName:                    nil,
+		distrtypes.ModuleName:                         nil,
+		govtypes.ModuleName:                           {authtypes.Burner},
+		ibctransfertypes.ModuleName:                   {authtypes.Minter, authtypes.Burner},
+		minttypes.ModuleName:                          {authtypes.Minter},
+		stakingtypes.BondedPoolName:                   {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:                {authtypes.Burner, authtypes.Staking},
+		collectortypes.ModuleName:                     {authtypes.Burner, authtypes.Staking},
+		vaulttypes.ModuleName:                         {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:                          {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:                     {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc1:                          {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc2:                          {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc3:                          {authtypes.Minter, authtypes.Burner},
+		liquidationtypes.ModuleName:                   {authtypes.Minter, authtypes.Burner},
+		auctiontypes.ModuleName:                       {authtypes.Minter, authtypes.Burner},
+		lockertypes.ModuleName:                        {authtypes.Minter, authtypes.Burner},
+		esmtypes.ModuleName:                           {authtypes.Burner},
+		wasm.ModuleName:                               {authtypes.Burner},
+		liquiditytypes.ModuleName:                     {authtypes.Minter, authtypes.Burner},
+		rewardstypes.ModuleName:                       {authtypes.Minter, authtypes.Burner},
+		icatypes.ModuleName:                           nil,
+		ccvconsumertypes.ConsumerRedistributeName:     nil,
+		ccvconsumertypes.ConsumerToSendToProviderName: nil,
 	}
 }
 
