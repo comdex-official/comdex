@@ -37,7 +37,7 @@ func NewKeeper(
 	assetKeeper expected.AssetKeeper,
 	marketKeeper expected.MarketKeeper,
 	rewardsKeeper expected.RewardsKeeper,
-	tokenmint     expected.TokenMintKeeper,
+	tokenmint expected.TokenMintKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
