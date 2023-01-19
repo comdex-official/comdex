@@ -24,7 +24,7 @@ func (k Keeper) SetFetchPriceResult(ctx sdk.Context, requestID types.OracleReque
 func (k Keeper) GetFetchPriceResult(ctx sdk.Context, id types.OracleRequestID) (types.FetchPriceResult, error) {
 	bz := ctx.KVStore(k.storeKey).Get(types.FetchPriceResultStoreKey(id))
 	if bz == nil {
-		return types.FetchPriceResult{}, sdkerrors.Wrapf(types.ErrSample,
+		return types.FetchPriceResult{}, sdkerrors.Wrapf(types.ErrRequestIDNotAvailable,
 			"GetResult: Result for request ID %d is not available.", id,
 		)
 	}
