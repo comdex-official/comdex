@@ -228,7 +228,7 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					rewardsAssetPoolData := v.RewardsAssetPoolData
 					for _, assetID := range rewardsAssetPoolData.AssetId {
 						amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
-						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt())
+						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt()) // in $USD
 					}
 					// calculating totalAPR
 					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
@@ -239,13 +239,8 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
 						continue
 					}
-					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
-					inverseRatesSum := sdk.ZeroDec()
-					// inverting the rate to enable low apr for assets which are more borrowed
-					for _, assetID := range rewardsAssetPoolData.AssetId {
-						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
-						inverseRatesSum = inverseRatesSum.Add(inverseRate)
-					}
+					dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
+					totalAPR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
@@ -274,12 +269,8 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 							if !found {
 								continue
 							}
-							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
-							numerator := totalAPR.Mul(inverseRate)
-							finalAPR := numerator.Quo(inverseRatesSum)
-							finalDailyRewardsNumerator := sdk.NewDecFromInt(liqFound.TruncateInt()).Mul(finalAPR)
-							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
 
+							finalDailyRewardsPerUser := liqFound.Mul(totalAPR)
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
 								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
 								err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
@@ -306,14 +297,6 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 		}
 	}
 	return nil
-}
-
-func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
-	assetBorrowedByPoolIDAndAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
-	tempRate := assetBorrowedByPoolIDAndAssetIDAmt.Quo(sdk.NewDecFromInt(totalRewardAmt))
-	inverseRate := sdk.OneDec().Sub(tempRate)
-	return inverseRate
 }
 
 func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poolID, appID uint64, masterPoolID int64) (sdk.Dec, bool) {
