@@ -110,15 +110,15 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 	return false, nil
 }
 
-func (k Keeper) ReturnLendID(ctx sdk.Context, lenderAddr string, AssetID, PoolID uint64) uint64 {
+func (k Keeper) GetLendIDForAssetIDPoolID(ctx sdk.Context, lenderAddr string, assetID, poolID uint64) uint64 {
 	totalMappingData := k.GetUserTotalMappingData(ctx, lenderAddr)
 	var lendID uint64
-	for _, v := range totalMappingData {
-		userLend, found := k.GetLend(ctx, v.LendId)
+	for _, mappingData := range totalMappingData {
+		userLend, found := k.GetLend(ctx, mappingData.LendId)
 		if !found {
 			continue
 		}
-		if userLend.AssetID == AssetID && userLend.PoolID == PoolID {
+		if userLend.AssetID == assetID && userLend.PoolID == poolID {
 			lendID = userLend.ID
 			break
 		}
@@ -180,11 +180,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		// Steps:
 		// Get the lend ID of previous lend position
 		// Call Deposit function
-		lendID := k.ReturnLendID(ctx, lenderAddr, AssetID, PoolID)
-		_, found := k.GetLend(ctx, lendID)
-		if !found {
-			return types.ErrLendNotFound
-		}
+		lendID := k.GetLendIDForAssetIDPoolID(ctx, lenderAddr, AssetID, PoolID)
 		err = k.DepositAsset(ctx, lenderAddr, lendID, Amount)
 		if err != nil {
 			return err
@@ -1375,7 +1371,7 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 		// Steps:
 		// Get the lend ID of previous lend position
 		// Call Deposit function
-		lendID := k.ReturnLendID(ctx, lenderAddr, AssetID, PoolID)
+		lendID := k.GetLendIDForAssetIDPoolID(ctx, lenderAddr, AssetID, PoolID)
 		_, found := k.GetLend(ctx, lendID)
 		if !found {
 			return types.ErrLendNotFound
