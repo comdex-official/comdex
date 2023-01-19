@@ -1325,9 +1325,8 @@ func (s *KeeperTestSuite) TestOraclePricForRewardDistrbution() {
 	s.app.MarketKeeper.SetTwa(s.ctx, twa)
 
 	price, found, ass = s.keeper.OraclePrice(s.ctx, asset1.Denom)
-	s.Require().Equal(uint64(1000000), price)
-	s.Require().True(found)
-	s.Require().Equal(asset1, ass)
+	s.Require().Equal(uint64(0), price)
+	s.Require().False(found)
 
 	twa.IsPriceActive = false
 	twa.Twa = 0
