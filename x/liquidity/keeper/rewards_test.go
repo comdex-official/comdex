@@ -1281,3 +1281,59 @@ func (s *KeeperTestSuite) TestGetAmountFarmedForAssetID() {
 	s.Require().NoError(err)
 	s.Require().Equal(sdk.NewInt(999999999), quantityFarmed)
 }
+
+func (s *KeeperTestSuite) TestOraclePricForRewardDistrbution() {
+	currentTime := s.ctx.BlockTime()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
+
+	price, found, ass := s.keeper.OraclePrice(s.ctx, asset1.Denom)
+	s.Require().Equal(uint64(1000000), price)
+	s.Require().True(found)
+	s.Require().Equal(asset1, ass)
+
+	price, found, ass = s.keeper.OraclePrice(s.ctx, asset2.Denom)
+	s.Require().Equal(uint64(1000000), price)
+	s.Require().True(found)
+	s.Require().Equal(asset2, ass)
+
+	twa, _ := s.app.MarketKeeper.GetTwa(s.ctx, asset1.Id)
+	twa.IsPriceActive = false
+	s.app.MarketKeeper.SetTwa(s.ctx, twa)
+
+	price, found, ass = s.keeper.OraclePrice(s.ctx, asset1.Denom)
+	s.Require().Equal(uint64(1000000), price)
+	s.Require().True(found)
+	s.Require().Equal(asset1, ass)
+
+	s.ctx = s.ctx.WithBlockHeight(10)
+
+	twa.IsPriceActive = false
+	twa.DiscardedHeightDiff = 10
+	s.app.MarketKeeper.SetTwa(s.ctx, twa)
+
+	price, found, ass = s.keeper.OraclePrice(s.ctx, asset1.Denom)
+	s.Require().Equal(uint64(1000000), price)
+	s.Require().True(found)
+	s.Require().Equal(asset1, ass)
+
+	s.ctx = s.ctx.WithBlockHeight(610)
+
+	twa.IsPriceActive = false
+	s.app.MarketKeeper.SetTwa(s.ctx, twa)
+
+	price, found, ass = s.keeper.OraclePrice(s.ctx, asset1.Denom)
+	s.Require().Equal(uint64(1000000), price)
+	s.Require().True(found)
+	s.Require().Equal(asset1, ass)
+
+	twa.IsPriceActive = false
+	twa.Twa = 0
+	s.app.MarketKeeper.SetTwa(s.ctx, twa)
+
+	price, found, _ = s.keeper.OraclePrice(s.ctx, asset1.Denom)
+	s.Require().Equal(uint64(0), price)
+	s.Require().False(found)
+}
