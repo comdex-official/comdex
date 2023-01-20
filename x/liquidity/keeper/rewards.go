@@ -68,18 +68,11 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool, assett
 		return 0, false, assettypes.Asset{}
 	}
 
-	// if price is not active and twa is 0 return false
-	if !price.IsPriceActive && price.Twa == 0 {
+	// if price is not active and twa is 0 or less return false
+	if !price.IsPriceActive && price.Twa <= 0 {
 		return 0, false, assettypes.Asset{}
 	}
-	// if price is not active and DiscardedHeightDiff is not -1
-	if price.DiscardedHeightDiff != -1 {
-		priceInactiveBlockCount := ctx.BlockHeight() - price.DiscardedHeightDiff
-		// if price is inactive since 600 block and also twa is 0 return error else continue with the old price
-		if priceInactiveBlockCount >= types.DefaultAllowedBlocksForPriceInactive {
-			return 0, false, assettypes.Asset{}
-		}
-	}
+
 	return price.Twa, true, asset
 }
 
