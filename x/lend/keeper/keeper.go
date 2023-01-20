@@ -112,7 +112,7 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 
 func (k Keeper) GetLendIDForAssetIDPoolID(ctx sdk.Context, lenderAddr string, assetID, poolID uint64) (uint64, bool) {
 	totalMappingData := k.GetUserTotalMappingData(ctx, lenderAddr)
-	var lendID uint64
+	lendID := uint64(0)
 	for _, mappingData := range totalMappingData {
 		userLend, found := k.GetLend(ctx, mappingData.LendId)
 		if !found {
@@ -123,8 +123,7 @@ func (k Keeper) GetLendIDForAssetIDPoolID(ctx sdk.Context, lenderAddr string, as
 			break
 		}
 	}
-	_, found := k.GetLend(ctx, lendID)
-	if !found {
+	if lendID == 0 {
 		return 0, false
 	}
 	return lendID, true
