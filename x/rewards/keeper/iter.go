@@ -218,16 +218,8 @@ func (k Keeper) OraclePriceForRewards(ctx sdk.Context, id uint64, amt sdk.Int) (
 	}
 
 	// if price is not active and twa is 0 return false
-	if !price.IsPriceActive && price.Twa == 0 {
+	if !price.IsPriceActive && price.Twa <= 0 {
 		return sdk.ZeroDec(), false
-	}
-	// if price is not active and DiscardedHeightDiff is not -1
-	if price.DiscardedHeightDiff != -1 {
-		priceInactiveBlockCount := ctx.BlockHeight() - price.DiscardedHeightDiff
-		// if price is inactive since 600 block and also twa is 0 return error else continue with the old price
-		if priceInactiveBlockCount >= types.DefaultAllowedBlocksForPriceInactive {
-			return sdk.ZeroDec(), false
-		}
 	}
 
 	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa)))
