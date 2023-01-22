@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
@@ -10,7 +12,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 )
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
@@ -29,11 +34,21 @@ func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
 	}
 }
 
+func PP(data interface{}) {
+	var p []byte
+	p, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s \n", p)
+}
+
 // DateRangesOverlap returns true if two date ranges overlap each other.
 // End time is exclusive and start time is inclusive.
-// func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
-// 	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
-// }
+func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
+	return startTimeA.Before(endTimeB) && endTimeA.After(startTimeB)
+}
 
 // DateRangeIncludes returns true if the target date included on the start, end time range.
 // End time is exclusive and start time is inclusive.
@@ -43,12 +58,18 @@ func DateRangeIncludes(startTime, endTime, targetTime time.Time) bool {
 
 // ParseDec is a shortcut for sdk.MustNewDecFromStr.
 func ParseDec(s string) sdk.Dec {
-	return sdk.MustNewDecFromStr(s)
+	return sdk.MustNewDecFromStr(strings.ReplaceAll(s, "_", ""))
+}
+
+// ParseDecP is like ParseDec, but it returns a pointer to sdk.Dec.
+func ParseDecP(s string) *sdk.Dec {
+	d := ParseDec(s)
+	return &d
 }
 
 // ParseCoin parses and returns sdk.Coin.
 func ParseCoin(s string) sdk.Coin {
-	coin, err := sdk.ParseCoinNormalized(s)
+	coin, err := sdk.ParseCoinNormalized(strings.ReplaceAll(s, "_", ""))
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +78,25 @@ func ParseCoin(s string) sdk.Coin {
 
 // ParseCoins parses and returns sdk.Coins.
 func ParseCoins(s string) sdk.Coins {
-	coins, err := sdk.ParseCoinsNormalized(s)
+	coins, err := sdk.ParseCoinsNormalized(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coins
+}
+
+// ParseDecCoin parses and returns sdk.DecCoin.
+func ParseDecCoin(s string) sdk.DecCoin {
+	coin, err := sdk.ParseDecCoin(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coin
+}
+
+// ParseDecCoins parses and returns sdk.DecCoins.
+func ParseDecCoins(s string) sdk.DecCoins {
+	coins, err := sdk.ParseDecCoins(strings.ReplaceAll(s, "_", ""))
 	if err != nil {
 		panic(err)
 	}
@@ -82,6 +121,16 @@ func DecApproxEqual(a, b sdk.Dec) bool {
 	return a.Sub(b).Quo(a).LTE(sdk.NewDecWithPrec(1, 3))
 }
 
+// DecApproxSqrt returns an approximate estimation of x's square root.
+func DecApproxSqrt(x sdk.Dec) (r sdk.Dec) {
+	var err error
+	r, err = x.ApproxSqrt()
+	if err != nil {
+		panic(err)
+	}
+	return
+}
+
 // RandomInt returns a random integer in the half-open interval [min, max).
 func RandomInt(r *rand.Rand, min, max sdk.Int) sdk.Int {
 	return min.Add(sdk.NewIntFromBigInt(new(big.Int).Rand(r, max.Sub(min).BigInt())))
@@ -90,6 +139,67 @@ func RandomInt(r *rand.Rand, min, max sdk.Int) sdk.Int {
 // RandomDec returns a random decimal in the half-open interval [min, max).
 func RandomDec(r *rand.Rand, min, max sdk.Dec) sdk.Dec {
 	return min.Add(sdk.NewDecFromBigIntWithPrec(new(big.Int).Rand(r, max.Sub(min).BigInt()), sdk.Precision))
+}
+
+// GenAndDeliverTx generates a transactions and delivers it.
+func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+	tx, err := helpers.GenTx(
+		txCtx.TxGen,
+		[]sdk.Msg{txCtx.Msg},
+		fees,
+		gas,
+		txCtx.Context.ChainID(),
+		[]uint64{account.GetAccountNumber()},
+		[]uint64{account.GetSequence()},
+		txCtx.SimAccount.PrivKey,
+	)
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
+	}
+
+	_, _, err = txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
+	}
+
+	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
+}
+
+// GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.
+func GenAndDeliverTxWithFees(txCtx simulation.OperationInput, gas uint64, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
+
+	var err error
+
+	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
+	if hasNeg {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
+	}
+
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
+	}
+	return GenAndDeliverTx(txCtx, fees, gas)
+}
+
+// ShuffleSimAccounts returns randomly shuffled simulation accounts.
+func ShuffleSimAccounts(r *rand.Rand, accs []simtypes.Account) []simtypes.Account {
+	accs2 := make([]simtypes.Account, len(accs))
+	copy(accs2, accs)
+	r.Shuffle(len(accs2), func(i, j int) {
+		accs2[i], accs2[j] = accs2[j], accs2[i]
+	})
+	return accs2
+}
+
+// TestAddress returns an address for testing purpose.
+// TestAddress returns same address when addrNum is same.
+func TestAddress(addrNum int) sdk.AccAddress {
+	addr := make(sdk.AccAddress, 20)
+	binary.PutVarint(addr, int64(addrNum))
+	return addr
 }
 
 // SafeMath runs f in safe mode, which means that any panics occurred inside f
@@ -117,6 +227,13 @@ func IsOverflow(r interface{}) bool {
 		return strings.Contains(s, "overflow") || strings.HasSuffix(s, "out of bound")
 	}
 	return false
+}
+
+// LengthPrefixString returns length-prefixed bytes representation of a string.
+func LengthPrefixString(s string) []byte {
+	bz := []byte(s)
+	bzLen := len(bz)
+	return append([]byte{byte(bzLen)}, bz...)
 }
 
 // This function lets you run the function f. In case of panic recovery is done

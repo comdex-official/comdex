@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -10,64 +9,26 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 )
 
-var (
-	_ amm.Order = (*UserOrder)(nil)
-	_ amm.Order = (*PoolOrder)(nil)
-
-	// PriceDescending defines a price comparator which is used to sort orders
-	// by price in descending order.
-	PriceDescending PriceComparator = func(a, b amm.Order) bool {
-		return a.GetPrice().GT(b.GetPrice())
+// OrderDirectionFromAMM converts amm.OrderDirection to liquidity module's
+// OrderDirection.
+func OrderDirectionFromAMM(dir amm.OrderDirection) OrderDirection {
+	switch dir {
+	case amm.Buy:
+		return OrderDirectionBuy
+	case amm.Sell:
+		return OrderDirectionSell
+	default:
+		panic(fmt.Errorf("invalid order direction: %s", dir))
 	}
-	// PriceAscending defines a price comparator which is used to sort orders
-	// by price in ascending order.
-	PriceAscending PriceComparator = func(a, b amm.Order) bool {
-		return a.GetPrice().LT(b.GetPrice())
-	}
-)
-
-// PriceComparator is used to sort orders by price.
-type PriceComparator func(a, b amm.Order) bool
-
-// SortOrders sorts orders by these four criteria:
-//  1. Price - descending/ascending based on PriceComparator
-//  2. Amount - Larger amount takes higher priority than smaller amount
-//  3. Order type - pool orders take higher priority than user orders
-//  4. Time - early orders take higher priority. For pools, the pool with
-//     lower pool id takes higher priority
-func SortOrders(orders []amm.Order, cmp PriceComparator) {
-	sort.SliceStable(orders, func(i, j int) bool {
-		switch orderA := orders[i].(type) {
-		case *UserOrder:
-			switch orderB := orders[j].(type) {
-			case *UserOrder:
-				return orderA.OrderID < orderB.OrderID
-			case *PoolOrder:
-				return false
-			}
-		case *PoolOrder:
-			switch orderB := orders[j].(type) {
-			case *UserOrder:
-				return true
-			case *PoolOrder:
-				return orderA.PoolID < orderB.PoolID
-			}
-		}
-		panic(fmt.Sprintf("unknown order types: (%T, %T)", orders[i], orders[j]))
-	})
-	sort.SliceStable(orders, func(i, j int) bool {
-		return orders[i].GetAmount().GT(orders[j].GetAmount())
-	})
-	sort.SliceStable(orders, func(i, j int) bool {
-		return cmp(orders[i], orders[j])
-	})
 }
 
 // UserOrder is the user order type.
 type UserOrder struct {
 	*amm.BaseOrder
-	OrderID uint64
-	Orderer sdk.AccAddress
+	Orderer                         sdk.AccAddress
+	OrderID                         uint64
+	BatchId                         uint64
+	OfferCoinDenom, DemandCoinDenom string
 }
 
 // NewUserOrder returns a new user order.
@@ -90,18 +51,44 @@ func NewUserOrder(order Order) *UserOrder {
 		amt = order.OpenAmount
 	}
 	return &UserOrder{
-		BaseOrder: amm.NewBaseOrder(dir, order.Price, amt, order.RemainingOfferCoin, order.ReceivedCoin.Denom),
-		OrderID:   order.Id,
-		Orderer:   order.GetOrderer(),
+		BaseOrder:       amm.NewBaseOrder(dir, order.Price, amt, order.RemainingOfferCoin.Amount),
+		Orderer:         order.GetOrderer(),
+		OrderID:         order.Id,
+		BatchId:         order.BatchId,
+		OfferCoinDenom:  order.OfferCoin.Denom,
+		DemandCoinDenom: order.ReceivedCoin.Denom,
 	}
+}
+
+func (order *UserOrder) GetBatchId() uint64 {
+	return order.BatchId
+}
+
+func (order *UserOrder) HasPriority(other amm.Order) bool {
+	if !order.Amount.Equal(other.GetAmount()) {
+		return order.BaseOrder.HasPriority(other)
+	}
+	switch other := other.(type) {
+	case *UserOrder:
+		return order.OrderID < other.OrderID
+	case *PoolOrder:
+		return true
+	default:
+		panic(fmt.Errorf("invalid order type: %T", other))
+	}
+}
+
+func (order *UserOrder) String() string {
+	return fmt.Sprintf("UserOrder(%d,%d,%s,%s,%s)",
+		order.OrderID, order.BatchId, order.Direction, order.Price, order.Amount)
 }
 
 // PoolOrder is the pool order type.
 type PoolOrder struct {
 	*amm.BaseOrder
-	PoolID         uint64
-	ReserveAddress sdk.AccAddress
-	OfferCoin      sdk.Coin
+	PoolID                          uint64
+	ReserveAddress                  sdk.AccAddress
+	OfferCoinDenom, DemandCoinDenom string
 }
 
 // NewPoolOrder returns a new pool order.
@@ -112,13 +99,32 @@ func NewPoolOrder(
 	dir amm.OrderDirection,
 	price sdk.Dec,
 	amt sdk.Int,
-	offerCoin sdk.Coin,
-	demandCoinDenom string,
+	offerCoinDenom, demandCoinDenom string,
 ) *PoolOrder {
 	return &PoolOrder{
-		BaseOrder:      amm.NewBaseOrder(dir, price, amt, offerCoin, demandCoinDenom),
-		PoolID:         poolID,
-		ReserveAddress: reserveAddr,
-		OfferCoin:      offerCoin,
+		BaseOrder:       amm.NewBaseOrder(dir, price, amt, amm.OfferCoinAmount(dir, price, amt)),
+		PoolID:          poolID,
+		ReserveAddress:  reserveAddr,
+		OfferCoinDenom:  offerCoinDenom,
+		DemandCoinDenom: demandCoinDenom,
 	}
+}
+
+func (order *PoolOrder) HasPriority(other amm.Order) bool {
+	if !order.Amount.Equal(other.GetAmount()) {
+		return order.BaseOrder.HasPriority(other)
+	}
+	switch other := other.(type) {
+	case *UserOrder:
+		return false
+	case *PoolOrder:
+		return order.PoolID < other.PoolID
+	default:
+		panic(fmt.Errorf("invalid order type: %T", other))
+	}
+}
+
+func (order *PoolOrder) String() string {
+	return fmt.Sprintf("PoolOrder(%d,%s,%s,%s)",
+		order.PoolID, order.Direction, order.Price, order.Amount)
 }

@@ -15,6 +15,7 @@ const (
 	FlagReserveAddress = "reserve-address"
 	FlagDenoms         = "denoms"
 	FlagOrderLifespan  = "order-lifespan"
+	FlagNumTicks       = "num-ticks"
 )
 
 func flagSetPools() *flag.FlagSet {

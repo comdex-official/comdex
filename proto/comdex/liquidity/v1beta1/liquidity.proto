@@ -46,6 +46,18 @@ message Pool {
   bool disabled = 7;
 
   uint64 app_id = 8;
+
+  PoolType type = 9;
+
+  string creator = 10;
+
+  string min_price = 11 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string max_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  
+
+
 }
 
 // DepositRequest defines a deposit request.
@@ -144,6 +156,52 @@ message Order {
   OrderStatus status = 14;
 
   uint64 app_id = 15;
+
+  // type specifies the typo of the order
+  OrderType type = 16;
+}
+
+// MMOrderIndex defines an index type to quickly find market making orders
+// from an orderer.
+message MMOrderIndex {
+  string orderer = 1;
+
+  uint64 app_id = 2;
+
+  uint64 pair_id = 3;
+
+  repeated uint64 order_ids = 4;
+}
+
+// PoolType enumerates pool types.
+enum PoolType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // POOL_TYPE_UNSPECIFIED specifies unknown pool type
+  POOL_TYPE_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "PoolTypeUnspecified"];
+
+  // POOL_TYPE_BASIC specifies the basic pool type
+  POOL_TYPE_BASIC = 1 [(gogoproto.enumvalue_customname) = "PoolTypeBasic"];
+
+  // POOL_TYPE_RANGED specifies the ranged pool type
+  POOL_TYPE_RANGED = 2 [(gogoproto.enumvalue_customname) = "PoolTypeRanged"];
+}
+
+// OrderType enumerates order types.
+enum OrderType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // ORDER_TYPE_UNSPECIFIED specifies unknown order type.
+  ORDER_TYPE_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "OrderTypeUnspecified"];
+
+  // ORDER_TYPE_LIMIT specifies limit order type.
+  ORDER_TYPE_LIMIT = 1 [(gogoproto.enumvalue_customname) = "OrderTypeLimit"];
+
+  // ORDER_TYPE_MARKET specifies market order type.
+  ORDER_TYPE_MARKET = 2 [(gogoproto.enumvalue_customname) = "OrderTypeMarket"];
+
+  // ORDER_TYPE_MM specifies MM(market making) order type.
+  ORDER_TYPE_MM = 3 [(gogoproto.enumvalue_customname) = "OrderTypeMM"];
 }
 
 // OrderDirection enumerates order directions.

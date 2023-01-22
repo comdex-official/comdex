@@ -24,6 +24,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCreatePool:
 			res, err := msgServer.CreatePool(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCreateRangedPool:
+			res, err := msgServer.CreateRangedPool(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgDeposit:
 			res, err := msgServer.Deposit(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -36,11 +39,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgMarketOrder:
 			res, err := msgServer.MarketOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgMMOrder:
+			res, err := msgServer.MMOrder(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCancelOrder:
 			res, err := msgServer.CancelOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCancelAllOrders:
 			res, err := msgServer.CancelAllOrders(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCancelMMOrder:
+			res, err := msgServer.CancelMMOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgFarm:
 			res, err := msgServer.Farm(sdk.WrapSDKContext(ctx), msg)

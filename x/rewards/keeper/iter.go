@@ -359,18 +359,17 @@ func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.
 	if !found {
 		return sdk.ZeroDec(), false
 	}
-	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
+	deserializerKit, err := k.liquidityKeeper.GetPoolTokenDesrializerKit(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount)
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, farmedCoin.FarmedPoolCoin)
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
 
-	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
-	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.BaseCoinDenom)
+	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.QuoteCoinDenom)
+	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.BaseCoinDenom)
 	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
 	if err != nil {
 		return sdk.ZeroDec(), false

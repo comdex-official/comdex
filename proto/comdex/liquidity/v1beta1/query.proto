@@ -201,14 +201,35 @@ message PoolResponse {
 
   string pool_coin_denom = 4;
 
-  repeated cosmos.base.v1beta1.Coin balances = 5
-  [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  PoolBalances balances = 5 [(gogoproto.nullable) = false];
 
   uint64 last_deposit_request_id = 6;
 
   uint64 last_withdraw_request_id = 7;
 
   uint64 app_id = 8;
+
+  PoolType type = 9;
+
+  string creator = 10;
+
+  string pool_coin_supply = 11
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+
+  string min_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string max_price = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string price = 14 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  bool disabled = 15;
+
+}
+
+message PoolBalances {
+  cosmos.base.v1beta1.Coin base_coin = 1 [(gogoproto.nullable) = false];
+
+  cosmos.base.v1beta1.Coin quote_coin = 2 [(gogoproto.nullable) = false];
 }
 
 // QueryFarmerRequest is request type for the Query/Farmer RPC method.
@@ -308,6 +329,41 @@ message QueryFarmedPoolCoinResponse {
   ];
 }
 
+// QueryOrderBooksRequest is request type for the Query/OrderBooks RPC method.
+message QueryOrderBooksRequest {
+  uint64 app_id = 1;
+  repeated uint64 pair_ids = 2;
+  repeated uint32 price_unit_powers = 3;
+  uint32 num_ticks = 4;
+}
+
+// QueryOrderBooksResponse is response type for Query/OrderBooks RPC method.
+message QueryOrderBooksResponse {
+  repeated OrderBookPairResponse pairs = 2 [(gogoproto.nullable) = false];
+}
+
+message OrderBookPairResponse {
+  uint64 pair_id    = 1;
+  string base_price = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookResponse order_books = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookResponse {
+  string price_unit = 1
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookTickResponse sells = 2 [(gogoproto.nullable) = false];
+  repeated OrderBookTickResponse buys  = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookTickResponse {
+  string price = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string user_order_amount = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string pool_order_amount = 3
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
@@ -372,12 +428,12 @@ service Query {
 
   // Orders returns all orders within the pair.
   rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}";
   }
 
   // Order returns the specific order.
   rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}/{id}";
   }
 
   // OrdersByOrderer returns orders made by an orderer.
@@ -403,5 +459,9 @@ service Query {
   // FarmedPoolCoin returns the total farmed pool coins.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
+  }
+
+  rpc OrderBooks(QueryOrderBooksRequest) returns (QueryOrderBooksResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/order_books/{app_id}";
   }
 }

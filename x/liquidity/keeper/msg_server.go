@@ -42,6 +42,16 @@ func (m msgServer) CreatePool(goCtx context.Context, msg *types.MsgCreatePool) (
 	return &types.MsgCreatePoolResponse{}, nil
 }
 
+func (m msgServer) CreateRangedPool(goCtx context.Context, msg *types.MsgCreateRangedPool) (*types.MsgCreateRangedPoolResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.CreateRangedPool(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCreateRangedPoolResponse{}, nil
+}
+
 // Deposit defines a method to deposit coins to the pool.
 func (m msgServer) Deposit(goCtx context.Context, msg *types.MsgDeposit) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -86,6 +96,17 @@ func (m msgServer) MarketOrder(goCtx context.Context, msg *types.MsgMarketOrder)
 	return &types.MsgMarketOrderResponse{}, nil
 }
 
+// MMOrder defines a method to make a MM(market making) order.
+func (m msgServer) MMOrder(goCtx context.Context, msg *types.MsgMMOrder) (*types.MsgMMOrderResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.MMOrder(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgMMOrderResponse{}, nil
+}
+
 // CancelOrder defines a method to cancel an order.
 func (m msgServer) CancelOrder(goCtx context.Context, msg *types.MsgCancelOrder) (*types.MsgCancelOrderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -106,6 +127,17 @@ func (m msgServer) CancelAllOrders(goCtx context.Context, msg *types.MsgCancelAl
 	}
 
 	return &types.MsgCancelAllOrdersResponse{}, nil
+}
+
+// CancelMMOrder defines a method to cancel all previous market making orders.
+func (m msgServer) CancelMMOrder(goCtx context.Context, msg *types.MsgCancelMMOrder) (*types.MsgCancelMMOrderResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.CancelMMOrder(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCancelMMOrderResponse{}, nil
 }
 
 func (m msgServer) Farm(goCtx context.Context, msg *types.MsgFarm) (*types.MsgFarmResponse, error) {
