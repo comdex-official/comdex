@@ -2,7 +2,6 @@ package expected
 
 import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	"github.com/comdex-official/comdex/x/liquidity/amm"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -28,8 +27,8 @@ type LiquidityKeeper interface {
 	GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinToDistribute sdk.Coin, liquidityGaugeData types.LiquidtyGaugeMetaData) ([]types.RewardDistributionDataCollector, error)
 	TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolID uint64) (sdk.Coin, error)
 	GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer liquiditytypes.ActiveFarmer, found bool)
-	GetAMMPoolInterfaceObject(ctx sdk.Context, appID, poolID uint64) (*liquiditytypes.Pool, *liquiditytypes.Pair, *amm.BasicPool, error)
-	CalculateXYFromPoolCoin(ctx sdk.Context, ammPool *amm.BasicPool, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
+	GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (liquiditytypes.PoolTokenDeserializerKit, error)
+	CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit liquiditytypes.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
 	GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer liquiditytypes.QueuedFarmer, found bool)
 	GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error)
 }

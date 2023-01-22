@@ -37,6 +37,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryWithdrawRequestCmd(),
 		NewQueryOrdersCmd(),
 		NewQueryOrderCmd(),
+		NewQueryOrderBooksCmd(),
 		NewQueryFarmerCmd(),
 		NewQueryDeserializePoolCoinCmd(),
 		NewQueryPoolIncentivesCmd(),
@@ -749,6 +750,69 @@ $ %s query %s order 1 1 1
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryOrderBooksCmd implements the order books query command.
+func NewQueryOrderBooksCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "order-books [app-id] [pair-ids]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Query order books",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query order books of specified pairs.
+
+Example:
+$ %s query %s order-books 1 1 --num-ticks=10
+$ %s query %s order-books 1 2,3
+`,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			numTicks, _ := cmd.Flags().GetUint32(FlagNumTicks)
+
+			pairIdStrings := strings.Split(args[1], ",")
+			var pairIds []uint64
+			for _, pairIdStr := range pairIdStrings {
+				pairId, err := strconv.ParseUint(pairIdStr, 10, 64)
+				if err != nil {
+					return fmt.Errorf("parse pair id: %w", err)
+				}
+				pairIds = append(pairIds, pairId)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.OrderBooks(
+				cmd.Context(),
+				&types.QueryOrderBooksRequest{
+					AppId:    appID,
+					PairIds:  pairIds,
+					NumTicks: numTicks,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	cmd.Flags().Uint32P(FlagNumTicks, "n", 20, "maximum number of ticks displayed on each buy/sell side")
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd

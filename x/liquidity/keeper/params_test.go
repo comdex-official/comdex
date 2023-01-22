@@ -68,8 +68,8 @@ func (s *KeeperTestSuite) TestUpdateGenericParams() {
 		{
 			Name:   "success valid case 1",
 			appID:  appID1,
-			Keys:   []string{"BatchSize", "TickPrecision", "MinInitialPoolCoinSupply", "PairCreationFee", "PoolCreationFee", "MinInitialDepositAmount", "MaxPriceLimitRatio", "MaxOrderLifespan", "SwapFeeRate", "WithdrawFeeRate", "DepositExtraGas", "WithdrawExtraGas", "OrderExtraGas", "SwapFeeDistrDenom", "SwapFeeBurnRate"},
-			Values: []string{"69", "699", "1000000000000000000", "10000000000dummy1", "10000000000dummy2", "10000", "0.1", "10h", "0.2", "0.4", "11", "12", "13", "loltoken", "0.8"},
+			Keys:   []string{"BatchSize", "MinInitialPoolCoinSupply", "PairCreationFee", "PoolCreationFee", "MinInitialDepositAmount", "MaxPriceLimitRatio", "MaxOrderLifespan", "SwapFeeRate", "WithdrawFeeRate", "DepositExtraGas", "WithdrawExtraGas", "OrderExtraGas", "SwapFeeDistrDenom", "SwapFeeBurnRate"},
+			Values: []string{"69", "1000000000000000000", "10000000000dummy1", "10000000000dummy2", "10000", "0.1", "10h", "0.2", "0.4", "11", "12", "13", "loltoken", "0.8"},
 			ExpErr: nil,
 		},
 	}
@@ -86,7 +86,6 @@ func (s *KeeperTestSuite) TestUpdateGenericParams() {
 				s.Require().NoError(err)
 
 				s.Require().Equal(params.BatchSize, uint64(69))
-				s.Require().Equal(params.TickPrecision, uint64(699))
 				s.Require().Equal(params.MinInitialPoolCoinSupply, newInt(1000000000000000000))
 				s.Require().Equal(params.PairCreationFee, utils.ParseCoins("10000000000dummy1"))
 				s.Require().Equal(params.PoolCreationFee, utils.ParseCoins("10000000000dummy2"))
