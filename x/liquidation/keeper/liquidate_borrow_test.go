@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	err = assetKeeper.AddAppRecords(*ctx, msg3)
 	s.Require().NoError(err)
 
-	msg4 := assetTypes.Asset{
+	msg4 := assetTypes.Asset{ //1
 		Name:          "ATOM",
 		Denom:         "uatom",
 		Decimals:      sdk.NewInt(1000000),
@@ -68,7 +68,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 1)
 	s.Suite.NoError(err)
 
-	msg5 := assetTypes.Asset{
+	msg5 := assetTypes.Asset{ //2
 		Name:          "CMDX",
 		Denom:         "ucmdx",
 		Decimals:      sdk.NewInt(1000000),
@@ -90,7 +90,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 2)
 	s.Suite.NoError(err)
 
-	msg6 := assetTypes.Asset{
+	msg6 := assetTypes.Asset{ //3
 		Name:          "CMST",
 		Denom:         "ucmst",
 		Decimals:      sdk.NewInt(1000000),
@@ -112,16 +112,15 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 3)
 	s.Suite.NoError(err)
 
-	msg7 := assetTypes.Asset{
-		Name:      "HARBOR",
-		Denom:     "uharbor",
+	msg13a := assetTypes.Asset{ //4
+		Name:      "OSMO",
+		Denom:     "uosmo",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
-	err = assetKeeper.AddAssetRecords(*ctx, msg7)
+	err = assetKeeper.AddAssetRecords(*ctx, msg13a)
 	s.Require().NoError(err)
-
-	market4 := markettypes.TimeWeightedAverage{
+	market3a := markettypes.TimeWeightedAverage{
 		AssetID:       4,
 		ScriptID:      12,
 		Twa:           1000000,
@@ -129,11 +128,11 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		IsPriceActive: true,
 		PriceValue:    []uint64{1000000},
 	}
-	s.app.MarketKeeper.SetTwa(s.ctx, market4)
+	s.app.MarketKeeper.SetTwa(s.ctx, market3a)
 	_, err = s.app.MarketKeeper.GetLatestPrice(s.ctx, 4)
 	s.Suite.NoError(err)
 
-	msg11 := assetTypes.Asset{
+	msg11 := assetTypes.Asset{ //5
 		Name:      "CATOM",
 		Denom:     "ucatom",
 		Decimals:  sdk.NewInt(1000000),
@@ -142,7 +141,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	err = assetKeeper.AddAssetRecords(*ctx, msg11)
 	s.Require().NoError(err)
 
-	msg12 := assetTypes.Asset{
+	msg12 := assetTypes.Asset{ //6
 		Name:      "CCMDX",
 		Denom:     "uccmdx",
 		Decimals:  sdk.NewInt(1000000),
@@ -151,13 +150,22 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	err = assetKeeper.AddAssetRecords(*ctx, msg12)
 	s.Require().NoError(err)
 
-	msg13 := assetTypes.Asset{
+	msg13 := assetTypes.Asset{ //7
 		Name:      "CCMST",
 		Denom:     "uccmst",
 		Decimals:  sdk.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg13)
+	s.Require().NoError(err)
+
+	msg13b := assetTypes.Asset{ //8
+		Name:      "COSMO",
+		Denom:     "ucosmo",
+		Decimals:  sdk.NewInt(1000000),
+		IsOnChain: true,
+	}
+	err = assetKeeper.AddAssetRecords(*ctx, msg13b)
 	s.Require().NoError(err)
 
 	cmstRatesParams := lendtypes.AssetRatesParams{
@@ -216,8 +224,28 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	}
 	lendKeeper.SetAssetRatesParams(s.ctx, cmdxRatesParams)
 
+	osmoRatesParams := lendtypes.AssetRatesParams{
+		AssetID:              4,
+		UOptimal:             Dec("0.65"),
+		Base:                 Dec("0.002"),
+		Slope1:               Dec("0.08"),
+		Slope2:               Dec("1.50"),
+		EnableStableBorrow:   false,
+		StableBase:           Dec("0.0"),
+		StableSlope1:         Dec("0.0"),
+		StableSlope2:         Dec("0.0"),
+		Ltv:                  Dec("0.65"),
+		LiquidationThreshold: Dec("0.70"),
+		LiquidationPenalty:   Dec("0.075"),
+		LiquidationBonus:     Dec("0.075"),
+		ReserveFactor:        Dec("0.2"),
+		CAssetID:             8,
+	}
+	lendKeeper.SetAssetRatesParams(s.ctx, osmoRatesParams)
+
 	var (
 		assetDataCMDXPool []*lendtypes.AssetDataPoolMapping
+		assetDataOSMOPool []*lendtypes.AssetDataPoolMapping
 	)
 	assetDataPoolOneAssetOne := &lendtypes.AssetDataPoolMapping{
 		AssetID:          1,
@@ -235,6 +263,22 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		SupplyCap:        sdk.NewDec(5000000000000),
 	}
 
+	assetDataPoolTwoAssetOne := &lendtypes.AssetDataPoolMapping{
+		AssetID:          1,
+		AssetTransitType: 3,
+		SupplyCap:        sdk.NewDec(5000000000000),
+	}
+	assetDataPoolTwoAssetTwo := &lendtypes.AssetDataPoolMapping{
+		AssetID:          4,
+		AssetTransitType: 1,
+		SupplyCap:        sdk.NewDec(2000000000000),
+	}
+	assetDataPoolTwoAssetThree := &lendtypes.AssetDataPoolMapping{
+		AssetID:          3,
+		AssetTransitType: 2,
+		SupplyCap:        sdk.NewDec(5000000000000),
+	}
+
 	assetDataCMDXPool = append(assetDataCMDXPool, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	cmdxPool := lendtypes.Pool{
 		ModuleName: "cmdx",
@@ -242,6 +286,17 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		AssetData:  assetDataCMDXPool,
 	}
 	err = lendKeeper.AddPoolRecords(s.ctx, cmdxPool)
+	if err != nil {
+		panic(err)
+	}
+
+	assetDataOSMOPool = append(assetDataOSMOPool, assetDataPoolTwoAssetOne, assetDataPoolTwoAssetTwo, assetDataPoolTwoAssetThree)
+	osmoPool := lendtypes.Pool{
+		ModuleName: "osmo",
+		CPoolName:  "OSMO-ATOM-CMST",
+		AssetData:  assetDataOSMOPool,
+	}
+	err = lendKeeper.AddPoolRecords(s.ctx, osmoPool)
 	if err != nil {
 		panic(err)
 	}
@@ -313,6 +368,102 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		panic(err)
 	}
 
+	osmoatomPair := lendtypes.Extended_Pair{ // 7
+		AssetIn:         4,
+		AssetOut:        1,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, osmoatomPair)
+	if err != nil {
+		panic(err)
+	}
+
+	osmocmstPair := lendtypes.Extended_Pair{ // 8
+		AssetIn:         4,
+		AssetOut:        3,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, osmocmstPair)
+	if err != nil {
+		panic(err)
+	}
+
+	cmstosmoPair := lendtypes.Extended_Pair{ // 9
+		AssetIn:         3,
+		AssetOut:        4,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, cmstosmoPair)
+	if err != nil {
+		panic(err)
+	}
+
+	cmstatomPair2 := lendtypes.Extended_Pair{ // 10
+		AssetIn:         3,
+		AssetOut:        1,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, cmstatomPair2)
+	if err != nil {
+		panic(err)
+	}
+
+	atomcmstPair2 := lendtypes.Extended_Pair{ // 11
+		AssetIn:         1,
+		AssetOut:        3,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, atomcmstPair2)
+	if err != nil {
+		panic(err)
+	}
+
+	atomosmoPair := lendtypes.Extended_Pair{ // 12
+		AssetIn:         1,
+		AssetOut:        4,
+		IsInterPool:     false,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, atomosmoPair)
+	if err != nil {
+		panic(err)
+	}
+
+	cmdxosmoPair := lendtypes.Extended_Pair{ // 13
+		AssetIn:         2,
+		AssetOut:        4,
+		IsInterPool:     true,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, cmdxosmoPair)
+	if err != nil {
+		panic(err)
+	}
+
+	osmocmdxPair := lendtypes.Extended_Pair{ // 14
+		AssetIn:         4,
+		AssetOut:        2,
+		IsInterPool:     true,
+		AssetOutPoolID:  2,
+		MinUsdValueLeft: 100000,
+	}
+	err = lendKeeper.AddLendPairsRecords(s.ctx, osmocmdxPair)
+	if err != nil {
+		panic(err)
+	}
+
 	// Adding Lend Pair Mapping
 	map1 := lendtypes.AssetToPairMapping{
 		PoolID:  1,
@@ -323,7 +474,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	map2 := lendtypes.AssetToPairMapping{
 		PoolID:  1,
 		AssetID: 2,
-		PairID:  []uint64{1, 2},
+		PairID:  []uint64{1, 2, 13},
 	}
 	lendKeeper.SetAssetToPair(s.ctx, map2)
 	map3 := lendtypes.AssetToPairMapping{
@@ -332,6 +483,27 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		PairID:  []uint64{5, 6},
 	}
 	lendKeeper.SetAssetToPair(s.ctx, map3)
+
+	map4 := lendtypes.AssetToPairMapping{
+		PoolID:  2,
+		AssetID: 1,
+		PairID:  []uint64{11, 12},
+	}
+	lendKeeper.SetAssetToPair(s.ctx, map4)
+
+	map5 := lendtypes.AssetToPairMapping{
+		PoolID:  2,
+		AssetID: 3,
+		PairID:  []uint64{9, 10},
+	}
+	lendKeeper.SetAssetToPair(s.ctx, map5)
+
+	map6 := lendtypes.AssetToPairMapping{
+		PoolID:  2,
+		AssetID: 4,
+		PairID:  []uint64{7, 8, 14},
+	}
+	lendKeeper.SetAssetToPair(s.ctx, map6)
 
 	auctionParams := lendtypes.AuctionParams{
 		AppId:                  3,
@@ -360,6 +532,18 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
 
 	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddr, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	s.Require().NoError(err)
+
+	s.fundAddr(userAddress, sdk.NewCoin("uosmo", sdk.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 4, userAddr, sdk.NewCoin("uosmo", sdk.NewInt(100000000000)))
+	s.Require().NoError(err)
+
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 3, userAddr, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	s.Require().NoError(err)
+
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 1, userAddr, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
 	s.Require().NoError(err)
 
 	lendKeeper, ctx = &s.lendKeeper, &s.ctx
@@ -392,6 +576,21 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	userAddr2, _ := sdk.AccAddressFromBech32("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp")
 	s.fundAddr(userAddr2, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg30)
+	s.Require().NoError(err)
+
+	msg40 := lendtypes.MsgBorrowAlternate{
+		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
+		AssetId:        2,
+		PoolId:         1,
+		AmountIn:       sdk.NewCoin("ucmdx", sdk.NewInt(100000000000)),
+		PairId:         13,
+		IsStableBorrow: false,
+		AmountOut:      sdk.NewCoin("uosmo", sdk.NewInt(32500000000)),
+		AppId:          3,
+	}
+
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000000)))
+	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg40)
 	s.Require().NoError(err)
 }
 
@@ -426,9 +625,9 @@ func (s *KeeperTestSuite) ChangeOraclePriceLend(asset, price uint64) {
 func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 	s.AddAppAssetLend()
-	currentBorrowsCount := 2
+	currentBorrowsCount := 3
 	s.Require().Equal(s.GetBorrowCount(), currentBorrowsCount)
-	s.Require().Equal(s.GetBorrowCountByPoolIDAssetID(1, 2), currentBorrowsCount)
+	s.Require().Equal(s.GetBorrowCountByPoolIDAssetID(1, 2), 2)
 	beforeBorrow, found := s.lendKeeper.GetBorrow(*ctx, 1)
 	s.Require().True(found)
 
@@ -442,10 +641,11 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	beforeAmtIn := beforeBorrow.AmountIn.Amount
 
 	s.ChangeOraclePriceLend(2, 1200000)
+	s.ChangeOraclePriceLend(4, 2000000)
 	err = liquidationKeeper.LiquidateBorrows(*ctx)
 	s.Require().NoError(err)
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
-	s.Require().Equal(id, uint64(2))
+	s.Require().Equal(id, uint64(3))
 
 	lockedVault := liquidationKeeper.GetLockedVaults(*ctx)
 	s.Require().Equal(lockedVault[0].OriginalVaultId, beforeBorrow.ID)

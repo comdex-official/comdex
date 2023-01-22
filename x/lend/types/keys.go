@@ -12,6 +12,10 @@ const (
 	ModuleAcc1 = "cmdx"
 	ModuleAcc2 = "atom"
 	ModuleAcc3 = "osmo"
+	ModuleAcc4 = "axlusdc"
+	ModuleAcc5 = "statom"
+	ModuleAcc6 = "evmos"
+	ModuleAcc7 = "gusdc"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName

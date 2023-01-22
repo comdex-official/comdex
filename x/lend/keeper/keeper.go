@@ -110,6 +110,25 @@ func (k Keeper) CheckSupplyCap(ctx sdk.Context, assetID, poolID uint64, amt sdk.
 	return false, nil
 }
 
+func (k Keeper) GetLendIDForAssetIDPoolID(ctx sdk.Context, lenderAddr string, assetID, poolID uint64) (uint64, bool) {
+	totalMappingData := k.GetUserTotalMappingData(ctx, lenderAddr)
+	lendID := uint64(0)
+	for _, mappingData := range totalMappingData {
+		userLend, found := k.GetLend(ctx, mappingData.LendId)
+		if !found {
+			continue
+		}
+		if userLend.AssetID == assetID && userLend.PoolID == poolID {
+			lendID = userLend.ID
+			break
+		}
+	}
+	if lendID == 0 {
+		return 0, false
+	}
+	return lendID, true
+}
+
 func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Amount sdk.Coin, PoolID, AppID uint64) error {
 	// this fn IBC Assets fom the user
 	// sends the asset to pool's module-acc
@@ -159,7 +178,19 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	}
 
 	if k.HasLendForAddressByAsset(ctx, lenderAddr, AssetID, PoolID) {
-		return types.ErrorDuplicateLend
+		// if a lend position is opened by the user for same asset in a pool, and when the user tries to lend again in that case
+		// we will deposit that asset and increase user's previous lend position.
+		// Steps:
+		// Get the lend ID of previous lend position
+		// Call Deposit function
+		lendID, found := k.GetLendIDForAssetIDPoolID(ctx, lenderAddr, AssetID, PoolID)
+		if !found {
+			return types.ErrLendNotFound
+		}
+		err = k.DepositAsset(ctx, lenderAddr, lendID, Amount)
+		if err != nil {
+			return err
+		}
 	}
 
 	assetRatesStat, found := k.GetAssetRatesParams(ctx, AssetID)
@@ -257,13 +288,13 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
-	//indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
-	//if err != nil {
-	//	return err
-	//}
-	//lendPos, _ = k.GetLend(ctx, lendID)
-	//lendPos.GlobalIndex = indexGlobalCurrent
-	//lendPos.LastInteractionTime = ctx.BlockTime()
+	indexGlobalCurrent, err := k.IterateLends(ctx, lendID)
+	if err != nil {
+		return err
+	}
+	lendPos, _ = k.GetLend(ctx, lendID)
+	lendPos.GlobalIndex = indexGlobalCurrent
+	lendPos.LastInteractionTime = ctx.BlockTime()
 
 	getAsset, _ := k.Asset.GetAsset(ctx, lendPos.AssetID)
 	pool, _ := k.GetPool(ctx, lendPos.PoolID)
@@ -280,7 +311,6 @@ func (k Keeper) WithdrawAsset(ctx sdk.Context, addr string, lendID uint64, withd
 		return sdkerrors.Wrap(types.ErrBadOfferCoinAmount, withdrawal.Denom)
 	}
 
-	// reservedAmount := k.GetReserveFunds(ctx, pool)
 	availableAmount := k.ModuleBalance(ctx, pool.ModuleName, withdrawal.Denom)
 
 	if withdrawal.Amount.GT(availableAmount) {
@@ -1342,7 +1372,19 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
 	if k.HasLendForAddressByAsset(ctx, lenderAddr, AssetID, PoolID) {
-		return types.ErrorDuplicateLend
+		// if a lend position is opened by the user for same asset in a pool, and when the user tries to lend again in that case
+		// we will deposit that asset and increase user's previous lend position.
+		// Steps:
+		// Get the lend ID of previous lend position
+		// Call Deposit function
+		lendID, found := k.GetLendIDForAssetIDPoolID(ctx, lenderAddr, AssetID, PoolID)
+		if !found {
+			return types.ErrLendNotFound
+		}
+		err = k.DepositAsset(ctx, lenderAddr, lendID, AmountIn)
+		if err != nil {
+			return err
+		}
 	}
 
 	assetRatesStat, found := k.GetAssetRatesParams(ctx, AssetID)

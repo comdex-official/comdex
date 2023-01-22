@@ -66,6 +66,15 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 			reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
 			reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
 			k.SetReserveBuybackAssetData(ctx, reserveBuybackStats)
+			reserveStat := types.AllReserveStats{
+				AssetID:                        v.AssetID,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         reserveBuybackStats.BuybackAmount.Add(reserveBuybackStats.ReserveAmount),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
+			}
+			k.SetAllReserveStatsByAssetID(ctx, reserveStat)
 		}
 	}
 
