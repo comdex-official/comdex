@@ -12,14 +12,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/rakyll/statik/fs"
 
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -86,16 +86,16 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctransfer "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibctransfer "github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v4/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
@@ -795,7 +795,7 @@ func New(
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
-	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper))
+	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper, app.IbcKeeper.ChannelKeeper))
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	app.IbcKeeper.SetRouter(ibcRouter)
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
@@ -1191,6 +1191,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
 		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc4:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc5:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc6:           {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc7:           {authtypes.Minter, authtypes.Burner},
 		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},

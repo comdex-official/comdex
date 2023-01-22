@@ -600,6 +600,64 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, appID uint64, order types.Orde
 	store.Delete(types.GetOrderIndexKey(appID, order.GetOrderer(), order.PairId, order.Id))
 }
 
+// GetMMOrderIndex returns the market making order index.
+func (k Keeper) GetMMOrderIndex(ctx sdk.Context, orderer sdk.AccAddress, appID, pairId uint64) (index types.MMOrderIndex, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetMMOrderIndexKey(orderer, appID, pairId))
+	if bz == nil {
+		return
+	}
+	index = types.MustUnmarshalMMOrderIndex(k.cdc, bz)
+	return index, true
+}
+
+// SetMMOrderIndex stores a market making order index.
+func (k Keeper) SetMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrderIndex) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshaMMOrderIndex(k.cdc, index)
+	store.Set(types.GetMMOrderIndexKey(index.GetOrderer(), appID, index.PairId), bz)
+}
+
+// IterateAllMMOrderIndexes iterates through all market making order indexes
+// in the store and call cb for each order.
+func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, appID uint64, cb func(index types.MMOrderIndex) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllMMOrderIndexKey(appID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		index := types.MustUnmarshalMMOrderIndex(k.cdc, iter.Value())
+		stop, err := cb(index)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllMMOrderIndexes returns all market making order indexes in the store.
+func (k Keeper) GetAllMMOrderIndexes(ctx sdk.Context, appID uint64) (indexes []types.MMOrderIndex) {
+	indexes = []types.MMOrderIndex{}
+	_ = k.IterateAllMMOrderIndexes(ctx, appID, func(index types.MMOrderIndex) (stop bool, err error) {
+		indexes = append(indexes, index)
+		return false, nil
+	})
+	return
+}
+
+// DeleteMMOrderIndex deletes a market making order index.
+func (k Keeper) DeleteMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrderIndex) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetMMOrderIndexKey(index.GetOrderer(), appID, index.PairId))
+}
+
 // GetGenericLiquidityParams returns the generic liquidity params by app id.
 func (k Keeper) GetGenericLiquidityParams(ctx sdk.Context, appID uint64) (genericLiquidityParams types.GenericParams, found bool) {
 	store := ctx.KVStore(k.storeKey)

@@ -155,6 +155,7 @@ func NewOrderForLimitOrder(msg *MsgLimitOrder, id uint64, pair Pair, offerCoin s
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
 		AppId:              msg.AppId,
+		Type:               OrderTypeLimit,
 	}
 }
 
@@ -176,6 +177,42 @@ func NewOrderForMarketOrder(msg *MsgMarketOrder, id uint64, pair Pair, offerCoin
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
 		AppId:              msg.AppId,
+		Type:               OrderTypeMarket,
+	}
+}
+
+func NewOrder(
+	typ OrderType, id, appId uint64, pair Pair, orderer sdk.AccAddress,
+	offerCoin sdk.Coin, price sdk.Dec, amt sdk.Int, expireAt time.Time, msgHeight int64,
+) Order {
+	var (
+		dir             OrderDirection
+		demandCoinDenom string
+	)
+	if offerCoin.Denom == pair.BaseCoinDenom {
+		dir = OrderDirectionSell
+		demandCoinDenom = pair.QuoteCoinDenom
+	} else {
+		dir = OrderDirectionBuy
+		demandCoinDenom = pair.BaseCoinDenom
+	}
+	return Order{
+		Id:                 id,
+		PairId:             pair.Id,
+		MsgHeight:          msgHeight,
+		Orderer:            orderer.String(),
+		Direction:          dir,
+		OfferCoin:          offerCoin,
+		RemainingOfferCoin: offerCoin,
+		ReceivedCoin:       sdk.NewCoin(demandCoinDenom, sdk.ZeroInt()),
+		Price:              price,
+		Amount:             amt,
+		OpenAmount:         amt,
+		BatchId:            pair.CurrentBatchId,
+		ExpireAt:           expireAt,
+		Status:             OrderStatusNotExecuted,
+		AppId:              appId,
+		Type:               typ,
 	}
 }
 
@@ -302,6 +339,17 @@ func (status OrderStatus) CanBeExpired() bool {
 	return status.IsMatchable()
 }
 
+// CanBeCanceled returns true if the OrderStatus is one of:
+// OrderStatusNotExecuted, OrderStatusNotMatched, OrderStatusPartiallyMatched.
+func (status OrderStatus) CanBeCanceled() bool {
+	switch status {
+	case OrderStatusNotExecuted, OrderStatusNotMatched, OrderStatusPartiallyMatched:
+		return true
+	default:
+		return false
+	}
+}
+
 // IsCanceledOrExpired returns true if the OrderStatus is one of:
 // OrderStatusCanceled, OrderStatusExpired.
 func (status OrderStatus) IsCanceledOrExpired() bool {
@@ -378,6 +426,28 @@ func UnmarshalOrder(cdc codec.BinaryCodec, value []byte) (order Order, err error
 // It throws panic if it fails.
 func MustUnmarshalOrder(cdc codec.BinaryCodec, value []byte) Order {
 	msg, err := UnmarshalOrder(cdc, value)
+	if err != nil {
+		panic(err)
+	}
+	return msg
+}
+
+// MustMarshaMMOrderIndex returns the MMOrderIndex bytes.
+// It throws panic if it fails.
+func MustMarshaMMOrderIndex(cdc codec.BinaryCodec, mmOrderIndex MMOrderIndex) []byte {
+	return cdc.MustMarshal(&mmOrderIndex)
+}
+
+// UnmarshalMMOrderIndex returns the MMOrderIndex from bytes.
+func UnmarshalMMOrderIndex(cdc codec.BinaryCodec, value []byte) (mmOrderIndex MMOrderIndex, err error) {
+	err = cdc.Unmarshal(value, &mmOrderIndex)
+	return mmOrderIndex, err
+}
+
+// MustUnmarshalOrder returns the Order from bytes.
+// It throws panic if it fails.
+func MustUnmarshalMMOrderIndex(cdc codec.BinaryCodec, value []byte) MMOrderIndex {
+	msg, err := UnmarshalMMOrderIndex(cdc, value)
 	if err != nil {
 		panic(err)
 	}

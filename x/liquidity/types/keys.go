@@ -39,6 +39,7 @@ var (
 	WithdrawRequestIndexKeyPrefix = []byte{0xb1}
 	OrderKeyPrefix                = []byte{0xb2}
 	OrderIndexKeyPrefix           = []byte{0xb3}
+	MMOrderIndexKeyPrefix         = []byte{0xb7}
 
 	ActiveFarmerKeyPrefix = []byte{0xb4}
 	QueuedFarmerKeyPrefix = []byte{0xb5}
@@ -194,6 +195,17 @@ func GetOrderIndexKey(
 // by an orderer.
 func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 	return append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...)
+}
+
+// GetMMOrderIndexKey returns the store key to retrieve MMOrderIndex object by
+// orderer and pair id.
+func GetMMOrderIndexKey(orderer sdk.AccAddress, appID, pairID uint64) []byte {
+	return append(append(append(MMOrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...), sdk.Uint64ToBigEndian(pairID)...)
+}
+
+// GetAllOrdersKey returns the store key to retrieve all orders.
+func GetAllMMOrderIndexKey(appID uint64) []byte {
+	return append(MMOrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetGenericParamsKey returns the store key to retrieve params object.

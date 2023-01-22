@@ -18,7 +18,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 
 	"github.com/comdex-official/comdex/x/bandoracle/client/cli"
 	"github.com/comdex-official/comdex/x/bandoracle/keeper"

@@ -206,6 +206,27 @@ func (k Keeper) CalculationOfRewards(
 	return newAm, nil
 }
 
+func (k Keeper) OraclePriceForRewards(ctx sdk.Context, id uint64, amt sdk.Int) (sdk.Dec, bool) {
+	asset, found := k.asset.GetAsset(ctx, id)
+	if !found {
+		return sdk.ZeroDec(), false
+	}
+
+	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
+	if !found {
+		return sdk.ZeroDec(), false
+	}
+
+	// if price is not active and twa is 0 return false
+	if !price.IsPriceActive && price.Twa <= 0 {
+		return sdk.ZeroDec(), false
+	}
+
+	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa)))
+	denominator := sdk.NewDecFromInt(asset.Decimals)
+	return numerator.Quo(denominator), true
+}
+
 func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	// Give external rewards to borrowers for opening a vault with specific assetID
 	extRewards := k.GetExternalRewardLends(ctx)
@@ -228,24 +249,22 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					rewardsAssetPoolData := v.RewardsAssetPoolData
 					for _, assetID := range rewardsAssetPoolData.AssetId {
 						amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
-						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt())
+						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt()) // in $USD
 					}
 					// calculating totalAPR
 					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 					if !found {
 						continue
 					}
-					totalRewardAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
+					totalRewardAmt, found := k.OraclePriceForRewards(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
+					if !found {
+						continue
+					}
 					if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
 						continue
 					}
-					totalAPR := totalRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
-					inverseRatesSum := sdk.ZeroDec()
-					// inverting the rate to enable low apr for assets which are more borrowed
-					for _, assetID := range rewardsAssetPoolData.AssetId {
-						inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
-						inverseRatesSum = inverseRatesSum.Add(inverseRate)
-					}
+					dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
+					totalAPR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
 					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
@@ -266,20 +285,16 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 							if !found {
 								continue
 							}
-							borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrow.AmountOut.Amount)
-							if err != nil {
+							borrowAmt, found := k.OraclePriceForRewards(ctx, pair.AssetOut, borrow.AmountOut.Amount)
+							if !found {
 								continue
 							}
 							liqFound, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, borrowAmt)
 							if !found {
 								continue
 							}
-							inverseRate := k.InvertingRates(ctx, assetID, rewardsAssetPoolData.CPoolId, totalRewardAmt.TruncateInt())
-							numerator := totalAPR.Mul(inverseRate)
-							finalAPR := numerator.Quo(inverseRatesSum)
-							finalDailyRewardsNumerator := sdk.NewDecFromInt(liqFound.TruncateInt()).Mul(finalAPR)
-							finalDailyRewardsPerUser := finalDailyRewardsNumerator.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
 
+							finalDailyRewardsPerUser := liqFound.Mul(totalAPR)
 							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
 								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
 								err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
@@ -308,14 +323,6 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) InvertingRates(ctx sdk.Context, assetID, poolID uint64, totalRewardAmt sdk.Int) sdk.Dec {
-	assetBorrowedByPoolIDAndAssetID, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	assetBorrowedByPoolIDAndAssetIDAmt, _ := k.marketKeeper.CalcAssetPrice(ctx, assetID, assetBorrowedByPoolIDAndAssetID.TotalBorrowed.Add(assetBorrowedByPoolIDAndAssetID.TotalStableBorrowed))
-	tempRate := assetBorrowedByPoolIDAndAssetIDAmt.Quo(sdk.NewDecFromInt(totalRewardAmt))
-	inverseRate := sdk.OneDec().Sub(tempRate)
-	return inverseRate
-}
-
 func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poolID, appID uint64, masterPoolID int64) (sdk.Dec, bool) {
 	borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
 	if !found {
@@ -339,8 +346,8 @@ func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poo
 		if !found {
 			return sdk.ZeroDec(), false
 		}
-		borrowAmt, err := k.marketKeeper.CalcAssetPrice(ctx, pair.AssetOut, borrowPos.AmountOut.Amount)
-		if err != nil {
+		borrowAmt, found := k.OraclePriceForRewards(ctx, pair.AssetOut, borrowPos.AmountOut.Amount)
+		if !found {
 			return sdk.ZeroDec(), false
 		}
 		addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
@@ -359,24 +366,23 @@ func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.
 	if !found {
 		return sdk.ZeroDec(), false
 	}
-	pool, pair, ammPool, err := k.liquidityKeeper.GetAMMPoolInterfaceObject(ctx, appID, uint64(masterPoolID))
+	deserializerKit, err := k.liquidityKeeper.GetPoolTokenDesrializerKit(ctx, appID, uint64(masterPoolID))
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, farmedCoin.FarmedPoolCoin.Amount)
-	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
+	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, farmedCoin.FarmedPoolCoin)
 	if err != nil {
 		return sdk.ZeroDec(), false
 	}
 
-	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
-	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, pair.BaseCoinDenom)
-	priceQuoteCoin, err := k.marketKeeper.CalcAssetPrice(ctx, quoteCoinAsset.Id, x)
-	if err != nil {
+	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.QuoteCoinDenom)
+	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.BaseCoinDenom)
+	priceQuoteCoin, found := k.OraclePriceForRewards(ctx, quoteCoinAsset.Id, x)
+	if !found {
 		return sdk.ZeroDec(), false
 	}
-	priceBaseCoin, err := k.marketKeeper.CalcAssetPrice(ctx, baseCoinAsset.Id, y)
-	if err != nil {
+	priceBaseCoin, found := k.OraclePriceForRewards(ctx, baseCoinAsset.Id, y)
+	if !found {
 		return sdk.ZeroDec(), false
 	}
 

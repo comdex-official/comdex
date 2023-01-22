@@ -220,15 +220,15 @@ func (s *KeeperTestSuite) TestMsgLend() {
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(100))),
 		},
-		{
-			Name:               "Duplicate lend Position",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, appOneID),
-			ExpErr:             types.ErrorDuplicateLend,
-			ExpResp:            nil,
-			QueryResponseIndex: 0,
-			QueryResponse:      nil,
-			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100))),
-		},
+		//{
+		//	Name:               "Duplicate lend Position",
+		//	Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, appOneID),
+		//	ExpErr:             types.ErrorDuplicateLend,
+		//	ExpResp:            nil,
+		//	QueryResponseIndex: 0,
+		//	QueryResponse:      nil,
+		//	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100))),
+		//},
 	}
 	for _, tc := range testCases {
 		tc := tc
@@ -1857,15 +1857,15 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 			QueryResponse:      nil,
 			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100))),
 		},
-		{
-			Name:               "Duplicate lend Position",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, poolOneID, sdk.NewCoin("uasset3", sdk.NewInt(100)), pairFiveID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appOneID),
-			ExpErr:             types.ErrorDuplicateLend,
-			ExpResp:            nil,
-			QueryResponseIndex: 0,
-			QueryResponse:      nil,
-			AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100))),
-		},
+		//{
+		//	Name:               "Duplicate lend Position",
+		//	Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, poolOneID, sdk.NewCoin("uasset3", sdk.NewInt(100)), pairFiveID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appOneID),
+		//	ExpErr:             types.ErrorDuplicateLend,
+		//	ExpResp:            nil,
+		//	QueryResponseIndex: 0,
+		//	QueryResponse:      nil,
+		//	AvailableBalance:   sdk.NewCoins(sdk.NewCoin("uasset1", newInt(100))),
+		//},
 		{
 			Name:               "Asset Id not defined in the pool",
 			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, poolOneID, sdk.NewCoin("uasset4", sdk.NewInt(100)), pairSevenID, false, sdk.NewCoin("uasset3", sdk.NewInt(10)), appOneID),

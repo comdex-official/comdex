@@ -91,10 +91,12 @@ func (s *KeeperTestSuite) TestPools() {
 	s.Require().Equal(resp.Pools[0].PairId, pool.PairId)
 	s.Require().Equal(resp.Pools[0].ReserveAddress, pool.ReserveAddress)
 	s.Require().Equal(resp.Pools[0].PoolCoinDenom, pool.PoolCoinDenom)
-	s.Require().Equal(resp.Pools[0].Balances, s.getBalances(pool.GetReserveAddress()))
+	s.Require().Equal(resp.Pools[0].Balances.BaseCoin, s.getBalance(pool.GetReserveAddress(), resp.Pools[0].Balances.BaseCoin.Denom))
+	s.Require().Equal(resp.Pools[0].Balances.QuoteCoin, s.getBalance(pool.GetReserveAddress(), resp.Pools[0].Balances.QuoteCoin.Denom))
 	s.Require().Equal(resp.Pools[0].LastDepositRequestId, pool.LastDepositRequestId)
 	s.Require().Equal(resp.Pools[0].LastWithdrawRequestId, pool.LastWithdrawRequestId)
 	s.Require().Equal(resp.Pools[0].AppId, pool.AppId)
+	s.Require().Equal(resp.Pools[0].PoolCoinSupply, s.getBalance(addr1, pool.PoolCoinDenom).Amount)
 }
 
 func (s *KeeperTestSuite) TestPool() {
@@ -153,10 +155,12 @@ func (s *KeeperTestSuite) TestPool() {
 				s.Require().Equal(resp.Pool.PairId, pool.PairId)
 				s.Require().Equal(resp.Pool.ReserveAddress, pool.ReserveAddress)
 				s.Require().Equal(resp.Pool.PoolCoinDenom, pool.PoolCoinDenom)
-				s.Require().Equal(resp.Pool.Balances, s.getBalances(pool.GetReserveAddress()))
+				s.Require().Equal(resp.Pool.Balances.BaseCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.BaseCoin.Denom))
+				s.Require().Equal(resp.Pool.Balances.QuoteCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.QuoteCoin.Denom))
 				s.Require().Equal(resp.Pool.LastDepositRequestId, pool.LastDepositRequestId)
 				s.Require().Equal(resp.Pool.LastWithdrawRequestId, pool.LastWithdrawRequestId)
 				s.Require().Equal(resp.Pool.AppId, pool.AppId)
+				s.Require().Equal(resp.Pool.PoolCoinSupply, s.getBalance(addr1, pool.PoolCoinDenom).Amount)
 			}
 		})
 	}
@@ -223,10 +227,12 @@ func (s *KeeperTestSuite) TestPoolByReserveAddress() {
 				s.Require().Equal(resp.Pool.PairId, pool.PairId)
 				s.Require().Equal(resp.Pool.ReserveAddress, pool.ReserveAddress)
 				s.Require().Equal(resp.Pool.PoolCoinDenom, pool.PoolCoinDenom)
-				s.Require().Equal(resp.Pool.Balances, s.getBalances(pool.GetReserveAddress()))
+				s.Require().Equal(resp.Pool.Balances.BaseCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.BaseCoin.Denom))
+				s.Require().Equal(resp.Pool.Balances.QuoteCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.QuoteCoin.Denom))
 				s.Require().Equal(resp.Pool.LastDepositRequestId, pool.LastDepositRequestId)
 				s.Require().Equal(resp.Pool.LastWithdrawRequestId, pool.LastWithdrawRequestId)
 				s.Require().Equal(resp.Pool.AppId, pool.AppId)
+				s.Require().Equal(resp.Pool.PoolCoinSupply, s.getBalance(addr1, pool.PoolCoinDenom).Amount)
 			}
 		})
 	}
@@ -293,10 +299,12 @@ func (s *KeeperTestSuite) TestPoolByPoolCoinDenom() {
 				s.Require().Equal(resp.Pool.PairId, pool.PairId)
 				s.Require().Equal(resp.Pool.ReserveAddress, pool.ReserveAddress)
 				s.Require().Equal(resp.Pool.PoolCoinDenom, pool.PoolCoinDenom)
-				s.Require().Equal(resp.Pool.Balances, s.getBalances(pool.GetReserveAddress()))
+				s.Require().Equal(resp.Pool.Balances.BaseCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.BaseCoin.Denom))
+				s.Require().Equal(resp.Pool.Balances.QuoteCoin, s.getBalance(pool.GetReserveAddress(), resp.Pool.Balances.QuoteCoin.Denom))
 				s.Require().Equal(resp.Pool.LastDepositRequestId, pool.LastDepositRequestId)
 				s.Require().Equal(resp.Pool.LastWithdrawRequestId, pool.LastWithdrawRequestId)
 				s.Require().Equal(resp.Pool.AppId, pool.AppId)
+				s.Require().Equal(resp.Pool.PoolCoinSupply, s.getBalance(addr1, pool.PoolCoinDenom).Amount)
 			}
 		})
 	}

@@ -14,6 +14,7 @@ import (
 
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 
+	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
@@ -109,21 +110,11 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 			}
 		}
 
-		pair := pairGetter(pool.PairId)
-		rx, ry := k.getPoolBalances(ctx, pool, pair)
-		poolRes := types.PoolResponse{
-			Id:                    pool.Id,
-			PairId:                pool.PairId,
-			ReserveAddress:        pool.ReserveAddress,
-			PoolCoinDenom:         pool.PoolCoinDenom,
-			Balances:              sdk.NewCoins(rx, ry),
-			LastDepositRequestId:  pool.LastDepositRequestId,
-			LastWithdrawRequestId: pool.LastWithdrawRequestId,
-			AppId:                 req.AppId,
-		}
-
 		if accumulate {
-			poolsRes = append(poolsRes, poolRes)
+			pair := pairGetter(pool.PairId)
+			rx, ry := k.getPoolBalances(ctx, pool, pair)
+			ps := k.GetPoolCoinSupply(ctx, pool)
+			poolsRes = append(poolsRes, types.NewPoolResponse(pool, rx, ry, ps))
 		}
 
 		return true, nil
@@ -157,18 +148,9 @@ func (k Querier) Pool(c context.Context, req *types.QueryPoolRequest) (*types.Qu
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // PoolByReserveAddress queries the specific pool by the reserve account address.
@@ -198,18 +180,9 @@ func (k Querier) PoolByReserveAddress(c context.Context, req *types.QueryPoolByR
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // PoolByPoolCoinDenom queries the specific pool by the pool coin denomination.
@@ -243,18 +216,9 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // Pairs queries all pairs.
@@ -754,4 +718,110 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 	farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 
 	return &types.QueryFarmedPoolCoinResponse{Coin: farmedCoins}, nil
+}
+
+// OrderBooks queries virtual order books from user orders and pools.
+func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest) (*types.QueryOrderBooksResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.AppId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
+	}
+
+	if len(req.PairIds) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "pair ids must not be empty")
+	}
+
+	if len(req.PriceUnitPowers) == 0 {
+		req.PriceUnitPowers = []uint32{0, 1, 2}
+	}
+
+	if req.NumTicks == 0 {
+		return nil, status.Error(codes.InvalidArgument, "number of ticks must not be 0")
+	}
+
+	pairIdSet := map[uint64]struct{}{}
+	for _, pairId := range req.PairIds {
+		if _, ok := pairIdSet[pairId]; ok {
+			return nil, status.Errorf(codes.InvalidArgument, "duplicate pair id: %d", pairId)
+		}
+		pairIdSet[pairId] = struct{}{}
+	}
+
+	priceUnitPowerSet := map[uint32]struct{}{}
+	for _, p := range req.PriceUnitPowers {
+		if _, ok := priceUnitPowerSet[p]; ok {
+			return nil, status.Errorf(codes.InvalidArgument, "duplicate price unit power: %d", p)
+		}
+		priceUnitPowerSet[p] = struct{}{}
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	_, found := k.assetKeeper.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", req.AppId)
+	}
+
+	params, err := k.GetGenericParams(ctx, req.AppId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
+	tickPrec := params.TickPrecision
+
+	var pairs []types.OrderBookPairResponse
+	for _, pairId := range req.PairIds {
+		pair, found := k.GetPair(ctx, req.AppId, pairId)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "pair %d doesn't exist", pairId)
+		}
+
+		if pair.LastPrice == nil {
+			return nil, status.Errorf(codes.Unavailable, "pair %d does not have last price", pairId)
+		}
+
+		ob := amm.NewOrderBook()
+		_ = k.IterateOrdersByPair(ctx, req.AppId, pairId, func(order types.Order) (stop bool, err error) {
+			switch order.Status {
+			case types.OrderStatusNotExecuted,
+				types.OrderStatusNotMatched,
+				types.OrderStatusPartiallyMatched:
+				ob.AddOrder(types.NewUserOrder(order))
+			}
+			return false, nil
+		})
+
+		lowestPrice, highestPrice := k.PriceLimits(ctx, *pair.LastPrice, params)
+		_ = k.IteratePoolsByPair(ctx, req.AppId, pairId, func(pool types.Pool) (stop bool, err error) {
+			if pool.Disabled {
+				return false, nil
+			}
+			rx, ry := k.getPoolBalances(ctx, pool, pair)
+			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+			ob.AddOrder(amm.PoolOrders(ammPool, amm.DefaultOrderer, lowestPrice, highestPrice, int(tickPrec))...)
+			return false, nil
+		})
+
+		ov := ob.MakeView()
+		ov.Match()
+
+		var configs []types.OrderBookConfig
+		for _, p := range req.PriceUnitPowers {
+			configs = append(configs, types.OrderBookConfig{
+				PriceUnitPower: int(p),
+				MaxNumTicks:    int(req.NumTicks),
+			})
+		}
+
+		pairs = append(
+			pairs, types.MakeOrderBookPairResponse(
+				pair.Id, ov, lowestPrice, highestPrice, int(tickPrec), configs...))
+	}
+
+	return &types.QueryOrderBooksResponse{
+		Pairs: pairs,
+	}, nil
 }

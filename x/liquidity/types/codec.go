@@ -14,12 +14,15 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreatePair{}, "comdex/liquidity/MsgCreatePair", nil)
 	cdc.RegisterConcrete(&MsgCreatePool{}, "comdex/liquidity/MsgCreatePool", nil)
+	cdc.RegisterConcrete(&MsgCreateRangedPool{}, "comdex/liquidity/MsgCreateRangedPool", nil)
 	cdc.RegisterConcrete(&MsgDeposit{}, "comdex/liquidity/MsgDeposit", nil)
 	cdc.RegisterConcrete(&MsgWithdraw{}, "comdex/liquidity/MsgWithdraw", nil)
 	cdc.RegisterConcrete(&MsgLimitOrder{}, "comdex/liquidity/MsgLimitOrder", nil)
 	cdc.RegisterConcrete(&MsgMarketOrder{}, "comdex/liquidity/MsgMarketOrder", nil)
+	cdc.RegisterConcrete(&MsgMMOrder{}, "comdex/liquidity/MsgMMOrder", nil)
 	cdc.RegisterConcrete(&MsgCancelOrder{}, "comdex/liquidity/MsgCancelOrder", nil)
 	cdc.RegisterConcrete(&MsgCancelAllOrders{}, "comdex/liquidity/MsgCancelAllOrders", nil)
+	cdc.RegisterConcrete(&MsgCancelMMOrder{}, "comdex/liquidity/MsgCancelMMOrder", nil)
 	cdc.RegisterConcrete(&MsgFarm{}, "comdex/liquidity/MsgFarm", nil)
 	cdc.RegisterConcrete(&MsgUnfarm{}, "comdex/liquidity/MsgUnfarm", nil)
 	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "comdex/liquidity/UpdateGenericParamsProposal", nil)
@@ -39,12 +42,15 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgCreatePair{},
 		&MsgCreatePool{},
+		&MsgCreateRangedPool{},
 		&MsgDeposit{},
 		&MsgWithdraw{},
 		&MsgLimitOrder{},
 		&MsgMarketOrder{},
+		&MsgMMOrder{},
 		&MsgCancelOrder{},
 		&MsgCancelAllOrders{},
+		&MsgCancelMMOrder{},
 		&MsgFarm{},
 		&MsgUnfarm{},
 	)

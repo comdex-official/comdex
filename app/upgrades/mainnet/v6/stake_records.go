@@ -10,7 +10,7 @@ package v6
 // Slash was 5%
 // Lost APR is 37% for 22 days
 
-var recordsJSONString = `[
+/*var recordsJSONString = `[
   {
       "address": "comdex1qp59k44d9338qqc2vx4cc8rm0tnfwwvh2t70fk",
       "amount": "361506"
@@ -1699,4 +1699,4 @@ var recordsJSONString = `[
       "address": "comdex1lltxfhkqyhd835ha3j5690wc4s0canjwptv30x",
       "amount": "361506"
   }
-]`
+]`*/

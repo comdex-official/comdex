@@ -12,28 +12,34 @@ import (
 var (
 	_ sdk.Msg = (*MsgCreatePair)(nil)
 	_ sdk.Msg = (*MsgCreatePool)(nil)
+	_ sdk.Msg = (*MsgCreateRangedPool)(nil)
 	_ sdk.Msg = (*MsgDeposit)(nil)
 	_ sdk.Msg = (*MsgWithdraw)(nil)
 	_ sdk.Msg = (*MsgLimitOrder)(nil)
 	_ sdk.Msg = (*MsgMarketOrder)(nil)
+	_ sdk.Msg = (*MsgMMOrder)(nil)
 	_ sdk.Msg = (*MsgCancelOrder)(nil)
 	_ sdk.Msg = (*MsgCancelAllOrders)(nil)
+	_ sdk.Msg = (*MsgCancelMMOrder)(nil)
 	_ sdk.Msg = (*MsgFarm)(nil)
 	_ sdk.Msg = (*MsgUnfarm)(nil)
 )
 
 // Message types for the liquidity module.
 const (
-	TypeMsgCreatePair      = "create_pair"
-	TypeMsgCreatePool      = "create_pool"
-	TypeMsgDeposit         = "deposit"
-	TypeMsgWithdraw        = "withdraw"
-	TypeMsgLimitOrder      = "limit_order"
-	TypeMsgMarketOrder     = "market_order"
-	TypeMsgCancelOrder     = "cancel_order"
-	TypeMsgCancelAllOrders = "cancel_all_orders"
-	TypeMsgFarm            = "farm"
-	TypeMsgUnfarm          = "unfarm"
+	TypeMsgCreatePair       = "create_pair"
+	TypeMsgCreatePool       = "create_pool"
+	TypeMsgCreateRangedPool = "create_ranged_pool"
+	TypeMsgDeposit          = "deposit"
+	TypeMsgWithdraw         = "withdraw"
+	TypeMsgLimitOrder       = "limit_order"
+	TypeMsgMarketOrder      = "market_order"
+	TypeMsgMMOrder          = "mm_order"
+	TypeMsgCancelOrder      = "cancel_order"
+	TypeMsgCancelAllOrders  = "cancel_all_orders"
+	TypeMsgCancelMMOrder    = "cancel_mm_order"
+	TypeMsgFarm             = "farm"
+	TypeMsgUnfarm           = "unfarm"
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
@@ -64,6 +70,9 @@ func (msg MsgCreatePair) ValidateBasic() error {
 	}
 	if err := sdk.ValidateDenom(msg.QuoteCoinDenom); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
+	if msg.BaseCoinDenom == msg.QuoteCoinDenom {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "cannot use same denom for both base coin and quote coin")
 	}
 	return nil
 }
@@ -149,6 +158,75 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 	return addr
 }
 
+// NewMsgCreateRangedPool creates a new MsgCreateRangedPool.
+func NewMsgCreateRangedPool(
+	appID uint64,
+	creator sdk.AccAddress,
+	pairId uint64,
+	depositCoins sdk.Coins,
+	minPrice sdk.Dec,
+	maxPrice sdk.Dec,
+	initialPrice sdk.Dec,
+) *MsgCreateRangedPool {
+	return &MsgCreateRangedPool{
+		AppId:        appID,
+		Creator:      creator.String(),
+		PairId:       pairId,
+		DepositCoins: depositCoins,
+		MinPrice:     minPrice,
+		MaxPrice:     maxPrice,
+		InitialPrice: initialPrice,
+	}
+}
+
+func (msg MsgCreateRangedPool) Route() string { return RouterKey }
+
+func (msg MsgCreateRangedPool) Type() string { return TypeMsgCreateRangedPool }
+
+func (msg MsgCreateRangedPool) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	if err := msg.DepositCoins.Validate(); err != nil {
+		return err
+	}
+	if len(msg.DepositCoins) == 0 || len(msg.DepositCoins) > 2 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "wrong number of deposit coins: %d", len(msg.DepositCoins))
+	}
+	for _, coin := range msg.DepositCoins {
+		if coin.Amount.GT(amm.MaxCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "deposit coin %s is bigger than the max amount %s", coin, amm.MaxCoinAmount)
+		}
+	}
+	if err := amm.ValidateRangedPoolParams(msg.MinPrice, msg.MaxPrice, msg.InitialPrice); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
+	return nil
+}
+
+func (msg MsgCreateRangedPool) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgCreateRangedPool) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgCreateRangedPool) GetCreator() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 // NewMsgDeposit creates a new MsgDeposit.
 func NewMsgDeposit(
 	appID uint64,
@@ -179,7 +257,7 @@ func (msg MsgDeposit) ValidateBasic() error {
 	if err := msg.DepositCoins.Validate(); err != nil {
 		return err
 	}
-	if len(msg.DepositCoins) != 2 {
+	if len(msg.DepositCoins) == 0 || len(msg.DepositCoins) > 2 {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "wrong number of deposit coins: %d", len(msg.DepositCoins))
 	}
 	return nil
@@ -446,6 +524,97 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 	return addr
 }
 
+// NewMsgMMOrder creates a new MsgMMOrder.
+func NewMsgMMOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+	maxSellPrice, minSellPrice sdk.Dec, sellAmt sdk.Int,
+	maxBuyPrice, minBuyPrice sdk.Dec, buyAmt sdk.Int,
+	orderLifespan time.Duration,
+) *MsgMMOrder {
+	return &MsgMMOrder{
+		AppId:         appID,
+		Orderer:       orderer.String(),
+		PairId:        pairId,
+		MaxSellPrice:  maxSellPrice,
+		MinSellPrice:  minSellPrice,
+		SellAmount:    sellAmt,
+		MaxBuyPrice:   maxBuyPrice,
+		MinBuyPrice:   minBuyPrice,
+		BuyAmount:     buyAmt,
+		OrderLifespan: orderLifespan,
+	}
+}
+
+func (msg MsgMMOrder) Route() string { return RouterKey }
+
+func (msg MsgMMOrder) Type() string { return TypeMsgMMOrder }
+
+func (msg MsgMMOrder) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Orderer); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid orderer address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	if msg.SellAmount.IsZero() && msg.BuyAmount.IsZero() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "sell amount and buy amount must not be zero at the same time")
+	}
+	if !msg.SellAmount.IsZero() {
+		if msg.SellAmount.LT(amm.MinCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "sell amount %s is smaller than the min amount %s", msg.SellAmount, amm.MinCoinAmount)
+		}
+		if !msg.MaxSellPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "max sell price must be positive: %s", msg.MaxSellPrice)
+		}
+		if !msg.MinSellPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "min sell price must be positive: %s", msg.MinSellPrice)
+		}
+		if msg.MinSellPrice.GT(msg.MaxSellPrice) {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max sell price must not be lower than min sell price")
+		}
+	}
+	if !msg.BuyAmount.IsZero() {
+		if msg.BuyAmount.LT(amm.MinCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "buy amount %s is smaller than the min amount %s", msg.BuyAmount, amm.MinCoinAmount)
+		}
+		if !msg.MinBuyPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "min buy price must be positive: %s", msg.MinBuyPrice)
+		}
+		if !msg.MaxBuyPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "max buy price must be positive: %s", msg.MaxBuyPrice)
+		}
+		if msg.MinBuyPrice.GT(msg.MaxBuyPrice) {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max buy price must not be lower than min buy price")
+		}
+	}
+	if msg.OrderLifespan < 0 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "order lifespan must not be negative: %s", msg.OrderLifespan)
+	}
+	return nil
+}
+
+func (msg MsgMMOrder) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgMMOrder) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgMMOrder) GetOrderer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 // NewMsgCancelOrder creates a new MsgCancelOrder.
 func NewMsgCancelOrder(
 	appID uint64,
@@ -547,6 +716,53 @@ func (msg MsgCancelAllOrders) GetSigners() []sdk.AccAddress {
 }
 
 func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgCancelMMOrder creates a new MsgCancelMMOrder.
+func NewMsgCancelMMOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairId uint64,
+) *MsgCancelMMOrder {
+	return &MsgCancelMMOrder{
+		AppId:   appID,
+		Orderer: orderer.String(),
+		PairId:  pairId,
+	}
+}
+
+func (msg MsgCancelMMOrder) Route() string { return RouterKey }
+
+func (msg MsgCancelMMOrder) Type() string { return TypeMsgCancelMMOrder }
+
+func (msg MsgCancelMMOrder) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Orderer); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid orderer address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	return nil
+}
+
+func (msg MsgCancelMMOrder) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgCancelMMOrder) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgCancelMMOrder) GetOrderer() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
 	if err != nil {
 		panic(err)

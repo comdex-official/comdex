@@ -483,6 +483,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						if err != nil {
 							return err
 						}
+						err = k.SendBridgeAssetToOriginPool(ctx, lockedVault)
+						if err != nil {
+							return err
+						}
 						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(cAssetIn.Denom, lockedVault.AmountIn))); err != nil {
 							return err
@@ -494,6 +498,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						return nil
 					}
 					if lockedVault.AmountIn.IsZero() {
+						err := k.SendBridgeAssetToOriginPool(ctx, lockedVault)
+						if err != nil {
+							return err
+						}
 						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
 						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
@@ -532,6 +540,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						if err != nil {
 							return err
 						}
+						err = k.SendBridgeAssetToOriginPool(ctx, lockedVault)
+						if err != nil {
+							return err
+						}
 						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						if err = k.bank.SendCoinsFromModuleToAccount(ctx, assetInPool.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(cAssetIn.Denom, lockedVault.AmountIn))); err != nil {
 							return err
@@ -543,6 +555,10 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 						return nil
 					}
 					if lockedVault.AmountIn.IsZero() {
+						err := k.SendBridgeAssetToOriginPool(ctx, lockedVault)
+						if err != nil {
+							return err
+						}
 						k.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
 						k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, lockedVault.OriginalVaultId, false)
 						k.lend.DeleteBorrowIDFromUserMapping(ctx, lendPos.Owner, lendPos.ID, lockedVault.OriginalVaultId)
@@ -573,6 +589,20 @@ func (k Keeper) UnLiquidateLockedBorrows(ctx sdk.Context, appID, id uint64, dutc
 				}
 			}
 		}
+	}
+	return nil
+}
+
+func (k Keeper) SendBridgeAssetToOriginPool(ctx sdk.Context, lockedVault types.LockedVault) error {
+	borrowMetadata := lockedVault.GetBorrowMetaData()
+	borrow, _ := k.lend.GetBorrow(ctx, lockedVault.OriginalVaultId)
+	pair, _ := k.lend.GetLendPair(ctx, borrow.PairID)
+	lend, _ := k.lend.GetLend(ctx, borrowMetadata.LendingId)
+	assetInPool, _ := k.lend.GetPool(ctx, lend.PoolID)
+	assetOutPool, _ := k.lend.GetPool(ctx, pair.AssetOutPoolID)
+	err := k.bank.SendCoinsFromModuleToModule(ctx, assetOutPool.ModuleName, assetInPool.ModuleName, sdk.NewCoins(borrowMetadata.BridgedAssetAmount))
+	if err != nil {
+		return err
 	}
 	return nil
 }
