@@ -74,9 +74,15 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool, assett
 	}
 
 	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
-	if !found || !price.IsPriceActive {
+	if !found {
 		return 0, false, assettypes.Asset{}
 	}
+
+	// if price is not active and twa is 0 or less return false
+	if !price.IsPriceActive && price.Twa <= 0 {
+		return 0, false, assettypes.Asset{}
+	}
+
 	return price.Twa, true, asset
 }
 
