@@ -30,10 +30,14 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.AddAssetsProposal:
 			return handleAddAssetProposal(ctx, k, c)
+		case *types.AddMultipleAssetsProposal:
+			return handleAddMultipleAssetProposal(ctx, k, c)
 		case *types.UpdateAssetProposal:
 			return handleUpdateAssetProposal(ctx, k, c)
 		case *types.AddPairsProposal:
 			return handleAddPairsProposal(ctx, k, c)
+		case *types.AddMultiplePairsProposal:
+			return handleAddMultiplePairsProposal(ctx, k, c)
 		case *types.UpdatePairProposal:
 			return handleUpdatePairProposal(ctx, k, c)
 		case *types.UpdateGovTimeInAppProposal:
@@ -53,12 +57,20 @@ func handleAddAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssets
 	return k.HandleProposalAddAsset(ctx, p)
 }
 
+func handleAddMultipleAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetsProposal) error {
+	return k.HandleProposalAddMultipleAsset(ctx, p)
+}
+
 func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateAssetProposal) error {
 	return k.HandleProposalUpdateAsset(ctx, p)
 }
 
 func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsProposal) error {
 	return k.HandleProposalAddPairs(ctx, p)
+}
+
+func handleAddMultiplePairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultiplePairsProposal) error {
+	return k.HandleProposalAddMultiplePairs(ctx, p)
 }
 
 func handleUpdatePairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdatePairProposal) error {

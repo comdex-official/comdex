@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"strings"
+	"strconv"
 	flag "github.com/spf13/pflag"
 )
 
@@ -16,6 +18,30 @@ func ParseBoolFromString(s string) bool {
 	default:
 		return false
 	}
+}
+
+func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
+	var parsedInts []uint64
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsed, err := strconv.ParseUint(s, 10, 64)
+		if err != nil {
+			return []uint64{}, err
+		}
+		parsedInts = append(parsedInts, parsed)
+	}
+	return parsedInts, nil
+}
+
+func ParseStringFromString(s string, separator string) ([]string, error) {
+	var parsedStrings []string
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsedStrings = append(parsedStrings, s)
+	}
+	return parsedStrings, nil
 }
 
 func FlagSetCreateAssetMapping() *flag.FlagSet {
