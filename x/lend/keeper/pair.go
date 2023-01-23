@@ -103,6 +103,40 @@ func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMap
 	return nil
 }
 
+func (k Keeper) AddMultipleAssetToPair(ctx sdk.Context, assetToPair []types.AssetToPairSingleMapping) error {
+	for _, assetPair := range assetToPair {
+		assetToPairMap, found := k.GetAssetToPair(ctx, assetPair.AssetID, assetPair.PoolID)
+		if found {
+			_, found = k.GetLendPair(ctx, assetPair.PairID)
+			if !found {
+				return types.ErrorPairDoesNotExist
+			}
+			assetToPairMap.PairID = append(assetToPairMap.PairID, assetPair.PairID)
+			k.SetAssetToPair(ctx, assetToPairMap)
+		} else {
+			var assetToPairMap types.AssetToPairMapping
+			_, found := k.Asset.GetAsset(ctx, assetPair.AssetID)
+			if !found {
+				return types.ErrorAssetDoesNotExist
+			}
+			_, found = k.GetPool(ctx, assetPair.PoolID)
+			if !found {
+				return types.ErrPoolNotFound
+			}
+			_, found = k.GetLendPair(ctx, assetPair.PairID)
+			if !found {
+				return types.ErrorPairDoesNotExist
+			}
+			assetToPairMap.AssetID = assetPair.AssetID
+			assetToPairMap.PoolID = assetPair.PoolID
+			assetToPairMap.PairID = append(assetToPairMap.PairID, assetPair.PairID)
+			k.SetAssetToPair(ctx, assetToPairMap)
+		}
+	}
+
+	return nil
+}
+
 func (k Keeper) SetLendPairID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)

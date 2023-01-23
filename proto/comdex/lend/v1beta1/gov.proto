@@ -31,6 +31,12 @@ message AddAssetToPairProposal {
   AssetToPairMapping AssetToPairMapping = 3 [(gogoproto.nullable) = false];
 }
 
+message AddMultipleAssetToPairProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated AssetToPairSingleMapping AssetToPairSingleMapping = 3 [(gogoproto.nullable) = false];
+}
+
 message AddAssetRatesParams {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];

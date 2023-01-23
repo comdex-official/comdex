@@ -25,6 +25,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MultipleLendPairsProposal{}, "comdex/lend/MultipleLendPairsProposal", nil)
 	cdc.RegisterConcrete(&AddPoolsProposal{}, "comdex/lend/AddPoolsProposal", nil)
 	cdc.RegisterConcrete(&AddAssetToPairProposal{}, "comdex/lend/AddAssetToPairProposal", nil)
+	cdc.RegisterConcrete(&AddMultipleAssetToPairProposal{}, "comdex/lend/AddMultipleAssetToPairProposal", nil)
 	cdc.RegisterConcrete(&AddAssetRatesParams{}, "comdex/lend/AddAssetRatesParams", nil)
 	cdc.RegisterConcrete(&AddAuctionParamsProposal{}, "comdex/lend/AddAuctionParamsProposal", nil)
 	cdc.RegisterConcrete(&MsgCalculateInterestAndRewards{}, "comdex/lend/MsgCalculateInterestAndRewards", nil)
@@ -40,6 +41,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&AddAssetRatesParams{},
 		&AddAuctionParamsProposal{},
 		&MultipleLendPairsProposal{},
+		&AddMultipleAssetToPairProposal{},
 	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
