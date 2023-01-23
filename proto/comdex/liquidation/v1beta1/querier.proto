@@ -12,7 +12,7 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message QueryLockedVaultRequest {
-  uint64 appID = 1;
+  uint64 app_id = 1;
   uint64 id = 2;
 }
 
@@ -89,7 +89,7 @@ message QueryUserLockedVaultsHistoryResponse {
 }
 
 message QueryLockedVaultsPairRequest {
-  uint64 PairId = 1 [ (gogoproto.moretags) = "yaml:\"Pair_Id\""];
+  uint64 pair_id = 1 [ (gogoproto.moretags) = "yaml:\"Pair_Id\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
@@ -112,7 +112,7 @@ message QueryAppIdsResponse {
 
 service Query {
   rpc QueryLockedVault(QueryLockedVaultRequest) returns (QueryLockedVaultResponse) {
-    option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vault/{id}";
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vault/{app_id}/{id}";
   }
   rpc QueryLockedVaults(QueryLockedVaultsRequest) returns (QueryLockedVaultsResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vaults";
@@ -124,13 +124,13 @@ service Query {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vaults_history";
   }
   rpc QueryUserLockedVaults(QueryUserLockedVaultsRequest) returns (QueryUserLockedVaultsResponse) {
-    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults";
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults/{user_address}";
   }
   rpc QueryUserLockedVaultsHistory(QueryUserLockedVaultsHistoryRequest) returns (QueryUserLockedVaultsHistoryResponse) {
-    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_history";
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_history/{user_address}";
   }
   rpc QueryLockedVaultsPair(QueryLockedVaultsPairRequest) returns (QueryLockedVaultsPairResponse) {
-    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_pair";
+    option (google.api.http).get = "/comdex/liquidation/v1beta1/user_locked_vaults_pair/{pair_id}";
   }
   rpc QueryAppIds(QueryAppIdsRequest) returns (QueryAppIdsResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/app_ids";

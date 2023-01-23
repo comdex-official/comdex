@@ -6,8 +6,10 @@ import (
 
 const (
 	ProposalAddAssets          = "AddAssets"
+	ProposalAddMultipleAssets  = "AddMultipleAssets"
 	ProposalUpdateAsset        = "UpdateAsset"
 	ProposalAddPairs           = "AddPairs"
+	ProposalAddMultiplePairs   = "AddMultiplePairs"
 	ProposalUpdatePair         = "UpdatePair"
 	ProposalAddApp             = "AddApp"
 	ProposalAddAssetInApp      = "AddAssetInApp"
@@ -18,11 +20,17 @@ func init() {
 	govtypes.RegisterProposalType(ProposalAddAssets)
 	govtypes.RegisterProposalTypeCodec(&AddAssetsProposal{}, "comdex/AddAssetsProposal")
 
+	govtypes.RegisterProposalType(ProposalAddMultipleAssets)
+	govtypes.RegisterProposalTypeCodec(&AddMultipleAssetsProposal{}, "comdex/AddMultipleAssetsProposal")
+
 	govtypes.RegisterProposalType(ProposalUpdateAsset)
 	govtypes.RegisterProposalTypeCodec(&UpdateAssetProposal{}, "comdex/UpdateAssetProposal")
 
 	govtypes.RegisterProposalType(ProposalAddPairs)
 	govtypes.RegisterProposalTypeCodec(&AddPairsProposal{}, "comdex/AddPairsProposal")
+
+	govtypes.RegisterProposalType(ProposalAddMultiplePairs)
+	govtypes.RegisterProposalTypeCodec(&AddMultiplePairsProposal{}, "comdex/AddMultiplePairsProposal")
 
 	govtypes.RegisterProposalType(ProposalUpdatePair)
 	govtypes.RegisterProposalTypeCodec(&UpdatePairProposal{}, "comdex/UpdatePairProposal")
@@ -39,8 +47,10 @@ func init() {
 
 var (
 	_ govtypes.Content = &AddAssetsProposal{}
+	_ govtypes.Content = &AddMultipleAssetsProposal{}
 	_ govtypes.Content = &UpdateAssetProposal{}
 	_ govtypes.Content = &AddPairsProposal{}
+	_ govtypes.Content = &AddMultiplePairsProposal{}
 	_ govtypes.Content = &UpdatePairProposal{}
 	_ govtypes.Content = &UpdateGovTimeInAppProposal{}
 	_ govtypes.Content = &AddAppProposal{}
@@ -74,6 +84,42 @@ func (p *AddAssetsProposal) ValidateBasic() error {
 
 	if err := p.Assets.Validate(); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func NewAddMultipleAssetsProposal(title, description string, assets []Asset) govtypes.Content {
+	return &AddMultipleAssetsProposal{
+		Title:       title,
+		Description: description,
+		Assets:      assets,
+	}
+}
+func (p *AddMultipleAssetsProposal) GetTitle() string {
+	return p.Title
+}
+
+func (p *AddMultipleAssetsProposal) GetDescription() string {
+	return p.Description
+}
+func (p *AddMultipleAssetsProposal) ProposalRoute() string { return RouterKey }
+
+func (p *AddMultipleAssetsProposal) ProposalType() string { return ProposalAddMultipleAssets }
+
+func (p *AddMultipleAssetsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+	if len(p.Assets) == 0 {
+		return ErrorEmptyProposalAssets
+	}
+
+	for _, asset := range p.Assets {
+		if err := asset.Validate(); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -139,6 +185,43 @@ func (p *AddPairsProposal) ValidateBasic() error {
 
 	if err := p.Pairs.Validate(); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func NewAddMultiplePairsProposal(title, description string, pairs []Pair) govtypes.Content {
+	return &AddMultiplePairsProposal{
+		Title:       title,
+		Description: description,
+		Pairs:       pairs,
+	}
+}
+
+func (p *AddMultiplePairsProposal) GetTitle() string {
+	return p.Title
+}
+
+func (p *AddMultiplePairsProposal) GetDescription() string {
+	return p.Description
+}
+func (p *AddMultiplePairsProposal) ProposalRoute() string { return RouterKey }
+
+func (p *AddMultiplePairsProposal) ProposalType() string { return ProposalAddMultiplePairs }
+
+func (p *AddMultiplePairsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+	if len(p.Pairs) == 0 {
+		return ErrorEmptyProposalAssets
+	}
+
+	for _, pair := range p.Pairs {
+		if err := pair.Validate(); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -15,4 +15,6 @@ var AddAssetsHandler = []govclient.ProposalHandler{
 	govclient.NewProposalHandler(cli.NewCmdSubmitAddAppProposal, rest.AddNewAppProposalRESTHandler),
 	govclient.NewProposalHandler(cli.NewCmdSubmitAddAssetInAppProposal, rest.AddNewAssetInAppProposalRESTHandler),
 	govclient.NewProposalHandler(cli.NewCmdSubmitUpdateGovTimeInAppProposal, rest.UpdateNewGovTimeInAppProposalRESTHandler),
+	govclient.NewProposalHandler(cli.NewCmdSubmitAddMultipleAssetsProposal, rest.AddNewAssetsProposalRESTHandler),
+	govclient.NewProposalHandler(cli.NewCmdSubmitAddMultiplePairsProposal, rest.AddNewPairsProposalRESTHandler),
 }
