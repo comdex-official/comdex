@@ -161,7 +161,7 @@ func (k Keeper) StartDutchAuction(
 	return nil
 }
 
-func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, max sdk.Dec) error {
+func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin) error {
 	if bid.Amount.Equal(sdk.ZeroInt()) {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid amount can't be Zero")
 	}
@@ -174,13 +174,6 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 	}
 	if bid.Amount.GT(auction.OutflowTokenCurrentAmount.Amount) {
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid amount can't be greater than collateral available")
-	}
-
-	max = k.GetUUSDFromUSD(ctx, max)
-
-	// Here OutflowToken current price is in uusd and max is in uusd
-	if max.LT(auction.OutflowTokenCurrentPrice.Ceil()) {
-		return auctiontypes.ErrorInvalidDutchPrice
 	}
 
 	// slice tells amount of collateral user should be given

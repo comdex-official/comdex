@@ -35,7 +35,7 @@ func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedV
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
-	item, found := q.GetLockedVault(ctx, req.AppID, req.Id)
+	item, found := q.GetLockedVault(ctx, req.AppId, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locked-vault does not exist for id %d", req.Id)
 	}

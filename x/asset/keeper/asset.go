@@ -220,6 +220,16 @@ func (k Keeper) AddAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	return nil
 }
 
+func (k *Keeper) AddMultipleAssetRecords(ctx sdk.Context, records ...types.Asset) error {
+	for _, record := range records {
+		err := k.AddAssetRecords(ctx, record)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	asset, found := k.GetAsset(ctx, msg.Id)
 	if !found {
