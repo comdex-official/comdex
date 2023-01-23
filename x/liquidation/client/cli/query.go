@@ -33,7 +33,7 @@ func queryLockedVault() *cobra.Command {
 			res, err := queryClient.QueryLockedVault(
 				context.Background(),
 				&types.QueryLockedVaultRequest{
-					AppID: appID,
+					AppId: appID,
 					Id:    id,
 				},
 			)
