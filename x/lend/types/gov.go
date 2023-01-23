@@ -5,16 +5,19 @@ import (
 )
 
 var (
-	ProposalAddLendPairs        = "ProposalAddLendPairs"
-	ProposalAddPool             = "ProposalAddPool"
-	ProposalAddAssetToPair      = "ProposalAddAssetToPair"
-	ProposalAddAssetRatesParams = "ProposalAddAssetRatesParams"
-	ProposalAddAuctionParams    = "ProposalAddAuctionParams"
+	ProposalAddLendPairs         = "ProposalAddLendPairs"
+	ProposalAddMultipleLendPairs = "ProposalAddMultipleLendPairs"
+	ProposalAddPool              = "ProposalAddPool"
+	ProposalAddAssetToPair       = "ProposalAddAssetToPair"
+	ProposalAddAssetRatesParams  = "ProposalAddAssetRatesParams"
+	ProposalAddAuctionParams     = "ProposalAddAuctionParams"
 )
 
 func init() {
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
 	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
+	govtypes.RegisterProposalType(ProposalAddMultipleLendPairs)
+	govtypes.RegisterProposalTypeCodec(&MultipleLendPairsProposal{}, "comdex/AddMultipleLendPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddPool)
 	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
@@ -31,6 +34,7 @@ var (
 	_ govtypes.Content = &AddAssetToPairProposal{}
 	_ govtypes.Content = &AddAssetRatesParams{}
 	_ govtypes.Content = &AddAuctionParamsProposal{}
+	_ govtypes.Content = &MultipleLendPairsProposal{}
 )
 
 func NewAddLendPairsProposal(title, description string, pairs Extended_Pair) govtypes.Content {
@@ -53,6 +57,36 @@ func (p *LendPairsProposal) ValidateBasic() error {
 
 	if err := p.Pairs.Validate(); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func NewAddMultipleLendPairsProposal(title, description string, pairs []Extended_Pair) govtypes.Content {
+	return &MultipleLendPairsProposal{
+		Title:       title,
+		Description: description,
+		Pairs:       pairs,
+	}
+}
+
+func (p *MultipleLendPairsProposal) ProposalRoute() string { return RouterKey }
+
+func (p *MultipleLendPairsProposal) ProposalType() string { return ProposalAddMultipleLendPairs }
+
+func (p *MultipleLendPairsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+	if len(p.Pairs) == 0 {
+		return ErrorEmptyProposalAssets
+	}
+
+	for _, pair := range p.Pairs {
+		if err := pair.Validate(); err != nil {
+			return err
+		}
 	}
 
 	return nil

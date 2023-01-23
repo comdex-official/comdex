@@ -8,9 +8,10 @@ import (
 )
 
 var (
-	AddLendPairsHandler        = govclient.NewProposalHandler(cli.CmdAddNewLendPairsProposal, rest.AddNewPairsProposalRESTHandler)
-	AddPoolHandler             = govclient.NewProposalHandler(cli.CmdAddPoolProposal, rest.AddPoolProposalRESTHandler)
-	AddAssetToPairHandler      = govclient.NewProposalHandler(cli.CmdAddAssetToPairProposal, rest.AddAssetToPairProposalRESTHandler)
-	AddAssetRatesParamsHandler = govclient.NewProposalHandler(cli.CmdAddNewAssetRatesParamsProposal, rest.AddNewAssetRatesParamsProposalRESTHandler)
-	AddAuctionParamsHandler    = govclient.NewProposalHandler(cli.CmdAddNewAuctionParamsProposal, rest.AddNewAuctionParamsProposalRESTHandler)
+	AddLendPairsHandler         = govclient.NewProposalHandler(cli.CmdAddNewLendPairsProposal, rest.AddNewPairsProposalRESTHandler)
+	AddPoolHandler              = govclient.NewProposalHandler(cli.CmdAddPoolProposal, rest.AddPoolProposalRESTHandler)
+	AddAssetToPairHandler       = govclient.NewProposalHandler(cli.CmdAddAssetToPairProposal, rest.AddAssetToPairProposalRESTHandler)
+	AddAssetRatesParamsHandler  = govclient.NewProposalHandler(cli.CmdAddNewAssetRatesParamsProposal, rest.AddNewAssetRatesParamsProposalRESTHandler)
+	AddAuctionParamsHandler     = govclient.NewProposalHandler(cli.CmdAddNewAuctionParamsProposal, rest.AddNewAuctionParamsProposalRESTHandler)
+	AddMultipleLendPairsHandler = govclient.NewProposalHandler(cli.CmdAddNewMultipleLendPairsProposal, rest.AddNewPairsProposalRESTHandler)
 )
