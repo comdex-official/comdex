@@ -105,7 +105,7 @@ func (p *AddMultipleAssetsProposal) GetDescription() string {
 }
 func (p *AddMultipleAssetsProposal) ProposalRoute() string { return RouterKey }
 
-func (p *AddMultipleAssetsProposal) ProposalType() string { return ProposalAddAssets }
+func (p *AddMultipleAssetsProposal) ProposalType() string { return ProposalAddMultipleAssets }
 
 func (p *AddMultipleAssetsProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
@@ -207,7 +207,7 @@ func (p *AddMultiplePairsProposal) GetDescription() string {
 }
 func (p *AddMultiplePairsProposal) ProposalRoute() string { return RouterKey }
 
-func (p *AddMultiplePairsProposal) ProposalType() string { return ProposalAddPairs }
+func (p *AddMultiplePairsProposal) ProposalType() string { return ProposalAddMultiplePairs }
 
 func (p *AddMultiplePairsProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
