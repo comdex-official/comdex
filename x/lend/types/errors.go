@@ -48,4 +48,5 @@ var (
 	ErrorLBMappingNotFound             = sdkerrors.Register(ModuleName, 639, "Asset LB Mapping Not found")
 	ErrInsufficientFundsInPool         = sdkerrors.Register(ModuleName, 640, "Insufficient Funds in Pool")
 	ErrBorrowLessThanMinAmount         = sdkerrors.Register(ModuleName, 641, "The Borrow amount requested is less than the min borrow limit of 1$")
+	ErrorEmptyProposalAssets           = sdkerrors.Register(ModuleName, 642, "Empty proposal for asset")
 )
