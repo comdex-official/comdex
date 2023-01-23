@@ -809,7 +809,9 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
 				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("ucmdx", userReceivableAmount)
+				userOutflowCoinFinal := sdk.NewCoin("ucmdx", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
@@ -822,7 +824,7 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
 				s.Require().Equal(userBid.Bidder, userAddress1)
 				s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
-				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
+				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoinFinal)
 				s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
 			}
 		})
@@ -936,7 +938,9 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
 				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("uosmo", userReceivableAmount)
+				userOutflowCoinFinal := sdk.NewCoin("uosmo", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
@@ -949,7 +953,7 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
 				s.Require().Equal(userBid.Bidder, userAddress1)
 				s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
-				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
+				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoinFinal)
 				s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
 			}
 		})
