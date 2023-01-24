@@ -538,6 +538,95 @@ func NewCreateNewLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.Fl
 	return txf, msg, nil
 }
 
+func CmdAddNewMultipleLendPairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-multiple-lend-pairs [flags]",
+		Short: "Add multiple lend asset pairs",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateNewMultipleLendPairs(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetNewLendPairsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewCreateNewMultipleLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	newLendPairs, err := parseAddNewLendPairsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse add lend pairs : %w", err)
+	}
+
+	assetIn, err := ParseUint64SliceFromString(newLendPairs.AssetIn, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOut, err := ParseUint64SliceFromString(newLendPairs.AssetOut, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isInterPool, err := ParseUint64SliceFromString(newLendPairs.IsInterPool, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOutPoolID, err := ParseUint64SliceFromString(newLendPairs.AssetOutPoolID, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	minUSDValueLeft, err := ParseUint64SliceFromString(newLendPairs.MinUSDValueLeft, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	var pairs []types.Extended_Pair
+	for i := range assetIn {
+		interPool := ParseBoolFromString(isInterPool[i])
+		pairs = append(pairs, types.Extended_Pair{
+			AssetIn:         assetIn[i],
+			AssetOut:        assetOut[i],
+			IsInterPool:     interPool,
+			AssetOutPoolID:  assetOutPoolID[i],
+			MinUsdValueLeft: minUSDValueLeft[i],
+		})
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	deposit, err := sdk.ParseCoinsNormalized(newLendPairs.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddMultipleLendPairsProposal(newLendPairs.Title, newLendPairs.Description, pairs)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+	return txf, msg, nil
+}
+
 func CmdAddPoolProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-lend-pool [flag] ",
@@ -676,6 +765,78 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 			}
 
 			content := types.NewAddAssetToPairProposal(title, description, assetToPairMapping)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func CmdAddMultipleAssetToPairProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-multiple-asset-to-pair-mapping [asset_ids] [pool_ids] [pair_ids] ",
+		Short: "Add multiple asset to pair mapping ",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			assetID, _ := ParseUint64SliceFromString(args[0], ",")
+			if err != nil {
+				return err
+			}
+			poolID, _ := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+			pairID, _ := ParseUint64SliceFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+			var assetToPairMapping []types.AssetToPairSingleMapping
+			for i := range assetID {
+				assetToPairMapping = append(assetToPairMapping, types.AssetToPairSingleMapping{
+					AssetID: assetID[i],
+					PoolID:  poolID[i],
+					PairID:  pairID[i],
+				})
+			}
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewAddMultipleAssetToPairProposal(title, description, assetToPairMapping)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {

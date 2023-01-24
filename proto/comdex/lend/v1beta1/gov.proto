@@ -13,6 +13,12 @@ message LendPairsProposal {
   Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
 }
 
+message MultipleLendPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
+}
+
 message AddPoolsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
@@ -23,6 +29,12 @@ message AddAssetToPairProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   AssetToPairMapping AssetToPairMapping = 3 [(gogoproto.nullable) = false];
+}
+
+message AddMultipleAssetToPairProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated AssetToPairSingleMapping AssetToPairSingleMapping = 3 [(gogoproto.nullable) = false];
 }
 
 message AddAssetRatesParams {

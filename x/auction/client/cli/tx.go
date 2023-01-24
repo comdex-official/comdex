@@ -106,9 +106,9 @@ func txPlaceDebtBid() *cobra.Command {
 
 func txPlaceDutchBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid-dutch [auction-id] [amount] [max-amount-per-collateral-token]  [app-id] [auction-mapping-id]",
+		Use:   "bid-dutch [auction-id] [amount] [app-id] [auction-mapping-id]",
 		Short: "Place a Dutch bid on an auction",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -125,19 +125,17 @@ func txPlaceDutchBid() *cobra.Command {
 				return err
 			}
 
-			max := sdk.MustNewDecFromStr(args[2])
-
-			appID, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			auctionMappingID, err := strconv.ParseUint(args[4], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress().String(), auctionID, amt, max, appID, auctionMappingID)
+			msg := types.NewMsgPlaceDutchBid(clientCtx.GetFromAddress().String(), auctionID, amt, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -151,7 +149,7 @@ func txPlaceDutchBid() *cobra.Command {
 
 func txPlaceDutchLendBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bid-dutch-lend [auction-id] [amount] [max-amount-per-collateral-token]  [app-id] [auction-mapping-id]",
+		Use:   "bid-dutch-lend [auction-id] [amount] [app-id] [auction-mapping-id]",
 		Short: "Place a Dutch bid on an auction for Commodo",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -170,19 +168,17 @@ func txPlaceDutchLendBid() *cobra.Command {
 				return err
 			}
 
-			max := sdk.MustNewDecFromStr(args[2])
-
-			appID, err := strconv.ParseUint(args[3], 10, 64)
+			appID, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			auctionMappingID, err := strconv.ParseUint(args[4], 10, 64)
+			auctionMappingID, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return fmt.Errorf("auction-id '%s' not a valid uint", args[0])
 			}
 
-			msg := types.NewMsgPlaceDutchLendBid(clientCtx.GetFromAddress().String(), auctionID, amt, max, appID, auctionMappingID)
+			msg := types.NewMsgPlaceDutchLendBid(clientCtx.GetFromAddress().String(), auctionID, amt, appID, auctionMappingID)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

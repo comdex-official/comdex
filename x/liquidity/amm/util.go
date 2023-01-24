@@ -67,28 +67,28 @@ func TotalMatchableAmount(orders []Order, price sdk.Dec) (amt sdk.Int) {
 
 // OrderGroup represents a group of orders with same batch id.
 type OrderGroup struct {
-	BatchId uint64
+	BatchID uint64
 	Orders  []Order
 }
 
 // GroupOrdersByBatchId groups orders by their batch id and returns a
 // slice of OrderGroup.
-func GroupOrdersByBatchId(orders []Order) (groups []*OrderGroup) {
-	groupByBatchId := map[uint64]*OrderGroup{}
+func GroupOrdersByBatchID(orders []Order) (groups []*OrderGroup) {
+	groupByBatchID := map[uint64]*OrderGroup{}
 	for _, order := range orders {
-		group, ok := groupByBatchId[order.GetBatchId()]
+		group, ok := groupByBatchID[order.GetBatchId()]
 		if !ok {
 			i := sort.Search(len(groups), func(i int) bool {
 				if order.GetBatchId() == 0 {
-					return groups[i].BatchId == 0
+					return groups[i].BatchID == 0
 				}
-				if groups[i].BatchId == 0 {
+				if groups[i].BatchID == 0 {
 					return true
 				}
-				return order.GetBatchId() <= groups[i].BatchId
+				return order.GetBatchId() <= groups[i].BatchID
 			})
-			group = &OrderGroup{BatchId: order.GetBatchId()}
-			groupByBatchId[order.GetBatchId()] = group
+			group = &OrderGroup{BatchID: order.GetBatchId()}
+			groupByBatchID[order.GetBatchId()] = group
 			groups = append(groups[:i], append([]*OrderGroup{group}, groups[i:]...)...)
 		}
 		group.Orders = append(group.Orders, order)

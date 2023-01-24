@@ -83,6 +83,66 @@ func (m *LendPairsProposal) GetPairs() Extended_Pair {
 	return Extended_Pair{}
 }
 
+type MultipleLendPairsProposal struct {
+	Title       string          `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string          `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	Pairs       []Extended_Pair `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs"`
+}
+
+func (m *MultipleLendPairsProposal) Reset()         { *m = MultipleLendPairsProposal{} }
+func (m *MultipleLendPairsProposal) String() string { return proto.CompactTextString(m) }
+func (*MultipleLendPairsProposal) ProtoMessage()    {}
+func (*MultipleLendPairsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4c877ba3eefc3a22, []int{1}
+}
+func (m *MultipleLendPairsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MultipleLendPairsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MultipleLendPairsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MultipleLendPairsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MultipleLendPairsProposal.Merge(m, src)
+}
+func (m *MultipleLendPairsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *MultipleLendPairsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_MultipleLendPairsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MultipleLendPairsProposal proto.InternalMessageInfo
+
+func (m *MultipleLendPairsProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *MultipleLendPairsProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *MultipleLendPairsProposal) GetPairs() []Extended_Pair {
+	if m != nil {
+		return m.Pairs
+	}
+	return nil
+}
+
 type AddPoolsProposal struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
@@ -93,7 +153,7 @@ func (m *AddPoolsProposal) Reset()         { *m = AddPoolsProposal{} }
 func (m *AddPoolsProposal) String() string { return proto.CompactTextString(m) }
 func (*AddPoolsProposal) ProtoMessage()    {}
 func (*AddPoolsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4c877ba3eefc3a22, []int{1}
+	return fileDescriptor_4c877ba3eefc3a22, []int{2}
 }
 func (m *AddPoolsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -153,7 +213,7 @@ func (m *AddAssetToPairProposal) Reset()         { *m = AddAssetToPairProposal{}
 func (m *AddAssetToPairProposal) String() string { return proto.CompactTextString(m) }
 func (*AddAssetToPairProposal) ProtoMessage()    {}
 func (*AddAssetToPairProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4c877ba3eefc3a22, []int{2}
+	return fileDescriptor_4c877ba3eefc3a22, []int{3}
 }
 func (m *AddAssetToPairProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -203,6 +263,66 @@ func (m *AddAssetToPairProposal) GetAssetToPairMapping() AssetToPairMapping {
 	return AssetToPairMapping{}
 }
 
+type AddMultipleAssetToPairProposal struct {
+	Title                    string                     `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description              string                     `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	AssetToPairSingleMapping []AssetToPairSingleMapping `protobuf:"bytes,3,rep,name=AssetToPairSingleMapping,proto3" json:"AssetToPairSingleMapping"`
+}
+
+func (m *AddMultipleAssetToPairProposal) Reset()         { *m = AddMultipleAssetToPairProposal{} }
+func (m *AddMultipleAssetToPairProposal) String() string { return proto.CompactTextString(m) }
+func (*AddMultipleAssetToPairProposal) ProtoMessage()    {}
+func (*AddMultipleAssetToPairProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4c877ba3eefc3a22, []int{4}
+}
+func (m *AddMultipleAssetToPairProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddMultipleAssetToPairProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddMultipleAssetToPairProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddMultipleAssetToPairProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddMultipleAssetToPairProposal.Merge(m, src)
+}
+func (m *AddMultipleAssetToPairProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddMultipleAssetToPairProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddMultipleAssetToPairProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddMultipleAssetToPairProposal proto.InternalMessageInfo
+
+func (m *AddMultipleAssetToPairProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AddMultipleAssetToPairProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AddMultipleAssetToPairProposal) GetAssetToPairSingleMapping() []AssetToPairSingleMapping {
+	if m != nil {
+		return m.AssetToPairSingleMapping
+	}
+	return nil
+}
+
 type AddAssetRatesParams struct {
 	Title            string           `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description      string           `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
@@ -213,7 +333,7 @@ func (m *AddAssetRatesParams) Reset()         { *m = AddAssetRatesParams{} }
 func (m *AddAssetRatesParams) String() string { return proto.CompactTextString(m) }
 func (*AddAssetRatesParams) ProtoMessage()    {}
 func (*AddAssetRatesParams) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4c877ba3eefc3a22, []int{3}
+	return fileDescriptor_4c877ba3eefc3a22, []int{5}
 }
 func (m *AddAssetRatesParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -273,7 +393,7 @@ func (m *AddAuctionParamsProposal) Reset()         { *m = AddAuctionParamsPropos
 func (m *AddAuctionParamsProposal) String() string { return proto.CompactTextString(m) }
 func (*AddAuctionParamsProposal) ProtoMessage()    {}
 func (*AddAuctionParamsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4c877ba3eefc3a22, []int{4}
+	return fileDescriptor_4c877ba3eefc3a22, []int{6}
 }
 func (m *AddAuctionParamsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -325,8 +445,10 @@ func (m *AddAuctionParamsProposal) GetAuctionParams() AuctionParams {
 
 func init() {
 	proto.RegisterType((*LendPairsProposal)(nil), "comdex.lend.v1beta1.LendPairsProposal")
+	proto.RegisterType((*MultipleLendPairsProposal)(nil), "comdex.lend.v1beta1.MultipleLendPairsProposal")
 	proto.RegisterType((*AddPoolsProposal)(nil), "comdex.lend.v1beta1.AddPoolsProposal")
 	proto.RegisterType((*AddAssetToPairProposal)(nil), "comdex.lend.v1beta1.AddAssetToPairProposal")
+	proto.RegisterType((*AddMultipleAssetToPairProposal)(nil), "comdex.lend.v1beta1.AddMultipleAssetToPairProposal")
 	proto.RegisterType((*AddAssetRatesParams)(nil), "comdex.lend.v1beta1.AddAssetRatesParams")
 	proto.RegisterType((*AddAuctionParamsProposal)(nil), "comdex.lend.v1beta1.AddAuctionParamsProposal")
 }
@@ -334,34 +456,37 @@ func init() {
 func init() { proto.RegisterFile("comdex/lend/v1beta1/gov.proto", fileDescriptor_4c877ba3eefc3a22) }
 
 var fileDescriptor_4c877ba3eefc3a22 = []byte{
-	// 423 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x94, 0xc1, 0x8a, 0xd3, 0x40,
-	0x1c, 0xc6, 0x33, 0xda, 0x0a, 0x4e, 0x15, 0x6a, 0x2a, 0x25, 0x16, 0x4c, 0xcb, 0x80, 0xda, 0x8b,
-	0x09, 0xb5, 0x17, 0xf1, 0x20, 0xb4, 0x20, 0x78, 0x50, 0x09, 0x41, 0x10, 0x04, 0x91, 0x69, 0x66,
-	0x1a, 0x07, 0xd2, 0x4c, 0xc8, 0x4c, 0x4b, 0xfb, 0x16, 0xbe, 0xc6, 0x3e, 0xc0, 0xbe, 0x43, 0x0f,
-	0x7b, 0xe8, 0x71, 0xf7, 0x52, 0x96, 0xf6, 0x0d, 0xfa, 0x04, 0xcb, 0x24, 0xb3, 0x90, 0x6e, 0xb3,
-	0x7b, 0xcc, 0x2d, 0x99, 0xef, 0xfb, 0xff, 0xbf, 0xef, 0x47, 0xc8, 0xc0, 0xd7, 0x01, 0x9f, 0x11,
-	0xba, 0x74, 0x23, 0x1a, 0x13, 0x77, 0x31, 0x98, 0x50, 0x89, 0x07, 0x6e, 0xc8, 0x17, 0x4e, 0x92,
-	0x72, 0xc9, 0xcd, 0x56, 0x2e, 0x3b, 0x4a, 0x76, 0xb4, 0xdc, 0x79, 0x19, 0xf2, 0x90, 0x67, 0xba,
-	0xab, 0x9e, 0x72, 0x6b, 0xc7, 0x2e, 0xdb, 0x94, 0xcd, 0x65, 0x3a, 0x3a, 0x07, 0xf0, 0xc5, 0x37,
-	0x1a, 0x13, 0x0f, 0xb3, 0x54, 0x78, 0x29, 0x4f, 0xb8, 0xc0, 0x91, 0xf9, 0x16, 0xd6, 0x25, 0x93,
-	0x11, 0xb5, 0x40, 0x0f, 0xf4, 0x9f, 0x8e, 0x9b, 0x87, 0x6d, 0xf7, 0xd9, 0x0a, 0xcf, 0xa2, 0x4f,
-	0x28, 0x3b, 0x46, 0x7e, 0x2e, 0x9b, 0x1f, 0x61, 0x83, 0x50, 0x11, 0xa4, 0x2c, 0x91, 0x8c, 0xc7,
-	0xd6, 0xa3, 0xcc, 0xdd, 0x3e, 0x6c, 0xbb, 0x66, 0xee, 0x2e, 0x88, 0xc8, 0x2f, 0x5a, 0xcd, 0xcf,
-	0xb0, 0x9e, 0xa8, 0x48, 0xeb, 0x71, 0x0f, 0xf4, 0x1b, 0x1f, 0x90, 0x53, 0x82, 0xe4, 0x7c, 0x59,
-	0x4a, 0x1a, 0x13, 0x4a, 0xfe, 0xaa, 0x76, 0xe3, 0xda, 0x7a, 0xdb, 0x35, 0xfc, 0x7c, 0x0c, 0x9d,
-	0x01, 0xd8, 0x1c, 0x11, 0xe2, 0x71, 0x1e, 0x55, 0x59, 0x7b, 0x08, 0x6b, 0x2a, 0x52, 0xb7, 0x7e,
-	0x55, 0xda, 0x5a, 0x19, 0x74, 0xd9, 0xcc, 0x8c, 0xae, 0x00, 0x6c, 0x8f, 0x08, 0x19, 0x09, 0x41,
-	0xe5, 0x4f, 0xae, 0x58, 0x2a, 0x6c, 0xfc, 0x07, 0x9a, 0x85, 0xe0, 0xef, 0x38, 0x49, 0x58, 0x1c,
-	0xea, 0xfe, 0xef, 0x4a, 0xfb, 0x9f, 0xda, 0x35, 0x4d, 0xc9, 0x22, 0xb4, 0x01, 0xb0, 0x75, 0xcb,
-	0xe6, 0x63, 0x49, 0x85, 0x87, 0x53, 0x3c, 0x13, 0x15, 0x80, 0xfd, 0x82, 0xcd, 0xbb, 0xa9, 0x1a,
-	0xeb, 0xcd, 0xfd, 0x58, 0x05, 0xb3, 0x86, 0x3a, 0x59, 0x82, 0x2e, 0x00, 0xb4, 0x14, 0xd2, 0x3c,
-	0x50, 0x39, 0xf9, 0x61, 0x85, 0x1f, 0xec, 0x07, 0x7c, 0x7e, 0x14, 0xfd, 0xe0, 0x1f, 0x72, 0xe4,
-	0xd4, 0x44, 0xc7, 0xe3, 0xe3, 0xaf, 0xeb, 0x9d, 0x0d, 0x36, 0x3b, 0x1b, 0x5c, 0xef, 0x6c, 0xf0,
-	0x7f, 0x6f, 0x1b, 0x9b, 0xbd, 0x6d, 0x5c, 0xee, 0x6d, 0xe3, 0xb7, 0x13, 0x32, 0xf9, 0x6f, 0x3e,
-	0x51, 0x8b, 0xdd, 0x7c, 0xf9, 0x7b, 0x3e, 0x9d, 0xb2, 0x80, 0xe1, 0x48, 0xbf, 0xbb, 0xfa, 0xe2,
-	0x90, 0xab, 0x84, 0x8a, 0xc9, 0x93, 0xec, 0xca, 0x18, 0xde, 0x04, 0x00, 0x00, 0xff, 0xff, 0xf4,
-	0xeb, 0x4b, 0xb2, 0x9e, 0x04, 0x00, 0x00,
+	// 476 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0xcf, 0x6a, 0x13, 0x41,
+	0x18, 0xcf, 0xd8, 0x56, 0xf0, 0xab, 0x42, 0xdc, 0x4a, 0xd9, 0x16, 0x9c, 0x94, 0x01, 0xb5, 0x97,
+	0xee, 0x52, 0x7b, 0x11, 0x0f, 0x42, 0x02, 0x82, 0x07, 0x2b, 0x21, 0x0a, 0x82, 0x20, 0x32, 0xc9,
+	0x4c, 0xd7, 0x81, 0xc9, 0xce, 0xb0, 0x33, 0x29, 0xed, 0x5b, 0xf8, 0x1a, 0x3e, 0x80, 0x47, 0xef,
+	0x3d, 0x78, 0xc8, 0x51, 0x2f, 0x41, 0x92, 0x37, 0xa8, 0x2f, 0x20, 0xb3, 0x3b, 0xc5, 0x5d, 0xbb,
+	0x55, 0xe8, 0x61, 0x73, 0x4b, 0xe6, 0xf7, 0xfb, 0x7e, 0x7f, 0x76, 0x86, 0x0f, 0xee, 0x8f, 0xd4,
+	0x98, 0xf1, 0x93, 0x58, 0xf2, 0x94, 0xc5, 0xc7, 0xfb, 0x43, 0x6e, 0xe9, 0x7e, 0x9c, 0xa8, 0xe3,
+	0x48, 0x67, 0xca, 0xaa, 0x60, 0xa3, 0x80, 0x23, 0x07, 0x47, 0x1e, 0xde, 0xbe, 0x97, 0xa8, 0x44,
+	0xe5, 0x78, 0xec, 0x7e, 0x15, 0xd4, 0x6d, 0x5c, 0xa7, 0x94, 0xcf, 0xe5, 0x38, 0xf9, 0x82, 0xe0,
+	0xee, 0x4b, 0x9e, 0xb2, 0x3e, 0x15, 0x99, 0xe9, 0x67, 0x4a, 0x2b, 0x43, 0x65, 0xf0, 0x10, 0xd6,
+	0xac, 0xb0, 0x92, 0x87, 0x68, 0x07, 0xed, 0xde, 0xea, 0xb5, 0xcf, 0x67, 0x9d, 0xdb, 0xa7, 0x74,
+	0x2c, 0x9f, 0x92, 0xfc, 0x98, 0x0c, 0x0a, 0x38, 0x78, 0x02, 0xeb, 0x8c, 0x9b, 0x51, 0x26, 0xb4,
+	0x15, 0x2a, 0x0d, 0x6f, 0xe4, 0xec, 0xcd, 0xf3, 0x59, 0x27, 0x28, 0xd8, 0x25, 0x90, 0x0c, 0xca,
+	0xd4, 0xe0, 0x19, 0xac, 0x69, 0x67, 0x19, 0xae, 0xec, 0xa0, 0xdd, 0xf5, 0xc7, 0x24, 0xaa, 0xa9,
+	0x14, 0x3d, 0x3f, 0xb1, 0x3c, 0x65, 0x9c, 0x7d, 0x70, 0xe9, 0x7a, 0xab, 0x67, 0xb3, 0x4e, 0x6b,
+	0x50, 0x8c, 0x91, 0xaf, 0x08, 0xb6, 0x0e, 0x27, 0xd2, 0x0a, 0x2d, 0xf9, 0x92, 0xf3, 0xaf, 0x5c,
+	0x27, 0xff, 0x67, 0x04, 0xed, 0x2e, 0x63, 0x7d, 0xa5, 0x64, 0x93, 0xb1, 0x0f, 0x60, 0xd5, 0x59,
+	0xfa, 0xaf, 0xbe, 0x55, 0x9b, 0xda, 0x11, 0x7c, 0xd8, 0x9c, 0x4c, 0x7e, 0x20, 0xd8, 0xec, 0x32,
+	0xd6, 0x35, 0x86, 0xdb, 0x37, 0xca, 0x75, 0x69, 0x30, 0xf1, 0x7b, 0x08, 0x4a, 0xc6, 0x87, 0x54,
+	0x6b, 0x91, 0x26, 0x3e, 0xff, 0xa3, 0xda, 0xfc, 0x97, 0xe9, 0xbe, 0x4d, 0x8d, 0x10, 0xf9, 0x85,
+	0x00, 0x77, 0x19, 0xbb, 0x78, 0x4a, 0xcb, 0xe9, 0xa8, 0x20, 0x2c, 0x19, 0xbf, 0x16, 0x69, 0x22,
+	0xf9, 0x9f, 0xa6, 0xee, 0x7d, 0xed, 0xfd, 0xaf, 0x69, 0x65, 0xc8, 0xf7, 0xbd, 0x52, 0x94, 0x4c,
+	0x11, 0x6c, 0x5c, 0xdc, 0xe8, 0x80, 0x5a, 0x6e, 0xfa, 0x34, 0xa3, 0x63, 0xd3, 0x40, 0xd5, 0xb7,
+	0xd0, 0xfe, 0xdb, 0xd5, 0x5f, 0xe6, 0x83, 0xab, 0x2b, 0x96, 0xc8, 0xbe, 0xda, 0x25, 0x11, 0xf2,
+	0x0d, 0x41, 0xe8, 0x2a, 0x4d, 0x46, 0xce, 0xa7, 0x38, 0x6c, 0xf0, 0x0a, 0x5f, 0xc1, 0x9d, 0x8a,
+	0xf5, 0x3f, 0xf7, 0x5a, 0x85, 0xe9, 0x1b, 0x55, 0xc7, 0x7b, 0x2f, 0xce, 0xe6, 0x18, 0x4d, 0xe7,
+	0x18, 0xfd, 0x9c, 0x63, 0xf4, 0x69, 0x81, 0x5b, 0xd3, 0x05, 0x6e, 0x7d, 0x5f, 0xe0, 0xd6, 0xbb,
+	0x28, 0x11, 0xf6, 0xe3, 0x64, 0xe8, 0x84, 0xe3, 0x42, 0x7c, 0x4f, 0x1d, 0x1d, 0x89, 0x91, 0xa0,
+	0xd2, 0xff, 0x8f, 0xfd, 0xba, 0xb7, 0xa7, 0x9a, 0x9b, 0xe1, 0xcd, 0x7c, 0xd1, 0x1f, 0xfc, 0x0e,
+	0x00, 0x00, 0xff, 0xff, 0x85, 0xe5, 0x00, 0xb3, 0x54, 0x06, 0x00, 0x00,
 }
 
 func (m *LendPairsProposal) Marshal() (dAtA []byte, err error) {
@@ -394,6 +519,57 @@ func (m *LendPairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x1a
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MultipleLendPairsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MultipleLendPairsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MultipleLendPairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Pairs) > 0 {
+		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGov(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
 		copy(dAtA[i:], m.Description)
@@ -488,6 +664,57 @@ func (m *AddAssetToPairProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	}
 	i--
 	dAtA[i] = 0x1a
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddMultipleAssetToPairProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddMultipleAssetToPairProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddMultipleAssetToPairProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetToPairSingleMapping) > 0 {
+		for iNdEx := len(m.AssetToPairSingleMapping) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AssetToPairSingleMapping[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGov(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
 	if len(m.Description) > 0 {
 		i -= len(m.Description)
 		copy(dAtA[i:], m.Description)
@@ -629,6 +856,29 @@ func (m *LendPairsProposal) Size() (n int) {
 	return n
 }
 
+func (m *MultipleLendPairsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	if len(m.Pairs) > 0 {
+		for _, e := range m.Pairs {
+			l = e.Size()
+			n += 1 + l + sovGov(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *AddPoolsProposal) Size() (n int) {
 	if m == nil {
 		return 0
@@ -664,6 +914,29 @@ func (m *AddAssetToPairProposal) Size() (n int) {
 	}
 	l = m.AssetToPairMapping.Size()
 	n += 1 + l + sovGov(uint64(l))
+	return n
+}
+
+func (m *AddMultipleAssetToPairProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	if len(m.AssetToPairSingleMapping) > 0 {
+		for _, e := range m.AssetToPairSingleMapping {
+			l = e.Size()
+			n += 1 + l + sovGov(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -834,6 +1107,154 @@ func (m *LendPairsProposal) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Pairs.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MultipleLendPairsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MultipleLendPairsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MultipleLendPairsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pairs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Pairs = append(m.Pairs, Extended_Pair{})
+			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1128,6 +1549,154 @@ func (m *AddAssetToPairProposal) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.AssetToPairMapping.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddMultipleAssetToPairProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddMultipleAssetToPairProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddMultipleAssetToPairProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetToPairSingleMapping", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetToPairSingleMapping = append(m.AssetToPairSingleMapping, AssetToPairSingleMapping{})
+			if err := m.AssetToPairSingleMapping[len(m.AssetToPairSingleMapping)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

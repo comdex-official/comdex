@@ -118,6 +118,16 @@ func (k Keeper) AddPairsRecords(ctx sdk.Context, msg types.Pair) error {
 	return nil
 }
 
+func (k *Keeper) AddMultiplePairsRecords(ctx sdk.Context, records ...types.Pair) error {
+	for _, record := range records {
+		err := k.AddPairsRecords(ctx, record)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (k *Keeper) UpdatePairRecords(ctx sdk.Context, msg types.Pair) error {
 	pair, found := k.GetPair(ctx, msg.Id)
 	if !found {

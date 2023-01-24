@@ -726,7 +726,6 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				AuctionId:        1,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("60869565218uatom"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -739,7 +738,6 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				AuctionId:        1,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000ucmdx"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -752,7 +750,6 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				AuctionId:        1,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1uatom"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -765,7 +762,6 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				AuctionId:        1,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000uatom"),
-				Max:              sdk.MustNewDecFromStr("1.1"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -778,7 +774,6 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				AuctionId:        1,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000uatom"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -814,7 +809,9 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
 				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("ucmdx", userReceivableAmount)
+				userOutflowCoinFinal := sdk.NewCoin("ucmdx", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
@@ -827,7 +824,7 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
 				s.Require().Equal(userBid.Bidder, userAddress1)
 				s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
-				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
+				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoinFinal)
 				s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
 			}
 		})
@@ -857,7 +854,6 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				AuctionId:        3,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("60869565218ucmdx"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -870,7 +866,6 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				AuctionId:        3,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000uosmo"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -883,7 +878,6 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				AuctionId:        3,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1ucmdx"),
-				Max:              sdk.MustNewDecFromStr("1.4"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -896,7 +890,6 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				AuctionId:        3,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000ucmdx"),
-				Max:              sdk.MustNewDecFromStr("1.1"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -909,7 +902,6 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				AuctionId:        3,
 				Bidder:           userAddress1,
 				Amount:           ParseCoin("1000ucmdx"),
-				Max:              sdk.MustNewDecFromStr("1.6"),
 				AppId:            appID,
 				AuctionMappingId: auctionMappingID,
 			},
@@ -946,7 +938,9 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
 				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("uosmo", userReceivableAmount)
+				userOutflowCoinFinal := sdk.NewCoin("uosmo", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
 				s.Require().Equal(beforeAuction.InflowTokenCurrentAmount.Add(userOutflowCoin), afterAuction.InflowTokenCurrentAmount)
@@ -959,7 +953,7 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				s.Require().Equal(userBid.AuctionStatus, auctionTypes.ActiveAuctionStatus)
 				s.Require().Equal(userBid.Bidder, userAddress1)
 				s.Require().Equal(userBid.AuctionMappingId, auctionMappingID)
-				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoin)
+				s.Require().Equal(userBid.OutflowTokenAmount, userOutflowCoinFinal)
 				s.Require().Equal(userBid.InflowTokenAmount, userInflowCoin)
 			}
 		})
@@ -988,7 +982,6 @@ func (s *KeeperTestSuite) TestCloseDutchLendAuction() {
 			AuctionId:        1,
 			Bidder:           userAddress1,
 			Amount:           beforeAuction.OutflowTokenCurrentAmount,
-			Max:              sdk.MustNewDecFromStr("1.2"),
 			AppId:            appId,
 			AuctionMappingId: auctionMappingId,
 		})
@@ -1034,7 +1027,6 @@ func (s *KeeperTestSuite) TestCloseDutchLendAuction3() {
 			AuctionId:        3,
 			Bidder:           userAddress1,
 			Amount:           beforeAuction.OutflowTokenCurrentAmount,
-			Max:              sdk.MustNewDecFromStr("1.6"),
 			AppId:            appId,
 			AuctionMappingId: auctionMappingId,
 		})
@@ -1086,7 +1078,6 @@ func (s *KeeperTestSuite) TestCloseDutchLendAuctionWithProtocolLoss() {
 			AuctionId:        1,
 			Bidder:           userAddress1,
 			Amount:           beforeAuction.OutflowTokenCurrentAmount,
-			Max:              sdk.MustNewDecFromStr("1.2"),
 			AppId:            appId,
 			AuctionMappingId: auctionMappingId,
 		})

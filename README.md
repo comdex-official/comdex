@@ -17,7 +17,7 @@ Plug & play customizable Comdex modules to deliver bleeding edge dApps
 
 Checkout the documents here [docs.comdex.one](https://docs.comdex.one).
 
-Harbour protocol : [docs.harborprotocol.one](http://docs.harborprotocol.one).
+Harbor protocol : [docs.harborprotocol.one](http://docs.harborprotocol.one).
 
 Commodo : [docs.commodo.one](http://docs.commodo.one).
 

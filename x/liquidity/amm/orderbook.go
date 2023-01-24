@@ -159,9 +159,8 @@ func (ticks *orderBookTicks) findPrice(price sdk.Dec) (i int, exact bool) {
 	i = sort.Search(len(ticks.ticks), func(i int) bool {
 		if ticks.priceIncreasing {
 			return ticks.ticks[i].price.GTE(price)
-		} else {
-			return ticks.ticks[i].price.LTE(price)
 		}
+		return ticks.ticks[i].price.LTE(price)
 	})
 	if i < len(ticks.ticks) && ticks.ticks[i].price.Equal(price) {
 		exact = true
@@ -198,9 +197,8 @@ func (ticks *orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	}
 	if ticks.priceIncreasing {
 		return ticks.ticks[len(ticks.ticks)-1].price, len(ticks.ticks) - 1, true
-	} else {
-		return ticks.ticks[0].price, 0, true
 	}
+	return ticks.ticks[0].price, 0, true
 }
 
 func (ticks *orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
@@ -209,9 +207,8 @@ func (ticks *orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
 	}
 	if ticks.priceIncreasing {
 		return ticks.ticks[0].price, 0, true
-	} else {
-		return ticks.ticks[len(ticks.ticks)-1].price, len(ticks.ticks) - 1, true
 	}
+	return ticks.ticks[len(ticks.ticks)-1].price, len(ticks.ticks) - 1, true
 }
 
 // orderBookTick represents a tick in OrderBook.

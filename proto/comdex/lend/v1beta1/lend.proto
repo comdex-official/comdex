@@ -563,3 +563,18 @@ message AllReserveStats {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 }
+
+message AssetToPairSingleMapping{
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 pair_id = 3 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags) = "yaml:\"pair_id\""
+  ];
+}

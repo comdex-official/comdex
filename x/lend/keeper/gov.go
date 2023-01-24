@@ -18,10 +18,18 @@ func (k Keeper) HandleAddAssetToPairRecords(ctx sdk.Context, p *types.AddAssetTo
 	return k.AddAssetToPair(ctx, p.AssetToPairMapping)
 }
 
+func (k Keeper) HandleAddMultipleAssetToPairRecords(ctx sdk.Context, p *types.AddMultipleAssetToPairProposal) error {
+	return k.AddMultipleAssetToPair(ctx, p.AssetToPairSingleMapping)
+}
+
 func (k Keeper) HandleAddAssetRatesParamsRecords(ctx sdk.Context, p *types.AddAssetRatesParams) error {
 	return k.AddAssetRatesParams(ctx, p.AssetRatesParams)
 }
 
 func (k Keeper) HandleAddAuctionParamsRecords(ctx sdk.Context, p *types.AddAuctionParamsProposal) error {
 	return k.AddAuctionParamsData(ctx, p.AuctionParams)
+}
+
+func (k Keeper) HandleMultipleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.MultipleLendPairsProposal) error {
+	return k.AddLendPairsRecords(ctx, p.Pairs...)
 }

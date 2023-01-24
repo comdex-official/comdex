@@ -85,10 +85,14 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.LendPairsProposal:
 			return handleAddWhitelistedPairsProposal(ctx, k, c)
+		case *types.MultipleLendPairsProposal:
+			return handleAddMultipleWhitelistedPairsProposal(ctx, k, c)
 		case *types.AddPoolsProposal:
 			return handleAddPoolProposal(ctx, k, c)
 		case *types.AddAssetToPairProposal:
 			return handleAddAssetToPairProposal(ctx, k, c)
+		case *types.AddMultipleAssetToPairProposal:
+			return handleAddMultipleAssetToPairProposal(ctx, k, c)
 		case *types.AddAssetRatesParams:
 			return handleAddAssetRatesParamsProposal(ctx, k, c)
 		case *types.AddAuctionParamsProposal:
@@ -104,12 +108,20 @@ func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *type
 	return k.HandleAddWhitelistedPairsRecords(ctx, p)
 }
 
+func handleAddMultipleWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.MultipleLendPairsProposal) error {
+	return k.HandleMultipleAddWhitelistedPairsRecords(ctx, p)
+}
+
 func handleAddPoolProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolsProposal) error {
 	return k.HandleAddPoolRecords(ctx, p)
 }
 
 func handleAddAssetToPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetToPairProposal) error {
 	return k.HandleAddAssetToPairRecords(ctx, p)
+}
+
+func handleAddMultipleAssetToPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetToPairProposal) error {
+	return k.HandleAddMultipleAssetToPairRecords(ctx, p)
 }
 
 func handleAddAssetRatesParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesParams) error {
