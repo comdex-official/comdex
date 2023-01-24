@@ -99,12 +99,11 @@ func (m MsgPlaceDebtBidRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgPlaceDutchBid(from string, auctionID uint64, amt sdk.Coin, max sdk.Dec, appID, auctionMappingID uint64) *MsgPlaceDutchBidRequest {
+func NewMsgPlaceDutchBid(from string, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceDutchBidRequest {
 	return &MsgPlaceDutchBidRequest{
 		Bidder:           from,
 		AuctionId:        auctionID,
 		Amount:           amt,
-		Max:              max,
 		AppId:            appID,
 		AuctionMappingId: auctionMappingID,
 	}
@@ -137,12 +136,11 @@ func (m MsgPlaceDutchBidRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgPlaceDutchLendBid(from string, auctionID uint64, amt sdk.Coin, max sdk.Dec, appID, auctionMappingID uint64) *MsgPlaceDutchLendBidRequest {
+func NewMsgPlaceDutchLendBid(from string, auctionID uint64, amt sdk.Coin, appID, auctionMappingID uint64) *MsgPlaceDutchLendBidRequest {
 	return &MsgPlaceDutchLendBidRequest{
 		Bidder:           from,
 		AuctionId:        auctionID,
 		Amount:           amt,
-		Max:              max,
 		AppId:            appID,
 		AuctionMappingId: auctionMappingID,
 	}

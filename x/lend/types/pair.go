@@ -43,6 +43,19 @@ func (m *AssetToPairMapping) Validate() error {
 	return nil
 }
 
+func (m *AssetToPairSingleMapping) Validate() error {
+	if m.AssetID == 0 {
+		return fmt.Errorf("assetID cannot be zero")
+	}
+	if m.PairID == 0 {
+		return fmt.Errorf("PairIDs cannot be zero")
+	}
+	if m.PoolID == 0 {
+		return fmt.Errorf("PoolIDs cannot be zero")
+	}
+	return nil
+}
+
 func (m *AssetRatesParams) Validate() error {
 	if m.AssetID == 0 {
 		return fmt.Errorf("assetID cannot be zero")
