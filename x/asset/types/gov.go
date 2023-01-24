@@ -96,6 +96,7 @@ func NewAddMultipleAssetsProposal(title, description string, assets []Asset) gov
 		Assets:      assets,
 	}
 }
+
 func (p *AddMultipleAssetsProposal) GetTitle() string {
 	return p.Title
 }

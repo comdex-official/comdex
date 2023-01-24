@@ -566,7 +566,6 @@ func CmdAddNewMultipleLendPairsProposal() *cobra.Command {
 
 func NewCreateNewMultipleLendPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	newLendPairs, err := parseAddNewLendPairsFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add lend pairs : %w", err)
 	}

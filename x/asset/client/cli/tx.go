@@ -57,7 +57,6 @@ Sample json content
 
 func NewCreateMultipleAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	assetsMapping, err := parseAssetsMappingFlags(fs)
-
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
 	}

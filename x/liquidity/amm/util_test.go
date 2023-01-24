@@ -61,13 +61,13 @@ func TestGroupOrdersByBatchId(t *testing.T) {
 		newOrder(sdk.NewInt(2000), 1),
 		newOrder(sdk.NewInt(64000), 0),
 	}
-	groups := amm.GroupOrdersByBatchId(orders)
-	require.EqualValues(t, 1, groups[0].BatchId)
+	groups := amm.GroupOrdersByBatchID(orders)
+	require.EqualValues(t, 1, groups[0].BatchID)
 	require.True(sdk.IntEq(t, sdk.NewInt(3000), amm.TotalAmount(groups[0].Orders)))
-	require.EqualValues(t, 2, groups[1].BatchId)
+	require.EqualValues(t, 2, groups[1].BatchID)
 	require.True(sdk.IntEq(t, sdk.NewInt(4000), amm.TotalAmount(groups[1].Orders)))
-	require.EqualValues(t, 4, groups[2].BatchId)
+	require.EqualValues(t, 4, groups[2].BatchID)
 	require.True(sdk.IntEq(t, sdk.NewInt(24000), amm.TotalAmount(groups[2].Orders)))
-	require.EqualValues(t, 0, groups[3].BatchId)
+	require.EqualValues(t, 0, groups[3].BatchID)
 	require.True(sdk.IntEq(t, sdk.NewInt(96000), amm.TotalAmount(groups[3].Orders)))
 }

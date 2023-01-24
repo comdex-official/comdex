@@ -305,7 +305,7 @@ func (ob *OrderBook) Match(lastPrice sdk.Dec) (matchPrice sdk.Dec, quoteCoinDiff
 func DistributeOrderAmountToTick(tick *orderBookTick, amt sdk.Int, price sdk.Dec) (quoteCoinDiff sdk.Int) {
 	remainingAmt := amt
 	quoteCoinDiff = sdk.ZeroInt()
-	groups := GroupOrdersByBatchId(tick.orders)
+	groups := GroupOrdersByBatchID(tick.orders)
 	for _, group := range groups {
 		openAmt := TotalMatchableAmount(group.Orders, price)
 		if openAmt.IsZero() {
@@ -384,9 +384,8 @@ func DistributeOrderAmountToOrders(orders []Order, amt sdk.Int, price sdk.Dec) (
 	if len(notMatchedOrders) > 0 {
 		if len(matchedOrders) == 0 {
 			return DistributeOrderAmountToOrders(orders[:len(orders)-1], amt, price)
-		} else {
-			return DistributeOrderAmountToOrders(matchedOrders, amt, price)
 		}
+		return DistributeOrderAmountToOrders(matchedOrders, amt, price)
 	}
 
 	quoteCoinDiff = sdk.ZeroInt()
