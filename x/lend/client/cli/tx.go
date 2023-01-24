@@ -787,7 +787,7 @@ func CmdAddAssetToPairProposal() *cobra.Command {
 
 func CmdAddMultipleAssetToPairProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-multiple-asset-to-pair-mapping [asset_id] [pool_id] [pair_id] ",
+		Use:   "add-multiple-asset-to-pair-mapping [asset_ids] [pool_ids] [pair_ids] ",
 		Short: "Add multiple asset to pair mapping ",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -811,8 +811,8 @@ func CmdAddMultipleAssetToPairProposal() *cobra.Command {
 			for i := range assetID {
 				assetToPairMapping = append(assetToPairMapping, types.AssetToPairSingleMapping{
 					AssetID: assetID[i],
-					PoolID: poolID[i],
-					PairID: pairID[i],
+					PoolID:  poolID[i],
+					PairID:  pairID[i],
 				})
 			}
 
