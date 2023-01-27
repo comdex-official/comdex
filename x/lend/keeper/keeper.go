@@ -191,6 +191,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 		if err != nil {
 			return err
 		}
+		return nil
 	}
 
 	assetRatesStat, found := k.GetAssetRatesParams(ctx, AssetID)
@@ -1371,6 +1372,12 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 
 	addr, _ := sdk.AccAddressFromBech32(lenderAddr)
 
+	assetRatesStat, found := k.GetAssetRatesParams(ctx, AssetID)
+	if !found {
+		return sdkerrors.Wrap(types.ErrorAssetRatesParamsNotFound, strconv.FormatUint(AssetID, 10))
+	}
+	cAsset, _ := k.Asset.GetAsset(ctx, assetRatesStat.CAssetID)
+
 	if k.HasLendForAddressByAsset(ctx, lenderAddr, AssetID, PoolID) {
 		// if a lend position is opened by the user for same asset in a pool, and when the user tries to lend again in that case
 		// we will deposit that asset and increase user's previous lend position.
@@ -1385,13 +1392,12 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 		if err != nil {
 			return err
 		}
+		err = k.BorrowAsset(ctx, lenderAddr, lendID, PairID, IsStableBorrow, sdk.NewCoin(cAsset.Denom, AmountIn.Amount), AmountOut)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-
-	assetRatesStat, found := k.GetAssetRatesParams(ctx, AssetID)
-	if !found {
-		return sdkerrors.Wrap(types.ErrorAssetRatesParamsNotFound, strconv.FormatUint(AssetID, 10))
-	}
-	cAsset, _ := k.Asset.GetAsset(ctx, assetRatesStat.CAssetID)
 
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, addr, pool.ModuleName, sdk.NewCoins(AmountIn)); err != nil {
 		return err
