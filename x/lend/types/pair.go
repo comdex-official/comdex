@@ -24,7 +24,7 @@ func (m *Extended_Pair) Validate() error {
 }
 
 func (m *Pool) Validate() error {
-	if len(m.CPoolName) >= 16 {
+	if len(m.CPoolName) >= 20 {
 		return ErrInvalidLengthCPoolName
 	}
 	if m.AssetData == nil {
