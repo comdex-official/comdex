@@ -1,6 +1,8 @@
 package v8
 
 import (
+	"fmt"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -11,6 +13,47 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
+
+func UpdateExtendedPairVaults(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
+	extPairs := []*bindings.MsgUpdatePairsVault{
+		{
+			AppID: 2, ExtPairID: 2, StabilityFee: sdk.MustNewDecFromStr("1"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.4"),
+			MinUsdValueLeft: 100000,
+		},
+		{
+			AppID: 2, ExtPairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.5"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.7"),
+			MinUsdValueLeft: 100000,
+		},
+		{
+			AppID: 2, ExtPairID: 4, StabilityFee: sdk.MustNewDecFromStr("0.25"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2"),
+			MinUsdValueLeft: 100000,
+		},
+		{
+			AppID: 2, ExtPairID: 5, StabilityFee: sdk.MustNewDecFromStr("1"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.5"),
+			MinUsdValueLeft: 100000,
+		},
+		{
+			AppID: 2, ExtPairID: 6, StabilityFee: sdk.MustNewDecFromStr("0.5"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.8"),
+			MinUsdValueLeft: 100000,
+		},
+		{
+			AppID: 2, ExtPairID: 7, StabilityFee: sdk.MustNewDecFromStr("0.35"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2.1"),
+			MinUsdValueLeft: 100000,
+		},
+	}
+	for _, extPair := range extPairs {
+		err := assetKeeper.WasmUpdatePairsVault(ctx, extPair)
+		if err != nil {
+			fmt.Println("err in updating extended pair ", extPair.ExtPairID)
+		}
+	}
+}
 
 func Dec(s string) sdk.Dec {
 	dec, err := sdk.NewDecFromStr(s)
@@ -141,6 +184,9 @@ func UpdateAuctionParams(
 		BidDurationSeconds:     3600,
 	}
 	err = auctionKeeper.AddAuctionParams(ctx, &auctionParams)
+	if err != nil {
+		return
+	}
 }
 
 func CreateUpgradeHandler800(
@@ -153,6 +199,7 @@ func CreateUpgradeHandler800(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		UpdateAuctionParams(ctx, assetKeeper, lendKeeper, auctionKeeper)
+		UpdateExtendedPairVaults(ctx, assetKeeper)
 		return newVM, err
 	}
 }
