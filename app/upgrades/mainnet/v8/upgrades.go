@@ -175,7 +175,7 @@ func UpdateAuctionParams(
 		AppID:                  2,
 		AuctionDurationSeconds: 18000,
 		Buffer:                 Dec("1.15"),
-		Cusp:                   Dec("0.75"),
+		Cusp:                   Dec("0.70"),
 		Step:                   360,
 		PriceFunctionType:      1,
 		SurplusID:              1,
