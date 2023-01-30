@@ -42,7 +42,7 @@ func UpdateExtendedPairVaults(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 7, StabilityFee: sdk.MustNewDecFromStr("0.35"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
+			AppID: 2, ExtPairID: 7, StabilityFee: sdk.MustNewDecFromStr("0.25"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
 			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2.1"),
 			MinUsdValueLeft: 100000,
 		},
