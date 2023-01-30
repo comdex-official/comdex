@@ -317,3 +317,17 @@ func (k Keeper) QueryEpochTime(c context.Context, req *types.QueryEpochTimeReque
 		Pagination: pagination,
 	}, nil
 }
+
+func (k Keeper) QueryExtLendRewardsAPR(c context.Context, req *types.QueryExtLendRewardsAPRRequest) (*types.QueryExtLendRewardsAPRResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx = sdk.UnwrapSDKContext(c)
+	)
+	apr := k.ExtLendRewardsAPR(ctx, req)
+
+	return &types.QueryExtLendRewardsAPRResponse{
+		Apr: apr,
+	}, nil
+}

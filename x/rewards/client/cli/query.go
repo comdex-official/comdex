@@ -42,6 +42,7 @@ func GetQueryCmd() *cobra.Command {
 		queryExternalRewardLends(),
 		queryExternalRewardStableMint(),
 		queryEpochTime(),
+		queryExtLendRewardsAPR(),
 	)
 
 	return cmd
@@ -580,6 +581,49 @@ func queryEpochTime() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "epoch_time")
+
+	return cmd
+}
+
+func queryExtLendRewardsAPR() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "ext_rewards_lend_apr [asset-id] [cpool-id]",
+		Short: "Query ext rewards lend apr",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			assetID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			cPoolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(ctx)
+
+			res, err := queryClient.QueryExtLendRewardsAPR(
+				context.Background(),
+				&types.QueryExtLendRewardsAPRRequest{
+					AssetId: assetID,
+					CPoolId: cPoolID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "ext_rewards_lend_apr")
 
 	return cmd
 }
