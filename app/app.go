@@ -1212,7 +1212,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		mv8.UpgradeName800,
-		mv8.CreateUpgradeHandler800(a.mm, a.configurator),
+		mv8.CreateUpgradeHandler800(a.mm, a.configurator, a.AssetKeeper, a.LendKeeper, a.AuctionKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it

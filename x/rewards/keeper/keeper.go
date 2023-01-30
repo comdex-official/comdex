@@ -391,3 +391,39 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	k.SetEpochTime(ctx, epoch)
 	return nil
 }
+
+func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRewardsAPRRequest) sdk.Dec {
+	extRewards := k.GetExternalRewardLends(ctx)
+	totalAPR := sdk.NewDec(0)
+	for _, v := range extRewards {
+		if v.IsActive && request.CPoolId == v.RewardsAssetPoolData.CPoolId && uint64InSlice(request.AssetId, v.RewardsAssetPoolData.AssetId) {
+			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
+			totalBorrowedAmt := sdk.ZeroInt()
+			rewardsAssetPoolData := v.RewardsAssetPoolData
+			for _, assetID := range rewardsAssetPoolData.AssetId {
+				amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
+				totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt()) // in $USD
+			}
+			// calculating totalAPR
+			rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
+			if !found {
+				continue
+			}
+			totalRewardAmt, found := k.OraclePriceForRewards(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
+			if !found {
+				continue
+			}
+			if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
+				continue
+			}
+			str, err := sdk.NewDecFromStr(types.DaysInYear)
+			if err != nil {
+				continue
+			}
+			dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
+			APR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
+			totalAPR = APR.Mul(str)
+		}
+	}
+	return totalAPR
+}
