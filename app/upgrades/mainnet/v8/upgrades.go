@@ -14,7 +14,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func UpdateExtendedPairVaults(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
+func UpdateExtendedPairVaultsAndAsset(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 	extPairs := []*bindings.MsgUpdatePairsVault{
 		{
 			AppID: 2, ExtPairID: 2, StabilityFee: sdk.MustNewDecFromStr("1"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
@@ -53,6 +53,11 @@ func UpdateExtendedPairVaults(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 			fmt.Println("err in updating extended pair ", extPair.ExtPairID)
 		}
 	}
+	asset, found := assetKeeper.GetAsset(ctx, 17)
+	if found {
+		asset.Denom = "ibc/2ABB3F0A1DA07D7F83D5004A4A16A4D4A264067AA85E15A4885D0AB8C0E4587B"
+	}
+	assetKeeper.SetAsset(ctx, asset)
 }
 
 func Dec(s string) sdk.Dec {
@@ -199,7 +204,7 @@ func CreateUpgradeHandler800(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		UpdateAuctionParams(ctx, assetKeeper, lendKeeper, auctionKeeper)
-		UpdateExtendedPairVaults(ctx, assetKeeper)
+		UpdateExtendedPairVaultsAndAsset(ctx, assetKeeper)
 		return newVM, err
 	}
 }
