@@ -194,17 +194,12 @@ func UpdateAuctionParams(
 	}
 }
 
-func CreateUpgradeHandler800(
+func CreateUpgradeHandler810(
 	mm *module.Manager,
 	configurator module.Configurator,
-	assetKeeper assetkeeper.Keeper,
-	lendKeeper lendkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		UpdateAuctionParams(ctx, assetKeeper, lendKeeper, auctionKeeper)
-		UpdateExtendedPairVaultsAndAsset(ctx, assetKeeper)
 		return newVM, err
 	}
 }
