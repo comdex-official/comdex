@@ -56,8 +56,8 @@ func UpdateExtendedPairVaultsAndAsset(ctx sdk.Context, assetKeeper assetkeeper.K
 	asset, found := assetKeeper.GetAsset(ctx, 17)
 	if found {
 		asset.Denom = "ibc/2ABB3F0A1DA07D7F83D5004A4A16A4D4A264067AA85E15A4885D0AB8C0E4587B"
+		assetKeeper.SetAsset(ctx, asset)
 	}
-	assetKeeper.SetAsset(ctx, asset)
 }
 
 func Dec(s string) sdk.Dec {
