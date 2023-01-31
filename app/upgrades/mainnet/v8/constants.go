@@ -1,7 +1,7 @@
 package v8
 
 const (
-	UpgradeName800   = "v8.0.0"
+	UpgradeName800   = "v8.1.0"
 	UpgradeHeight800 = ""
 	UpgradeInfo800   = `'{
 		"binaries": {
