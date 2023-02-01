@@ -27,3 +27,17 @@ const (
 		}
 	}'`
 )
+
+const (
+	UpgradeName811   = "v8.1.0"
+	UpgradeHeight811 = ""
+	UpgradeInfo811   = `'{
+		"binaries": {
+			"darwin/arm64":"",
+			"darwin/x86_64":"",
+			"linux/arm64":"",
+			"linux/x86_64":"",
+			"windows/x86_64":""
+		}
+	}'`
+)
