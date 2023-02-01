@@ -138,7 +138,7 @@ func UpdateAuctionParams(
 		LiquidationPenalty:   Dec("0.05"),
 		LiquidationBonus:     Dec("0.05"),
 		ReserveFactor:        Dec("0.2"),
-		CAssetID:             21,
+		CAssetID:             22,
 	}
 	lendKeeper.SetAssetRatesParams(ctx, axlUSDCRatesParams)
 
@@ -157,7 +157,7 @@ func UpdateAuctionParams(
 		LiquidationPenalty:   Dec("0.075"),
 		LiquidationBonus:     Dec("0.075"),
 		ReserveFactor:        Dec("0.2"),
-		CAssetID:             22,
+		CAssetID:             23,
 	}
 	lendKeeper.SetAssetRatesParams(ctx, stATOMRatesParams)
 
