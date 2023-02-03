@@ -6,10 +6,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	host "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
 
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
@@ -24,22 +24,22 @@ func (im IBCModule) OnChanOpenInit(
 	chanCap *capabilitytypes.Capability,
 	counterparty channeltypes.Counterparty,
 	version string,
-) (string, error) { // Require portID is the portID module is bound to
+) error { // Require portID is the portID module is bound to
 	boundPort := im.keeper.GetPort(ctx)
 	if boundPort != portID {
-		return "", sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid port: %s, expected %s", portID, boundPort)
+		return sdkerrors.Wrapf(porttypes.ErrInvalidPort, "invalid port: %s, expected %s", portID, boundPort)
 	}
 
 	if version != types.Version {
-		return "", sdkerrors.Wrapf(types.ErrInvalidVersion, "got %s, expected %s", version, types.Version)
+		return sdkerrors.Wrapf(types.ErrInvalidVersion, "got %s, expected %s", version, types.Version)
 	}
 
 	// Claim channel capability passed back by IBC module
 	if err := im.keeper.ClaimCapability(ctx, chanCap, host.ChannelCapabilityPath(portID, channelID)); err != nil {
-		return "", err
+		return err
 	}
 
-	return types.Version, nil
+	return nil
 }
 
 // OnChanOpenTry implements the IBCModule interface.
@@ -127,20 +127,20 @@ func (im IBCModule) OnRecvPacket(
 	var ack channeltypes.Acknowledgement
 	oracleAck, err := im.handleOraclePacket(ctx, modulePacket)
 	if err != nil {
-		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: "+err.Error()))
+		return channeltypes.NewErrorAcknowledgement(sdkerrors.ErrUnknownRequest.Error())
 	} else if ack != oracleAck {
 		return oracleAck
 	}
 
 	var modulePacketData types.BandoraclePacketData
 	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error()))
+		return channeltypes.NewErrorAcknowledgement(sdkerrors.ErrUnknownRequest.Error())
 	}
 
 	// Dispatch packet
-	switch packet := modulePacketData.Packet.(type) {
+	switch modulePacketData.Packet.(type) {
 	default:
-		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(types.ErrUnrecognisedPacket, "unrecognized %s packet type: %T", types.ModuleName, packet))
+		return channeltypes.NewErrorAcknowledgement(types.ErrUnrecognisedPacket.Error())
 	}
 
 	// NOTE: acknowledgement will be written synchronously during IBC handler execution.

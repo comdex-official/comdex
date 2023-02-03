@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	host "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
