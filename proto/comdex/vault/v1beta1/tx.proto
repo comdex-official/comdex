@@ -189,12 +189,6 @@ message MsgVaultInterestCalcRequest {
 }
 
 message  MsgVaultInterestCalcResponse{}
-// need to remove later
-message MsgCorrectStabilityFeesRequest {
-  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-}
-
-message  MsgCorrectStabilityFeesResponse{}
 
 service Msg {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
@@ -208,5 +202,4 @@ service Msg {
   rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
   rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
   rpc MsgVaultInterestCalc(MsgVaultInterestCalcRequest) returns (MsgVaultInterestCalcResponse);
-  rpc MsgCorrectStabilityFees(MsgCorrectStabilityFeesRequest) returns (MsgCorrectStabilityFeesResponse); // need to remove later
 }

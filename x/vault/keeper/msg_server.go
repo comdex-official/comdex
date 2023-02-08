@@ -2,12 +2,10 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/app/wasm/bindings"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -1452,58 +1450,4 @@ func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultIn
 	}
 
 	return &types.MsgVaultInterestCalcResponse{}, nil
-}
-
-// need to remove later
-func (k msgServer) MsgCorrectStabilityFees(c context.Context, msg *types.MsgCorrectStabilityFeesRequest) (*types.MsgCorrectStabilityFeesResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-	if msg.From == "comdex1ma05aft9x20xjx2jd4spms03rcuewk5r0elvx7" {
-		extPairs := []*bindings.MsgUpdatePairsVault{
-			{
-				AppID: 2, ExtPairID: 2, StabilityFee: sdk.MustNewDecFromStr("0.01"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.4"),
-				MinUsdValueLeft: 100000,
-			},
-			{
-				AppID: 2, ExtPairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.005"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.7"),
-				MinUsdValueLeft: 100000,
-			},
-			{
-				AppID: 2, ExtPairID: 4, StabilityFee: sdk.MustNewDecFromStr("0.0025"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2"),
-				MinUsdValueLeft: 100000,
-			},
-			{
-				AppID: 2, ExtPairID: 5, StabilityFee: sdk.MustNewDecFromStr("0.01"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.5"),
-				MinUsdValueLeft: 100000,
-			},
-			{
-				AppID: 2, ExtPairID: 6, StabilityFee: sdk.MustNewDecFromStr("0.005"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.8"),
-				MinUsdValueLeft: 100000,
-			},
-			{
-				AppID: 2, ExtPairID: 7, StabilityFee: sdk.MustNewDecFromStr("0.0025"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-				DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2.1"),
-				MinUsdValueLeft: 100000,
-			},
-		}
-		for _, extPair := range extPairs {
-			err := k.asset.WasmUpdatePairsVault(ctx, extPair)
-			if err != nil {
-				fmt.Println("err in updating extended pair ", extPair.ExtPairID)
-			}
-		}
-		stAtomPair, found := k.asset.GetPairsVault(ctx, 11)
-		if found {
-			stAtomPair.PairId = 9
-			k.asset.SetPairsVault(ctx, stAtomPair)
-		}
-	} else {
-		return &types.MsgCorrectStabilityFeesResponse{}, types.ErrorInvalidFrom
-	}
-
-	return &types.MsgCorrectStabilityFeesResponse{}, nil
 }

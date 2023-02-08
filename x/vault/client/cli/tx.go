@@ -36,7 +36,6 @@ func GetTxCmd() *cobra.Command {
 		DepositStableMint(),
 		WithdrawStableMint(),
 		CalculateInterest(),
-		CorrectStabilityFees(),
 	)
 
 	return cmd
@@ -489,32 +488,6 @@ func CalculateInterest() *cobra.Command {
 			}
 
 			msg := types.NewMsgVaultInterestCalcRequest(ctx.FromAddress, appID, userVaultID)
-
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-// need to remove later
-func CorrectStabilityFees() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "correct-fees",
-		Short: "correct stability fees",
-		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgCorrectStabilityFeesRequest(ctx.FromAddress)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err
