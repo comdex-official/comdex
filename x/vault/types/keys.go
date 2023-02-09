@@ -23,7 +23,6 @@ var (
 	TypeMsgDepositStableMintRequest    = ModuleName + ":deposit_stablemint"
 	TypeMsgWithdrawStableMintRequest   = ModuleName + ":withdraw_stablemint"
 	TypeMsgVaultInterestCalcRequest    = ModuleName + ":calculate_interest"
-	TypeMsgCorrectStabilityFeesRequest = ModuleName + ":correct-fees" // need to remove later
 )
 
 var (

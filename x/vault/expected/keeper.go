@@ -3,7 +3,6 @@ package expected
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -27,8 +26,6 @@ type AssetKeeper interface {
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 	GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool)
 	GetPairsVault(ctx sdk.Context, pairID uint64) (assettypes.ExtendedPairVault, bool)
-	SetPairsVault(ctx sdk.Context, app assettypes.ExtendedPairVault)
-	WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.MsgUpdatePairsVault) error
 }
 
 type MarketKeeper interface {
