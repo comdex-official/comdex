@@ -10,8 +10,9 @@ import (
 )
 
 type (
-	XCreateAddAssetMappingInputs  createAddAssetMappingInputs
-	XCreateAddAssetsMappingInputs createAddAssetsMappingInputs
+	XCreateAddAssetMappingInputs       createAddAssetMappingInputs
+	XCreateAddAssetsMappingInputs      createAddAssetsMappingInputs
+	XCreateAddAssetsPairsMappingInputs createAddAssetsPairsMappingInputs
 )
 
 type XCreateAddAssetMappingInputsExceptions struct {
@@ -21,6 +22,11 @@ type XCreateAddAssetMappingInputsExceptions struct {
 
 type XCreateAddAssetsMappingInputsExceptions struct {
 	XCreateAddAssetsMappingInputs
+	Other *string // Other won't raise an error
+}
+
+type XCreateAddAssetsPairsMappingInputsExceptions struct {
+	XCreateAddAssetsPairsMappingInputs
 	Other *string // Other won't raise an error
 }
 
@@ -94,4 +100,39 @@ func parseAssetsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsMappingInputs, 
 	}
 
 	return assetsMapping, nil
+}
+
+func (release *createAddAssetsPairsMappingInputs) UnmarshalJSON(data []byte) error {
+	var createAddAssetsMappingInputsE XCreateAddAssetsPairsMappingInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&createAddAssetsMappingInputsE); err != nil {
+		return err
+	}
+
+	*release = createAddAssetsPairsMappingInputs(createAddAssetsMappingInputsE.XCreateAddAssetsPairsMappingInputs)
+	return nil
+}
+
+func parseAssetsPairsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsPairsMappingInputs, error) {
+	assetsPairsMapping := &createAddAssetsPairsMappingInputs{}
+	addAssetsPairsMappingFile, _ := fs.GetString(FlagAddAssetsPairsMappingFile)
+
+	if addAssetsPairsMappingFile == "" {
+		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
+	}
+
+	contents, err := os.ReadFile(addAssetsPairsMappingFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = assetsPairsMapping.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return assetsPairsMapping, nil
 }

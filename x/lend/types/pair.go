@@ -101,3 +101,13 @@ func (m *AssetRatesParams) Validate() error {
 	}
 	return nil
 }
+
+func (m *PoolPairs) Validate() error {
+	if len(m.CPoolName) >= 20 {
+		return ErrInvalidLengthCPoolName
+	}
+	if m.AssetData == nil {
+		return fmt.Errorf("AssetData cannot be nil")
+	}
+	return nil
+}

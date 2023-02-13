@@ -14,6 +14,7 @@ type (
 	XAddLendPoolInputs         addLendPoolInputs
 	XAddAssetRatesParamsInputs addAssetRatesParamsInputs
 	XSetAuctionParamsInputs    addNewAuctionParamsInputs
+	XAddLendPoolPairsInputs    addLendPoolPairsInputs
 )
 
 type XAddNewLendPairsInputsExceptions struct {
@@ -25,6 +26,12 @@ type XAddPoolInputsExceptions struct {
 	XAddLendPoolInputs
 	Other *string // Other won't raise an error
 }
+
+type XAddPoolPairsInputsExceptions struct {
+	XAddLendPoolPairsInputs
+	Other *string // Other won't raise an error
+}
+
 type XAddAssetRatesParamsInputsExceptions struct {
 	XAddAssetRatesParamsInputs
 	Other *string // Other won't raise an error
@@ -60,6 +67,19 @@ func (release *addLendPoolInputs) UnmarshalJSON(data []byte) error {
 	}
 
 	*release = addLendPoolInputs(addPoolParamsE.XAddLendPoolInputs)
+	return nil
+}
+
+func (release *addLendPoolPairsInputs) UnmarshalJSON(data []byte) error {
+	var addPoolParamsE XAddPoolPairsInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&addPoolParamsE); err != nil {
+		return err
+	}
+
+	*release = addLendPoolPairsInputs(addPoolParamsE.XAddLendPoolPairsInputs)
 	return nil
 }
 
@@ -132,6 +152,28 @@ func parseAddPoolFlags(fs *pflag.FlagSet) (*addLendPoolInputs, error) {
 	}
 
 	return addPoolParams, nil
+}
+
+func parseAddPoolPairsFlags(fs *pflag.FlagSet) (*addLendPoolPairsInputs, error) {
+	addPoolPairsParams := &addLendPoolPairsInputs{}
+	addPoolPairsParamsFile, _ := fs.GetString(FlagAddLendPoolPairsFile)
+
+	if addPoolPairsParamsFile == "" {
+		return nil, fmt.Errorf("must pass in a add new pool json using the --%s flag", FlagAddLendPoolFile)
+	}
+
+	contents, err := os.ReadFile(addPoolPairsParamsFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = addPoolPairsParams.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return addPoolPairsParams, nil
 }
 
 func parseAssetRateStatsFlags(fs *pflag.FlagSet) (*addAssetRatesParamsInputs, error) {

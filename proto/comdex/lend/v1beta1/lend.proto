@@ -578,3 +578,28 @@ message AssetToPairSingleMapping{
     (gogoproto.moretags) = "yaml:\"pair_id\""
   ];
 }
+
+message PoolPairs {
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+
+  string module_name = 2 [
+    (gogoproto.customname) = "ModuleName",
+    (gogoproto.moretags) = "yaml:\"module_name\""
+  ];
+
+  string cpool_name = 3 [
+    (gogoproto.customname) = "CPoolName",
+    (gogoproto.moretags) = "yaml:\"cpool_name\""
+  ];
+
+  repeated AssetDataPoolMapping asset_data = 4 [
+    (gogoproto.customname) = "AssetData",
+    (gogoproto.moretags) = "yaml:\"asset_data\""
+  ];
+
+  uint64 min_usd_value_left = 5 [
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
+}

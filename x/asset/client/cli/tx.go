@@ -810,3 +810,126 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 	}
 	return txf, msg, nil
 }
+
+func NewCmdSubmitAddMultipleAssetsPairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-multiple-assets-pairs [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit multiple assets and pairs",
+		Long: `Must provide path to a add assets in JSON file (--add-assets) describing the asset in app to be created
+Sample json content
+{
+	"name" :"ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
+	"denom" :"uatom,ucmdx,ucmst,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
+	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
+	"is_on_chain" :"0,0,0,0,0,0,0,0,1",
+	"asset_oracle_price" :"1,1,0,1,0,0,0,0,0",
+    "asset_out" :"3,3,3,3,3,3,3,3,3",
+	"title" :"Add assets and pairs for applications to be deployed on comdex testnet",
+	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR to be then used on harbor, commodo and cswap apps",
+	"deposit" :"1000000000ucmdx"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateMultipleAssetsPairs(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetCreateAssetsPairsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	assetsPairsMapping, err := parseAssetsPairsMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
+	}
+
+	names, err := ParseStringFromString(assetsPairsMapping.Name, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	denoms, err := ParseStringFromString(assetsPairsMapping.Denom, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	decimals, err := ParseStringFromString(assetsPairsMapping.Decimals, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isOnChain, err := ParseStringFromString(assetsPairsMapping.IsOnChain, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOraclePrice, err := ParseStringFromString(assetsPairsMapping.AssetOraclePrice, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	isCdpMintable, err := ParseStringFromString(assetsPairsMapping.IsCdpMintable, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOut, err := ParseStringFromString(assetsPairsMapping.AssetOut, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	var assets []types.AssetPair
+	for i := range names {
+		newIsOnChain := ParseBoolFromString(isOnChain[i])
+		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
+		newIsCdpMintable := ParseBoolFromString(isCdpMintable[i])
+		newDecimals, ok := sdk.NewIntFromString(decimals[i])
+		if !ok {
+			return txf, nil, types.ErrorInvalidDecimals
+		}
+		newAssetOut, ok := sdk.NewIntFromString(assetOut[i])
+
+		assets = append(assets, types.AssetPair{
+			Name:                  names[i],
+			Denom:                 denoms[i],
+			Decimals:              newDecimals,
+			IsOnChain:             newIsOnChain,
+			IsOraclePriceRequired: newAssetOraclePrice,
+			IsCdpMintable:         newIsCdpMintable,
+			AssetOut:              newAssetOut.Uint64(),
+		})
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(assetsPairsMapping.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddMultipleAssetsPairsProposal(assetsPairsMapping.Title, assetsPairsMapping.Description, assets)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}

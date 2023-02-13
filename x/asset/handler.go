@@ -46,6 +46,8 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddAppProposal(ctx, k, c)
 		case *types.AddAssetInAppProposal:
 			return handleAddAssetInAppProposal(ctx, k, c)
+		case *types.AddMultipleAssetsPairsProposal:
+			return handleMultipleAssetsPairsProposal(ctx, k, c)
 
 		default:
 			return sdkerrors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -87,4 +89,8 @@ func handleAddAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppPropo
 
 func handleAddAssetInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetInAppProposal) error {
 	return k.HandleAddAssetInAppRecords(ctx, p)
+}
+
+func handleMultipleAssetsPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetsPairsProposal) error {
+	return k.HandleProposalAddMultipleAssetPair(ctx, p)
 }
