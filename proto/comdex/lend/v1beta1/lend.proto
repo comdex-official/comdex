@@ -603,3 +603,27 @@ message PoolPairs {
   uint64 min_usd_value_left = 5 [
     (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
 }
+
+message PoolInterestData {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string lend_interest = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lend_interest\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}
+
+message PoolInterest  {
+  uint64 pool_id = 1 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+  repeated PoolInterestData pool_interest_data = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customname) = "PoolInterestData",
+    (gogoproto.moretags) = "yaml:\"pool_interest_data\""
+  ];
+}

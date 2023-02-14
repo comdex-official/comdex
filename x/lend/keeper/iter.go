@@ -286,3 +286,34 @@ func (k Keeper) ReBalanceStableRates(ctx sdk.Context, borrowPos types.BorrowAsse
 
 	return borrowPos, nil
 }
+
+func (k Keeper) IterateLendsForQuery(ctx sdk.Context) ([]types.PoolInterest, error) {
+	var (
+		poolInterest     types.PoolInterest
+		poolInterestData types.PoolInterestData
+	)
+
+	pools := k.GetPools(ctx)
+	var allPoolInterest []types.PoolInterest
+	for _, pool := range pools {
+		var v []types.PoolInterestData
+		poolInterest.PoolID = pool.PoolID
+		for _, data := range pool.AssetData {
+			lbMap, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pool.PoolID, data.AssetID)
+			totalInt := sdk.ZeroDec()
+			for _, ID := range lbMap.LendIds {
+				lend, _ := k.GetLend(ctx, ID)
+				lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
+				interestPerBlock, _, _ := k.CalculateLendReward(ctx, lend.AmountIn.Amount.String(), lendAPR, lend)
+				totalInt = totalInt.Add(interestPerBlock)
+			}
+			poolInterestData.LendInterest = totalInt.TruncateInt()
+			poolInterestData.AssetID = data.AssetID
+			v = append(v, poolInterestData)
+		}
+		poolInterest.PoolInterestData = v
+		allPoolInterest = append(allPoolInterest, poolInterest)
+	}
+
+	return allPoolInterest, nil
+}

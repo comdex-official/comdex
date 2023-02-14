@@ -299,6 +299,15 @@ message QueryFundModBalByAssetPoolResponse {
   ];
 }
 
+message QueryLendInterestRequest {}
+
+message QueryLendInterestResponse {
+  repeated PoolInterest pool_interest = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_interest\""
+  ];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -391,6 +400,10 @@ service Query {
 
   rpc QueryFundModBalByAssetPool(QueryFundModBalByAssetPoolRequest) returns (QueryFundModBalByAssetPoolResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/fund_mod_bal_by_asset_pool/{asset_id}/{pool_id}";
+  };
+
+  rpc QueryLendInterest(QueryLendInterestRequest) returns (QueryLendInterestResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/lend_interest";
   };
 }
 
