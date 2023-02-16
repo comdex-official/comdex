@@ -824,6 +824,7 @@ Sample json content
 	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
 	"is_on_chain" :"0,0,0,0,0,0,0,0,1",
 	"asset_oracle_price" :"1,1,0,1,0,0,0,0,0",
+    "is_cdp_mintable" :"1,1,0,1,0,0,0,0,0",
     "asset_out" :"3,3,3,3,3,3,3,3,3",
 	"title" :"Add assets and pairs for applications to be deployed on comdex testnet",
 	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR to be then used on harbor, commodo and cswap apps",

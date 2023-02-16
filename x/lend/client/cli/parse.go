@@ -159,7 +159,7 @@ func parseAddPoolPairsFlags(fs *pflag.FlagSet) (*addLendPoolPairsInputs, error) 
 	addPoolPairsParamsFile, _ := fs.GetString(FlagAddLendPoolPairsFile)
 
 	if addPoolPairsParamsFile == "" {
-		return nil, fmt.Errorf("must pass in a add new pool json using the --%s flag", FlagAddLendPoolFile)
+		return nil, fmt.Errorf("must pass in a add new pool pairs json using the --%s flag", FlagAddLendPoolPairsFile)
 	}
 
 	contents, err := os.ReadFile(addPoolPairsParamsFile)

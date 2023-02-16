@@ -120,7 +120,7 @@ func parseAssetsPairsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsPairsMappi
 	addAssetsPairsMappingFile, _ := fs.GetString(FlagAddAssetsPairsMappingFile)
 
 	if addAssetsPairsMappingFile == "" {
-		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
+		return nil, fmt.Errorf("must pass in add asset pairs mapping json using the --%s flag", FlagAddAssetsPairsMappingFile)
 	}
 
 	contents, err := os.ReadFile(addAssetsPairsMappingFile)

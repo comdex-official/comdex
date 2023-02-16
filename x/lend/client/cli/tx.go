@@ -1156,11 +1156,6 @@ func NewCreateLendPoolPairs(clientCtx client.Context, txf tx.Factory, fs *flag.F
 		return txf, nil, err
 	}
 
-	//minUSDValue, err := ParseUint64SliceFromString(newLendPool.MinUSDValueLeft, ",")
-	//if err != nil {
-	//	return txf, nil, err
-	//}
-
 	supplyCap, err := ParseDecSliceFromString(newLendPool.SupplyCap, ",")
 	if err != nil {
 		return txf, nil, err
@@ -1181,12 +1176,15 @@ func NewCreateLendPoolPairs(clientCtx client.Context, txf tx.Factory, fs *flag.F
 		}
 		assetData = append(assetData, &assetDataNew)
 	}
-	minUSDValue := sdk.NewUintFromString(newLendPool.MinUSDValueLeft)
+	minUSDValueLeft, err := strconv.ParseUint(newLendPool.MinUSDValueLeft, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
 	pool = types.PoolPairs{
 		ModuleName:      moduleName,
 		CPoolName:       cPoolName,
 		AssetData:       assetData,
-		MinUsdValueLeft: minUSDValue.Uint64(),
+		MinUsdValueLeft: minUSDValueLeft,
 	}
 
 	from := clientCtx.GetFromAddress()
