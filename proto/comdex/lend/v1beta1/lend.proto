@@ -651,3 +651,92 @@ message PoolInterestB  {
     (gogoproto.moretags) = "yaml:\"pool_interest_data\""
   ];
 }
+
+message AssetRatesPoolPairs {
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetID",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  string u_optimal = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"u_optimal\""
+  ];
+  string base = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"base\""
+  ];
+  string slope1 = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"slope1\""
+  ];
+  string slope2 = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"slope2\""
+  ];
+  bool enable_stable_borrow = 6 [
+    (gogoproto.moretags) = "yaml:\"enable_stable_borrow\""
+  ];
+  string stable_base = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_base\""
+  ];
+  string stable_slope1 = 8 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_slope1\""
+  ];
+  string stable_slope2 = 9 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_slope2\""
+  ];
+  string ltv = 10 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"ltv\""
+  ];
+  string liquidation_threshold = 11 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"liquidation_threshold\""
+  ];
+  string liquidation_penalty = 12 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"liquidation_penalty\""
+  ];
+  string liquidation_bonus = 13 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"liquidation_bonus\""
+  ];
+  string reserve_factor = 14 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"reserve_factor\""
+  ];
+  uint64 c_asset_id = 15 [
+    (gogoproto.customname) = "CAssetID",
+    (gogoproto.moretags) = "yaml:\"c_asset_id\""
+  ];
+
+  string module_name = 16 [
+    (gogoproto.customname) = "ModuleName",
+    (gogoproto.moretags) = "yaml:\"module_name\""
+  ];
+  string cpool_name = 17 [
+    (gogoproto.customname) = "CPoolName",
+    (gogoproto.moretags) = "yaml:\"cpool_name\""
+  ];
+  repeated AssetDataPoolMapping asset_data = 18 [
+    (gogoproto.customname) = "AssetData",
+    (gogoproto.moretags) = "yaml:\"asset_data\""
+  ];
+  uint64 min_usd_value_left = 19 [
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
+}

@@ -37,3 +37,7 @@ func (k Keeper) HandleMultipleAddWhitelistedPairsRecords(ctx sdk.Context, p *typ
 func (k Keeper) HandleAddPoolPairsRecords(ctx sdk.Context, p *types.AddPoolPairsProposal) error {
 	return k.AddPoolsPairsRecords(ctx, p.PoolPairs)
 }
+
+func (k Keeper) HandleAddAssetRatesPoolPairsRecords(ctx sdk.Context, p *types.AddAssetRatesPoolPairsProposal) error {
+	return k.AddAssetRatesPoolPairs(ctx, p.AssetRatesPoolPairs)
+}

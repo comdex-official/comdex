@@ -56,6 +56,13 @@ func AddPoolPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalR
 	}
 }
 
+func AddAssetRatesPoolPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-asset-pool-pairs",
+		Handler:  AddpoolRESTHandler(clientCtx),
+	}
+}
+
 func AddAssetToPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-asset-to-pair",

@@ -10,11 +10,12 @@ import (
 )
 
 type (
-	XAddNewLendPairsInputs     addNewLendPairsInputs
-	XAddLendPoolInputs         addLendPoolInputs
-	XAddAssetRatesParamsInputs addAssetRatesParamsInputs
-	XSetAuctionParamsInputs    addNewAuctionParamsInputs
-	XAddLendPoolPairsInputs    addLendPoolPairsInputs
+	XAddNewLendPairsInputs            addNewLendPairsInputs
+	XAddLendPoolInputs                addLendPoolInputs
+	XAddAssetRatesParamsInputs        addAssetRatesParamsInputs
+	XSetAuctionParamsInputs           addNewAuctionParamsInputs
+	XAddLendPoolPairsInputs           addLendPoolPairsInputs
+	XAddAssetRatesLendPoolPairsInputs addAssetRatesPoolPairsInputs
 )
 
 type XAddNewLendPairsInputsExceptions struct {
@@ -29,6 +30,11 @@ type XAddPoolInputsExceptions struct {
 
 type XAddPoolPairsInputsExceptions struct {
 	XAddLendPoolPairsInputs
+	Other *string // Other won't raise an error
+}
+
+type XAddAssetRatesPoolPairsInputsExceptions struct {
+	XAddAssetRatesLendPoolPairsInputs
 	Other *string // Other won't raise an error
 }
 
@@ -80,6 +86,19 @@ func (release *addLendPoolPairsInputs) UnmarshalJSON(data []byte) error {
 	}
 
 	*release = addLendPoolPairsInputs(addPoolParamsE.XAddLendPoolPairsInputs)
+	return nil
+}
+
+func (release *addAssetRatesPoolPairsInputs) UnmarshalJSON(data []byte) error {
+	var addPoolParamsE XAddAssetRatesPoolPairsInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&addPoolParamsE); err != nil {
+		return err
+	}
+
+	*release = addAssetRatesPoolPairsInputs(addPoolParamsE.XAddAssetRatesLendPoolPairsInputs)
 	return nil
 }
 
@@ -160,6 +179,28 @@ func parseAddPoolPairsFlags(fs *pflag.FlagSet) (*addLendPoolPairsInputs, error) 
 
 	if addPoolPairsParamsFile == "" {
 		return nil, fmt.Errorf("must pass in a add new pool pairs json using the --%s flag", FlagAddLendPoolPairsFile)
+	}
+
+	contents, err := os.ReadFile(addPoolPairsParamsFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = addPoolPairsParams.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return addPoolPairsParams, nil
+}
+
+func parseAddAssetratesPoolPairsFlags(fs *pflag.FlagSet) (*addAssetRatesPoolPairsInputs, error) {
+	addPoolPairsParams := &addAssetRatesPoolPairsInputs{}
+	addPoolPairsParamsFile, _ := fs.GetString(FlagAddAssetRatesPoolPairsFile)
+
+	if addPoolPairsParamsFile == "" {
+		return nil, fmt.Errorf("must pass in a add new asset rates, pool & pairs json using the --%s flag", FlagAddAssetRatesPoolPairsFile)
 	}
 
 	contents, err := os.ReadFile(addPoolPairsParamsFile)

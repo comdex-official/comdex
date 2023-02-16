@@ -506,3 +506,42 @@ func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []type
 	}
 	return assetRatesParams
 }
+
+func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPoolPairs) error {
+	_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
+	if found {
+		return types.ErrorAssetRatesParamsAlreadyExists
+	}
+
+	assetRatesParams := types.AssetRatesParams{
+		AssetID:              msg.AssetID,
+		UOptimal:             msg.UOptimal,
+		Base:                 msg.Base,
+		Slope1:               msg.Slope1,
+		Slope2:               msg.Slope2,
+		EnableStableBorrow:   msg.EnableStableBorrow,
+		StableBase:           msg.StableBase,
+		StableSlope1:         msg.StableSlope1,
+		StableSlope2:         msg.StableSlope2,
+		Ltv:                  msg.Ltv,
+		LiquidationThreshold: msg.LiquidationThreshold,
+		LiquidationPenalty:   msg.LiquidationPenalty,
+		LiquidationBonus:     msg.LiquidationBonus,
+		ReserveFactor:        msg.ReserveFactor,
+		CAssetID:             msg.CAssetID,
+	}
+
+	k.SetAssetRatesParams(ctx, assetRatesParams)
+
+	poolPairs := types.PoolPairs{
+		ModuleName:      msg.ModuleName,
+		CPoolName:       msg.CPoolName,
+		AssetData:       msg.AssetData,
+		MinUsdValueLeft: msg.MinUsdValueLeft,
+	}
+	err := k.AddPoolsPairsRecords(ctx, poolPairs)
+	if err != nil {
+		return err
+	}
+	return nil
+}

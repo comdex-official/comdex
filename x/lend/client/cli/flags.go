@@ -10,11 +10,12 @@ import (
 )
 
 const (
-	FlagNewLendPairFile         = "add-lend-pair-file"
-	FlagAddLendPoolFile         = "add-lend-pool-file"
-	FlagAddAssetRatesParamsFile = "add-asset-rates-params-file"
-	FlagSetAuctionParamsFile    = "add-auction-params-file"
-	FlagAddLendPoolPairsFile    = "add-lend-pool-pairs-file"
+	FlagNewLendPairFile            = "add-lend-pair-file"
+	FlagAddLendPoolFile            = "add-lend-pool-file"
+	FlagAddAssetRatesParamsFile    = "add-asset-rates-params-file"
+	FlagSetAuctionParamsFile       = "add-auction-params-file"
+	FlagAddLendPoolPairsFile       = "add-lend-pool-pairs-file"
+	FlagAddAssetRatesPoolPairsFile = "add-asset-rates-pool-pairs-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -73,6 +74,13 @@ func FlagSetAddLendPoolPairsMapping() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
 	fs.String(FlagAddLendPoolPairsFile, "", "add new lend pool pairs json file path")
+	return fs
+}
+
+func FlagSetAddAssetRatesPoolPairsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddAssetRatesPoolPairsFile, "", "add new lend asset rates, pool pairs json file path")
 	return fs
 }
 
@@ -157,4 +165,31 @@ type addNewAuctionParamsInputs struct {
 	Title                  string
 	Description            string
 	Deposit                string
+}
+
+type addAssetRatesPoolPairsInputs struct {
+	AssetID              string `json:"asset_id"`
+	UOptimal             string `json:"u_optimal"`
+	Base                 string `json:"base"`
+	Slope1               string `json:"slope_1"`
+	Slope2               string `json:"slope_2"`
+	EnableStableBorrow   string `json:"enable_stable_borrow"`
+	StableBase           string `json:"stable_base"`
+	StableSlope1         string `json:"stable_slope_1"`
+	StableSlope2         string `json:"stable_slope_2"`
+	LTV                  string `json:"ltv"`
+	LiquidationThreshold string `json:"liquidation_threshold"`
+	LiquidationPenalty   string `json:"liquidation_penalty"`
+	LiquidationBonus     string `json:"liquidation_bonus"`
+	ReserveFactor        string `json:"reserve_factor"`
+	CAssetID             string `json:"c_asset_id"`
+	ModuleName           string `json:"module_name"`
+	AssetIDs             string `json:"asset_ids"`
+	AssetTransitType     string `json:"asset_transit_type"`
+	SupplyCap            string `json:"supply_cap"`
+	CPoolName            string `json:"c_pool_name"`
+	MinUSDValueLeft      string `json:"min_usd_value_left"`
+	Title                string
+	Description          string
+	Deposit              string
 }
