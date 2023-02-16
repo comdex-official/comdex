@@ -364,6 +364,29 @@ message OrderBookTickResponse {
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
 
+message TotalActiveAndQueuedPoolCoins {
+  uint64 pool_id = 1;
+  cosmos.base.v1beta1.Coin total_active_pool_coin = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin total_queued_pool_coin = 3 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryAllFarmedPoolCoinsRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAllFarmedPoolCoinsResponse {
+  uint64 app_id = 1;
+  repeated TotalActiveAndQueuedPoolCoins total_active_and_queued_coins = 2;
+}
+
+
+
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
@@ -459,6 +482,11 @@ service Query {
   // FarmedPoolCoin returns the total farmed pool coins.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
+  }
+
+  // TotalActiveAndQueuedPoolCoin returns the total number of active and queued farmed pool coins in each pool.
+  rpc TotalActiveAndQueuedPoolCoin(QueryAllFarmedPoolCoinsRequest) returns (QueryAllFarmedPoolCoinsResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/all_farmed_coin/{app_id}";
   }
 
   rpc OrderBooks(QueryOrderBooksRequest) returns (QueryOrderBooksResponse) {
