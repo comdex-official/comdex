@@ -1,7 +1,7 @@
-package v8_0_0 //nolint:revive,stylecheck
+package v9_0_0 //nolint:revive,stylecheck
 
 const (
-	UpgradeName820Beta = "v8.2.0.beta"
+	UpgradeName820Beta = "v9.0.0.beta"
 	UpgradeHeight      = ""
 	UpgradeInfo        = `'{
 		"binaries": {

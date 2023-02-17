@@ -1,4 +1,4 @@
-package v8_0_0 //nolint:revive,stylecheck
+package v9_0_0 //nolint:revive,stylecheck
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -55,7 +55,7 @@ func UpdateDenomAndAddAsset(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 	assetKeeper.SetPair(ctx, pairSTOSMO)
 }
 
-func CreateUpgradeHandlerV820Beta(
+func CreateUpgradeHandlerV900Beta(
 	mm *module.Manager,
 	configurator module.Configurator,
 	assetKeeper assetkeeper.Keeper,
