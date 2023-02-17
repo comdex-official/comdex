@@ -2,13 +2,14 @@ package app
 
 import (
 	"fmt"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
@@ -1214,7 +1215,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv9.UpgradeName820Beta,
+		tv9.UpgradeName,
 		tv9.CreateUpgradeHandlerV900Beta(a.mm, a.configurator, a.AssetKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
@@ -1278,7 +1279,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == mv8.UpgradeName811 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 
-	case upgradeInfo.Name == tv9.UpgradeName820Beta && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 
