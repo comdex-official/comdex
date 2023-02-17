@@ -816,18 +816,18 @@ func NewCmdSubmitAddMultipleAssetsPairsProposal() *cobra.Command {
 		Use:   "add-multiple-assets-pairs [flags]",
 		Args:  cobra.ExactArgs(0),
 		Short: "Submit multiple assets and pairs",
-		Long: `Must provide path to a add assets in JSON file (--add-assets) describing the asset in app to be created
+		Long: `Must provide path to a add assets and pairs in JSON file (--add-assets-pairs-file) describing the assets and pairs to be created
 Sample json content
 {
-	"name" :"ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
-	"denom" :"uatom,ucmdx,ucmst,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
-	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
-	"is_on_chain" :"0,0,0,0,0,0,0,0,1",
-	"asset_oracle_price" :"1,1,0,1,0,0,0,0,0",
-    "is_cdp_mintable" :"1,1,0,1,0,0,0,0,0",
-    "asset_out" :"3,3,3,3,3,3,3,3,3",
+	"name" :"ATOM,CMDX,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
+	"denom" :"uatom,ucmdx,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
+	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
+	"is_on_chain" :"0,0,0,0,0,0,0,1",
+	"asset_oracle_price" :"1,1,1,0,0,0,0,0",
+    "is_cdp_mintable" :"1,1,1,0,0,0,0,0",
+    "asset_out" :"3,3,3,3,3,3,3,3",
 	"title" :"Add assets and pairs for applications to be deployed on comdex testnet",
-	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR to be then used on harbor, commodo and cswap apps",
+	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR with pairs to be then used on harbor, commodo and cswap apps",
 	"deposit" :"1000000000ucmdx"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -856,7 +856,7 @@ Sample json content
 func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	assetsPairsMapping, err := parseAssetsPairsMappingFlags(fs)
 	if err != nil {
-		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
+		return txf, nil, fmt.Errorf("failed to parse assetsPairs: %w", err)
 	}
 
 	names, err := ParseStringFromString(assetsPairsMapping.Name, ",")
