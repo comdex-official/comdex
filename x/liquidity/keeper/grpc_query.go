@@ -720,6 +720,47 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 	return &types.QueryFarmedPoolCoinResponse{Coin: farmedCoins}, nil
 }
 
+// TotalActiveAndQueuedPoolCoin returns the total number of active and queued farmed pool coins in each pool.
+func (k Querier) TotalActiveAndQueuedPoolCoin(c context.Context, req *types.QueryAllFarmedPoolCoinsRequest) (*types.QueryAllFarmedPoolCoinsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.AppId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var totalActiveAndQueuedPoolCoins []*types.TotalActiveAndQueuedPoolCoins
+
+	pools := k.GetAllPools(ctx, req.AppId)
+	for _, pool := range pools {
+		totalActiveCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		allActiveFarmers := k.GetAllActiveFarmers(ctx, req.AppId, pool.Id)
+		for _, afarmer := range allActiveFarmers {
+			totalActiveCoin = totalActiveCoin.Add(afarmer.FarmedPoolCoin)
+		}
+
+		totalQueuedCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		allQueuedFarmers := k.GetAllQueuedFarmers(ctx, req.AppId, pool.Id)
+		for _, qfarmer := range allQueuedFarmers {
+			for _, qCoin := range qfarmer.QueudCoins {
+				totalQueuedCoin = totalQueuedCoin.Add(qCoin.FarmedPoolCoin)
+			}
+		}
+
+		totalActiveAndQueuedPoolCoins = append(totalActiveAndQueuedPoolCoins,
+			&types.TotalActiveAndQueuedPoolCoins{
+				PoolId:              pool.Id,
+				TotalActivePoolCoin: totalActiveCoin,
+				TotalQueuedPoolCoin: totalQueuedCoin,
+			},
+		)
+	}
+	return &types.QueryAllFarmedPoolCoinsResponse{AppId: req.AppId, TotalActiveAndQueuedCoins: totalActiveAndQueuedPoolCoins}, nil
+}
+
 // OrderBooks queries virtual order books from user orders and pools.
 func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest) (*types.QueryOrderBooksResponse, error) {
 	if req == nil {
