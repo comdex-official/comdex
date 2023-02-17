@@ -267,3 +267,80 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	k.SetAsset(ctx, asset)
 	return nil
 }
+
+func (k *Keeper) AddMultipleAssetPairRecords(ctx sdk.Context, records ...types.AssetPair) error {
+	for _, record := range records {
+		err := k.AddAssetPairRecords(ctx, record)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (k Keeper) AddAssetPairRecords(ctx sdk.Context, msg types.AssetPair) error {
+	if k.HasAssetForDenom(ctx, msg.Denom) || k.HasAssetForName(ctx, msg.Name) {
+		return types.ErrorDuplicateAsset
+	}
+
+	IsLetter := regexp.MustCompile(`^[A-Z]+$`).MatchString
+
+	if !IsLetter(msg.Name) || len(msg.Name) > 10 {
+		return types.ErrorNameDidNotMeetCriterion
+	}
+	if !msg.IsOnChain && msg.IsCdpMintable {
+		return types.ErrorOffChainAssetCannotBeMintable
+	}
+
+	var (
+		assetID = k.GetAssetID(ctx)
+		asset   = types.Asset{
+			Id:                    assetID + 1,
+			Name:                  msg.Name,
+			Denom:                 msg.Denom,
+			Decimals:              msg.Decimals,
+			IsOnChain:             msg.IsOnChain,
+			IsOraclePriceRequired: msg.IsOraclePriceRequired,
+			IsCdpMintable:         msg.IsCdpMintable,
+		}
+	)
+	if msg.IsOraclePriceRequired {
+		k.bandoracle.SetCheckFlag(ctx, false)
+	}
+
+	k.SetAssetID(ctx, asset.Id)
+	k.SetAsset(ctx, asset)
+	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
+	k.SetAssetForName(ctx, asset.Name, asset.Id)
+
+	if !k.HasAsset(ctx, asset.Id) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if !k.HasAsset(ctx, msg.AssetOut) {
+		return types.ErrorAssetDoesNotExist
+	}
+	if asset.Id == msg.AssetOut {
+		return types.ErrorDuplicateAsset
+	}
+	pairs := k.GetPairs(ctx)
+	for _, data := range pairs {
+		if data.AssetIn == asset.Id && data.AssetOut == msg.AssetOut {
+			return types.ErrorDuplicatePair
+		} else if (data.AssetIn == msg.AssetOut) && (data.AssetOut == asset.Id) {
+			return types.ErrorReversePairAlreadyExist
+		}
+	}
+	var (
+		id   = k.GetPairID(ctx)
+		pair = types.Pair{
+			Id:       id + 1,
+			AssetIn:  asset.Id,
+			AssetOut: msg.AssetOut,
+		}
+	)
+
+	k.SetPairID(ctx, pair.Id)
+	k.SetPair(ctx, pair)
+
+	return nil
+}

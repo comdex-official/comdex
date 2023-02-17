@@ -12,12 +12,20 @@ type (
 	UpdateNewAssetRequest struct{}
 	AddNewPairsRequest    struct{}
 	UpdateNewPairRequest  struct{}
+	AddNewAssetsPairs     struct{}
 )
 
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-new-assets",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
+	}
+}
+
+func AddNewAssetsPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-new-assets-pairs",
+		Handler:  AddNewAssetsPairsRESTHandler(clientCtx),
 	}
 }
 
@@ -52,6 +60,16 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 func AddNewAssetsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UpdateNewAssetRequest
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+	}
+}
+
+func AddNewAssetsPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddNewAssetsPairs
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return

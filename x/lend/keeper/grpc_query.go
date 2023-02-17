@@ -599,3 +599,21 @@ func (q QueryServer) QueryFundModBalByAssetPool(c context.Context, req *types.Qu
 
 	return &types.QueryFundModBalByAssetPoolResponse{Amount: modBal}, nil
 }
+
+func (q QueryServer) QueryLendInterest(c context.Context, req *types.QueryLendInterestRequest) (*types.QueryLendInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	lendInterest, _ := q.IterateLendsForQuery(ctx)
+	return &types.QueryLendInterestResponse{PoolInterest: lendInterest}, nil
+}
+
+func (q QueryServer) QueryBorrowInterest(c context.Context, req *types.QueryBorrowInterestRequest) (*types.QueryBorrowInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	borrowInterest, _ := q.IterateBorrowsForQuery(ctx)
+	return &types.QueryBorrowInterestResponse{PoolInterest: borrowInterest}, nil
+}

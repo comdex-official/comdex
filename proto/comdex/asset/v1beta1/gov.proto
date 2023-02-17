@@ -63,3 +63,9 @@ message AddAssetInAppProposal {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   AppData app = 3 [(gogoproto.nullable) = false];
 }
+
+message AddMultipleAssetsPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  repeated AssetPair assetsPair = 3 [(gogoproto.nullable) = false];
+}

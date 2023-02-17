@@ -12,6 +12,8 @@ var (
 	ProposalAddAssetRatesParams    = "ProposalAddAssetRatesParams"
 	ProposalAddAuctionParams       = "ProposalAddAuctionParams"
 	ProposalAddMultipleAssetToPair = "ProposalAddMultipleAssetToPair"
+	ProposalAddPoolPairs           = "ProposalAddPoolPairs"
+	ProposalAddAssetRatesPoolPairs = "ProposalAddAssetRatesPoolPairs"
 )
 
 func init() {
@@ -29,6 +31,10 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&AddAssetRatesParams{}, "comdex/AddAssetRatesParams")
 	govtypes.RegisterProposalType(ProposalAddAuctionParams)
 	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "comdex/AddAuctionParamsProposal")
+	govtypes.RegisterProposalType(ProposalAddPoolPairs)
+	govtypes.RegisterProposalTypeCodec(&AddPoolPairsProposal{}, "comdex/AddPoolPairsProposal")
+	govtypes.RegisterProposalType(ProposalAddAssetRatesPoolPairs)
+	govtypes.RegisterProposalTypeCodec(&AddAssetRatesPoolPairsProposal{}, "comdex/AddAssetRatesPoolPairsProposal")
 }
 
 var (
@@ -39,6 +45,8 @@ var (
 	_ govtypes.Content = &AddAuctionParamsProposal{}
 	_ govtypes.Content = &MultipleLendPairsProposal{}
 	_ govtypes.Content = &AddMultipleAssetToPairProposal{}
+	_ govtypes.Content = &AddPoolPairsProposal{}
+	_ govtypes.Content = &AddAssetRatesPoolPairsProposal{}
 )
 
 func NewAddLendPairsProposal(title, description string, pairs Extended_Pair) govtypes.Content {
@@ -237,6 +245,65 @@ func (p *AddAuctionParamsProposal) ProposalType() string {
 func (p *AddAuctionParamsProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewAddPoolPairsProposal(title, description string, pool PoolPairs) govtypes.Content {
+	return &AddPoolPairsProposal{
+		Title:       title,
+		Description: description,
+		PoolPairs:   pool,
+	}
+}
+
+func (p *AddPoolPairsProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (p *AddPoolPairsProposal) ProposalType() string {
+	return ProposalAddPool
+}
+
+func (p *AddPoolPairsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+
+	pool := p.PoolPairs
+	if err := pool.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewAddassetRatesPoolPairs(title, description string, AssetRatesPoolPairs AssetRatesPoolPairs) govtypes.Content {
+	return &AddAssetRatesPoolPairsProposal{
+		Title:               title,
+		Description:         description,
+		AssetRatesPoolPairs: AssetRatesPoolPairs,
+	}
+}
+
+func (p *AddAssetRatesPoolPairsProposal) ProposalRoute() string {
+	return RouterKey
+}
+
+func (p *AddAssetRatesPoolPairsProposal) ProposalType() string {
+	return ProposalAddAssetRatesPoolPairs
+}
+
+func (p *AddAssetRatesPoolPairsProposal) ValidateBasic() error {
+	err := govtypes.ValidateAbstract(p)
+	if err != nil {
+		return err
+	}
+
+	if err = p.AssetRatesPoolPairs.Validate(); err != nil {
 		return err
 	}
 

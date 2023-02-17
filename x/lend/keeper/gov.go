@@ -33,3 +33,11 @@ func (k Keeper) HandleAddAuctionParamsRecords(ctx sdk.Context, p *types.AddAucti
 func (k Keeper) HandleMultipleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.MultipleLendPairsProposal) error {
 	return k.AddLendPairsRecords(ctx, p.Pairs...)
 }
+
+func (k Keeper) HandleAddPoolPairsRecords(ctx sdk.Context, p *types.AddPoolPairsProposal) error {
+	return k.AddPoolsPairsRecords(ctx, p.PoolPairs)
+}
+
+func (k Keeper) HandleAddAssetRatesPoolPairsRecords(ctx sdk.Context, p *types.AddAssetRatesPoolPairsProposal) error {
+	return k.AddAssetRatesPoolPairs(ctx, p.AssetRatesPoolPairs)
+}

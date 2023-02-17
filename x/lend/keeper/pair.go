@@ -83,6 +83,174 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 	return nil
 }
 
+func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) error {
+	for _, v := range pool.AssetData {
+		_, found := k.Asset.GetAsset(ctx, v.AssetID)
+		if !found {
+			return types.ErrorAssetDoesNotExist
+		}
+	}
+
+	poolID := k.GetPoolID(ctx)
+	newPool := types.Pool{
+		PoolID:     poolID + 1,
+		ModuleName: pool.ModuleName,
+		CPoolName:  pool.CPoolName,
+		AssetData:  pool.AssetData,
+	}
+	var assetIDPair []uint64
+	var mainAssetCurrentPool uint64
+	for _, v := range pool.AssetData {
+		var assetStats types.PoolAssetLBMapping
+		assetStats.PoolID = newPool.PoolID
+		assetStats.AssetID = v.AssetID
+		assetStats.TotalBorrowed = sdk.ZeroInt()
+		assetStats.TotalStableBorrowed = sdk.ZeroInt()
+		assetStats.TotalLend = sdk.ZeroInt()
+		assetStats.TotalInterestAccumulated = sdk.ZeroInt()
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
+		reserveBuybackStats, found := k.GetReserveBuybackAssetData(ctx, v.AssetID)
+		if !found {
+			reserveBuybackStats.AssetID = v.AssetID
+			reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
+			reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
+			k.SetReserveBuybackAssetData(ctx, reserveBuybackStats)
+			reserveStat := types.AllReserveStats{
+				AssetID:                        v.AssetID,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         reserveBuybackStats.BuybackAmount.Add(reserveBuybackStats.ReserveAmount),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
+			}
+			k.SetAllReserveStatsByAssetID(ctx, reserveStat)
+		}
+		assetIDPair = append(assetIDPair, v.AssetID)
+		if v.AssetTransitType == 1 {
+			mainAssetCurrentPool = v.AssetID
+		}
+	}
+
+	k.SetPool(ctx, newPool)
+	k.SetPoolID(ctx, newPool.PoolID)
+	// Add same pool pairs for the specific pool
+	// Add inter-pool pairs by fetching all the previous pools
+	// create pair mapping for individual pairs
+
+	intraPoolPairs := CreatePairs(assetIDPair) // returns {{1,2},{2,1}}
+	for _, pairs := range intraPoolPairs {
+
+		id := k.GetLendPairID(ctx)
+		pair := types.Extended_Pair{
+			Id:              id + 1,
+			AssetIn:         pairs[0],
+			AssetOut:        pairs[1],
+			IsInterPool:     false,
+			AssetOutPoolID:  poolID + 1,
+			MinUsdValueLeft: pool.MinUsdValueLeft,
+		}
+		k.SetLendPairID(ctx, pair.Id)
+		k.SetLendPair(ctx, pair)
+
+		//var assetToPair types.AssetToPairMapping
+		assetToPair, found := k.GetAssetToPair(ctx, pair.AssetIn, poolID+1)
+		if !found {
+			assetToPair.AssetID = pair.AssetIn
+			assetToPair.PoolID = poolID + 1 // here asset IN and Out Pool are same
+			assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+		} else {
+			assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+		}
+		k.SetAssetToPair(ctx, assetToPair)
+	}
+
+	// Plan:
+	// first call all previous pools and get their transit asset type == 1
+	// store data and, first create pair as current cPool main asset as assetIn and other {{poolID, mainAssetID}} as assetOut
+	// In second step reverse the pair
+
+	pools := k.GetPools(ctx)
+	var diffPoolID, mainAssetID []uint64
+	if len(pools) > 1 {
+		for _, cPool := range pools {
+			if cPool.PoolID == poolID+1 {
+				continue
+			}
+			for _, ad := range cPool.AssetData {
+				if ad.AssetTransitType == 1 {
+					diffPoolID = append(diffPoolID, cPool.PoolID)
+					mainAssetID = append(mainAssetID, ad.AssetID)
+					break
+				}
+			}
+		}
+
+		// here we have different cPoolID and their main assetID
+		for i := range diffPoolID {
+			// first creating pair with different cPool as asset In
+			id := k.GetLendPairID(ctx)
+			pair := types.Extended_Pair{
+				Id:              id + 1,
+				AssetIn:         mainAssetID[i],
+				AssetOut:        mainAssetCurrentPool,
+				IsInterPool:     true,
+				AssetOutPoolID:  poolID + 1,
+				MinUsdValueLeft: pool.MinUsdValueLeft,
+			}
+			k.SetLendPairID(ctx, pair.Id)
+			k.SetLendPair(ctx, pair)
+
+			assetToPair, found := k.GetAssetToPair(ctx, pair.AssetIn, diffPoolID[i])
+			if !found {
+				assetToPair.AssetID = pair.AssetIn
+				assetToPair.PoolID = diffPoolID[i] // here asset IN and Out Pool are same
+				assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+			} else {
+				assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+			}
+			k.SetAssetToPair(ctx, assetToPair)
+		}
+
+		for i := range diffPoolID {
+			// Second creating pair with current cPool as asset In
+			id := k.GetLendPairID(ctx)
+			pair := types.Extended_Pair{
+				Id:              id + 1,
+				AssetIn:         mainAssetCurrentPool,
+				AssetOut:        mainAssetID[i],
+				IsInterPool:     true,
+				AssetOutPoolID:  diffPoolID[i],
+				MinUsdValueLeft: pool.MinUsdValueLeft,
+			}
+			k.SetLendPairID(ctx, pair.Id)
+			k.SetLendPair(ctx, pair)
+
+			assetToPair, found := k.GetAssetToPair(ctx, pair.AssetIn, poolID+1)
+			if !found {
+				assetToPair.AssetID = pair.AssetIn
+				assetToPair.PoolID = poolID + 1 // here asset IN and Out Pool are same
+				assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+			} else {
+				assetToPair.PairID = append(assetToPair.PairID, pair.Id)
+			}
+			k.SetAssetToPair(ctx, assetToPair)
+		}
+	}
+	return nil
+}
+
+func CreatePairs(numbers []uint64) [][2]uint64 {
+	var result [][2]uint64
+	for i := 0; i < len(numbers); i++ {
+		for j := i + 1; j < len(numbers); j++ {
+			result = append(result, [2]uint64{numbers[i], numbers[j]})
+			result = append(result, [2]uint64{numbers[j], numbers[i]})
+		}
+	}
+	return result
+}
+
 func (k Keeper) AddAssetToPair(ctx sdk.Context, assetToPair types.AssetToPairMapping) error {
 	_, found := k.Asset.GetAsset(ctx, assetToPair.AssetID)
 	if !found {
@@ -337,4 +505,43 @@ func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []type
 		assetRatesParams = append(assetRatesParams, asset)
 	}
 	return assetRatesParams
+}
+
+func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPoolPairs) error {
+	_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
+	if found {
+		return types.ErrorAssetRatesParamsAlreadyExists
+	}
+
+	assetRatesParams := types.AssetRatesParams{
+		AssetID:              msg.AssetID,
+		UOptimal:             msg.UOptimal,
+		Base:                 msg.Base,
+		Slope1:               msg.Slope1,
+		Slope2:               msg.Slope2,
+		EnableStableBorrow:   msg.EnableStableBorrow,
+		StableBase:           msg.StableBase,
+		StableSlope1:         msg.StableSlope1,
+		StableSlope2:         msg.StableSlope2,
+		Ltv:                  msg.Ltv,
+		LiquidationThreshold: msg.LiquidationThreshold,
+		LiquidationPenalty:   msg.LiquidationPenalty,
+		LiquidationBonus:     msg.LiquidationBonus,
+		ReserveFactor:        msg.ReserveFactor,
+		CAssetID:             msg.CAssetID,
+	}
+
+	k.SetAssetRatesParams(ctx, assetRatesParams)
+
+	poolPairs := types.PoolPairs{
+		ModuleName:      msg.ModuleName,
+		CPoolName:       msg.CPoolName,
+		AssetData:       msg.AssetData,
+		MinUsdValueLeft: msg.MinUsdValueLeft,
+	}
+	err := k.AddPoolsPairsRecords(ctx, poolPairs)
+	if err != nil {
+		return err
+	}
+	return nil
 }
