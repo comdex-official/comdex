@@ -46,7 +46,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		SupplyCap:        sdk.NewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
-	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
+	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
 
 	poolOneID := s.CreateNewPool("cmdx", "CMDX-ATOM-CMST", assetDataPoolOne)
 	poolTwoID := s.CreateNewPool("osmo", "OSMO-ATOM-CMST", assetDataPoolTwo)

@@ -286,3 +286,73 @@ func (k Keeper) ReBalanceStableRates(ctx sdk.Context, borrowPos types.BorrowAsse
 
 	return borrowPos, nil
 }
+
+func (k Keeper) IterateLendsForQuery(ctx sdk.Context) ([]types.PoolInterest, error) {
+	var (
+		poolInterest     types.PoolInterest
+		poolInterestData types.PoolInterestData
+	)
+
+	pools := k.GetPools(ctx)
+	var allPoolInterest []types.PoolInterest
+	for _, pool := range pools {
+		var v []types.PoolInterestData
+		poolInterest.PoolID = pool.PoolID
+		for _, data := range pool.AssetData {
+			lbMap, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pool.PoolID, data.AssetID)
+			totalInt := sdk.ZeroDec()
+			for _, ID := range lbMap.LendIds {
+				lend, _ := k.GetLend(ctx, ID)
+				lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
+				interestPerBlock, _, _ := k.CalculateLendReward(ctx, lend.AmountIn.Amount.String(), lendAPR, lend)
+				totalInt = totalInt.Add(interestPerBlock)
+			}
+			poolInterestData.LendInterest = totalInt.TruncateInt()
+			poolInterestData.AssetID = data.AssetID
+			v = append(v, poolInterestData)
+		}
+		poolInterest.PoolInterestData = v
+		allPoolInterest = append(allPoolInterest, poolInterest)
+	}
+
+	return allPoolInterest, nil
+}
+
+func (k Keeper) IterateBorrowsForQuery(ctx sdk.Context) ([]types.PoolInterestB, error) {
+	var (
+		poolInterest     types.PoolInterestB
+		poolInterestData types.PoolInterestDataB
+	)
+
+	pools := k.GetPools(ctx)
+	var allPoolInterest []types.PoolInterestB
+	for _, pool := range pools {
+		var v []types.PoolInterestDataB
+		poolInterest.PoolID = pool.PoolID
+		for _, data := range pool.AssetData {
+			lbMap, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pool.PoolID, data.AssetID)
+			totalInt := sdk.ZeroDec()
+			for _, ID := range lbMap.BorrowIds {
+				borrow, _ := k.GetBorrow(ctx, ID)
+				pair, _ := k.GetLendPair(ctx, borrow.PairID)
+				reserveRates, err := k.GetReserveRate(ctx, pair.AssetOutPoolID, pair.AssetOut)
+				if err != nil {
+					return []types.PoolInterestB{}, err
+				}
+				currBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
+				interestPerInteraction, _, _, _, err := k.CalculateBorrowInterest(ctx, borrow.AmountOut.Amount.String(), currBorrowAPR, reserveRates, borrow)
+				if err != nil {
+					return []types.PoolInterestB{}, err
+				}
+				totalInt = totalInt.Add(interestPerInteraction)
+			}
+			poolInterestData.BorrowInterest = totalInt.TruncateInt()
+			poolInterestData.AssetID = data.AssetID
+			v = append(v, poolInterestData)
+		}
+		poolInterest.PoolInterestData = v
+		allPoolInterest = append(allPoolInterest, poolInterest)
+	}
+
+	return allPoolInterest, nil
+}

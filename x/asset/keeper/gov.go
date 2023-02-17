@@ -41,3 +41,7 @@ func (k Keeper) HandleAddAppRecords(ctx sdk.Context, p *types.AddAppProposal) er
 func (k Keeper) HandleAddAssetInAppRecords(ctx sdk.Context, p *types.AddAssetInAppProposal) error {
 	return k.AddAssetInAppRecords(ctx, p.App)
 }
+
+func (k Keeper) HandleProposalAddMultipleAssetPair(ctx sdk.Context, p *types.AddMultipleAssetsPairsProposal) error {
+	return k.AddMultipleAssetPairRecords(ctx, p.AssetsPair...)
+}

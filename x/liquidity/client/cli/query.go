@@ -42,6 +42,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryDeserializePoolCoinCmd(),
 		NewQueryPoolIncentivesCmd(),
 		NewQueryFarmedPoolCoinCmd(),
+		NewQueryTotalActiveAndQueuedPoolCoinCmd(),
 	)
 
 	return cmd
@@ -1009,6 +1010,51 @@ $ %s query %s farmed-coin 1 1
 				&types.QueryFarmedPoolCoinRequest{
 					AppId:  appID,
 					PoolId: poolID,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryTotalActiveAndQueuedPoolCoinCmd implements the total-farmed-coin query command.
+func NewQueryTotalActiveAndQueuedPoolCoinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-farmed-coin [app-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query total active and queued coins being farmed in each pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query total active and queued coins being farmed in each pool.
+Example:
+$ %s query %s total-farmed-coin 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.TotalActiveAndQueuedPoolCoin(
+				cmd.Context(),
+				&types.QueryAllFarmedPoolCoinsRequest{
+					AppId: appID,
 				})
 			if err != nil {
 				return err

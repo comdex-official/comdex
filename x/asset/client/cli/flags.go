@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	FlagAddAssetMappingFile  = "add-asset-mapping-file"
-	FlagAddAssetsMappingFile = "add-assets-file"
+	FlagAddAssetMappingFile       = "add-asset-mapping-file"
+	FlagAddAssetsMappingFile      = "add-assets-file"
+	FlagAddAssetsPairsMappingFile = "add-assets-pairs-file"
 )
 
 func ParseBoolFromString(s string) bool {
@@ -59,6 +60,13 @@ func FlagSetCreateAssetsMapping() *flag.FlagSet {
 	return fs
 }
 
+func FlagSetCreateAssetsPairsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddAssetsPairsMappingFile, "", "add assets pairs json file path")
+	return fs
+}
+
 type createAddAssetMappingInputs struct {
 	AppID         string `json:"app_id"`
 	AssetID       string `json:"asset_id"`
@@ -77,6 +85,19 @@ type createAddAssetsMappingInputs struct {
 	IsOnChain        string `json:"is_on_chain"`
 	AssetOraclePrice string `json:"asset_oracle_price"`
 	IsCdpMintable    string `json:"is_cdp_mintable"`
+	Title            string
+	Description      string
+	Deposit          string
+}
+
+type createAddAssetsPairsMappingInputs struct {
+	Name             string `json:"name"`
+	Denom            string `json:"denom"`
+	Decimals         string `json:"decimals"`
+	IsOnChain        string `json:"is_on_chain"`
+	AssetOraclePrice string `json:"asset_oracle_price"`
+	IsCdpMintable    string `json:"is_cdp_mintable"`
+	AssetOut         string `json:"asset_out"`
 	Title            string
 	Description      string
 	Deposit          string

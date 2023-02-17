@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strings"
 
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
 
@@ -72,7 +74,6 @@ import (
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -169,6 +170,7 @@ import (
 	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
 	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
 	mv8 "github.com/comdex-official/comdex/app/upgrades/mainnet/v8"
+	tv9 "github.com/comdex-official/comdex/app/upgrades/testnet/v9_0_0"
 )
 
 const (
@@ -203,6 +205,8 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		lendclient.AddAuctionParamsHandler,
 		lendclient.AddMultipleAssetToPairHandler,
 		lendclient.AddMultipleLendPairsHandler,
+		lendclient.AddPoolPairsHandler,
+		lendclient.AddAssetRatesPoolPairsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -1211,8 +1215,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv8.UpgradeName811,
-		mv8.CreateUpgradeHandler811(a.mm, a.configurator, a.AssetKeeper, a.LendKeeper, a.AuctionKeeper),
+		tv9.UpgradeName,
+		tv9.CreateUpgradeHandlerV900Beta(a.mm, a.configurator, a.AssetKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1271,8 +1275,11 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 
 	case upgradeInfo.Name == mv8.UpgradeName810 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
-	
+
 	case upgradeInfo.Name == mv8.UpgradeName811 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
+
+	case upgradeInfo.Name == tv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 

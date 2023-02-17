@@ -48,3 +48,15 @@ message AddAuctionParamsProposal {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   AuctionParams AuctionParams = 3 [(gogoproto.nullable) = false];
 }
+
+message AddPoolPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  PoolPairs PoolPairs = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetRatesPoolPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AssetRatesPoolPairs AssetRatesPoolPairs = 3 [(gogoproto.nullable) = false];
+}

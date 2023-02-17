@@ -50,6 +50,8 @@ func GetQueryCmd() *cobra.Command {
 		QueryFundReserveBalance(),
 		QueryAllReserveStats(),
 		QueryFundModBalByAssetPool(),
+		queryLendInterest(),
+		queryBorrowInterest(),
 	)
 
 	return cmd
@@ -901,5 +903,67 @@ func QueryFundModBalByAssetPool() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func queryLendInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lend_interest",
+		Short: "Query all lend interest",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryLendInterest(
+				context.Background(),
+				&types.QueryLendInterestRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lend_interest")
+
+	return cmd
+}
+
+func queryBorrowInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "borrow_interest",
+		Short: "Query all borrow interest",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryBorrowInterest(
+				context.Background(),
+				&types.QueryBorrowInterestRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lend_interest")
+
 	return cmd
 }
