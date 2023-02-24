@@ -313,6 +313,16 @@ func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
 		return err
 	}
 
+	// mint farm coin for 1:1 representation of pool coin and send it to the farmer.
+	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	farmCoin := sdk.NewCoin(pool.FarmCoin.Denom, msg.FarmingPoolCoin.Amount)
+	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(farmCoin)); err != nil {
+		return err
+	}
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(farmCoin)); err != nil {
+		return err
+	}
+
 	queuedFarmer, found := k.GetQueuedFarmer(ctx, msg.AppId, msg.PoolId, farmer)
 
 	if !found {
@@ -338,6 +348,7 @@ func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.FarmingPoolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyFarmCoin, farmCoin.String()),
 		),
 	})
 
@@ -430,6 +441,17 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 		activeFarmer.FarmedPoolCoin.Amount = activeFarmer.FarmedPoolCoin.Amount.Sub(msg.UnfarmingPoolCoin.Amount)
 	}
 
+	// take back farm coin from the farmer which was minted for 1:1 representation of pool coin and burn it.
+	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	farmCoin := sdk.NewCoin(pool.FarmCoin.Denom, unFarmingCoin.Amount)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, farmer, types.ModuleName, sdk.NewCoins(farmCoin))
+	if err != nil {
+		return err
+	}
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(farmCoin)); err != nil {
+		return err
+	}
+
 	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(unFarmingCoin))
 	if err != nil {
 		return err
@@ -454,6 +476,7 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.UnfarmingPoolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyFarmCoin, farmCoin.String()),
 		),
 	})
 

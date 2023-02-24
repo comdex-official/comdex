@@ -158,6 +158,10 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				AppId:                 1,
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm1-3",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			QueryResponseIndex: 2, // poolID 1 & 2 are taken by above two cases, since the test environment is non atomic.
 			QueryResponse: &types.Pool{
@@ -171,6 +175,10 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				AppId:                 1,
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm1-3",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000)))),
 		},
@@ -202,6 +210,10 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				AppId:                 2,
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm2-1",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Pool{
@@ -215,6 +227,10 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				AppId:                 2,
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm2-1",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))), sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000)))),
 		},
@@ -1093,6 +1109,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				AppId:                 1,
 				Type:                  types.PoolTypeRanged,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm1-3",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			QueryResponseIndex: 2, // poolID 1 & 2 are taken by above two cases, since the test environment is non atomic.
 			QueryResponse: &types.Pool{
@@ -1106,6 +1126,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				AppId:                 1,
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm1-3",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			AvailableBalance: sdk.NewCoins(
 				sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
@@ -1131,6 +1155,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				AppId:                 2,
 				Type:                  types.PoolTypeRanged,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm2-1",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.Pool{
@@ -1144,6 +1172,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				AppId:                 2,
 				Type:                  types.PoolTypeRanged,
 				Creator:               addr1.String(),
+				FarmCoin: &types.FarmCoin{
+					Denom:    "farm2-1",
+					Decimals: uint64(1000000000000),
+				},
 			},
 			AvailableBalance: sdk.NewCoins(
 				sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
