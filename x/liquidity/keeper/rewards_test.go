@@ -636,6 +636,60 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().True(utils.ParseCoins("9999999999pool1-1").IsEqual(s.getBalances(liquidityProvider2)))
 }
 
+func (s *KeeperTestSuite) TestFarmAndUnfarm() {
+	creator := s.addr(0)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 1000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, creator, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, creator, "1000000000000uasset1,1000000000000uasset2")
+
+	liquidityProvider1 := s.addr(1)
+	s.Deposit(appID1, pool.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset2")
+	s.nextBlock()
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+
+	currentTime := s.ctx.BlockTime()
+	s.ctx = s.ctx.WithBlockTime(currentTime)
+
+	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-1"))
+	err := s.keeper.Farm(s.ctx, msg)
+	s.Require().NoError(err)
+	s.Require().True(utils.ParseCoins("10000000000farm1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	queuedFarmers := s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
+	s.Require().Len(queuedFarmers, 1)
+
+	modAddress := s.app.AccountKeeper.GetModuleAddress(types.ModuleName)
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(modAddress)))
+
+	// validate supply of farm coin after farming - mint check
+	s.Require().True(utils.ParseCoin("10000000000farm1-1").IsEqual(s.app.BankKeeper.GetSupply(s.ctx, "farm1-1")))
+
+	unfarmMsg := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000farm1-1"))
+	err = s.keeper.Unfarm(s.ctx, unfarmMsg)
+	s.Require().NoError(err)
+
+	// validate supply of farm coin after farming - burn check
+	s.Require().True(utils.ParseCoin("9989000000farm1-1").IsEqual(s.app.BankKeeper.GetSupply(s.ctx, "farm1-1")))
+
+	s.Require().True(utils.ParseCoins("9989000000farm1-1,11000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	s.Require().True(utils.ParseCoins("9989000000pool1-1").IsEqual(s.getBalances(modAddress)))
+
+	unfarmMsg = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("9989000000farm1-1"))
+	err = s.keeper.Unfarm(s.ctx, unfarmMsg)
+	s.Require().NoError(err)
+
+	// check after full cycle - 100% farm and unfarm
+	s.Require().True(utils.ParseCoin("0farm1-1").IsEqual(s.app.BankKeeper.GetSupply(s.ctx, "farm1-1")))
+
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	s.Require().True(utils.ParseCoins("").IsEqual(s.getBalances(modAddress)))
+
+}
+
 // liquidity provided in incrementel order
 func (s *KeeperTestSuite) TestGetFarmingRewardsDataLinearLPs() {
 	currentTime := s.ctx.BlockTime()
