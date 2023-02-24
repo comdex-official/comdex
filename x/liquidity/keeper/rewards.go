@@ -371,8 +371,8 @@ func (k Keeper) ValidateMsgUnfarm(ctx sdk.Context, msg *types.MsgUnfarm) (sdk.Ac
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
-	if msg.UnfarmingPoolCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
+	if msg.UnfarmingPoolCoin.Denom != pool.FarmCoin.Denom {
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected farm coin denom %s, found %s", pool.FarmCoin.Denom, msg.UnfarmingPoolCoin.Denom)
 	}
 	if !msg.UnfarmingPoolCoin.Amount.IsPositive() {
 		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
@@ -442,17 +442,17 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 	}
 
 	// take back farm coin from the farmer which was minted for 1:1 representation of pool coin and burn it.
-	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
-	farmCoin := sdk.NewCoin(pool.FarmCoin.Denom, unFarmingCoin.Amount)
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, farmer, types.ModuleName, sdk.NewCoins(farmCoin))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, farmer, types.ModuleName, sdk.NewCoins(unFarmingCoin))
 	if err != nil {
 		return err
 	}
-	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(farmCoin)); err != nil {
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(unFarmingCoin)); err != nil {
 		return err
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(unFarmingCoin))
+	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, unFarmingCoin.Amount)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(poolCoin))
 	if err != nil {
 		return err
 	}
@@ -474,9 +474,9 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
 			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
-			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.UnfarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, poolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
-			sdk.NewAttribute(types.AttributeKeyFarmCoin, farmCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyFarmCoin, unFarmingCoin.String()),
 		),
 	})
 

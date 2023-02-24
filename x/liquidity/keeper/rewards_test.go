@@ -212,43 +212,43 @@ func (s *KeeperTestSuite) TestUnfarm() {
 	}{
 		{
 			Name:             "error app id invalid",
-			Msg:              *types.NewMsgUnfarm(69, pool.Id, liquidityProvider1, utils.ParseCoin("699000000pool1-1")),
+			Msg:              *types.NewMsgUnfarm(69, pool.Id, liquidityProvider1, utils.ParseCoin("699000000farm1-1")),
 			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
 			Name:             "error pool id invalid",
-			Msg:              *types.NewMsgUnfarm(appID1, 69, liquidityProvider1, utils.ParseCoin("699000000pool1-1")),
+			Msg:              *types.NewMsgUnfarm(appID1, 69, liquidityProvider1, utils.ParseCoin("699000000farm1-1")),
 			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", 69),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
 			Name:             "error pool denom invalid",
 			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("699000000pool1-2")),
-			ExpErr:           sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found pool1-2", pool.PoolCoinDenom),
+			ExpErr:           sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected farm coin denom %s, found pool1-2", pool.FarmCoin.Denom),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
 			Name:             "error farm not found",
-			Msg:              *types.NewMsgUnfarm(appID1, pool2.Id, liquidityProvider1, utils.ParseCoin("699000000pool1-2")),
+			Msg:              *types.NewMsgUnfarm(appID1, pool2.Id, liquidityProvider1, utils.ParseCoin("699000000farm1-2")),
 			ExpErr:           sdkerrors.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", pool2.Id),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
 			Name:             "error insufficient farmed amounts",
-			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("100000000000pool1-1")),
-			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000000pool1-1 smaller than requested unfarming pool coin amount 100000000000pool1-1"),
+			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("100000000000farm1-1")),
+			ExpErr:           sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000000farm1-1 smaller than requested unfarming pool coin amount 100000000000farm1-1"),
 			AvailableBalance: sdk.Coins{},
 		},
 		{
 			Name:             "success partial unlock",
-			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1")),
+			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000farm1-1")),
 			ExpErr:           nil,
 			AvailableBalance: utils.ParseCoins("5000000000pool1-1,5000000000farm1-1"),
 		},
 		{
 			Name:             "success full unlock",
-			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1")),
+			Msg:              *types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000farm1-1")),
 			ExpErr:           nil,
 			AvailableBalance: utils.ParseCoins("10000000000pool1-1"),
 		},
@@ -337,16 +337,16 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().Len(queuedFarmers[0].QueudCoins, 5)
 
 	// lp1 trying to unfarm more than farmed
-	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("160000000pool1-1"))
+	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("160000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().Error(err)
-	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 150000000pool1-1 smaller than requested unfarming pool coin amount 160000000pool1-1").Error())
+	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 150000000farm1-1 smaller than requested unfarming pool coin amount 160000000farm1-1").Error())
 
 	// unfarming small portions, below unlock removes token from most recently added queue
 	// unlock is done from a single latest object in a queue since this object itself can satisfy the unlock requirement,
 	// Before - SortedByTimeFarmQueue -> [50000000pool1-1, 40000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
 	// After  - SortedByTimeFarmQueue -> [45000000pool1-1, 40000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	queuedFarmers = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
@@ -360,7 +360,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// unlock is done from a single latest object in a queue since this object itself can satisfy the unlock requirement,
 	// Before  - SortedByTimeFarmQueue -> [45000000pool1-1, 40000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
 	// After   - SortedByTimeFarmQueue -> [34000000pool1-1, 40000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	queuedFarmers = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
@@ -375,7 +375,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// of its token for unlocking, and the remaining unlock tokens are fullfilled from 2nd most recent queue object
 	// Before - SortedByTimeFarmQueue -> [34000000pool1-1, 40000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
 	// After   - SortedByTimeFarmQueue -> [36000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("38000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("38000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	queuedFarmers = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
@@ -388,7 +388,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// similarly below cases are followed as above
 	// Before   - SortedByTimeFarmQueue -> [36000000pool1-1, 30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
 	// After    - SortedByTimeFarmQueue -> [30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("36000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("36000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	queuedFarmers = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
@@ -400,7 +400,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 
 	// Before    - SortedByTimeFarmQueue -> [30000000pool1-1, 20000000pool1-1, 10000000pool1-1]
 	// After     - SortedByTimeFarmQueue -> [10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("50000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("50000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	queuedFarmers = s.keeper.GetAllQueuedFarmers(s.ctx, appID1, pool.Id)
@@ -411,10 +411,10 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().True(utils.ParseCoins("9990000000pool1-1,10000000farm1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	// lp1 trying to unfarm more than farmed
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("11000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().Error(err)
-	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000pool1-1 smaller than requested unfarming pool coin amount 11000000pool1-1").Error())
+	s.Require().EqualError(err, sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount 10000000farm1-1 smaller than requested unfarming pool coin amount 11000000farm1-1").Error())
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Hour * 1))
 	// SortedByTimeFarmQueue -> [69000000pool1-1, 10000000pool1-1]
@@ -442,7 +442,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// After
 	// SortedByTimeFarmQueue -> []
 	// ActiveFarmedTokens -> [9000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("70000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("70000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	afs = s.keeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
@@ -460,7 +460,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// After
 	// SortedByTimeFarmQueue -> []
 	// ActiveFarmedTokens -> []
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("9000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("9000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	afs = s.keeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
@@ -513,7 +513,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// After
 	// SortedByTimeFarmQueue -> []
 	// ActiveFarmedTokens -> [10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("26000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("26000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	afs = s.keeper.GetAllActiveFarmers(s.ctx, appID1, pool.Id)
@@ -555,7 +555,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// After
 	// SortedByTimeFarmQueue -> [(l2) 7000000pool1-1, (l1) 6000000pool1-1]
 	// ActiveFarmedTokens -> [ (l1) 10000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("3000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("3000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	s.Require().True(utils.ParseCoins("9984000000pool1-1,16000000farm1-1").IsEqual(s.getBalances(liquidityProvider1)))
@@ -576,7 +576,7 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	// After
 	// SortedByTimeFarmQueue -> [(l2) 7000000pool1-1]
 	// ActiveFarmedTokens -> [ (l1) 8000000pool1-1]
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("8000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("8000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	s.Require().True(utils.ParseCoins("9992000000pool1-1,8000000farm1-1").IsEqual(s.getBalances(liquidityProvider1)))
@@ -607,13 +607,13 @@ func (s *KeeperTestSuite) TestUnfarmTwo() {
 	s.Require().Equal(utils.ParseCoin("7000000pool1-1").Amount, afs[1].FarmedPoolCoin.Amount)
 
 	// total unlock - lp1
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("8000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("8000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
 
 	// total unlock - lp2
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider2, utils.ParseCoin("7000000pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider2, utils.ParseCoin("7000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 	s.Require().True(utils.ParseCoins("9999999999pool1-1").IsEqual(s.getBalances(liquidityProvider2)))
@@ -1151,16 +1151,16 @@ func (s *KeeperTestSuite) TestGetFarmingRewardsDataZeroLPs() {
 	s.Require().Len(qfs[3].QueudCoins, 0)
 	s.Require().Len(afs, 4)
 
-	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("10000000000pool1-1"))
+	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("10000000000farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider2, utils.ParseCoin("9999999999pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider2, utils.ParseCoin("9999999999farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider3, utils.ParseCoin("9999999999pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider3, utils.ParseCoin("9999999999farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
-	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider4, utils.ParseCoin("9999999999pool1-1"))
+	msgUnlock = types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider4, utils.ParseCoin("9999999999farm1-1"))
 	err = s.keeper.Unfarm(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 
