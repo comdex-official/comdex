@@ -23,7 +23,7 @@ var (
 	_ amm.Orderer = (*PoolOrderer)(nil)
 
 	poolCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]-[1-9]\d*)$`)
-	farmCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]-[1-9]\d*)$`)
+	farmCoinDenomRegexp = regexp.MustCompile(`^farm([1-9]-[1-9]\d*)$`)
 )
 
 type PoolTokenDeserializerKit struct {
@@ -75,7 +75,7 @@ func FarmCoinDenom(appID, poolID uint64) string {
 func ParseFarmCoinDenom(denom string) (appID, poolID uint64, err error) {
 	chunks := farmCoinDenomRegexp.FindStringSubmatch(denom)
 	if len(chunks) == 0 {
-		return 0, 0, fmt.Errorf("%s is not a pool coin denom", denom)
+		return 0, 0, fmt.Errorf("%s is not a farm coin denom", denom)
 	}
 	appID, err = strconv.ParseUint(strings.Split(chunks[1], "-")[0], 10, 64)
 	if err != nil {

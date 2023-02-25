@@ -569,3 +569,33 @@ func (k Keeper) GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64
 	}
 	return totalAmountFarmed, nil
 }
+
+func (k Keeper) ValidateFarmCoinOwnershipByFarmer(ctx sdk.Context, farmCoin sdk.Coin, farmer sdk.AccAddress) error {
+	appID, poolID, err := types.ParseFarmCoinDenom(farmCoin.Denom)
+	if err != nil {
+		return err
+	}
+
+	if !farmCoin.Amount.IsPositive() {
+		return sdkerrors.Wrapf(types.ErrInvalidFarmAmount, "amount should be positive")
+	}
+
+	_, found := k.assetKeeper.GetApp(ctx, appID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+	}
+	_, found = k.GetPool(ctx, appID, poolID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", poolID)
+	}
+
+	activeFarmer, found := k.GetActiveFarmer(ctx, appID, poolID, farmer)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNotActiveFarmer, "farmer is not active for given pool id : %d", poolID)
+	}
+
+	if farmCoin.Amount.GT(activeFarmer.FarmedPoolCoin.Amount) {
+		return sdkerrors.Wrapf(types.ErrInvalidFarmAmount, "actual farmed amount %s is smaller than %s", sdk.NewCoin(farmCoin.Denom, activeFarmer.FarmedPoolCoin.Amount), farmCoin.String())
+	}
+	return nil
+}
