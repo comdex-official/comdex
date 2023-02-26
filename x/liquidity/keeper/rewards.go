@@ -599,3 +599,31 @@ func (k Keeper) ValidateFarmCoinOwnershipByFarmer(ctx sdk.Context, farmCoin sdk.
 	}
 	return nil
 }
+
+func (k Keeper) TransferFarmCoinOwnership(ctx sdk.Context, from, to sdk.AccAddress, farmCoin sdk.Coin) error {
+	err := k.ValidateFarmCoinOwnershipByFarmer(ctx, farmCoin, from)
+	if err != nil {
+		return err
+	}
+
+	// basic coin and other validations are already done above.
+	appID, poolID, _ := types.ParseFarmCoinDenom(farmCoin.Denom)
+
+	activeFarmerFrom, _ := k.GetActiveFarmer(ctx, appID, poolID, from)
+	activeFarmerFrom.FarmedPoolCoin.Amount = activeFarmerFrom.FarmedPoolCoin.Amount.Sub(farmCoin.Amount)
+	if activeFarmerFrom.FarmedPoolCoin.IsZero() {
+		k.DeleteActiveFarmer(ctx, activeFarmerFrom)
+	} else {
+		k.SetActiveFarmer(ctx, activeFarmerFrom)
+	}
+
+	activeFarmerTo, found := k.GetActiveFarmer(ctx, appID, poolID, to)
+	if !found {
+		pool, _ := k.GetPool(ctx, appID, poolID)
+		activeFarmerTo = types.NewActivefarmer(appID, poolID, to, sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)))
+	}
+	activeFarmerTo.FarmedPoolCoin.Amount = activeFarmerTo.FarmedPoolCoin.Amount.Add(farmCoin.Amount)
+	k.SetActiveFarmer(ctx, activeFarmerTo)
+
+	return nil
+}

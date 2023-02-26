@@ -88,6 +88,10 @@ func ParseFarmCoinDenom(denom string) (appID, poolID uint64, err error) {
 	return appID, poolID, nil
 }
 
+func IsFarmCoinDenom(denom string) bool {
+	return len(farmCoinDenomRegexp.FindStringSubmatch(denom)) != 0
+}
+
 // FarmCoinDenom returns a unique farm coin denom for a pool.
 func FarmCoinDecimals(baseDecimals, quoteDecimals uint64) uint64 {
 	baseExponent := math.Log10(float64(baseDecimals))
