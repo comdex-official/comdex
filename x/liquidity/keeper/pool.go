@@ -156,6 +156,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)
+	k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
 
 	// Send deposit coins to the pool's reserve account.
 	creator := msg.GetCreator()
@@ -314,11 +315,12 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 	quoteAsset, _ := k.assetKeeper.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
 
 	// Create and save the new pool object.
-	poolId := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
-	pool := types.NewRangedPool(msg.AppId, poolId, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice, baseAsset, quoteAsset)
+	poolID := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
+	pool := types.NewRangedPool(msg.AppId, poolID, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice, baseAsset, quoteAsset)
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)
+	k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
 
 	// Send deposit coins to the pool's reserve account.
 	creator := msg.GetCreator()
@@ -840,4 +842,11 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 	}
 
 	return nil
+}
+
+func (k Keeper) BlockAllFarmCoinTransfers(ctx sdk.Context, appID uint64) {
+	pools := k.GetAllPools(ctx, appID)
+	for _, pool := range pools {
+		k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
+	}
 }
