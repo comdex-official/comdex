@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	utils "github.com/comdex-official/comdex/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
@@ -1663,4 +1664,81 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_WithBurnRate()
 	s.Require().True(coinEq(utils.ParseCoin("81000ucmdx"), receivedSwapFunds))
 
 	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
+}
+
+func (s *KeeperTestSuite) TestCreatePoolWithMaxDecimals() {
+	addr1 := s.addr(1)
+	appID1 := s.CreateNewApp("appone")
+
+	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  "ASSETONE",
+		Denom:                 "assetone",
+		Decimals:              sdk.NewInt(1000000000000000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+
+	err = s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  "ASSETTWO",
+		Denom:                 "assettwo",
+		Decimals:              sdk.NewInt(1000000000000000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+
+	err = s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  "ASSETTHREE",
+		Denom:                 "assetthree",
+		Decimals:              sdk.NewInt(1000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+
+	err = s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  "ASSETFOUR",
+		Denom:                 "assetfour",
+		Decimals:              sdk.NewInt(1000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, "assetone", "assettwo")
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000assetone,1000000assettwo")
+	pool, found := s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000000000))
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, "assetthree", "assetfour")
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "10000000assetthree,1000000000assetfour")
+	pool, found = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000))
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, "assetone", "assetthree")
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "10000000assetone,1000000000assetthree")
+	pool, found = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000000000))
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, "assetone", "assetfour")
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000assetone,1000123000000assetfour")
+	pool, found = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000000000))
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, "assettwo", "assetthree")
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000assettwo,1000000000assetthree")
+	pool, found = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000000000))
+
+	pair = s.CreateNewLiquidityPair(appID1, addr1, "assettwo", "assetfour")
+	pool = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000assettwo,1000123000000assetfour")
+	pool, found = s.keeper.GetPool(s.ctx, appID1, pool.Id)
+	s.Require().True(found)
+	s.Require().Equal(pool.FarmCoin.Decimals, uint64(1000000000000000000))
 }
