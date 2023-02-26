@@ -224,6 +224,8 @@ message PoolResponse {
 
   bool disabled = 15;
 
+  FarmCoin farm_coin = 16;
+
 }
 
 message PoolBalances {
