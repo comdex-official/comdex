@@ -290,8 +290,8 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 	}
 
 	// Create and save the new pool object.
-	poolId := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
-	pool := types.NewRangedPool(msg.AppId, poolId, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice)
+	poolID := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
+	pool := types.NewRangedPool(msg.AppId, poolID, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice)
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)

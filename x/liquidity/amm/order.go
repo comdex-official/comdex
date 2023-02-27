@@ -50,7 +50,7 @@ type Order interface {
 	GetDirection() OrderDirection
 	// GetBatchId returns the batch id where the order was created.
 	// Batch id of 0 means the current batch.
-	GetBatchId() uint64
+	GetBatchID() uint64
 	GetPrice() sdk.Dec
 	GetAmount() sdk.Int // The original order amount
 	GetOfferCoinAmount() sdk.Int
@@ -98,7 +98,7 @@ func (order *BaseOrder) GetDirection() OrderDirection {
 	return order.Direction
 }
 
-func (order *BaseOrder) GetBatchId() uint64 {
+func (order *BaseOrder) GetBatchID() uint64 {
 	return 0
 }
 

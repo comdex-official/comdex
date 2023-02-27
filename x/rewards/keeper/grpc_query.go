@@ -322,9 +322,7 @@ func (k Keeper) QueryExtLendRewardsAPR(c context.Context, req *types.QueryExtLen
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 	apr := k.ExtLendRewardsAPR(ctx, req)
 
 	return &types.QueryExtLendRewardsAPRResponse{
