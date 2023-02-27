@@ -164,7 +164,7 @@ $ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 1.3 2.5 1.5 -
 				return fmt.Errorf("parse app id: %w", err)
 			}
 
-			pairId, err := strconv.ParseUint(args[1], 10, 64)
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse pair id: %w", err)
 			}
@@ -192,7 +192,7 @@ $ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 1.3 2.5 1.5 -
 			msg := types.NewMsgCreateRangedPool(
 				appID,
 				clientCtx.GetFromAddress(),
-				pairId,
+				pairID,
 				depositCoins,
 				minPrice,
 				maxPrice,
@@ -532,7 +532,7 @@ $ %s tx %s mm-order 1 1 102 101 10000 0 0 0 --from mykey
 				return fmt.Errorf("parse app id: %w", err)
 			}
 
-			pairId, err := strconv.ParseUint(args[1], 10, 64)
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse pair id: %w", err)
 			}
@@ -572,7 +572,7 @@ $ %s tx %s mm-order 1 1 102 101 10000 0 0 0 --from mykey
 			msg := types.NewMsgMMOrder(
 				appID,
 				clientCtx.GetFromAddress(),
-				pairId,
+				pairID,
 				maxSellPrice, minSellPrice, sellAmt,
 				maxBuyPrice, minBuyPrice, buyAmt,
 				orderLifespan,
@@ -718,12 +718,12 @@ $ %s tx %s cancel-mm-order 1 1 --from mykey
 				return fmt.Errorf("parse app id: %w", err)
 			}
 
-			pairId, err := strconv.ParseUint(args[1], 10, 64)
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCancelMMOrder(appID, clientCtx.GetFromAddress(), pairId)
+			msg := types.NewMsgCancelMMOrder(appID, clientCtx.GetFromAddress(), pairID)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
