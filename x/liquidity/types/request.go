@@ -182,7 +182,7 @@ func NewOrderForMarketOrder(msg *MsgMarketOrder, id uint64, pair Pair, offerCoin
 }
 
 func NewOrder(
-	typ OrderType, id, appId uint64, pair Pair, orderer sdk.AccAddress,
+	typ OrderType, id, appID uint64, pair Pair, orderer sdk.AccAddress,
 	offerCoin sdk.Coin, price sdk.Dec, amt sdk.Int, expireAt time.Time, msgHeight int64,
 ) Order {
 	var (
@@ -211,7 +211,7 @@ func NewOrder(
 		BatchId:            pair.CurrentBatchId,
 		ExpireAt:           expireAt,
 		Status:             OrderStatusNotExecuted,
-		AppId:              appId,
+		AppId:              appID,
 		Type:               typ,
 	}
 }

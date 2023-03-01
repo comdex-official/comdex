@@ -127,7 +127,7 @@ func NewRangedPool(appID, id, pairId uint64, creator sdk.AccAddress, minPrice, m
 	return Pool{
 		Type:                  PoolTypeRanged,
 		Id:                    id,
-		PairId:                pairId,
+		PairId:                pairID,
 		Creator:               creator.String(),
 		ReserveAddress:        PoolReserveAddress(appID, id).String(),
 		PoolCoinDenom:         PoolCoinDenom(appID, id),
@@ -194,7 +194,7 @@ func (pool Pool) AMMPool(rx, ry, ps sdk.Int) amm.Pool {
 
 type PoolOrderer struct {
 	amm.Pool
-	Id                            uint64
+	ID                            uint64
 	ReserveAddress                sdk.AccAddress
 	BaseCoinDenom, QuoteCoinDenom string
 }
@@ -208,7 +208,7 @@ func NewPoolOrderer(
 ) *PoolOrderer {
 	return &PoolOrderer{
 		Pool:           pool,
-		Id:             poolID,
+		ID:             poolID,
 		ReserveAddress: reserveAddr,
 		BaseCoinDenom:  baseCoinDenom,
 		QuoteCoinDenom: quoteCoinDenom,
@@ -223,7 +223,7 @@ func (orderer *PoolOrderer) Order(dir amm.OrderDirection, price sdk.Dec, amt sdk
 	case amm.Sell:
 		offerCoinDenom, demandCoinDenom = orderer.BaseCoinDenom, orderer.QuoteCoinDenom
 	}
-	return NewPoolOrder(orderer.Id, orderer.ReserveAddress, dir, price, amt, offerCoinDenom, demandCoinDenom)
+	return NewPoolOrder(orderer.ID, orderer.ReserveAddress, dir, price, amt, offerCoinDenom, demandCoinDenom)
 }
 
 // MustMarshalPool returns the pool bytes.

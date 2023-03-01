@@ -786,14 +786,14 @@ $ %s query %s order-books 1 2,3
 
 			numTicks, _ := cmd.Flags().GetUint32(FlagNumTicks)
 
-			pairIdStrings := strings.Split(args[1], ",")
+			pairIDStrings := strings.Split(args[1], ",")
 			var pairIds []uint64
-			for _, pairIdStr := range pairIdStrings {
-				pairId, err := strconv.ParseUint(pairIdStr, 10, 64)
+			for _, pairIDStr := range pairIDStrings {
+				pairID, err := strconv.ParseUint(pairIDStr, 10, 64)
 				if err != nil {
 					return fmt.Errorf("parse pair id: %w", err)
 				}
-				pairIds = append(pairIds, pairId)
+				pairIds = append(pairIds, pairID)
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)

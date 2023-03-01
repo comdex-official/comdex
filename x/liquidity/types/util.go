@@ -112,11 +112,11 @@ func PriceLimits(lastPrice, priceLimitRatio sdk.Dec, tickPrec int) (lowestPrice,
 	return
 }
 
-func NewMMOrderIndex(orderer sdk.AccAddress, appId, pairId uint64, orderIds []uint64) MMOrderIndex {
+func NewMMOrderIndex(orderer sdk.AccAddress, appID, pairID uint64, orderIds []uint64) MMOrderIndex {
 	return MMOrderIndex{
 		Orderer:  orderer.String(),
-		AppId:    appId,
-		PairId:   pairId,
+		AppId:    appID,
+		PairId:   pairID,
 		OrderIds: orderIds,
 	}
 }

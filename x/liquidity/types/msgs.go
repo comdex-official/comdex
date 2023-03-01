@@ -162,7 +162,7 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 func NewMsgCreateRangedPool(
 	appID uint64,
 	creator sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 	depositCoins sdk.Coins,
 	minPrice sdk.Dec,
 	maxPrice sdk.Dec,
@@ -171,7 +171,7 @@ func NewMsgCreateRangedPool(
 	return &MsgCreateRangedPool{
 		AppId:        appID,
 		Creator:      creator.String(),
-		PairId:       pairId,
+		PairId:       pairID,
 		DepositCoins: depositCoins,
 		MinPrice:     minPrice,
 		MaxPrice:     maxPrice,
@@ -528,7 +528,7 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 func NewMsgMMOrder(
 	appID uint64,
 	orderer sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 	maxSellPrice, minSellPrice sdk.Dec, sellAmt sdk.Int,
 	maxBuyPrice, minBuyPrice sdk.Dec, buyAmt sdk.Int,
 	orderLifespan time.Duration,
@@ -536,7 +536,7 @@ func NewMsgMMOrder(
 	return &MsgMMOrder{
 		AppId:         appID,
 		Orderer:       orderer.String(),
-		PairId:        pairId,
+		PairId:        pairID,
 		MaxSellPrice:  maxSellPrice,
 		MinSellPrice:  minSellPrice,
 		SellAmount:    sellAmt,
@@ -727,12 +727,12 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 func NewMsgCancelMMOrder(
 	appID uint64,
 	orderer sdk.AccAddress,
-	pairId uint64,
+	pairID uint64,
 ) *MsgCancelMMOrder {
 	return &MsgCancelMMOrder{
 		AppId:   appID,
 		Orderer: orderer.String(),
-		PairId:  pairId,
+		PairId:  pairID,
 	}
 }
 

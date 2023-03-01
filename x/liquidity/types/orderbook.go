@@ -31,16 +31,16 @@ type OrderBookConfig struct {
 	MaxNumTicks    int
 }
 
-func MakeOrderBookPairResponse(pairId uint64, ov *amm.OrderBookView, lowestPrice, highestPrice sdk.Dec, tickPrec int, configs ...OrderBookConfig) OrderBookPairResponse {
+func MakeOrderBookPairResponse(pairID uint64, ov *amm.OrderBookView, lowestPrice, highestPrice sdk.Dec, tickPrecision int, configs ...OrderBookConfig) OrderBookPairResponse {
 	resp := OrderBookPairResponse{
-		PairId: pairId,
+		PairId: pairID,
 	}
-	basePrice, found := OrderBookBasePrice(ov, tickPrec)
+	basePrice, found := OrderBookBasePrice(ov, tickPrecision)
 	if !found {
 		return resp
 	}
 	resp.BasePrice = basePrice
-	ammTickPrec := amm.TickPrecision(tickPrec)
+	ammTickPrec := amm.TickPrecision(tickPrecision)
 
 	sort.Slice(configs, func(i, j int) bool {
 		return configs[i].PriceUnitPower < configs[j].PriceUnitPower

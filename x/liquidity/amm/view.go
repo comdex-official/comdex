@@ -123,9 +123,8 @@ func (view *OrderBookView) BuyAmountOver(price sdk.Dec, inclusive bool) sdk.Int 
 	i := sort.Search(len(view.buyAmtAccSums), func(i int) bool {
 		if inclusive {
 			return view.buyAmtAccSums[i].price.LT(price)
-		} else {
-			return view.buyAmtAccSums[i].price.LTE(price)
 		}
+		return view.buyAmtAccSums[i].price.LTE(price)
 	})
 	if i == 0 {
 		return sdk.ZeroInt()
@@ -137,9 +136,8 @@ func (view *OrderBookView) BuyAmountUnder(price sdk.Dec, inclusive bool) sdk.Int
 	i := sort.Search(len(view.buyAmtAccSums), func(i int) bool {
 		if inclusive {
 			return view.buyAmtAccSums[i].price.LTE(price)
-		} else {
-			return view.buyAmtAccSums[i].price.LT(price)
 		}
+		return view.buyAmtAccSums[i].price.LT(price)
 	})
 	if i == 0 {
 		return view.buyAmtAccSums[len(view.buyAmtAccSums)-1].sum
@@ -151,9 +149,8 @@ func (view *OrderBookView) SellAmountUnder(price sdk.Dec, inclusive bool) sdk.In
 	i := sort.Search(len(view.sellAmtAccSums), func(i int) bool {
 		if inclusive {
 			return view.sellAmtAccSums[i].price.GT(price)
-		} else {
-			return view.sellAmtAccSums[i].price.GTE(price)
 		}
+		return view.sellAmtAccSums[i].price.GTE(price)
 	})
 	if i == 0 {
 		return sdk.ZeroInt()
@@ -165,9 +162,8 @@ func (view *OrderBookView) SellAmountOver(price sdk.Dec, inclusive bool) sdk.Int
 	i := sort.Search(len(view.sellAmtAccSums), func(i int) bool {
 		if inclusive {
 			return view.sellAmtAccSums[i].price.GTE(price)
-		} else {
-			return view.sellAmtAccSums[i].price.GT(price)
 		}
+		return view.sellAmtAccSums[i].price.GT(price)
 	})
 	if i == 0 {
 		return view.sellAmtAccSums[len(view.sellAmtAccSums)-1].sum

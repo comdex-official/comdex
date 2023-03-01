@@ -27,7 +27,7 @@ type UserOrder struct {
 	*amm.BaseOrder
 	Orderer                         sdk.AccAddress
 	OrderID                         uint64
-	BatchId                         uint64
+	BatchID                         uint64
 	OfferCoinDenom, DemandCoinDenom string
 }
 
@@ -54,14 +54,14 @@ func NewUserOrder(order Order) *UserOrder {
 		BaseOrder:       amm.NewBaseOrder(dir, order.Price, amt, order.RemainingOfferCoin.Amount),
 		Orderer:         order.GetOrderer(),
 		OrderID:         order.Id,
-		BatchId:         order.BatchId,
+		BatchID:         order.BatchId,
 		OfferCoinDenom:  order.OfferCoin.Denom,
 		DemandCoinDenom: order.ReceivedCoin.Denom,
 	}
 }
 
-func (order *UserOrder) GetBatchId() uint64 {
-	return order.BatchId
+func (order *UserOrder) GetBatchID() uint64 {
+	return order.BatchID
 }
 
 func (order *UserOrder) HasPriority(other amm.Order) bool {
@@ -80,7 +80,7 @@ func (order *UserOrder) HasPriority(other amm.Order) bool {
 
 func (order *UserOrder) String() string {
 	return fmt.Sprintf("UserOrder(%d,%d,%s,%s,%s)",
-		order.OrderID, order.BatchId, order.Direction, order.Price, order.Amount)
+		order.OrderID, order.BatchID, order.Direction, order.Price, order.Amount)
 }
 
 // PoolOrder is the pool order type.
