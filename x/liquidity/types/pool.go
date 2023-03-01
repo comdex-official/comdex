@@ -123,7 +123,7 @@ func NewBasicPool(appID, id, pairID uint64, creator sdk.AccAddress, baseAsset, q
 }
 
 // NewRangedPool returns a new ranged pool object.
-func NewRangedPool(appID, id, pairId uint64, creator sdk.AccAddress, minPrice, maxPrice sdk.Dec, baseAsset, quoteAsset assettypes.Asset) Pool {
+func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, maxPrice sdk.Dec, baseAsset, quoteAsset assettypes.Asset) Pool {
 	return Pool{
 		Type:                  PoolTypeRanged,
 		Id:                    id,
