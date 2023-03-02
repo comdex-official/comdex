@@ -184,7 +184,7 @@ containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
-		sh ./scripts/protoc-swagger-gen.sh; fi
+		sh ./scripts/protoc_swagger_gen.sh; fi
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
