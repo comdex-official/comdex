@@ -17,6 +17,8 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
 BUILDDIR ?= $(CURDIR)/build
 GOBIN = $(shell go env GOPATH)/bin
 GOARCH = $(shell go env GOARCH)
@@ -175,6 +177,14 @@ else
 endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
+
+protoVer=v0.1
+containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
+
+proto-swagger-gen:
+	@echo "Generating Protobuf Swagger"
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
+		sh ./scripts/protoc-swagger-gen.sh; fi
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
