@@ -91,7 +91,9 @@ endif
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 
-all: install test
+all: install
+	@echo "--> project root: go mod tidy"
+	@go mod tidy
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
@@ -108,6 +110,7 @@ distclean: clean
 	rm -rf vendor/
 
 install: go.sum
+	@echo "--> installing"
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
 build:
