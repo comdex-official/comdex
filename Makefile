@@ -178,6 +178,7 @@ endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
+protoVer=v0.1
 containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
 
 proto-swagger-gen:
