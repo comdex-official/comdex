@@ -34,9 +34,11 @@ RUN LEDGER_ENABLED=false BUILD_TAGS=muslc LINK_STATICALLY=true make build \
   && (file /code/bin/comdex | grep "statically linked")
 
 # --------------------------------------------------------
-FROM alpine:3.16
+#FROM alpine:3.16
+FROM golang
 
 COPY --from=go-builder /code/bin/comdex /usr/bin/comdex
+RUN apt update && apt install -y python3 protobuf-compiler
 
 COPY docker/* /opt/
 RUN chmod +x /opt/*.sh
