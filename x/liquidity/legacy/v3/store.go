@@ -224,8 +224,10 @@ func MintFarmTokenAndTransferToAccounts(
 			for _, afarmer := range allActiveFarmers {
 				farmer := sdk.MustAccAddressFromBech32(afarmer.Farmer)
 				farmCoin := sdk.NewCoin(pool.FarmCoin.Denom, afarmer.FarmedPoolCoin.Amount)
-				if err := MintAndSendHelper(ctx, bankKeeper, farmer, farmCoin); err != nil {
-					return err
+				if farmCoin.Amount.IsPositive() {
+					if err := MintAndSendHelper(ctx, bankKeeper, farmer, farmCoin); err != nil {
+						return err
+					}
 				}
 			}
 
@@ -236,8 +238,10 @@ func MintFarmTokenAndTransferToAccounts(
 				for _, qCoin := range qfarmer.QueudCoins {
 					farmCoin.Amount = farmCoin.Amount.Add(qCoin.FarmedPoolCoin.Amount)
 				}
-				if err := MintAndSendHelper(ctx, bankKeeper, farmer, farmCoin); err != nil {
-					return err
+				if farmCoin.Amount.IsPositive() {
+					if err := MintAndSendHelper(ctx, bankKeeper, farmer, farmCoin); err != nil {
+						return err
+					}
 				}
 			}
 		}
