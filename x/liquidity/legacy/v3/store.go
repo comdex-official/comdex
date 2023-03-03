@@ -159,9 +159,9 @@ func MigratePools(
 		if err := cdc.Unmarshal(iter.Value(), &oldPool); err != nil {
 			return err
 		}
-		pair, found := GetPair(store, cdc, appID, oldPool.Id)
+		pair, found := GetPair(store, cdc, appID, oldPool.PairId)
 		if !found {
-			return fmt.Errorf("pair %d not found", oldPool.PairId)
+			return fmt.Errorf("pair %d not found in app %d", oldPool.PairId, appID)
 		}
 
 		baseAsset, found := assetKeeper.GetAssetForDenom(ctx, pair.BaseCoinDenom)
