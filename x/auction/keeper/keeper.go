@@ -29,6 +29,7 @@ type (
 		tokenMint   expected.TokenMintKeeper
 		esm         expected.EsmKeeper
 		lend        expected.LendKeeper
+		liquidity   expected.LiquidityKeeper
 	}
 )
 
@@ -47,6 +48,7 @@ func NewKeeper(
 	tokenMintKeeper expected.TokenMintKeeper,
 	esm expected.EsmKeeper,
 	lend expected.LendKeeper,
+	liquidity expected.LiquidityKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -68,6 +70,7 @@ func NewKeeper(
 		tokenMint:   tokenMintKeeper,
 		esm:         esm,
 		lend:        lend,
+		liquidity:   liquidity,
 	}
 }
 

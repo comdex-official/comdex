@@ -599,6 +599,7 @@ func New(
 		&app.EsmKeeper,
 		&app.TokenmintKeeper,
 		&app.Rewardskeeper,
+		&app.LiquidityKeeper,
 	)
 
 	app.TokenmintKeeper = tokenmintkeeper.NewKeeper(
@@ -669,6 +670,7 @@ func New(
 		&app.TokenmintKeeper,
 		&app.EsmKeeper,
 		&app.LendKeeper,
+		&app.LiquidityKeeper,
 	)
 
 	app.CollectorKeeper = collectorkeeper.NewKeeper(

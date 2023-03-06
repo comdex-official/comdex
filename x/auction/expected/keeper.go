@@ -112,3 +112,7 @@ type LendKeeper interface {
 	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
 	GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats lendtypes.AllReserveStats, found bool)
 }
+
+type LiquidityKeeper interface {
+	TransferFarmCoinOwnership(ctx sdk.Context, from, to sdk.AccAddress, farmCoin sdk.Coin) error
+}
