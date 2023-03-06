@@ -998,9 +998,11 @@ func New(
 				SignModeHandler: encoding.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
+			GovKeeper:         app.GovKeeper,
 			wasmConfig:        wasmConfig,
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
+			Cdc:               appCodec,
 		},
 	)
 	if err != nil {
