@@ -785,3 +785,17 @@ func (k Keeper) GetAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64) (queu
 	})
 	return queuedFarmers
 }
+
+// GetAllCMSTPools returns all pools in the store.
+func (k Keeper) GetAllCMSTPools(ctx sdk.Context, appID uint64) (pools []types.Pool) {
+	pools = []types.Pool{}
+	_ = k.IterateAllPools(ctx, appID, func(pool types.Pool) (stop bool, err error) {
+		pairID := pool.PairId
+		pair, _ := k.GetPair(ctx, appID, pairID)
+		if pair.QuoteCoinDenom == "ucmst" || pair.BaseCoinDenom == "ucmst" {
+			pools = append(pools, pool)
+		}
+		return false, nil
+	})
+	return
+}
