@@ -1,10 +1,12 @@
 package v10
 
 import (
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -12,6 +14,7 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -24,9 +27,58 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 )
 
+func DeleteAccidentallyCreatedPairAndRefundPirCreationFeeToOwner(
+	ctx sdk.Context,
+	liquidityKeeper liquiditykeeper.Keeper,
+	assetKeeper assetkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
+) {
+	allApps, found := assetKeeper.GetApps(ctx)
+	if !found {
+		panic("apps not found")
+	}
+	harborAppID := 0
+	for _, app := range allApps {
+		if app.Name == "harbor" {
+			harborAppID = int(app.Id)
+			break
+		}
+	}
+	if harborAppID == 0 {
+		panic("harbor app not found")
+	}
+	liquidityParams, err := liquidityKeeper.GetGenericParams(ctx, uint64(harborAppID))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	refundAmount := sdk.NewCoin("ucmdx", sdk.NewInt(2000000000))
+
+	feeCollectorAddress := sdk.MustAccAddressFromBech32(liquidityParams.FeeCollectorAddress)
+	feeCollectorCmdxBalance := bankKeeper.GetBalance(ctx, feeCollectorAddress, "ucmdx")
+	if feeCollectorCmdxBalance.Amount.LT(refundAmount.Amount) {
+		panic("isufficient balance in fee collector of harbor app")
+	}
+
+	pairCreatorAddress := sdk.MustAccAddressFromBech32("comdex19wmd9xzhjnvmr90z8r3cnjlns5kgem9qglt2ll")
+	pairCreatorCmdxBalance := bankKeeper.GetBalance(ctx, pairCreatorAddress, "ucmdx")
+	err = bankKeeper.SendCoins(ctx, feeCollectorAddress, pairCreatorAddress, sdk.NewCoins(refundAmount))
+	if err != nil {
+		panic(err)
+	}
+	pairCreatorCmdxBalanceNew := bankKeeper.GetBalance(ctx, pairCreatorAddress, "ucmdx")
+
+	if pairCreatorCmdxBalance.Add(refundAmount) != pairCreatorCmdxBalanceNew {
+		panic("account balance invariant after pair creation fee refund")
+	}
+}
+
 func CreateUpgradeHandlerV10(
 	mm *module.Manager,
 	configurator module.Configurator,
+	liquidityKeeper liquiditykeeper.Keeper,
+	assetKeeper assetkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
@@ -126,6 +178,7 @@ func CreateUpgradeHandlerV10(
 		if err != nil {
 			return nil, err
 		}
+		DeleteAccidentallyCreatedPairAndRefundPirCreationFeeToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
 		return vm, err
 	}
 }
