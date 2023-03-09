@@ -3,9 +3,7 @@ package v10
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -114,11 +112,6 @@ func CreateUpgradeHandlerV10(
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDebtBidRequest{}),
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDutchBidRequest{}),
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDutchLendBidRequest{}),
-				sdk.MsgTypeURL(&esmtypes.MsgDepositESM{}),
-				sdk.MsgTypeURL(&esmtypes.MsgExecuteESM{}),
-				sdk.MsgTypeURL(&esmtypes.MsgKillRequest{}),
-				sdk.MsgTypeURL(&esmtypes.MsgCollateralRedemptionRequest{}),
-				sdk.MsgTypeURL(&esmtypes.MsgCollateralRedemptionRequest{}),
 				sdk.MsgTypeURL(&lendtypes.MsgLend{}),
 				sdk.MsgTypeURL(&lendtypes.MsgWithdraw{}),
 				sdk.MsgTypeURL(&lendtypes.MsgDeposit{}),
@@ -129,11 +122,7 @@ func CreateUpgradeHandlerV10(
 				sdk.MsgTypeURL(&lendtypes.MsgDepositBorrow{}),
 				sdk.MsgTypeURL(&lendtypes.MsgCloseBorrow{}),
 				sdk.MsgTypeURL(&lendtypes.MsgBorrowAlternate{}),
-				sdk.MsgTypeURL(&lendtypes.MsgFundModuleAccounts{}),
 				sdk.MsgTypeURL(&lendtypes.MsgCalculateInterestAndRewards{}),
-				sdk.MsgTypeURL(&lendtypes.MsgFundReserveAccounts{}),
-				sdk.MsgTypeURL(&liquidationtypes.MsgLiquidateVaultRequest{}),
-				sdk.MsgTypeURL(&liquidationtypes.MsgLiquidateBorrowRequest{}),
 				sdk.MsgTypeURL(&liquiditytypes.MsgCreatePair{}),
 				sdk.MsgTypeURL(&liquiditytypes.MsgCreatePool{}),
 				sdk.MsgTypeURL(&liquiditytypes.MsgCreateRangedPool{}),
@@ -153,10 +142,6 @@ func CreateUpgradeHandlerV10(
 				sdk.MsgTypeURL(&lockertypes.MsgCloseLockerRequest{}),
 				sdk.MsgTypeURL(&lockertypes.MsgLockerRewardCalcRequest{}),
 				sdk.MsgTypeURL(&rewardstypes.MsgCreateGauge{}),
-				sdk.MsgTypeURL(&rewardstypes.ActivateExternalRewardsLockers{}),
-				sdk.MsgTypeURL(&rewardstypes.ActivateExternalRewardsVault{}),
-				sdk.MsgTypeURL(&rewardstypes.ActivateExternalRewardsLend{}),
-				sdk.MsgTypeURL(&rewardstypes.ActivateExternalRewardsStableMint{}),
 				sdk.MsgTypeURL(&tokenminttypes.MsgMintNewTokensRequest{}),
 				sdk.MsgTypeURL(&vaulttypes.MsgCreateRequest{}),
 				sdk.MsgTypeURL(&vaulttypes.MsgDepositRequest{}),
