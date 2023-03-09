@@ -12,11 +12,16 @@ import (
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 )
 
 func CreateUpgradeHandlerV10(
@@ -35,6 +40,18 @@ func CreateUpgradeHandlerV10(
 		hostParams := icahosttypes.Params{
 			HostEnabled: true,
 			AllowMessages: []string{
+				sdk.MsgTypeURL(&ibctransfertypes.MsgTransfer{}),
+				sdk.MsgTypeURL(&banktypes.MsgSend{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
+				sdk.MsgTypeURL(&distrtypes.MsgWithdrawDelegatorReward{}),
+				sdk.MsgTypeURL(&distrtypes.MsgSetWithdrawAddress{}),
+				sdk.MsgTypeURL(&distrtypes.MsgWithdrawValidatorCommission{}),
+				sdk.MsgTypeURL(&distrtypes.MsgFundCommunityPool{}),
+				sdk.MsgTypeURL(&govtypes.MsgVote{}),
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceSurplusBidRequest{}),
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDebtBidRequest{}),
 				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDutchBidRequest{}),
