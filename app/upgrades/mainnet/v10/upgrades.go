@@ -27,7 +27,13 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 )
 
-func DeleteAccidentallyCreatedPairAndRefundPirCreationFeeToOwner(
+// An error occurred during the creation of the CMST/STJUNO pair, as it was mistakenly created in the Harbor app (ID-2) instead of the cSwap app (ID-1).
+// As a result, the transaction fee was charged to the creator of the pair, who is entitled to a refund.
+// The provided code is designed to initiate the refund process.
+// The transaction hash for the pair creation is EF408AD53B8BB0469C2A593E4792CB45552BD6495753CC2C810A1E4D82F3982F.
+// MintSan - https://www.mintscan.io/comdex/txs/EF408AD53B8BB0469C2A593E4792CB45552BD6495753CC2C810A1E4D82F3982F
+
+func RefundFeeForAccidentallyCreatedPirToOwner(
 	ctx sdk.Context,
 	liquidityKeeper liquiditykeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
@@ -178,7 +184,7 @@ func CreateUpgradeHandlerV10(
 		if err != nil {
 			return nil, err
 		}
-		DeleteAccidentallyCreatedPairAndRefundPirCreationFeeToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
+		RefundFeeForAccidentallyCreatedPirToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
 		return vm, err
 	}
 }
