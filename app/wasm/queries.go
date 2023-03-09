@@ -197,7 +197,7 @@ func (qp QueryPlugin) WasmCheckLiquidityProvided(ctx sdk.Context, appID, poolID 
 }
 
 func (qp QueryPlugin) WasmGetPools(ctx sdk.Context, appID uint64) (pools []uint64) {
-	poolsData := qp.liquidityKeeper.GetAllPools(ctx, appID)
+	poolsData := qp.liquidityKeeper.GetAllCMSTPools(ctx, appID)
 	for _, pool := range poolsData {
 		pools = append(pools, pool.Id)
 	}
