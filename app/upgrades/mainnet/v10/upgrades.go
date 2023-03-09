@@ -68,7 +68,7 @@ func DeleteAccidentallyCreatedPairAndRefundPirCreationFeeToOwner(
 	}
 	pairCreatorCmdxBalanceNew := bankKeeper.GetBalance(ctx, pairCreatorAddress, "ucmdx")
 
-	if pairCreatorCmdxBalance.Add(refundAmount) != pairCreatorCmdxBalanceNew {
+	if !pairCreatorCmdxBalance.Add(refundAmount).IsEqual(pairCreatorCmdxBalanceNew) {
 		panic("account balance invariant after pair creation fee refund")
 	}
 }
