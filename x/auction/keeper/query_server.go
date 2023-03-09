@@ -24,17 +24,6 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
-}
-
 func (q QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (res *types.QuerySurplusAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
@@ -418,7 +407,7 @@ func (q QueryServer) QueryProtocolStatistics(c context.Context, req *types.Query
 	}, nil
 }
 
-func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
+func (q QueryServer) QueryDutchAuctionParams(c context.Context, req *types.QueryDutchAuctionParamRequest) (*types.QueryDutchAuctionParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -427,10 +416,10 @@ func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAucti
 
 	item, found := q.GetAuctionParams(ctx, req.AppId)
 	if !found {
-		return &types.QueryAuctionParamResponse{}, nil
+		return &types.QueryDutchAuctionParamResponse{}, nil
 	}
 
-	return &types.QueryAuctionParamResponse{
+	return &types.QueryDutchAuctionParamResponse{
 		AuctionParams: item,
 	}, nil
 }

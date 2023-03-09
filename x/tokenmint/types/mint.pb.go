@@ -28,7 +28,7 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-//app_vault_type_id will be the key for  the KVStore for this value.
+// app_vault_type_id will be the key for  the KVStore for this value.
 type TokenMint struct {
 	AppId        uint64          `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	MintedTokens []*MintedTokens `protobuf:"bytes,2,rep,name=minted_tokens,json=mintedTokens,proto3" json:"minted_tokens,omitempty" yaml:"minted_tokens"`

@@ -182,9 +182,21 @@ protoVer=v0.1
 containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
 
 proto-swagger-gen:
-	@echo "Generating Protobuf Swagger"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
-		sh ./scripts/protoc_swagger_gen.sh; fi
+	@echo
+	@echo "=========== Generating Docs ============"
+	@echo
+	./scripts/protoc_swagger_gen.sh
+
+	@if [ -n "$(git status --porcelain)" ]; then \
+        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+        exit 1;\
+    else \
+        echo "\033[92mSwagger docs are in sync\033[0m";\
+    fi
+	@echo
+	@echo "=========== Docs Generation Complete ============"
+	@echo
+.PHONY: docs
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."

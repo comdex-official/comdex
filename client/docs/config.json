@@ -1,0 +1,218 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "comdex - gRPC Gateway docs",
+    "description": "A REST interface for state queries, legacy transactions",
+    "version": "1.0.0"
+  },
+  "apis": [
+    {
+      "url": "../../tmp-swagger-gen/comdex/asset/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "AssetParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/auction/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "auctionParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/bandoracle/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "bandoracleParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/collector/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "collectorParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/esm/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "esmParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/lend/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "lendParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/liquidity/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "liquidityParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/locker/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "lockerParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/market/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "marketParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/rewards/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "rewardsParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/tokenmint/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "tokenmintParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/comdex/vault/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "vaultParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/auth/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "AuthParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/authz/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "AuthzParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/bank/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "BankParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/base/tendermint/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "BaseParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/distribution/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "DistributionParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/evidence/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "EvidenceParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/feegrant/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "FeegrantParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/gov/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "GovParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/mint/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "CosmosMintParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/params/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "Params"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/slashing/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "SlashingParams"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/staking/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "StakingParams",
+          "Pool": "StakingPool",
+          "DelegatorValidators": "StakingDelegatorValidators"
+        }
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/tx/v1beta1/service.swagger.json",
+      "dereference": {
+        "circular": "ignore"
+      }
+    },
+    {
+      "url": "../../tmp-swagger-gen/cosmos/upgrade/v1beta1/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "UpgradeParams"
+        }
+      }
+    }
+  ]
+}

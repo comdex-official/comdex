@@ -5,7 +5,6 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/market/v1beta1/market.proto";
-import "comdex/market/v1beta1/params.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/market/types";
 option (gogoproto.equal_all) = false;
@@ -36,23 +35,11 @@ message QueryMarketResponse {
   ];
 }
 
-message QueryParamsRequest {}
-
-message QueryParamsResponse {
-  Params params = 1 [
-    (gogoproto.moretags) = "yaml:\"params\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
 service Query {
   rpc QueryMarkets(QueryMarketsRequest) returns (QueryMarketsResponse) {
     option (google.api.http).get = "/comdex/market/v1beta1/timeWeightedAverage";
   }
   rpc QueryMarket(QueryMarketRequest) returns (QueryMarketResponse) {
     option (google.api.http).get = "/comdex/market/v1beta1/timeWeightedAverage/{assetID}";
-  }
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/market/v1beta1/params";
   }
 }

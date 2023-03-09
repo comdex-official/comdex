@@ -82,7 +82,7 @@ func queryLockedVaults() *cobra.Command {
 
 func queryParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "params",
+		Use:   "liquidation-params",
 		Short: "Query module parameters",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -92,9 +92,9 @@ func queryParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryParams(
+			res, err := queryClient.QueryLiquidationParams(
 				context.Background(),
-				&types.QueryParamsRequest{},
+				&types.QueryLiquidationParamsRequest{},
 			)
 			if err != nil {
 				return err

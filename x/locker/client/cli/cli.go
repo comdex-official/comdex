@@ -20,7 +20,6 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		queryParams(),
 		queryLockedVault(),
 		queryLockersByAppToAssetID(),
 		queryLockerByAppID(),

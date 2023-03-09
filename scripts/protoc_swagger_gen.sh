@@ -1,34 +1,33 @@
 #!/usr/bin/env bash
 
-# Run from the project root directory
-# This script generates the swagger & openapi.yaml documentation for the rest API on port 1317
-
-# change to the scripts folder
-cd "$(dirname `realpath "$0"`)"
-# change to the root folder
-cd ../
+set -eo pipefail
 
 mkdir -p ./tmp-swagger-gen
 
-# Get the paths used repos from go/pkg/mod
+# move the vendor folder to a temp dir so that go list works properly
+temp_dir="f29ea6aa861dc4b083e8e48f67cce"
+if [ -d vendor ]; then
+  mv ./vendor ./$temp_dir
+fi
+
+# Get the path of the cosmos-sdk repo from go/pkg/mod
 cosmos_sdk_dir=$(go list -f '{{ .Dir }}' -m github.com/cosmos/cosmos-sdk)
-wasmd=$(go list -f '{{ .Dir }}' -m github.com/CosmWasm/wasmd)
-ica=$(go list -f '{{ .Dir }}' -m github.com/cosmos/interchain-accounts)
 
-proto_dirs=$(find ./proto "$cosmos_sdk_dir"/proto "$wasmd"/proto "$ica"/proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
+# move the vendor folder back to ./vendor
+if [ -d $temp_dir ]; then
+  mv ./$temp_dir ./vendor
+fi
+
+proto_dirs=$(find ./proto "$cosmos_sdk_dir"/proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-
   # generate swagger files (filter query files)
   query_file=$(find "${dir}" -maxdepth 1 \( -name 'query.proto' -o -name 'service.proto' \))
   if [[ ! -z "$query_file" ]]; then
-    # Get swagger protoc plugin with `go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@v1.16.0`
     protoc  \
     -I "proto" \
     -I "$cosmos_sdk_dir/third_party/proto" \
     -I "$cosmos_sdk_dir/proto" \
-    -I "$wasmd/proto" \
-    -I "$ica/proto" \
-     "$query_file" \
+      "$query_file" \
     --swagger_out ./tmp-swagger-gen \
     --swagger_opt logtostderr=true \
     --swagger_opt fqn_for_swagger_name=true \
@@ -36,53 +35,16 @@ for dir in $proto_dirs; do
   fi
 done
 
-# delete cosmos/mint path since comdex uses its own module
-rm -rf ./tmp-swagger-gen/cosmos/mint
+cd ./client/docs
+yarn install
+yarn combine
+yarn convert
+yarn build
 
-# Fix circular definition in cosmos/tx/v1beta1/service.swagger.json
-jq 'del(.definitions["cosmos.tx.v1beta1.ModeInfo.Multi"].properties.mode_infos.items["$ref"])' ./tmp-swagger-gen/cosmos/tx/v1beta1/service.swagger.json > ./tmp-swagger-gen/cosmos/tx/v1beta1/fixed-service.swagger.json
+#Add public servers to spec file for comdex testnet and mainnet
+yq -i '."servers"+=[{"url":"https://rest.comdex.one","description":"comdex mainnet node"},{"url":"https://test2-rest.comdex.one","description":"comdex testnet node"}]' static/openapi/openapi.yaml
 
-# Tag everything as "gRPC Gateway API"
-perl -i -pe 's/"(Query|Service)"/"gRPC Gateway API"/' $(find ./tmp-swagger-gen -name '*.swagger.json' -print0 | xargs -0)
+cd ../../
 
-# Convert all *.swagger.json files into a single folder _all
-files=$(find ./tmp-swagger-gen -name '*.swagger.json' -print0 | xargs -0)
-mkdir -p ./tmp-swagger-gen/_all
-counter=0
-for f in $files; do
-  echo "[+] $f"
-
-  # check gaia first before cosmos
-  # if [[ "$f" =~ "gaia" ]]; then
-  #   cp $f ./tmp-swagger-gen/_all/gaia-$counter.json
-  if [[ "$f" =~ "router" ]]; then
-    cp $f ./tmp-swagger-gen/_all/pfm-$counter.json
-  elif [[ "$f" =~ "cosmwasm" ]]; then
-    cp $f ./tmp-swagger-gen/_all/cosmwasm-$counter.json
-  elif [[ "$f" =~ "comdex" ]]; then
-    cp $f ./tmp-swagger-gen/_all/comdex-$counter.json
-  elif [[ "$f" =~ "cosmos" ]]; then
-    cp $f ./tmp-swagger-gen/_all/cosmos-$counter.json
-  elif [[ "$f" =~ "intertx" ]]; then
-    cp $f ./tmp-swagger-gen/_all/intertx-$counter.json
-  else
-    cp $f ./tmp-swagger-gen/_all/other-$counter.json
-  fi
-  ((counter++))
-done
-
-# merges all the above into FINAL.json
-python3 ./scripts/merge_protoc.py
-
-# Makes a swagger temp file with reference pointers
-swagger-combine ./tmp-swagger-gen/_all/FINAL.json -o ./docs/_tmp_swagger.yaml -f yaml --continueOnConflictingPaths --includeDefinitions
-
-# extends out the *ref instances to their full value
-swagger-merger --input ./docs/_tmp_swagger.yaml -o ./docs/swagger.yaml
-
-# Derive openapi from swagger docs
-swagger2openapi --patch ./docs/swagger.yaml --outfile ./docs/static/openapi.yml --yaml  
-
-# clean swagger tmp files
-rm ./docs/_tmp_swagger.yaml
+# clean swagger files
 rm -rf ./tmp-swagger-gen
