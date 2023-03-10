@@ -896,7 +896,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 	if borrowPos.AmountOut.Denom != payment.Denom {
 		return types.ErrBadOfferCoinAmount
 	}
-	if payment.Amount.GT(borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.Ceil().RoundInt())) {
+	if payment.Amount.GTE(borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.Ceil().TruncateInt())) {
 		return types.ErrInvalidRepayment
 	}
 	borrowPos.GlobalIndex = indexGlobalCurrent
