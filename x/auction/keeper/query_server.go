@@ -407,7 +407,7 @@ func (q QueryServer) QueryProtocolStatistics(c context.Context, req *types.Query
 	}, nil
 }
 
-func (q QueryServer) QueryDutchAuctionParams(c context.Context, req *types.QueryDutchAuctionParamRequest) (*types.QueryDutchAuctionParamResponse, error) {
+func (q QueryServer) QueryGenericAuctionParams(c context.Context, req *types.QueryGenericAuctionParamRequest) (*types.QueryGenericAuctionParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -416,10 +416,10 @@ func (q QueryServer) QueryDutchAuctionParams(c context.Context, req *types.Query
 
 	item, found := q.GetAuctionParams(ctx, req.AppId)
 	if !found {
-		return &types.QueryDutchAuctionParamResponse{}, nil
+		return &types.QueryGenericAuctionParamResponse{}, nil
 	}
 
-	return &types.QueryDutchAuctionParamResponse{
+	return &types.QueryGenericAuctionParamResponse{
 		AuctionParams: item,
 	}, nil
 }

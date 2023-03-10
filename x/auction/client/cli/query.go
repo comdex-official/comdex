@@ -457,7 +457,7 @@ func queryDutchBiddings() *cobra.Command {
 	return cmd
 }
 
-func queryDutchAuctionParams() *cobra.Command {
+func queryGenericAuctionParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auction-params [id]",
 		Short: "Query auction-params",
@@ -475,9 +475,9 @@ func queryDutchAuctionParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryDutchAuctionParams(
+			res, err := queryClient.QueryGenericAuctionParams(
 				context.Background(),
-				&types.QueryDutchAuctionParamRequest{
+				&types.QueryGenericAuctionParamRequest{
 					AppId: id,
 				},
 			)
