@@ -18,8 +18,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
@@ -83,16 +82,11 @@ func CreateUpgradeHandlerV10(
 	liquidityKeeper liquiditykeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	icahostkeeper icahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
-		// create ICS27 Controller submodule params, controller module not enabled.
-		controllerParams := icacontrollertypes.Params{}
-
-		// create ICS27 Host submodule params
-
-		// create ICS27 Host submodule params
 		hostParams := icahosttypes.Params{
 			HostEnabled: true,
 			AllowMessages: []string{
@@ -156,14 +150,7 @@ func CreateUpgradeHandlerV10(
 				sdk.MsgTypeURL(&vaulttypes.MsgVaultInterestCalcRequest{}),
 			},
 		}
-		// No changes in existing module and their states,
-		// This upgrades adds new modules and new states in the existing store
-
-		icamodule, correctTypecast := mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if !correctTypecast {
-			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
-		}
-		icamodule.InitModule(ctx, controllerParams, hostParams)
+		icahostkeeper.SetParams(ctx, hostParams)
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
