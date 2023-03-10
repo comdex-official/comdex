@@ -1219,7 +1219,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		mv10.UpgradeName,
-		mv10.CreateUpgradeHandlerV10(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper),
+		mv10.CreateUpgradeHandlerV10(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.ICAHostKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
