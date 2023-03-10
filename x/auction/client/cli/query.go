@@ -457,35 +457,7 @@ func queryDutchBiddings() *cobra.Command {
 	return cmd
 }
 
-func queryParams() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "params",
-		Short: "Query module parameters",
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-
-			res, err := queryClient.QueryParams(
-				context.Background(),
-				&types.QueryParamsRequest{},
-			)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func queryAuctionParams() *cobra.Command {
+func queryDutchAuctionParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auction-params [id]",
 		Short: "Query auction-params",
@@ -503,9 +475,9 @@ func queryAuctionParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAuctionParams(
+			res, err := queryClient.QueryDutchAuctionParams(
 				context.Background(),
-				&types.QueryAuctionParamRequest{
+				&types.QueryDutchAuctionParamRequest{
 					AppId: id,
 				},
 			)

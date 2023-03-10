@@ -17,7 +17,6 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		queryMarket(),
 		queryMarkets(),
-		queryParams(),
 	)
 
 	return cmd

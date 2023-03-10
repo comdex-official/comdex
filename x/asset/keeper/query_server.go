@@ -77,7 +77,7 @@ func (q QueryServer) QueryAsset(c context.Context, req *types.QueryAssetRequest)
 	}, nil
 }
 
-func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
+func (q QueryServer) QueryAssetPairs(c context.Context, req *types.QueryAssetPairsRequest) (*types.QueryAssetPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -125,13 +125,13 @@ func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryPairsResponse{
+	return &types.QueryAssetPairsResponse{
 		PairsInfo:  pairsInfo,
 		Pagination: pagination,
 	}, nil
 }
 
-func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
+func (q QueryServer) QueryAssetPair(c context.Context, req *types.QueryAssetPairRequest) (*types.QueryAssetPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -161,7 +161,7 @@ func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 		DenomOut: assetOut.Denom,
 	}
 
-	return &types.QueryPairResponse{
+	return &types.QueryAssetPairResponse{
 		PairInfo: pairInfo,
 	}, nil
 }
