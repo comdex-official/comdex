@@ -39,14 +39,6 @@
       }
     },
     {
-      "url": "../../tmp-swagger-gen/comdex/esm/v1beta1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "esmParams"
-        }
-      }
-    },
-    {
       "url": "../../tmp-swagger-gen/comdex/lend/v1beta1/query.swagger.json",
       "operationIds": {
         "rename": {
