@@ -17,7 +17,6 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		queryParams(),
 		querySurplusAuction(),
 		querySurplusAuctions(),
 		querySurplusBiddings(),
@@ -28,7 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		queryDutchAuctions(),
 		queryDutchBiddings(),
 		queryProtocolStats(),
-		queryAuctionParams(),
+		queryGenericAuctionParams(),
 		queryDutchLendAuction(),
 		queryDutchLendAuctions(),
 		queryDutchLendBiddings(),

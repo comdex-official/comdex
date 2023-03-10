@@ -601,9 +601,9 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, appID uint64, order types.Orde
 }
 
 // GetMMOrderIndex returns the market making order index.
-func (k Keeper) GetMMOrderIndex(ctx sdk.Context, orderer sdk.AccAddress, appID, pairId uint64) (index types.MMOrderIndex, found bool) {
+func (k Keeper) GetMMOrderIndex(ctx sdk.Context, orderer sdk.AccAddress, appID, pairID uint64) (index types.MMOrderIndex, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetMMOrderIndexKey(orderer, appID, pairId))
+	bz := store.Get(types.GetMMOrderIndexKey(orderer, appID, pairID))
 	if bz == nil {
 		return
 	}
@@ -784,4 +784,21 @@ func (k Keeper) GetAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64) (queu
 		return false, nil
 	})
 	return queuedFarmers
+}
+
+// GetAllCMSTPools returns all pools in the store.
+func (k Keeper) GetAllCMSTPools(ctx sdk.Context, appID uint64) (pools []types.Pool) {
+	cmstPools := []types.Pool{}
+	allPools := k.GetAllPools(ctx, appID)
+	for _, pool := range allPools {
+		if !pool.Disabled {
+			pair, found := k.GetPair(ctx, appID, pool.PairId)
+			if found {
+				if pair.BaseCoinDenom == "ucmst" || pair.QuoteCoinDenom == "ucmst" {
+					cmstPools = append(cmstPools, pool)
+				}
+			}
+		}
+	}
+	return cmstPools
 }

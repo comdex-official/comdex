@@ -103,9 +103,9 @@ func queryPair() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryPair(
+			res, err := queryClient.QueryAssetPair(
 				context.Background(),
-				&types.QueryPairRequest{
+				&types.QueryAssetPairRequest{
 					Id: id,
 				},
 			)
@@ -139,9 +139,9 @@ func queryPairs() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryPairs(
+			res, err := queryClient.QueryAssetPairs(
 				context.Background(),
-				&types.QueryPairsRequest{
+				&types.QueryAssetPairsRequest{
 					Pagination: pagination,
 				},
 			)

@@ -378,15 +378,15 @@ func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.
 	}
 
 	expireAt := ctx.BlockTime().Add(msg.OrderLifespan)
-	lastOrderId := pair.LastOrderId
+	lastOrderID := pair.LastOrderId
 
 	var orderIds []uint64
 	for _, tick := range buyTicks {
-		lastOrderId++
+		lastOrderID++
 		offerCoin := sdk.NewCoin(pair.QuoteCoinDenom, tick.OfferCoinAmount)
 		order := types.NewOrder(
 			types.OrderTypeMM,
-			lastOrderId, msg.AppId,
+			lastOrderID, msg.AppId,
 			pair,
 			orderer,
 			offerCoin,
@@ -401,11 +401,11 @@ func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.
 		orderIds = append(orderIds, order.Id)
 	}
 	for _, tick := range sellTicks {
-		lastOrderId++
+		lastOrderID++
 		offerCoin := sdk.NewCoin(pair.BaseCoinDenom, tick.OfferCoinAmount)
 		order := types.NewOrder(
 			types.OrderTypeMM,
-			lastOrderId, msg.AppId,
+			lastOrderID, msg.AppId,
 			pair,
 			orderer,
 			offerCoin,
@@ -420,7 +420,7 @@ func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.
 		orderIds = append(orderIds, order.Id)
 	}
 
-	pair.LastOrderId = lastOrderId
+	pair.LastOrderId = lastOrderID
 	k.SetPair(ctx, pair)
 
 	k.SetMMOrderIndex(ctx, msg.AppId, types.NewMMOrderIndex(orderer, msg.AppId, pair.Id, orderIds))
@@ -506,22 +506,22 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 	}
 
 	orderPairCache := map[uint64]types.Pair{} // maps order's pair id to pair, to cache the result
-	pairIdSet := map[uint64]struct{}{}        // set of pairs where to cancel orders
+	pairIDSet := map[uint64]struct{}{}        // set of pairs where to cancel orders
 	var pairIds []string                      // needed to emit an event
-	for _, pairId := range msg.PairIds {
-		pair, found := k.GetPair(ctx, msg.AppId, pairId)
+	for _, pairID := range msg.PairIds {
+		pair, found := k.GetPair(ctx, msg.AppId, pairID)
 		if !found { // check if the pair exists
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairId)
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
 		}
-		pairIdSet[pairId] = struct{}{} // add pair id to the set
-		pairIds = append(pairIds, strconv.FormatUint(pairId, 10))
-		orderPairCache[pairId] = pair // also cache the pair to use at below
+		pairIDSet[pairID] = struct{}{} // add pair id to the set
+		pairIds = append(pairIds, strconv.FormatUint(pairID, 10))
+		orderPairCache[pairID] = pair // also cache the pair to use at below
 	}
 
 	var canceledOrderIds []string
 	if err := k.IterateOrdersByOrderer(ctx, msg.AppId, msg.GetOrderer(), func(order types.Order) (stop bool, err error) {
-		_, ok := pairIdSet[order.PairId] // is the pair included in the pair set?
-		if len(pairIdSet) == 0 || ok {   // pair ids not specified(cancel all), or the pair is in the set
+		_, ok := pairIDSet[order.PairId] // is the pair included in the pair set?
+		if len(pairIDSet) == 0 || ok {   // pair ids not specified(cancel all), or the pair is in the set
 			pair, ok := orderPairCache[order.PairId]
 			if !ok {
 				pair, _ = k.GetPair(ctx, msg.AppId, order.PairId)
@@ -554,8 +554,8 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 func (k Keeper) cancelMMOrder(ctx sdk.Context, appID uint64, orderer sdk.AccAddress, pair types.Pair, skipIfNotFound bool) (canceledOrderIds []uint64, err error) {
 	index, found := k.GetMMOrderIndex(ctx, orderer, appID, pair.Id)
 	if found {
-		for _, orderId := range index.OrderIds {
-			order, found := k.GetOrder(ctx, pair.Id, appID, orderId)
+		for _, orderID := range index.OrderIds {
+			order, found := k.GetOrder(ctx, pair.Id, appID, orderID)
 			if !found {
 				// The order has already been deleted from store.
 				continue
@@ -724,13 +724,13 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 	}
 	bulkOp = types.NewBulkSendCoinsOperation()
 	type PoolMatchResult struct {
-		PoolId         uint64
+		PoolID         uint64
 		OrderDirection types.OrderDirection
 		PaidCoin       sdk.Coin
 		ReceivedCoin   sdk.Coin
 		MatchedAmount  sdk.Int
 	}
-	poolMatchResultById := map[uint64]*PoolMatchResult{}
+	poolMatchResultByID := map[uint64]*PoolMatchResult{}
 	var poolMatchResults []*PoolMatchResult
 	for _, order := range orders {
 		if !order.IsMatched() {
@@ -777,16 +777,16 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 
 			bulkOp.QueueSendCoins(pair.GetEscrowAddress(), order.ReserveAddress, sdk.NewCoins(receivedCoin))
 
-			r, ok := poolMatchResultById[order.PoolID]
+			r, ok := poolMatchResultByID[order.PoolID]
 			if !ok {
 				r = &PoolMatchResult{
-					PoolId:         order.PoolID,
+					PoolID:         order.PoolID,
 					OrderDirection: types.OrderDirectionFromAMM(order.Direction),
 					PaidCoin:       sdk.NewCoin(paidCoin.Denom, sdk.ZeroInt()),
 					ReceivedCoin:   sdk.NewCoin(receivedCoin.Denom, sdk.ZeroInt()),
 					MatchedAmount:  sdk.ZeroInt(),
 				}
-				poolMatchResultById[order.PoolID] = r
+				poolMatchResultByID[order.PoolID] = r
 				poolMatchResults = append(poolMatchResults, r)
 			}
 			dir := types.OrderDirectionFromAMM(order.Direction)
@@ -811,7 +811,7 @@ func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.
 				types.EventTypePoolOrderMatched,
 				sdk.NewAttribute(types.AttributeKeyOrderDirection, r.OrderDirection.String()),
 				sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(pair.Id, 10)),
-				sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(r.PoolId, 10)),
+				sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(r.PoolID, 10)),
 				sdk.NewAttribute(types.AttributeKeyMatchedAmount, r.MatchedAmount.String()),
 				sdk.NewAttribute(types.AttributeKeyPaidCoin, r.PaidCoin.String()),
 				sdk.NewAttribute(types.AttributeKeyReceivedCoin, r.ReceivedCoin.String()),

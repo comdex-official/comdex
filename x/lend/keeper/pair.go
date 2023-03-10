@@ -140,7 +140,6 @@ func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) erro
 
 	intraPoolPairs := CreatePairs(assetIDPair) // returns {{1,2},{2,1}}
 	for _, pairs := range intraPoolPairs {
-
 		id := k.GetLendPairID(ctx)
 		pair := types.Extended_Pair{
 			Id:              id + 1,
@@ -153,7 +152,7 @@ func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) erro
 		k.SetLendPairID(ctx, pair.Id)
 		k.SetLendPair(ctx, pair)
 
-		//var assetToPair types.AssetToPairMapping
+		// var assetToPair types.AssetToPairMapping
 		assetToPair, found := k.GetAssetToPair(ctx, pair.AssetIn, poolID+1)
 		if !found {
 			assetToPair.AssetID = pair.AssetIn
@@ -385,10 +384,6 @@ func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 
 func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRatesParams) error {
 	for _, msg := range records {
-		_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
-		if found {
-			return types.ErrorAssetRatesParamsAlreadyExists
-		}
 
 		assetRatesParams := types.AssetRatesParams{
 			AssetID:              msg.AssetID,

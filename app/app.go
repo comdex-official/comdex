@@ -166,6 +166,7 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	mv10 "github.com/comdex-official/comdex/app/upgrades/mainnet/v10"
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
 	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
@@ -996,9 +997,11 @@ func New(
 				SignModeHandler: encoding.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
+			GovKeeper:         app.GovKeeper,
 			wasmConfig:        wasmConfig,
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
+			Cdc:               appCodec,
 		},
 	)
 	if err != nil {
@@ -1215,8 +1218,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv9.UpgradeName,
-		mv9.CreateUpgradeHandlerV900(a.mm, a.configurator, a.AssetKeeper),
+		mv10.UpgradeName,
+		mv10.CreateUpgradeHandlerV10(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1280,6 +1283,9 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 
 	case upgradeInfo.Name == mv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
+
+	case upgradeInfo.Name == mv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 

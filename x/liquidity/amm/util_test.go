@@ -43,7 +43,7 @@ type batchIdOrder struct {
 	batchId uint64
 }
 
-func (order *batchIdOrder) GetBatchId() uint64 {
+func (order *batchIdOrder) GetBatchID() uint64 {
 	return order.batchId
 }
 

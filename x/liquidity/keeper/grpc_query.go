@@ -783,12 +783,12 @@ func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest
 		return nil, status.Error(codes.InvalidArgument, "number of ticks must not be 0")
 	}
 
-	pairIdSet := map[uint64]struct{}{}
-	for _, pairId := range req.PairIds {
-		if _, ok := pairIdSet[pairId]; ok {
-			return nil, status.Errorf(codes.InvalidArgument, "duplicate pair id: %d", pairId)
+	pairIDSet := map[uint64]struct{}{}
+	for _, pairID := range req.PairIds {
+		if _, ok := pairIDSet[pairID]; ok {
+			return nil, status.Errorf(codes.InvalidArgument, "duplicate pair id: %d", pairID)
 		}
-		pairIdSet[pairId] = struct{}{}
+		pairIDSet[pairID] = struct{}{}
 	}
 
 	priceUnitPowerSet := map[uint32]struct{}{}
@@ -814,18 +814,18 @@ func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest
 	tickPrec := params.TickPrecision
 
 	var pairs []types.OrderBookPairResponse
-	for _, pairId := range req.PairIds {
-		pair, found := k.GetPair(ctx, req.AppId, pairId)
+	for _, pairID := range req.PairIds {
+		pair, found := k.GetPair(ctx, req.AppId, pairID)
 		if !found {
-			return nil, status.Errorf(codes.NotFound, "pair %d doesn't exist", pairId)
+			return nil, status.Errorf(codes.NotFound, "pair %d doesn't exist", pairID)
 		}
 
 		if pair.LastPrice == nil {
-			return nil, status.Errorf(codes.Unavailable, "pair %d does not have last price", pairId)
+			return nil, status.Errorf(codes.Unavailable, "pair %d does not have last price", pairID)
 		}
 
 		ob := amm.NewOrderBook()
-		_ = k.IterateOrdersByPair(ctx, req.AppId, pairId, func(order types.Order) (stop bool, err error) {
+		_ = k.IterateOrdersByPair(ctx, req.AppId, pairID, func(order types.Order) (stop bool, err error) {
 			switch order.Status {
 			case types.OrderStatusNotExecuted,
 				types.OrderStatusNotMatched,
@@ -836,7 +836,7 @@ func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest
 		})
 
 		lowestPrice, highestPrice := k.PriceLimits(ctx, *pair.LastPrice, params)
-		_ = k.IteratePoolsByPair(ctx, req.AppId, pairId, func(pool types.Pool) (stop bool, err error) {
+		_ = k.IteratePoolsByPair(ctx, req.AppId, pairID, func(pool types.Pool) (stop bool, err error) {
 			if pool.Disabled {
 				return false, nil
 			}

@@ -570,7 +570,15 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 	}
 
 	if k.HasBorrowForAddressByPair(ctx, addr, pairID) {
-		return types.ErrorDuplicateBorrow
+		borrowID, found := k.GetBorrowIDForAddressByPair(ctx, addr, pairID)
+		if !found {
+			return types.ErrBorrowNotFound
+		}
+		err2 := k.DepositDraw(ctx, addr, borrowID, AmountIn, loan)
+		if err2 != nil {
+			return err2
+		}
+		return nil
 	}
 
 	if AmountIn.Amount.GT(lendPos.AvailableToBorrow) {
@@ -888,7 +896,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 	if borrowPos.AmountOut.Denom != payment.Denom {
 		return types.ErrBadOfferCoinAmount
 	}
-	if payment.Amount.GT(borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.Ceil().RoundInt())) {
+	if payment.Amount.GTE(borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.Ceil().TruncateInt())) {
 		return types.ErrInvalidRepayment
 	}
 	borrowPos.GlobalIndex = indexGlobalCurrent
@@ -1831,4 +1839,29 @@ func (k Keeper) UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sd
 		}
 	}
 	return amount, true
+}
+
+func (k Keeper) GetBorrowIDForAddressByPair(ctx sdk.Context, address string, pairID uint64) (uint64, bool) {
+	mappingData := k.GetUserTotalMappingData(ctx, address)
+	for _, data := range mappingData {
+		for _, inData := range data.BorrowId {
+			borrowData, _ := k.GetBorrow(ctx, inData)
+			if borrowData.PairID == pairID {
+				return borrowData.ID, true
+			}
+		}
+	}
+	return 0, false
+}
+
+func (k Keeper) DepositDraw(ctx sdk.Context, addr string, borrowID uint64, AmountIn, loan sdk.Coin) error {
+	err := k.DepositBorrowAsset(ctx, borrowID, addr, AmountIn)
+	if err != nil {
+		return err
+	}
+	err = k.DrawAsset(ctx, borrowID, addr, loan)
+	if err != nil {
+		return err
+	}
+	return nil
 }

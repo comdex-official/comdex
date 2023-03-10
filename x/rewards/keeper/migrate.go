@@ -32,6 +32,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	}
 	return err
 }
+
 func MigrateExternalRewardLends(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	key := types.ExternalRewardsLendMappingKey(3)
 	value := store.Get(key)

@@ -35,9 +35,9 @@ message QueryLockedVaultsResponse {
       [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
 }
 
-message QueryParamsRequest {}
+message QueryLiquidationParamsRequest {}
 
-message QueryParamsResponse {
+message QueryLiquidationParamsResponse {
   Params params = 1 [
     (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
@@ -117,7 +117,7 @@ service Query {
   rpc QueryLockedVaults(QueryLockedVaultsRequest) returns (QueryLockedVaultsResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/locked_vaults";
   }
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc QueryLiquidationParams(QueryLiquidationParamsRequest) returns (QueryLiquidationParamsResponse) {
     option (google.api.http).get = "/comdex/liquidation/v1beta1/params";
   }
   rpc QueryLockedVaultsHistory(QueryLockedVaultsHistoryRequest) returns (QueryLockedVaultsHistoryResponse) {
