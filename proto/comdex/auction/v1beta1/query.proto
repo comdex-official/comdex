@@ -199,11 +199,11 @@ message  QueryProtocolStatisticsResponse {
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryDutchAuctionParamRequest {
+message QueryGenericAuctionParamRequest {
   uint64 app_id = 1;
 }
 
-message QueryDutchAuctionParamResponse {
+message QueryGenericAuctionParamResponse {
   AuctionParams auctionParams = 1
   [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\""];
 }
@@ -304,7 +304,7 @@ service Query {
   rpc QueryProtocolStatistics(QueryProtocolStatisticsRequest) returns (QueryProtocolStatisticsResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/protocolstats/{app_id}";
   }
-  rpc QueryDutchAuctionParams(QueryDutchAuctionParamRequest) returns (QueryDutchAuctionParamResponse) {
+  rpc QueryGenericAuctionParams(QueryGenericAuctionParamRequest) returns (QueryGenericAuctionParamResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{app_id}";
   }
   rpc QueryDutchLendAuction(QueryDutchLendAuctionRequest) returns (QueryDutchLendAuctionResponse) {
