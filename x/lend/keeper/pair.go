@@ -384,10 +384,6 @@ func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 
 func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRatesParams) error {
 	for _, msg := range records {
-		_, found := k.GetAssetRatesParams(ctx, msg.AssetID)
-		if found {
-			return types.ErrorAssetRatesParamsAlreadyExists
-		}
 
 		assetRatesParams := types.AssetRatesParams{
 			AssetID:              msg.AssetID,
