@@ -36,6 +36,7 @@ func GetTxCmd() *cobra.Command {
 		DepositStableMint(),
 		WithdrawStableMint(),
 		CalculateInterest(),
+		LimitMinting(),
 	)
 
 	return cmd
@@ -488,6 +489,32 @@ func CalculateInterest() *cobra.Command {
 			}
 
 			msg := types.NewMsgVaultInterestCalcRequest(ctx.FromAddress, appID, userVaultID)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// need to remove later
+func LimitMinting() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "limit-minting",
+		Short: "reduce mint limit",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgMsgLimitMintingRequest(ctx.FromAddress)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

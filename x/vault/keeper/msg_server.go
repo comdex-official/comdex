@@ -1451,3 +1451,19 @@ func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultIn
 
 	return &types.MsgVaultInterestCalcResponse{}, nil
 }
+
+// need to remove later
+func (k msgServer) MsgLimitMinting(c context.Context, msg *types.MsgLimitMintingRequest) (*types.MsgLimitMintingResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	if msg.From == "comdex1y92q7jf7jvyjd6tada5y00ycfavg6cug8n9khd" {
+		usdcVault, found := k.asset.GetPairsVault(ctx, 1)
+		if found {
+			usdcVault.DebtCeiling = sdk.NewInt(1250000000000)
+		}
+		k.asset.SetPairsVault(ctx, usdcVault)
+	} else {
+		return &types.MsgLimitMintingResponse{}, types.ErrorInvalidFrom
+	}
+
+	return &types.MsgLimitMintingResponse{}, nil
+}

@@ -190,6 +190,13 @@ message MsgVaultInterestCalcRequest {
 
 message  MsgVaultInterestCalcResponse{}
 
+// need to remove later
+message MsgLimitMintingRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+}
+
+message  MsgLimitMintingResponse{}
+
 service Msg {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
   rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
@@ -202,4 +209,5 @@ service Msg {
   rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
   rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
   rpc MsgVaultInterestCalc(MsgVaultInterestCalcRequest) returns (MsgVaultInterestCalcResponse);
+  rpc MsgLimitMinting(MsgLimitMintingRequest) returns (MsgLimitMintingResponse); // need to remove later
 }

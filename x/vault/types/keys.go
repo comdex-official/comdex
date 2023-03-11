@@ -12,17 +12,18 @@ const (
 )
 
 var (
-	TypeMsgCreateRequest               = ModuleName + ":create"
-	TypeMsgDepositRequest              = ModuleName + ":deposit"
-	TypeMsgWithdrawRequest             = ModuleName + ":withdraw"
-	TypeMsgDrawRequest                 = ModuleName + ":draw"
-	TypeMsgRepayRequest                = ModuleName + ":repay"
-	TypeMsgLiquidateRequest            = ModuleName + ":liquidate"
-	TypeMsgDepositDrawRequest          = ModuleName + ":deposit_draw"
-	TypeMsgCreateStableMintRequest     = ModuleName + ":create_stablemint"
-	TypeMsgDepositStableMintRequest    = ModuleName + ":deposit_stablemint"
-	TypeMsgWithdrawStableMintRequest   = ModuleName + ":withdraw_stablemint"
-	TypeMsgVaultInterestCalcRequest    = ModuleName + ":calculate_interest"
+	TypeMsgCreateRequest             = ModuleName + ":create"
+	TypeMsgDepositRequest            = ModuleName + ":deposit"
+	TypeMsgWithdrawRequest           = ModuleName + ":withdraw"
+	TypeMsgDrawRequest               = ModuleName + ":draw"
+	TypeMsgRepayRequest              = ModuleName + ":repay"
+	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeMsgDepositDrawRequest        = ModuleName + ":deposit_draw"
+	TypeMsgCreateStableMintRequest   = ModuleName + ":create_stablemint"
+	TypeMsgDepositStableMintRequest  = ModuleName + ":deposit_stablemint"
+	TypeMsgWithdrawStableMintRequest = ModuleName + ":withdraw_stablemint"
+	TypeMsgVaultInterestCalcRequest  = ModuleName + ":calculate_interest"
+	TypeMsgLimitMintingRequest       = ModuleName + ":limit-mint" // need to remove later
 )
 
 var (
