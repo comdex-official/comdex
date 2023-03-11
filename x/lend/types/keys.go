@@ -46,6 +46,7 @@ var (
 	TypeBorrowAlternateAssetRequest        = ModuleName + ":borrow-alternate"
 	TypeCalculateInterestAndRewardsRequest = ModuleName + ":calculate-interest-rewards"
 	TypeFundReserveAccountRequest          = ModuleName + ":fund-reserve"
+	TypeMsgLimitSupplyCapRequest           = ModuleName + ":limit-supply-cap" // need to remove later
 )
 
 var (

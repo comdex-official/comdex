@@ -2,8 +2,10 @@ package types
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/asset/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgLend(lender string, assetID uint64, amount sdk.Coin, poolID, appID uint64) *MsgLend {
@@ -546,4 +548,44 @@ func (msg *MsgFundReserveAccounts) GetSigners() []sdk.AccAddress {
 func (msg *MsgFundReserveAccounts) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
+}
+
+func NewMsgMsgLimitSupplyCapRequest(
+	from sdk.AccAddress,
+) *MsgLimitSupplyCapRequest {
+	return &MsgLimitSupplyCapRequest{
+		From: from.String(),
+	}
+}
+
+func (m *MsgLimitSupplyCapRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgLimitSupplyCapRequest) Type() string {
+	return TypeMsgLimitSupplyCapRequest
+}
+
+func (m *MsgLimitSupplyCapRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(types.ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(types.ErrorInvalidFrom, "%s", err)
+	}
+
+	return nil
+}
+
+func (m *MsgLimitSupplyCapRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgLimitSupplyCapRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }

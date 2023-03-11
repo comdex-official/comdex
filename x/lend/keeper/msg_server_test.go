@@ -2081,3 +2081,43 @@ func (s *KeeperTestSuite) TestMsgCalculateInterestAndRewards() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestSupplyCap() {
+	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
+	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
+
+	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
+	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
+	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
+
+	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
+	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)
+	s.AddAssetRatesStats(assetTwoID, newDec("0.5"), newDec("0.002"), newDec("0.08"), newDec("2.0"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.5"), newDec("0.55"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetTwoID)
+
+	appOneID := s.CreateNewApp("commodo", "cmmdo")
+
+	s.AddPoolsPairsRecords() // pools and pairs added
+
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(5000000000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(5000000000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"), sdk.NewCoins(sdk.NewCoin("uasset3", newInt(5000000000000))))
+
+	msg := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, sdk.NewCoin("uasset3", newInt(5000000000000)), 1, appOneID)
+	_, err := s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg)
+	fmt.Println(err)
+
+	msg2 := types.NewMsgCloseLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1)
+	_, err = s.msgServer.CloseLend(sdk.WrapSDKContext(s.ctx), msg2)
+	fmt.Println(err)
+
+	msg3 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, sdk.NewCoin("uasset3", newInt(100000000000)), 1, appOneID)
+	_, err = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg3)
+	fmt.Println(err)
+
+	s.UpdateSupplyCap()
+
+	msg4 := types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, sdk.NewCoin("uasset3", newInt(50000000001)), 1, appOneID)
+	_, err = s.msgServer.Lend(sdk.WrapSDKContext(s.ctx), msg4)
+	fmt.Println(err)
+}

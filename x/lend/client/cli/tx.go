@@ -41,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 		txFundModuleAccounts(),
 		txCalculateInterestAndRewards(),
 		txFundReserveAccounts(),
+		txLimitSupplyCap(),
 	)
 
 	return cmd
@@ -1356,4 +1357,29 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	}
 
 	return txf, msg, nil
+}
+
+func txLimitSupplyCap() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "limit-supply-cap",
+		Short: "update CMST supply cap limit",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgMsgLimitSupplyCapRequest(ctx.FromAddress)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

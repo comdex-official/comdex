@@ -119,7 +119,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa1 := markettypes.TimeWeightedAverage{
 		AssetID:       1,
 		ScriptID:      10,
-		Twa:           1000000000000,
+		Twa:           1000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -127,7 +127,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa2 := markettypes.TimeWeightedAverage{
 		AssetID:       2,
 		ScriptID:      10,
-		Twa:           1000000000000,
+		Twa:           1000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa3 := markettypes.TimeWeightedAverage{
 		AssetID:       3,
 		ScriptID:      10,
-		Twa:           1000000000000,
+		Twa:           1000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa4 := markettypes.TimeWeightedAverage{
 		AssetID:       4,
 		ScriptID:      10,
-		Twa:           10000000000000,
+		Twa:           1000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -252,4 +252,45 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	}
 	s.Require().NotZero(appID)
 	return appID
+}
+
+func (s *KeeperTestSuite) AddPoolsPairsRecords() {
+	supplyCap1, _ := sdk.NewDecFromStr("5000000000000")
+	assetDataAsset1 := types.AssetDataPoolMapping{
+		AssetID:          1,
+		AssetTransitType: 3,
+		SupplyCap:        supplyCap1,
+	}
+
+	supplyCap2, _ := sdk.NewDecFromStr("1000000000000")
+	assetDataAsset2 := types.AssetDataPoolMapping{
+		AssetID:          2,
+		AssetTransitType: 1,
+		SupplyCap:        supplyCap2,
+	}
+
+	supplyCap3, _ := sdk.NewDecFromStr("5000000000000")
+	assetDataAsset3 := types.AssetDataPoolMapping{
+		AssetID:          3,
+		AssetTransitType: 2,
+		SupplyCap:        supplyCap3,
+	}
+
+	AssetData := []*types.AssetDataPoolMapping{&assetDataAsset1, &assetDataAsset2, &assetDataAsset3}
+	err := s.app.LendKeeper.AddPoolsPairsRecords(s.ctx, types.PoolPairs{
+		ModuleName:      "cmdx",
+		CPoolName:       "CMDX-ATOM-CMST",
+		AssetData:       AssetData,
+		MinUsdValueLeft: 100000,
+	})
+	if err != nil {
+		return
+	}
+}
+
+func (s *KeeperTestSuite) UpdateSupplyCap() {
+	err := s.keeper.UpdateSupplyCap(s.ctx)
+	if err != nil {
+		return
+	}
 }

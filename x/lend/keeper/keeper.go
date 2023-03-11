@@ -1832,3 +1832,19 @@ func (k Keeper) UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sd
 	}
 	return amount, true
 }
+
+// UpdateSupplyCap update supply_cap for cmst in lend pool
+func (k Keeper) UpdateSupplyCap(ctx sdk.Context) error {
+	lendPool, found := k.GetPool(ctx, 1)
+	if !found {
+		return types.ErrPoolNotFound
+	}
+	supplyCap, _ := sdk.NewDecFromStr("150000000000")
+	for _, v := range lendPool.AssetData {
+		if v.AssetID == 3 {
+			v.SupplyCap = supplyCap
+		}
+	}
+	k.SetPool(ctx, lendPool)
+	return nil
+}

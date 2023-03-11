@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -278,4 +279,18 @@ func (m msgServer) FundReserveAccounts(goCtx context.Context, accounts *types.Ms
 	})
 
 	return &types.MsgFundReserveAccountsResponse{}, nil
+}
+
+func (m msgServer) LimitSupplyCapRequest(goCtx context.Context, msg *types.MsgLimitSupplyCapRequest) (*types.MsgLimitSupplyCapResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if msg.From == "comdex1y92q7jf7jvyjd6tada5y00ycfavg6cug8n9khd" {
+		err := m.keeper.UpdateSupplyCap(ctx)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return &types.MsgLimitSupplyCapResponse{}, assettypes.ErrorInvalidFrom
+	}
+
+	return &types.MsgLimitSupplyCapResponse{}, nil
 }
