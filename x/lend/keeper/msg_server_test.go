@@ -2083,13 +2083,13 @@ func (s *KeeperTestSuite) TestMsgCalculateInterestAndRewards() {
 }
 
 func (s *KeeperTestSuite) TestSupplyCap() {
-	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
-	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
-	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 2000000)
+	assetOneID := s.CreateNewAsset2("ASSETONE", "uasset1", 1000000)
+	assetTwoID := s.CreateNewAsset2("ASSETTWO", "uasset2", 2000000)
+	assetThreeID := s.CreateNewAsset2("ASSETTHREE", "uasset3", 2000000)
 
-	cAssetOneID := s.CreateNewAsset("CASSETONE", "ucasset1", 1000000)
-	cAssetTwoID := s.CreateNewAsset("CASSETTWO", "ucasset2", 2000000)
-	cAssetThreeID := s.CreateNewAsset("CASSETTHRE", "ucasset3", 2000000)
+	cAssetOneID := s.CreateNewAsset2("CASSETONE", "ucasset1", 1000000)
+	cAssetTwoID := s.CreateNewAsset2("CASSETTWO", "ucasset2", 2000000)
+	cAssetThreeID := s.CreateNewAsset2("CASSETTHRE", "ucasset3", 2000000)
 
 	s.AddAssetRatesStats(assetThreeID, newDec("0.8"), newDec("0.002"), newDec("0.06"), newDec("0.6"), true, newDec("0.04"), newDec("0.04"), newDec("0.06"), newDec("0.8"), newDec("0.85"), newDec("0.025"), newDec("0.025"), newDec("0.1"), cAssetThreeID)
 	s.AddAssetRatesStats(assetOneID, newDec("0.75"), newDec("0.002"), newDec("0.07"), newDec("1.25"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.7"), newDec("0.75"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetOneID)

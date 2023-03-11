@@ -119,7 +119,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa1 := markettypes.TimeWeightedAverage{
 		AssetID:       1,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -127,7 +127,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa2 := markettypes.TimeWeightedAverage{
 		AssetID:       2,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa3 := markettypes.TimeWeightedAverage{
 		AssetID:       3,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -143,7 +143,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	twa4 := markettypes.TimeWeightedAverage{
 		AssetID:       4,
 		ScriptID:      10,
-		Twa:           1000000,
+		Twa:           1000000000000,
 		CurrentIndex:  1,
 		IsPriceActive: true,
 		PriceValue:    nil,
@@ -293,4 +293,63 @@ func (s *KeeperTestSuite) UpdateSupplyCap() {
 	if err != nil {
 		return
 	}
+}
+
+func (s *KeeperTestSuite) CreateNewAsset2(name, denom string, _ uint64) uint64 {
+	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
+		Name:                  name,
+		Denom:                 denom,
+		Decimals:              sdk.NewInt(1000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: true,
+	})
+	s.Require().NoError(err)
+	assets := s.app.AssetKeeper.GetAssets(s.ctx)
+	var assetID uint64
+	for _, asset := range assets {
+		if asset.Denom == denom {
+			assetID = asset.Id
+			break
+		}
+	}
+	s.Require().NotZero(assetID)
+
+	twa1 := markettypes.TimeWeightedAverage{
+		AssetID:       1,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa2 := markettypes.TimeWeightedAverage{
+		AssetID:       2,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa3 := markettypes.TimeWeightedAverage{
+		AssetID:       3,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+	twa4 := markettypes.TimeWeightedAverage{
+		AssetID:       4,
+		ScriptID:      10,
+		Twa:           1000000,
+		CurrentIndex:  1,
+		IsPriceActive: true,
+		PriceValue:    nil,
+	}
+
+	s.app.MarketKeeper.SetTwa(s.ctx, twa1)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa2)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa3)
+	s.app.MarketKeeper.SetTwa(s.ctx, twa4)
+	return assetID
 }
