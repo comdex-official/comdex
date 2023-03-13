@@ -1527,7 +1527,7 @@ paths:
         - Query
   /comdex/auction/v1beta1/auctionparams/{app_id}:
     get:
-      operationId: QueryDutchAuctionParams
+      operationId: QueryGenericAuctionParams
       responses:
         '200':
           description: A successful response.
@@ -40174,39 +40174,6 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  comdex.auction.v1beta1.QueryDutchAuctionParamResponse:
-    type: object
-    properties:
-      auctionParams:
-        type: object
-        properties:
-          app_id:
-            type: string
-            format: uint64
-          auction_duration_seconds:
-            type: string
-            format: uint64
-          buffer:
-            type: string
-          cusp:
-            type: string
-          step:
-            type: string
-          price_function_type:
-            type: string
-            format: uint64
-          surplus_id:
-            type: string
-            format: uint64
-          debt_id:
-            type: string
-            format: uint64
-          dutch_id:
-            type: string
-            format: uint64
-          bid_duration_seconds:
-            type: string
-            format: uint64
   comdex.auction.v1beta1.QueryDutchAuctionResponse:
     type: object
     properties:
@@ -41035,6 +41002,39 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  comdex.auction.v1beta1.QueryGenericAuctionParamResponse:
+    type: object
+    properties:
+      auctionParams:
+        type: object
+        properties:
+          app_id:
+            type: string
+            format: uint64
+          auction_duration_seconds:
+            type: string
+            format: uint64
+          buffer:
+            type: string
+          cusp:
+            type: string
+          step:
+            type: string
+          price_function_type:
+            type: string
+            format: uint64
+          surplus_id:
+            type: string
+            format: uint64
+          debt_id:
+            type: string
+            format: uint64
+          dutch_id:
+            type: string
+            format: uint64
+          bid_duration_seconds:
+            type: string
+            format: uint64
   comdex.auction.v1beta1.QueryProtocolStatisticsResponse:
     type: object
     properties:
