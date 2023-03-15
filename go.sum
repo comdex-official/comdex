@@ -1895,10 +1895,10 @@ github.com/openzipkin/zipkin-go v0.2.5/go.mod h1:KpXfKdgRDnnhsxw4pNIH9Md5lyFqKUa
 github.com/ory/dockertest v3.3.5+incompatible h1:iLLK6SQwIhcbrG783Dghaaa3WPzGc+4Emza6EbVUUGA=
 github.com/ory/dockertest v3.3.5+incompatible/go.mod h1:1vX4m9wsvi00u5bseYwXaSnhNrne+V0E6LAcBILJdPs=
 github.com/ory/dockertest/v3 v3.9.1/go.mod h1:42Ir9hmvaAPm0Mgibk6mBPi7SFvTXxEcnztDYOJ//uM=
-github.com/osmosis-labs/osmosis/osmoutils v0.0.0-20230105184425-1e6fcd979d99 h1:8yYGNa5u8MmFdh+FpZQ7/4jlGABd5XSDfPcENJE9HXs=
-github.com/osmosis-labs/osmosis/osmoutils v0.0.0-20230105184425-1e6fcd979d99/go.mod h1:K4de+n3DtLdueen98dOzaRXZvqMd8JvigL8O1xW445o=
-github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.0-20230110104305-322e8478dbe8 h1:iOJO+5jffUFlLVy51XaGnec22rNX5YAs71rxD+7M2Ac=
-github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.0-20230110104305-322e8478dbe8/go.mod h1:ey8gfcDaTYJMkj5d0FZ4+p3CPcXP6tbPQ/WyOww17Gc=
+github.com/osmosis-labs/osmosis/osmoutils v0.0.3 h1:VEDnY7dyVvS3PUnEni7kNaAgkh7ExNklM0BN9+kfT1U=
+github.com/osmosis-labs/osmosis/osmoutils v0.0.3/go.mod h1:rO4YKI0ZQkS3o4UDhFuQFy+j4eM/as8GLvuBDNBStkQ=
+github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.5 h1:zvL32HWsNjeKSjwaAnEdimtrsO60m/7VUes+PSbczZU=
+github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.5/go.mod h1:G45lwxdwaTPj3zkn9xm+OllkNTfV/sEx6YR0kcm2CH4=
 github.com/otiai10/copy v1.2.0/go.mod h1:rrF5dJ5F0t/EWSYODDu4j9/vEeYHMkc8jt0zJChqQWw=
 github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=
 github.com/otiai10/copy v1.6.0/go.mod h1:XWfuS3CrI0R6IE0FbgHsEazaXO8G0LpMp9o8tos0x4E=
