@@ -23,6 +23,7 @@ BUILDDIR ?= $(CURDIR)/build
 GOBIN = $(shell go env GOPATH)/bin
 GOARCH = $(shell go env GOARCH)
 GOOS = $(shell go env GOOS)
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 
 export GO111MODULE = on
 
@@ -92,6 +93,11 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
+check_version:
+ifneq ($(GO_MINOR_VERSION),19)
+	@echo "ERROR: Please upgrade Go version to 1.19+"
+	exit 1
+endif
 
 all: install
 	@echo "--> project root: go mod tidy"
@@ -111,7 +117,7 @@ clean:
 distclean: clean
 	rm -rf vendor/
 
-install: go.sum
+install: check_version go.sum
 	@echo "--> installing"
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
