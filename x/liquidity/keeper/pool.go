@@ -719,8 +719,8 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 				continue
 			}
 			rx, ry := k.GetPoolBalances(ctx, pool)
-			quoteValue, _ := k.marketKeeper.CalcAssetPrice(ctx, quoteAsset.Id, rx.Amount)
-			baseValue, _ := k.marketKeeper.CalcAssetPrice(ctx, baseAsset.Id, ry.Amount)
+			quoteValue, _ := k.CalcAssetPrice(ctx, quoteAsset.Id, rx.Amount)
+			baseValue, _ := k.CalcAssetPrice(ctx, baseAsset.Id, ry.Amount)
 			totalValue := quoteValue.Add(baseValue)
 			if !totalValue.IsPositive() {
 				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil
