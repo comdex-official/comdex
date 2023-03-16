@@ -124934,7 +124934,9 @@ func DistributeRewards(
 	for _, gaugeID := range editableGaugeIds {
 		gauge, found := rewardsKeeper.GetGaugeByID(ctx, gaugeID)
 		if !found {
-			panic(fmt.Sprintf("required gauge with id %d not found", gaugeID))
+			warning := fmt.Sprintf("required gauge with id %d not found", gaugeID)
+			fmt.Println(warning)
+			continue
 		}
 		epochAmount := gauge.DepositAmount.Amount.Quo(sdk.NewInt(int64(gauge.TotalTriggers)))
 		gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(epochAmount)
