@@ -14,7 +14,7 @@ import (
 
 type Reward struct {
 	Address string   `json:"address"`
-	Reward  sdk.Coin `json:reward`
+	Reward  sdk.Coin `json:"reward"`
 }
 
 func DistributeRewards(

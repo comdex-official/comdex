@@ -384,7 +384,6 @@ func (k Keeper) GetLendPairID(ctx sdk.Context) uint64 {
 
 func (k Keeper) AddAssetRatesParams(ctx sdk.Context, records ...types.AssetRatesParams) error {
 	for _, msg := range records {
-
 		assetRatesParams := types.AssetRatesParams{
 			AssetID:              msg.AssetID,
 			UOptimal:             msg.UOptimal,
