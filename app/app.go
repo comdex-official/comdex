@@ -699,7 +699,7 @@ func New(
 	app.IBCHooksKeeper = &hooksKeeper
 
 	addrPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-	wasmHooks := ibchooks.NewWasmHooks(app.IBCHooksKeeper, app.Ics20WasmHooks.ContractKeeper, addrPrefix) // The contract keeper needs to be set later
+	wasmHooks := ibchooks.NewWasmHooks(app.IBCHooksKeeper, &wasmkeeper.PermissionedKeeper{}, addrPrefix) // The contract keeper needs to be set later
 	app.Ics20WasmHooks = &wasmHooks
 	app.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
 		app.IbcKeeper.ChannelKeeper,
