@@ -1,7 +1,7 @@
 package grpc 
 
 // THIS FILE IS GENERATED CODE, DO NOT EDIT
-// SOURCE AT `proto/osmosis/ibc-rate-limit/v1beta1/query.yml`
+// SOURCE AT `proto/comdex/ibc-rate-limit/v1beta1/query.yml`
 
 import (
 	context "context"
@@ -11,18 +11,18 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/comdex-official/comdex/x/ibc-rate-limit/client"
-	"github.com/comdex-official/comdex/x/ibc-rate-limit/client/queryproto"
+	"github.com/comdex-official/comdex/x/ibc-rate-limit/types"
 )
 
 type Querier struct {
 	Q client.Querier
 }
 
-var _ queryproto.QueryServer = Querier{}
+var _ types.QueryServer = Querier{}
 
 func (q Querier) Params(grpcCtx context.Context,
-	req *queryproto.ParamsRequest,
-) (*queryproto.ParamsResponse, error) {
+	req *types.ParamsRequest,
+) (*types.ParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}

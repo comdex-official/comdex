@@ -21,7 +21,6 @@ import (
 	ibcratelimitclient "github.com/comdex-official/comdex/x/ibc-rate-limit/client"
 	ibcratelimitcli "github.com/comdex-official/comdex/x/ibc-rate-limit/client/cli"
 	"github.com/comdex-official/comdex/x/ibc-rate-limit/client/grpc"
-	"github.com/comdex-official/comdex/x/ibc-rate-limit/client/queryproto"
 	"github.com/comdex-official/comdex/x/ibc-rate-limit/types"
 )
 
@@ -56,7 +55,7 @@ func (b AppModuleBasic) RegisterRESTRoutes(ctx client.Context, r *mux.Router) {
 }
 
 func (b AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	queryproto.RegisterQueryHandlerClient(context.Background(), mux, queryproto.NewQueryClient(clientCtx)) //nolint:errcheck
+	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)) //nolint:errcheck
 }
 
 func (b AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -112,7 +111,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	queryproto.RegisterQueryServer(cfg.QueryServer(), grpc.Querier{Q: ibcratelimitclient.Querier{K: am.ics4wrapper}})
+	types.RegisterQueryServer(cfg.QueryServer(), grpc.Querier{Q: ibcratelimitclient.Querier{K: am.ics4wrapper}})
 }
 
 // RegisterInvariants registers the txfees module's invariants.

@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/cobra"
 
 	comdexcli "github.com/comdex-official/comdex/types/comdex_cli"
-	"github.com/comdex-official/comdex/x/ibc-rate-limit/client/queryproto"
 	"github.com/comdex-official/comdex/x/ibc-rate-limit/types"
 )
 
@@ -13,8 +12,8 @@ func GetQueryCmd() *cobra.Command {
 	cmd := comdexcli.QueryIndexCmd(types.ModuleName)
 
 	cmd.AddCommand(
-		comdexcli.GetParams[*queryproto.ParamsRequest](
-			types.ModuleName, queryproto.NewQueryClient),
+		comdexcli.GetParams[*types.ParamsRequest](
+			types.ModuleName, types.NewQueryClient),
 	)
 
 	return cmd
