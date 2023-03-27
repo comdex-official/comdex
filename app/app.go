@@ -176,6 +176,9 @@ import (
 	ibcratelimit "github.com/comdex-official/comdex/x/ibc-rate-limit"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
+	ibchooks "github.com/osmosis-labs/osmosis/x/ibc-hooks"
+	ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
+	ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
 
 	mv10 "github.com/comdex-official/comdex/app/upgrades/mainnet/v10"
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
@@ -282,6 +285,7 @@ var (
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
+		ibchooks.AppModuleBasic{},
 	)
 )
 
@@ -329,6 +333,7 @@ type App struct {
 	UpgradeKeeper     upgradekeeper.Keeper
 	ParamsKeeper      paramskeeper.Keeper
 	IbcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCHooksKeeper    *ibchookskeeper.Keeper
 	ICAHostKeeper     icahostkeeper.Keeper
 	EvidenceKeeper    evidencekeeper.Keeper
 	IbcTransferKeeper ibctransferkeeper.Keeper
@@ -361,6 +366,9 @@ type App struct {
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
+
+	Ics20WasmHooks   *ibchooks.WasmHooks
+	HooksICS4Wrapper ibchooks.ICS4Middleware
 	// the module manager
 	mm *module.Manager
 	// Module configurator
@@ -395,6 +403,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
+			ibchookstypes.StoreKey,
 		)
 	)
 
@@ -701,12 +710,26 @@ func New(
 		app.BankKeeper,
 	)
 
+	// Configure the hooks keeper
+	hooksKeeper := ibchookskeeper.NewKeeper(
+		app.keys[ibchookstypes.StoreKey],
+	)
+	app.IBCHooksKeeper = &hooksKeeper
+
+	addrPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+	wasmHooks := ibchooks.NewWasmHooks(app.IBCHooksKeeper, &wasmkeeper.PermissionedKeeper{}, addrPrefix) // The contract keeper needs to be set later
+	app.Ics20WasmHooks = &wasmHooks
+	app.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
+		app.IbcKeeper.ChannelKeeper,
+		app.Ics20WasmHooks,
+	)
+
 	// Create Transfer Keepers
 	app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IbcKeeper.ChannelKeeper,
+		app.HooksICS4Wrapper,
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
 		app.AccountKeeper,
@@ -877,6 +900,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
+		ibchooks.NewAppModule(app.AccountKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -917,6 +941,7 @@ func New(
 		liquiditytypes.ModuleName,
 		lendtypes.ModuleName,
 		esmtypes.ModuleName,
+		ibchookstypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -953,6 +978,7 @@ func New(
 		rewardstypes.ModuleName,
 		liquiditytypes.ModuleName,
 		esmtypes.ModuleName,
+		ibchookstypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -994,6 +1020,7 @@ func New(
 		rewardstypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcratelimittypes.ModuleName,
+		ibchookstypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -1293,6 +1320,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 	return map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		distrtypes.ModuleName:          nil,
+		ibchookstypes.ModuleName:       nil,
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		minttypes.ModuleName:           {authtypes.Minter},
