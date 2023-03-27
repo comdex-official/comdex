@@ -7,11 +7,13 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -82,6 +84,8 @@ func CreateUpgradeHandlerV10(
 	liquidityKeeper liquiditykeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
+	accountKeeper authkeeper.AccountKeeper,
+	rewardsKeeper rewardskeeper.Keeper,
 	icahostkeeper icahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
@@ -157,6 +161,7 @@ func CreateUpgradeHandlerV10(
 			return nil, err
 		}
 		RefundFeeForAccidentallyCreatedPirToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
+		DistributeRewards(ctx, accountKeeper, bankKeeper, rewardsKeeper)
 		return vm, err
 	}
 }
