@@ -10,6 +10,12 @@ import (
 	"strings"
 
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	// IBC Transfer: Defines the "transfer" IBC port
+	transfer "github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+
+	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
@@ -164,11 +170,17 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
+	"github.com/comdex-official/comdex/x/ibc-rate-limit/ibcratelimitmodule"
+	ibcratelimittypes "github.com/comdex-official/comdex/x/ibc-rate-limit/types"
+
+	ibcratelimit "github.com/comdex-official/comdex/x/ibc-rate-limit"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 	ibchooks "github.com/osmosis-labs/osmosis/x/ibc-hooks"
 	ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
 	ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
 
+	mv10 "github.com/comdex-official/comdex/app/upgrades/mainnet/v10"
 	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
 	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
 	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
@@ -272,6 +284,7 @@ var (
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
+		ibcratelimitmodule.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 	)
 )
@@ -347,6 +360,10 @@ type App struct {
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
+
+	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
+	RawIcs20TransferAppModule transfer.AppModule
+	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 
@@ -440,6 +457,7 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -758,6 +776,8 @@ func New(
 		&app.LendKeeper,
 	)
 
+	app.WireICS20PreWasmKeeper(appCodec, bApp, appKeepers.IBCHooksKeeper)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	if err != nil {
@@ -879,6 +899,7 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 	)
 
@@ -998,6 +1019,7 @@ func New(
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
 		crisistypes.ModuleName,
+		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 	)
 
@@ -1023,9 +1045,11 @@ func New(
 				SignModeHandler: encoding.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
+			GovKeeper:         app.GovKeeper,
 			wasmConfig:        wasmConfig,
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
+			Cdc:               appCodec,
 		},
 	)
 	if err != nil {
@@ -1069,6 +1093,89 @@ func New(
 
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	return app
+}
+
+// WireICS20PreWasmKeeper Create the IBC Transfer Stack from bottom to top:
+//
+// * SendPacket. Originates from the transferKeeper and goes up the stack:
+// transferKeeper.SendPacket -> ibc_rate_limit.SendPacket -> ibc_hooks.SendPacket -> channel.SendPacket
+// * RecvPacket, message that originates from core IBC and goes down to app, the flow is the other way
+// channel.RecvPacket -> ibc_hooks.OnRecvPacket -> ibc_rate_limit.OnRecvPacket -> forward.OnRecvPacket -> transfer.OnRecvPacket
+//
+// Note that the forward middleware is only integrated on the "reveive" direction. It can be safely skipped when sending.
+// Note also that the forward middleware is called "router", but we are using the name "forward" for clarity
+// This may later be renamed upstream: https://github.com/strangelove-ventures/packet-forward-middleware/issues/10
+//
+// After this, the wasm keeper is required to be set on both
+// appkeepers.WasmHooks AND appKeepers.RateLimitingICS4Wrapper
+func (appKeepers *App) WireICS20PreWasmKeeper(
+	appCodec codec.Codec,
+	bApp *baseapp.BaseApp,
+	hooksKeeper *ibchookskeeper.Keeper,
+) {
+	// Setup the ICS4Wrapper used by the hooks middleware
+	osmoPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, nil, osmoPrefix) // The contract keeper needs to be set later
+	appKeepers.Ics20WasmHooks = &wasmHooks
+	appKeepers.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.Ics20WasmHooks,
+	)
+
+	// ChannelKeeper wrapper for rate limiting SendPacket(). The wasmKeeper needs to be added after it's created
+	rateLimitingICS4Wrapper := ibcratelimit.NewICS4Middleware(
+		appKeepers.HooksICS4Wrapper,
+		appKeepers.AccountKeeper,
+		// wasm keeper we set later.
+		nil,
+		appKeepers.BankKeeper,
+		appKeepers.GetSubspace(ibcratelimittypes.ModuleName),
+	)
+	appKeepers.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
+
+	// Create Transfer Keepers
+	transferKeeper := ibctransferkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[ibctransfertypes.StoreKey],
+		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
+		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
+		appKeepers.RateLimitingICS4Wrapper,
+		appKeepers.IbcKeeper.ChannelKeeper,
+		&appKeepers.IbcKeeper.PortKeeper,
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.ScopedIBCTransferKeeper,
+	)
+	appKeepers.IbcTransferKeeper = transferKeeper
+	appKeepers.RawIcs20TransferAppModule = transfer.NewAppModule(appKeepers.IbcTransferKeeper)
+
+	// Packet Forward Middleware
+	// Initialize packet forward middleware router
+	appKeepers.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[packetforwardtypes.StoreKey],
+		appKeepers.GetSubspace(packetforwardtypes.ModuleName),
+		appKeepers.IbcTransferKeeper,
+		appKeepers.IbcKeeper.ChannelKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
+		// The ICS4Wrapper is replaced by the HooksICS4Wrapper instead of the channel so that sending can be overridden by the middleware
+		appKeepers.HooksICS4Wrapper,
+	)
+	packetForwardMiddleware := packetforward.NewIBCMiddleware(
+		transfer.NewIBCModule(appKeepers.IbcTransferKeeper),
+		appKeepers.PacketForwardKeeper,
+		0,
+		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+	)
+
+	// RateLimiting IBC Middleware
+	rateLimitingTransferModule := ibcratelimit.NewIBCModule(packetForwardMiddleware, appKeepers.RateLimitingICS4Wrapper)
+
+	// Hooks Middleware
+	hooksTransferModule := ibchooks.NewIBCMiddleware(&rateLimitingTransferModule, &appKeepers.HooksICS4Wrapper)
+	appKeepers.TransferStack = &hooksTransferModule
 }
 
 // Name returns the name of the App
@@ -1243,8 +1350,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv9.UpgradeName,
-		mv9.CreateUpgradeHandlerV900(a.mm, a.configurator, a.AssetKeeper),
+		mv10.UpgradeName,
+		mv10.CreateUpgradeHandlerV10(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1308,6 +1415,9 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{}
 
 	case upgradeInfo.Name == mv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{}
+
+	case upgradeInfo.Name == mv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 

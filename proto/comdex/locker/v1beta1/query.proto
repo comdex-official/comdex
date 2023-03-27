@@ -4,9 +4,7 @@ package comdex.locker.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/locker/v1beta1/locker.proto";
-import "comdex/locker/v1beta1/params.proto";
 import "comdex/asset/v1beta1/asset.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/locker/types";
@@ -66,10 +64,6 @@ service Query {
 
   rpc QueryWhiteListedAssetByAllApps(QueryWhiteListedAssetByAllAppsRequest) returns (QueryWhiteListedAssetByAllAppsResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/whitelisted_asset_app_id";
-  };
-
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/params";
   };
 
   rpc QueryLockerLookupTableByApp(QueryLockerLookupTableByAppRequest) returns (QueryLockerLookupTableByAppResponse) {
@@ -256,15 +250,6 @@ message AppToAllAsset {
   uint64  app_id = 1;
   repeated comdex.asset.v1beta1.Asset assets = 2 [
     (gogoproto.moretags) = "yaml:\"assets\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message QueryParamsRequest {}
-
-message QueryParamsResponse {
-  Params params = 1 [
-    (gogoproto.moretags) = "yaml:\"params\"",
     (gogoproto.nullable) = false
   ];
 }

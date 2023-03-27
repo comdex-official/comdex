@@ -11,8 +11,23 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+	asset, found := k.assetKeeper.GetAsset(ctx, id)
+	if !found {
+		return sdk.ZeroDec(), assettypes.ErrorAssetDoesNotExist
+	}
+	twa, found := k.marketKeeper.GetTwa(ctx, id)
+	if found && twa.Twa > 0 {
+		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
+		denominator := sdk.NewDecFromInt(asset.Decimals)
+		return numerator.Quo(denominator), nil
+	}
+	return sdk.ZeroDec(), markettypes.ErrorPriceNotActive
+}
 
 func (k Keeper) GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (types.PoolTokenDeserializerKit, error) {
 	pool, found := k.GetPool(ctx, appID, poolID)
@@ -131,7 +146,7 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 			} else {
 				assetAmount = baseCoin.Amount
 			}
-			value, _ := k.marketKeeper.CalcAssetPrice(ctx, asset.Id, assetAmount)
+			value, _ := k.CalcAssetPrice(ctx, asset.Id, assetAmount)
 			value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 			_, found = poolSupplyData[address.String()]
 			if !found {
@@ -181,7 +196,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		} else {
 			assetAmount = baseCoin.Amount
 		}
-		value, _ := k.marketKeeper.CalcAssetPrice(ctx, asset.Id, assetAmount)
+		value, _ := k.CalcAssetPrice(ctx, asset.Id, assetAmount)
 		value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 		lpAddresses = append(lpAddresses, addr)
 		lpSupplies = append(lpSupplies, value)

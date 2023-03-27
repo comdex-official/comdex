@@ -3,7 +3,6 @@ package comdex.esm.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/esm/v1beta1/params.proto";
 import "comdex/esm/v1beta1/esm.proto";
 

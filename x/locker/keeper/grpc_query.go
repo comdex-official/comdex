@@ -23,17 +23,6 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
-func (q QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
-}
-
 func (q QueryServer) QueryLockerInfo(c context.Context, req *types.QueryLockerInfoRequest) (*types.QueryLockerInfoResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")

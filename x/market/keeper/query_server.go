@@ -76,14 +76,3 @@ func (q *queryServer) QueryMarket(c context.Context, req *types.QueryMarketReque
 		TimeWeightedAverage: item,
 	}, nil
 }
-
-func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
-}

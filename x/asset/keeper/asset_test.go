@@ -666,7 +666,7 @@ func (s *KeeperTestSuite) TestAddPair() {
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
-				res, err := server.QueryPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairRequest{Id: tc.pairID})
+				res, err := server.QueryAssetPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAssetPairRequest{Id: tc.pairID})
 				s.Require().NoError(err)
 				s.Require().Equal(res.PairInfo.Id, tc.pairID)
 				s.Require().Equal(res.PairInfo.AssetIn, tc.pair.AssetIn)
@@ -790,7 +790,7 @@ func (s *KeeperTestSuite) TestUpdatePair() {
 				s.Require().EqualError(err, tc.ExpErr.Error())
 			} else {
 				s.Require().NoError(err)
-				res, err := server.QueryPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairRequest{Id: tc.pairID})
+				res, err := server.QueryAssetPair(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAssetPairRequest{Id: tc.pairID})
 				s.Require().NoError(err)
 				s.Require().Equal(res.PairInfo.Id, tc.pairID)
 				s.Require().Equal(res.PairInfo.AssetIn, tc.pair.AssetIn)
@@ -1221,7 +1221,7 @@ func (s *KeeperTestSuite) TestQueryPairsAndExtendedPairVaults() {
 	s.TestAddPair()
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	server := keeper.NewQueryServer(*assetKeeper)
-	res, err := server.QueryPairs(sdk.WrapSDKContext(*ctx), &assetTypes.QueryPairsRequest{})
+	res, err := server.QueryAssetPairs(sdk.WrapSDKContext(*ctx), &assetTypes.QueryAssetPairsRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(len(res.PairsInfo), 2)
 }
