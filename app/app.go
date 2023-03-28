@@ -18,6 +18,17 @@ import (
 	ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
 	ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
 
+	ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
+	"github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
+	ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
+
+	// IBC Transfer: Defines the "transfer" IBC port
+	transfer "github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+
+	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/rakyll/statik/fs"
 
@@ -275,6 +286,7 @@ var (
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
+		ibcratelimitmodule.AppModuleBasic{},
 	)
 )
 
@@ -311,6 +323,7 @@ type App struct {
 	AccountKeeper     authkeeper.AccountKeeper
 	FeegrantKeeper    feegrantkeeper.Keeper
 	BankKeeper        bankkeeper.Keeper
+	BankBaseKeeper    *bankkeeper.BaseKeeper
 	AuthzKeeper       authzkeeper.Keeper
 	CapabilityKeeper  *capabilitykeeper.Keeper
 	StakingKeeper     stakingkeeper.Keeper
@@ -350,9 +363,14 @@ type App struct {
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
 
-	TransferStack    *ibchooks.IBCMiddleware
-	Ics20WasmHooks   *ibchooks.WasmHooks
-	HooksICS4Wrapper ibchooks.ICS4Middleware
+	// IBC modules
+	// transfer module
+	RawIcs20TransferAppModule transfer.AppModule
+	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
+	TransferStack             *ibchooks.IBCMiddleware
+	Ics20WasmHooks            *ibchooks.WasmHooks
+	HooksICS4Wrapper          ibchooks.ICS4Middleware
+	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 	// the module manager
@@ -443,6 +461,7 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -559,6 +578,8 @@ func New(
 		app.keys[ibchookstypes.StoreKey],
 	)
 	app.IbcHooksKeeper = &hooksKeeper
+
+	app.WireICS20PreWasmKeeper(appCodec, baseApp, app.IbcHooksKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, app.keys[icahosttypes.StoreKey],
@@ -874,7 +895,9 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
+		packetforward.NewAppModule(app.PacketForwardKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -972,7 +995,6 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
-		wasmtypes.ModuleName,
 		authz.ModuleName,
 		vestingtypes.ModuleName,
 		paramstypes.ModuleName,
@@ -991,7 +1013,14 @@ func New(
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
 		crisistypes.ModuleName,
+		ibcratelimittypes.ModuleName,
+
+		// wasm after ibc transfer
+		wasmtypes.ModuleName,
+
+		// ibc_hooks after auth keeper
 		ibchookstypes.ModuleName,
+		packetforwardtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -1064,6 +1093,89 @@ func New(
 
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	return app
+}
+
+// WireICS20PreWasmKeeper Create the IBC Transfer Stack from bottom to top:
+//
+// * SendPacket. Originates from the transferKeeper and goes up the stack:
+// transferKeeper.SendPacket -> ibc_rate_limit.SendPacket -> ibc_hooks.SendPacket -> channel.SendPacket
+// * RecvPacket, message that originates from core IBC and goes down to app, the flow is the other way
+// channel.RecvPacket -> ibc_hooks.OnRecvPacket -> ibc_rate_limit.OnRecvPacket -> forward.OnRecvPacket -> transfer.OnRecvPacket
+//
+// Note that the forward middleware is only integrated on the "reveive" direction. It can be safely skipped when sending.
+// Note also that the forward middleware is called "router", but we are using the name "forward" for clarity
+// This may later be renamed upstream: https://github.com/strangelove-ventures/packet-forward-middleware/issues/10
+//
+// After this, the wasm keeper is required to be set on both
+// a.WasmHooks AND a.RateLimitingICS4Wrapper
+func (a *App) WireICS20PreWasmKeeper(
+	appCodec codec.Codec,
+	bApp *baseapp.BaseApp,
+	hooksKeeper *ibchookskeeper.Keeper,
+) {
+	// Setup the ICS4Wrapper used by the hooks middleware
+	cmdxPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
+	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, nil, cmdxPrefix) // The contract keeper needs to be set later
+	a.Ics20WasmHooks = &wasmHooks
+	a.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
+		a.IbcKeeper.ChannelKeeper,
+		a.Ics20WasmHooks,
+	)
+
+	// ChannelKeeper wrapper for rate limiting SendPacket(). The wasmKeeper needs to be added after it's created
+	rateLimitingICS4Wrapper := ibcratelimit.NewICS4Middleware(
+		a.HooksICS4Wrapper,
+		&a.AccountKeeper,
+		// wasm keeper we set later.
+		nil,
+		a.BankBaseKeeper,
+		a.GetSubspace(ibcratelimittypes.ModuleName),
+	)
+	a.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
+
+	// Create Transfer Keepers
+	transferKeeper := ibctransferkeeper.NewKeeper(
+		appCodec,
+		a.keys[ibctransfertypes.StoreKey],
+		a.GetSubspace(ibctransfertypes.ModuleName),
+		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
+		a.RateLimitingICS4Wrapper,
+		a.IbcKeeper.ChannelKeeper,
+		&a.IbcKeeper.PortKeeper,
+		a.AccountKeeper,
+		a.BankBaseKeeper,
+		a.ScopedIBCTransferKeeper,
+	)
+	a.IbcTransferKeeper = transferKeeper
+	a.RawIcs20TransferAppModule = transfer.NewAppModule(a.IbcTransferKeeper)
+
+	// Packet Forward Middleware
+	// Initialize packet forward middleware router
+	a.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
+		appCodec,
+		a.keys[packetforwardtypes.StoreKey],
+		a.GetSubspace(packetforwardtypes.ModuleName),
+		a.IbcTransferKeeper,
+		a.IbcKeeper.ChannelKeeper,
+		a.DistrKeeper,
+		a.BankBaseKeeper,
+		// The ICS4Wrapper is replaced by the HooksICS4Wrapper instead of the channel so that sending can be overridden by the middleware
+		a.HooksICS4Wrapper,
+	)
+	packetForwardMiddleware := packetforward.NewIBCMiddleware(
+		transfer.NewIBCModule(a.IbcTransferKeeper),
+		a.PacketForwardKeeper,
+		0,
+		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+	)
+
+	// RateLimiting IBC Middleware
+	rateLimitingTransferModule := ibcratelimit.NewIBCModule(packetForwardMiddleware, a.RateLimitingICS4Wrapper)
+
+	// Hooks Middleware
+	hooksTransferModule := ibchooks.NewIBCMiddleware(&rateLimitingTransferModule, &a.HooksICS4Wrapper)
+	a.TransferStack = &hooksTransferModule
 }
 
 // Name returns the name of the App
