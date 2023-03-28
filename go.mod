@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.24
+	github.com/tendermint/tendermint v0.34.26
 	github.com/tendermint/tm-db v0.6.8-0.20220506192307-f628bb5dc95b
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
@@ -75,7 +75,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogoproto v1.4.3 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.4 // indirect
+	github.com/cosmos/iavl v0.19.5 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
 	github.com/curioswitch/go-reassign v0.2.0 // indirect
@@ -149,6 +149,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20210204194344-59a8610d2b87 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
+	github.com/iancoleman/orderedmap v0.2.0 // indirect
 	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jgautheron/goconst v1.5.1 // indirect
@@ -229,6 +230,7 @@ require (
 	github.com/spf13/viper v1.14.0 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
+	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect

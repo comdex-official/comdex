@@ -361,14 +361,17 @@ type App struct {
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
 
-	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
+	// IBC modules
+	// transfer module
 	RawIcs20TransferAppModule transfer.AppModule
+	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
+	TransferStack             *ibchooks.IBCMiddleware
+	Ics20WasmHooks            *ibchooks.WasmHooks
+	HooksICS4Wrapper          ibchooks.ICS4Middleware
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 
-	Ics20WasmHooks   *ibchooks.WasmHooks
-	HooksICS4Wrapper ibchooks.ICS4Middleware
 	// the module manager
 	mm *module.Manager
 	// Module configurator
@@ -776,7 +779,7 @@ func New(
 		&app.LendKeeper,
 	)
 
-	app.WireICS20PreWasmKeeper(appCodec, bApp, appKeepers.IBCHooksKeeper)
+	app.WireICS20PreWasmKeeper(appCodec, app.BaseApp, app.IBCHooksKeeper)
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
@@ -1118,17 +1121,17 @@ func (appKeepers *App) WireICS20PreWasmKeeper(
 	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, nil, osmoPrefix) // The contract keeper needs to be set later
 	appKeepers.Ics20WasmHooks = &wasmHooks
 	appKeepers.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
-		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IbcKeeper.ChannelKeeper,
 		appKeepers.Ics20WasmHooks,
 	)
 
 	// ChannelKeeper wrapper for rate limiting SendPacket(). The wasmKeeper needs to be added after it's created
 	rateLimitingICS4Wrapper := ibcratelimit.NewICS4Middleware(
 		appKeepers.HooksICS4Wrapper,
-		appKeepers.AccountKeeper,
+		&appKeepers.AccountKeeper,
 		// wasm keeper we set later.
 		nil,
-		appKeepers.BankKeeper,
+		&appKeepers.BankKeeper,
 		appKeepers.GetSubspace(ibcratelimittypes.ModuleName),
 	)
 	appKeepers.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
