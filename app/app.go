@@ -287,6 +287,7 @@ var (
 		ica.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
+		packetforward.AppModuleBasic{},
 	)
 )
 
@@ -407,7 +408,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			ibchookstypes.StoreKey,
+			ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
 		)
 	)
 
@@ -462,6 +463,7 @@ func New(
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
+	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -938,6 +940,9 @@ func New(
 		liquiditytypes.ModuleName,
 		lendtypes.ModuleName,
 		esmtypes.ModuleName,
+		ibcratelimittypes.ModuleName,
+		ibchookstypes.ModuleName,
+		packetforwardtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -974,6 +979,9 @@ func New(
 		rewardstypes.ModuleName,
 		liquiditytypes.ModuleName,
 		esmtypes.ModuleName,
+		ibcratelimittypes.ModuleName,
+		ibchookstypes.ModuleName,
+		packetforwardtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
