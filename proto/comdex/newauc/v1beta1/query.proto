@@ -1,0 +1,22 @@
+syntax = "proto3";
+package comdex.newauc.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/newauc/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/newauc/types";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex-official/comdex/newauc/params";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
