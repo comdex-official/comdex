@@ -13,7 +13,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
 )
@@ -71,14 +70,14 @@ func SetupIBCRateLimitingContract(
 func CreateUpgradeHandlerV11(
 	mm *module.Manager,
 	configurator module.Configurator,
+	wasmKeeper wasmkeeper.Keeper,
+	accountKeeper authkeeper.AccountKeeper,
+	paramKeeper paramskeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
-
-		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
-		if err != nil {
+		if err := SetupIBCRateLimitingContract(ctx, wasmKeeper, accountKeeper, paramKeeper); err != nil {
 			return nil, err
 		}
-		return vm, err
+		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
