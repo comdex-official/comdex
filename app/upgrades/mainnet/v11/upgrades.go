@@ -54,7 +54,7 @@ func SetupIBCRateLimitingContract(
 	if err != nil {
 		return err
 	}
-	addrStr, err := sdk.Bech32ifyAddressBytes("ucmdx", addr)
+	addrStr, err := sdk.Bech32ifyAddressBytes("comdex", addr)
 	if err != nil {
 		return err
 	}
