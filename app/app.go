@@ -782,7 +782,7 @@ func New(
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
-	supportedFeatures := "iterator,staking,stargate,comdex"
+	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1"
 
 	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper), wasmOpts...)
 
