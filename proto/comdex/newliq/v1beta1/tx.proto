@@ -1,8 +1,0 @@
-syntax = "proto3";
-package comdex.newliq.v1beta1;
-
-
-option go_package = "github.com/comdex-official/comdex/x/newliq/types";
-
-service Msg {
-}

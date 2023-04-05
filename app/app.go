@@ -164,13 +164,13 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
-	"github.com/comdex-official/comdex/x/newliq"
-	newliqkeeper "github.com/comdex-official/comdex/x/newliq/keeper"
-	newliqtypes "github.com/comdex-official/comdex/x/newliq/types"
+	"github.com/comdex-official/comdex/x/liquidationsV2"
+	newliqkeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
+	newliqtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 
-	"github.com/comdex-official/comdex/x/newauc"
-	newauckeeper "github.com/comdex-official/comdex/x/newauc/keeper"
-	newauctypes "github.com/comdex-official/comdex/x/newauc/types"
+	"github.com/comdex-official/comdex/x/auctionsV2"
+	newauckeeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
+	newauctypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
@@ -278,8 +278,8 @@ var (
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
-		newliq.AppModuleBasic{},
-		newauc.AppModuleBasic{},
+		liquidationsV2.AppModuleBasic{},
+		auctionsV2.AppModuleBasic{},
 	)
 )
 
@@ -886,8 +886,8 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
-		newliq.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
-		newauc.NewAppModule(app.cdc, app.NewaucKeeper, app.AccountKeeper, app.BankKeeper),
+		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
+		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

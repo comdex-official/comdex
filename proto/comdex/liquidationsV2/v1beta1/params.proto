@@ -1,0 +1,11 @@
+syntax = "proto3";
+package comdex.newliq.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
