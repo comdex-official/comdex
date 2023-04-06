@@ -81,16 +81,20 @@ message LockedVault {
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
-     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""]; 
+     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
+
   bool is_internal_keeper = 11 [
     (gogoproto.customname) = "IsInternalKeeper",
      (gogoproto.moretags) = "yaml:\"is_intenal_keeper\""];
+
   string internal_keeper_address = 12 [
     (gogoproto.customname) = "InternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"internal_keeper_address\""];
+
   string is_external_keeper = 13 [
     (gogoproto.customname) = "IsExternalKeeper",
     (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
+
   string external_keeper_address = 14 [
     (gogoproto.customname) = "ExternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
