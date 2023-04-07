@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.newliq.v1beta1;
+package comdex.liquidationsV2.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/liquidationsV2/v1beta1/params.proto";

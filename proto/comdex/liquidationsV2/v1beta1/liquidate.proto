@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.newliq.v1beta1;
+package comdex.liquidationsV2.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -10,7 +10,7 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 
-message WhiteListing {
+message LiquidationWhiteListing {
 
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
@@ -19,8 +19,7 @@ message WhiteListing {
   uint64 auction_type = 2 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
-
-   
+    uint64 current_offset = 3;
 }
 
 
@@ -39,7 +38,7 @@ message LockedVault {
 
   uint64 app_id = 2 [
     (gogoproto.customname) = "AppId",
-        (gogoproto.moretags) = "yaml:\"id\""];
+    (gogoproto.moretags) = "yaml:\"id\""];
 
   uint64 original_vault_id = 3 [
     (gogoproto.customname) = "OriginalVaultId",
@@ -67,35 +66,40 @@ message LockedVault {
 
   string current_collateralisation_ratio = 8 [
     (gogoproto.customname) = "CurrentCollaterlisationRatio",
-     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
     
   string collateral_to_be_auctioned =9 [
     (gogoproto.nullable) = false,
     (gogoproto.customname) = "CollateralToBeAuctioned",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"collateral_to_be_auctioned\""];
+  string target_debt =10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customname) = "TargetDebt",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"target_debt\""];
     
-  google.protobuf.Timestamp liquidation_timestamp = 10 [
+  google.protobuf.Timestamp liquidation_timestamp = 11 [
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
-     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
+    (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
 
-  bool is_internal_keeper = 11 [
+  bool is_internal_keeper = 12 [
     (gogoproto.customname) = "IsInternalKeeper",
-     (gogoproto.moretags) = "yaml:\"is_intenal_keeper\""];
+    (gogoproto.moretags) = "yaml:\"is_intenal_keeper\""];
 
-  string internal_keeper_address = 12 [
+  string internal_keeper_address = 13 [
     (gogoproto.customname) = "InternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"internal_keeper_address\""];
 
-  string is_external_keeper = 13 [
+  string is_external_keeper = 14 [
     (gogoproto.customname) = "IsExternalKeeper",
     (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
 
-  string external_keeper_address = 14 [
+  string external_keeper_address = 15 [
     (gogoproto.customname) = "ExternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
 
@@ -158,3 +162,4 @@ message LockedVault {
 //   ];
 
 // }
+
