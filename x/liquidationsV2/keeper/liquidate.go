@@ -64,14 +64,10 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			if !found {
 				return fmt.Errorf("Liquidation not enabled for App ID  %d", vault.AppId)
 			}
-			//Checking extended pair vault data
-			extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
-			pair, _ := k.asset.GetPair(ctx, extPair.PairId)
-			assetIn, found := k.asset.GetAsset(ctx, pair.AssetIn)
-			if !found {
-				return fmt.Errorf("asset not found in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
-			}
 
+		
+			// Checking extended pair vault data for Minimum collateralisation ratio
+			extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			liqRatio := extPair.MinCr
 			totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 			collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
@@ -79,12 +75,12 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				return fmt.Errorf("error Calculating CR in Liquidation, liquidate_vaults.go for vault ID %d", vault.Id)
 			}
 			if collateralizationRatio.LT(liqRatio) {
-
 				totalDebt := vault.AmountOut.Add(vault.InterestAccumulated)
 				err1 := k.rewards.CalculateVaultInterest(ctx, vault.AppId, vault.ExtendedPairVaultID, vault.Id, totalDebt, vault.BlockHeight, vault.BlockTime.Unix())
 				if err1 != nil {
 					return fmt.Errorf("error Calculating vault interest in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 				}
+				//Callling vault to use the updated values of the vault
 				vault, _ := k.vault.GetVault(ctx, vault.Id)
 
 				totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
@@ -92,12 +88,14 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				if err != nil {
 					return fmt.Errorf("error Calculating CR in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 				}
-			
 
-				err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner,vault.AmountIn,totalOut,collateralizationRatio, vault.AppId,false,false,"","")
+				//Creating locked vault struct , which will trigger auction
+				err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "")
 				if err != nil {
 					return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 				}
+
+				//Removing data from existing structs
 				k.vault.DeleteVault(ctx, vault.Id)
 				var rewards rewardstypes.VaultInterestTracker
 				rewards.AppMappingId = vault.AppId
@@ -108,6 +106,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			return nil
 		})
 	}
+	
 	liquidationOffsetHolder.CurrentOffset = uint64(end)
 	k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 
@@ -115,11 +114,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 
 }
 
-
-
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn sdk.Int, AmountOut sdk.Int,  collateralizationRatio sdk.Dec, appID uint64,  isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn sdk.Int, AmountOut sdk.Int, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
-
 
 	value := types.LockedVault{
 		LockedVaultId:                lockedVaultID + 1,
@@ -131,6 +127,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		AmountOut:                    AmountOut,
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      AmountIn,
+		TargetDebt:                   AmountOut,
 		LiquidationTimestamp:         ctx.BlockTime(),
 		IsInternalKeeper:             false,
 		InternalKeeperAddress:        "",
