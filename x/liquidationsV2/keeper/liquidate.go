@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -92,6 +93,8 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				if err != nil {
 					return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 				}
+				length := k.vault.GetLengthOfVault(ctx)
+				k.vault.SetLengthOfVault(ctx, length-1)
 
 				//Removing data from existing structs
 				k.vault.DeleteVault(ctx, vault.Id)
@@ -131,11 +134,11 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		InternalKeeperAddress:        "",
 		IsExternalKeeper:             "",
 		ExternalKeeperAddress:        "",
+	
 	}
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
-	length := k.vault.GetLengthOfVault(ctx)
-	k.vault.SetLengthOfVault(ctx, length-1)
+
 	return nil
 }
