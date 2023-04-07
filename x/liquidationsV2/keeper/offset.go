@@ -16,7 +16,7 @@ func (k Keeper) SetLiquidationOffsetHolder(ctx sdk.Context, liquidatonPrefix str
 }
 
 // GetLiquidationOffsetHolder returns liquidationOffsetHolder object for the given app id, pool id and farmer.
-func (k Keeper) GetLiquidationOffsetHolder(ctx sdk.Context, appID uint64, liquidatonPrefix string) (liquidationOffsetHolder types.LiquidationOffsetHolder, found bool) {
+func (k Keeper) GetLiquidationOffsetHolder(ctx sdk.Context,  liquidatonPrefix string) (liquidationOffsetHolder types.LiquidationOffsetHolder, found bool) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetLiquidationOffsetHolderKey(appID, liquidatonPrefix))
 	if bz == nil {

@@ -19,9 +19,12 @@ message LiquidationWhiteListing {
   uint64 auction_type = 2 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
-    uint64 current_offset = 3;
 }
 
+
+message LiquidationOffsetHolder {
+  uint64 current_offset = 2;
+} 
 
 
 //Internal keepers are bots run by people to liquidate positions of comdex apps
@@ -146,6 +149,15 @@ message LockedVault {
 //     BorrowMetaData borrow_meta_data = 18;
 //   }
 }
+
+
+
+
+
+
+
+
+
 
 // message BorrowMetaData {
 //   uint64 lending_id = 1;
