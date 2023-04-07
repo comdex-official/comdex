@@ -13,5 +13,5 @@ option (gogoproto.goproto_getters_all) = false;
 message WhitelistAppProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  WhiteListing whitelisting = 3 [(gogoproto.nullable) = false];
+  LiquidationWhiteListing whitelisting = 3 [(gogoproto.nullable) = false];
 }
