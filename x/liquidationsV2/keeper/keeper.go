@@ -48,3 +48,23 @@ func NewKeeper(
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
+
+
+// List of functions to be created
+
+
+
+
+//1.  ABCI
+//2.		  			Liquidate
+//3.					Harbor 
+//4.					Commodo
+
+//   MsgServer
+//5.		HarborLiquidateKeeper
+// 6.     	CommodoLiquidateKeeper
+//7.		ExternalLiquidateKeeper
+
+
+//8. Liquidation Whitelisting Proposal
+
