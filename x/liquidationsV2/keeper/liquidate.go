@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -65,7 +64,6 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 				return fmt.Errorf("Liquidation not enabled for App ID  %d", vault.AppId)
 			}
 
-		
 			// Checking extended pair vault data for Minimum collateralisation ratio
 			extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 			liqRatio := extPair.MinCr
@@ -106,7 +104,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			return nil
 		})
 	}
-	
+
 	liquidationOffsetHolder.CurrentOffset = uint64(end)
 	k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 
