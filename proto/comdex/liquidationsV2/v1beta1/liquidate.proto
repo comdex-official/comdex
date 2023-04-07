@@ -107,6 +107,8 @@ message LockedVault {
     (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
   string fee_to_be_collected = 16 [
     (gogoproto.customname) = "FeeToBeCollected",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
 
 

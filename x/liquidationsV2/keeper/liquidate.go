@@ -341,6 +341,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		CollateralToBeAuctioned:      AmountIn,
 		TargetDebt:                   AmountOut,
 		LiquidationTimestamp:         ctx.BlockTime(),
+		FeeToBeCollected: ,
 		IsInternalKeeper:             false,
 		InternalKeeperAddress:        "",
 		IsExternalKeeper:             "",
