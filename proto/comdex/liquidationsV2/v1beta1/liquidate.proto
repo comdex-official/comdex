@@ -105,6 +105,9 @@ message LockedVault {
   string external_keeper_address = 15 [
     (gogoproto.customname) = "ExternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
+  string fee_to_be_collected = 16 [
+    (gogoproto.customname) = "FeeToBeCollected",
+    (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
 
 
 

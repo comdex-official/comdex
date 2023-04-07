@@ -1,7 +1,7 @@
 package types
 
 import (
-	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -10,9 +10,8 @@ const (
 )
 
 // NewLiquidationOffsetHolder returns a new LiquidationOffsetHolder object.
-func NewLiquidationOffsetHolder(appID, currentOffset uint64) LiquidationOffsetHolder {
+func NewLiquidationOffsetHolder( currentOffset uint64) LiquidationOffsetHolder {
 	return LiquidationOffsetHolder{
-		AppId:         appID,
 		CurrentOffset: currentOffset,
 	}
 }
@@ -30,12 +29,12 @@ func GetSliceStartEndForLiquidations(sliceLen, offset, batchSize int) (int, int)
 }
 
 // Validate validates ActiveFarmer.
-func (liquidationOffsetHolder LiquidationOffsetHolder) Validate() error {
-	if liquidationOffsetHolder.AppId == 0 {
-		return fmt.Errorf("app id must not be 0")
-	}
-	return nil
-}
+// func (liquidationOffsetHolder LiquidationOffsetHolder) Validate() error {
+// 	if liquidationOffsetHolder.AppId == 0 {
+// 		return fmt.Errorf("app id must not be 0")
+// 	}
+// 	return nil
+// }
 
 // MustMarshalLiquidationOffsetHolder returns the LiquidationOffsetHolder bytes.
 // It throws panic if it fails.
