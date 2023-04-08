@@ -427,5 +427,19 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 }
 
 func (k Keeper) MsgLiquidate(ctx sdk.Context, liquidator string, liqType, id uint64) error {
+	if liqType == 0 {
+		err := k.LiquidateIndividualVault(ctx, id)
+		if err != nil {
+			return err
+		}
+	} else if liqType == 1 {
+		err := k.LiquidateIndividualBorrow(ctx, id)
+		if err != nil {
+			return err
+		}
+	} else {
+		// TODO: for other apps
+	}
+	// TODO: send liquidation bonus to liquidator address logic
 	return nil
 }
