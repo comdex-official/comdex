@@ -17,7 +17,7 @@ func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) 
 		ctx.Logger().Error("error in Liquidate function")
 		ctx.EventManager().EmitEvent(
 			sdk.NewEvent(
-				types.EventTypeLiquidateVaultsErr,
+				types.EventTypeLiquidateErr,
 				sdk.NewAttribute(types.Error, fmt.Sprintf("%s", err)),
 			),
 		)
