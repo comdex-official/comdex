@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -30,7 +33,43 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// this line is used by starport scaffolding # 1
+	cmd.AddCommand(
+		txLiquidateInternalKeeper(),
+	)
+	return cmd
+}
 
+func txLiquidateInternalKeeper() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "liquidate_internal_keeper [type] [id]",
+		Short: "liquidate faulty positions",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			liqType, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLiquidateInternalKeeperRequest(ctx.FromAddress, liqType, id)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

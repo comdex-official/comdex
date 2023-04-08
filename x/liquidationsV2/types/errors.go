@@ -8,5 +8,5 @@ import (
 
 // x/liquidationsV2 module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrVaultIDInvalid = sdkerrors.Register(ModuleName, 1501, "Vault Id invalid")
 )

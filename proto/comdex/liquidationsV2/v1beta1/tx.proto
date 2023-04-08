@@ -1,8 +1,27 @@
 syntax = "proto3";
 package comdex.liquidationsV2.v1beta1;
 
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
 
 service Msg {
+  rpc MsgLiquidateInternalKeeper(MsgLiquidateInternalKeeperRequest) returns (MsgLiquidateInternalKeeperResponse);
 }
+
+message MsgLiquidateInternalKeeperRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+
+  uint64 liq_type = 2 [
+    (gogoproto.customname) = "LiqType",
+    (gogoproto.moretags) = "yaml:\"liq_type\""];
+
+  uint64 id = 3 [
+    (gogoproto.customname) = "Id",
+    (gogoproto.moretags) = "yaml:\"id\""];
+}
+message  MsgLiquidateInternalKeeperResponse{}
