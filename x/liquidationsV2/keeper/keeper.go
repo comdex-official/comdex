@@ -85,3 +85,27 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 //8. Liquidation Whitelisting Proposal
 
+
+
+
+// List of auction functions to be created
+
+// 1. Auction Activator
+//		2.Dutch Activator
+//		3.English Activator 
+
+//4. User Biddings 
+//5. 					DEPOSIT BID
+//6. 					CANCEL BID/ UPDATE BID
+//7.					TRIGGER BID  (ABCI)
+//8. 					WITHDRAW BID 
+
+//9. RESTART AUCTION
+//16. END AUCTION 
+//10. HARBOR AUCTION TRIGGER
+//11. HARBOR AUCTION END TRIGGER
+//12. VAULT AUCTION END TRIGGER
+//13. BORROW AUCTION END TRIGGER
+//14. EXTERNAL APPS AUCTION END TRIGGER
+//15. INTERNAL LIQUIDATORS INCENTIVISING LOGIC TRIGGER 					
+
