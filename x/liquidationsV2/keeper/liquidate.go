@@ -151,20 +151,18 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		TargetDebt:                   AmountOut,
 		LiquidationTimestamp:         ctx.BlockTime(),
 		FeeToBeCollected:             feesToBeCollected,
-	
 		IsInternalKeeper:             false,
 		InternalKeeperAddress:        "",
 		IsExternalKeeper:             "",
 		ExternalKeeperAddress:        "",
+		StructureType:                "vault",
 	}
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
 	//Call auction activator
 	//struct for auction will stay same for english and dutch
-	// based on type recieved from 
-
-
+	// based on type recieved from
 
 	return nil
 }
@@ -449,7 +447,6 @@ func (k Keeper) MsgLiquidate(ctx sdk.Context, liquidator string, liqType, id uin
 	// TODO: send liquidation bonus to liquidator address logic
 	return nil
 }
-
 
 func (k Keeper) SetLiquidationWhiteListing(ctx sdk.Context, liquidationWhiteListing types.LiquidationWhiteListing) {
 	var (
