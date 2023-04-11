@@ -4,22 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/comdex-official/comdex/x/auctionsV2/types"
+	"github.com/comdex-official/comdex/x/liquidationsV2/expected"
+	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   sdk.StoreKey
-		memKey     sdk.StoreKey
-		paramstore paramtypes.Subspace
-
-		bankKeeper types.BankKeeper
+		cdc         codec.BinaryCodec
+		storeKey    sdk.StoreKey
+		memKey      sdk.StoreKey
+		paramstore  paramtypes.Subspace
+		liquidation expected.LiquidationV2Keeper
+		bankKeeper  types.BankKeeper
 	}
 )
 
@@ -33,7 +33,7 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
-
+	liquidation expected.LiquidationV2Keeper,
 	bankKeeper types.BankKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
@@ -47,6 +47,7 @@ func NewKeeper(
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
+		liquidation: liquidation,
 		bankKeeper: bankKeeper,
 	}
 }
