@@ -93,6 +93,6 @@ type RewardsKeeper interface {
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
 }
 
-type AuctionKeeper interface {
+type AuctionsV2Keeper interface {
 	AuctionActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 }

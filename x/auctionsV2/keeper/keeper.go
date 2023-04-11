@@ -3,9 +3,8 @@ package keeper
 import (
 	"context"
 	"fmt"
-
-	"github.com/comdex-official/comdex/x/liquidationsV2/expected"
-	"github.com/comdex-official/comdex/x/liquidationsV2/types"
+	"github.com/comdex-official/comdex/x/auctionsV2/expected"
+	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -18,7 +17,7 @@ type (
 		storeKey    sdk.StoreKey
 		memKey      sdk.StoreKey
 		paramstore  paramtypes.Subspace
-		liquidation expected.LiquidationV2Keeper
+		LiquidationsV2 expected.LiquidationsV2Keeper
 		bankKeeper  types.BankKeeper
 	}
 )
@@ -33,7 +32,7 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
-	liquidation expected.LiquidationV2Keeper,
+	LiquidationsV2Keeper expected.LiquidationsV2Keeper,
 	bankKeeper types.BankKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
@@ -47,7 +46,7 @@ func NewKeeper(
 		storeKey:   storeKey,
 		memKey:     memKey,
 		paramstore: ps,
-		liquidation: liquidation,
+		LiquidationsV2: LiquidationsV2Keeper,
 		bankKeeper: bankKeeper,
 	}
 }

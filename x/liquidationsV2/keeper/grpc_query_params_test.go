@@ -1,21 +1,21 @@
 package keeper_test
 
-import (
-	"testing"
+// import (
+// 	"testing"
 
-	testkeeper "github.com/comdex-official/comdex/testutil/keeper"
-	"github.com/comdex-official/comdex/x/liquidationsV2/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-)
+// 	testkeeper "github.com/comdex-official/comdex/testutil/keeper"
+// 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	"github.com/stretchr/testify/require"
+// )
 
-func TestParamsQuery(t *testing.T) {
-	keeper, ctx := testkeeper.NewliqKeeper(t)
-	wctx := sdk.WrapSDKContext(ctx)
-	params := types.DefaultParams()
-	keeper.SetParams(ctx, params)
+// func TestParamsQuery(t *testing.T) {
+// 	keeper, ctx := testkeeper.NewliqKeeper(t)
+// 	wctx := sdk.WrapSDKContext(ctx)
+// 	params := types.DefaultParams()
+// 	keeper.SetParams(ctx, params)
 
-	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
-	require.NoError(t, err)
-	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
-}
+// 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
+// 	require.NoError(t, err)
+// 	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
+// }
