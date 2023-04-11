@@ -15,7 +15,9 @@ message LiquidationWhiteListing {
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
     (gogoproto.moretags) = "yaml:\"app_id\""];
-
+//------------Auction Types defn
+// 0 auction type - "dutch" 
+//1 auction type - "english"
   uint64 auction_type = 2 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];

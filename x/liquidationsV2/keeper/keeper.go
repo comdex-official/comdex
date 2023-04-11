@@ -95,6 +95,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 //		3.English Activator 
 
 //4. User Biddings 
+
 //5. 					DEPOSIT BID
 //6. 					CANCEL BID/ UPDATE BID
 //7.					TRIGGER BID  (ABCI)
@@ -107,5 +108,5 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 //12. VAULT AUCTION END TRIGGER
 //13. BORROW AUCTION END TRIGGER
 //14. EXTERNAL APPS AUCTION END TRIGGER
-//15. INTERNAL LIQUIDATORS INCENTIVISING LOGIC TRIGGER 					
+//15. INTERNAL LIQUIDATORS INCENTIVISING LOGIC TRIGGER
 

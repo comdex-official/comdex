@@ -163,6 +163,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	//Call auction activator
 	//struct for auction will stay same for english and dutch
 	// based on type recieved from 
+	
 
 
 	return nil
