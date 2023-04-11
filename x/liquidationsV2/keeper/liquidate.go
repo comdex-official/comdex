@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -162,6 +163,10 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
 	//Call auction activator
+	err := k.auctionsV2.AuctionActivator(ctx, value)
+	if err != nil {
+		return fmt.Errorf("Auction could not be initiated for %d %d", value, err)
+	}
 	//struct for auction will stay same for english and dutch
 	// based on type recieved from
 

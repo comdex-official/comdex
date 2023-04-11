@@ -12,13 +12,22 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 	auctionType, _ := k.liquidationsV2.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
 
 	//Dutch Auction Model Followed for auction type 0
-	if auctionType.AuctionType{
-		
-		//Trigger Dutch Auction
+	if auctionType.AuctionType {
 
-	}else{
+		//Trigger Dutch Auction
+		err := k.DutchAuctionActivator(ctx, liquidationData)
+		if err != nil {
+
+		}
+
+	} else {
 		//Trigger English Auction
 	}
+
+	return nil
+}
+
+func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidationtypes.LockedVault) error {
 
 	return nil
 }

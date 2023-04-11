@@ -4,7 +4,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -91,4 +91,8 @@ type LendKeeper interface {
 type RewardsKeeper interface {
 	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
+}
+
+type AuctionKeeper interface {
+	AuctionActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 }

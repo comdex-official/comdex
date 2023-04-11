@@ -7,6 +7,8 @@ import (
 
 	"github.com/comdex-official/comdex/x/liquidationsV2/expected"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
+	"github.com/comdex-official/comdex/x/auctionsV2/expected"
+	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -25,6 +27,7 @@ type Keeper struct {
 	esm        expected.EsmKeeper
 	rewards    expected.RewardsKeeper
 	lend       expected.LendKeeper
+	auctionsV2 expected.AuctionsV2Keeper
 }
 
 func NewKeeper(
@@ -40,6 +43,7 @@ func NewKeeper(
 	esm expected.EsmKeeper,
 	rewards expected.RewardsKeeper,
 	lend expected.LendKeeper,
+	auctionsV2 expected.AuctionsV2Keeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -59,6 +63,7 @@ func NewKeeper(
 		esm:        esm,
 		rewards:    rewards,
 		lend:       lend,
+		auctionsV2: auctionsV2,
 	}
 }
 
