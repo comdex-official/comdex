@@ -113,9 +113,9 @@ message LockedVault {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
 
-
-
-
+  string structure_type = 17 [
+    (gogoproto.customname) = "StructureType",
+    (gogoproto.moretags) = "yaml:\"structure_type\""];
 
 //updated_amount_out = amount_out + interest_accumulated + opening_fee_accumulated
 //   // + closing_fee_accumulated
