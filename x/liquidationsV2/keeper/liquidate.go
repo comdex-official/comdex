@@ -151,7 +151,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		TargetDebt:                   AmountOut,
 		LiquidationTimestamp:         ctx.BlockTime(),
 		FeeToBeCollected:             feesToBeCollected,
-		type:                          "vault"
+	
 		IsInternalKeeper:             false,
 		InternalKeeperAddress:        "",
 		IsExternalKeeper:             "",
@@ -163,7 +163,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	//Call auction activator
 	//struct for auction will stay same for english and dutch
 	// based on type recieved from 
-	
+
 
 
 	return nil

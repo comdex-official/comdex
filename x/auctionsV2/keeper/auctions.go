@@ -10,10 +10,15 @@ import(
 
 
 
-func (k Keeper) AuctionActivator(ctx sdk.Context,liquidationData liquidationtypes.LockedVault) error {
+func (k Keeper) AuctionActivator(ctx sdk.Context,lockedVault liquidationtypes.LockedVault) error {
 
-	auctionType:=liquidationData.AppId
+	//Using app id provided in the lockedVault Struct
+	// Using the app id to fetch the app data whitelisted in the liquidation module to find the auction type selected by the app.
+	appWhitelistedData:=k.liquidation.GetLiquidationWhiteListing(ctx,lockedVault.AppId)
+
 	
+
+
 
 	
 	return nil
