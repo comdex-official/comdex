@@ -449,3 +449,29 @@ func (k Keeper) MsgLiquidate(ctx sdk.Context, liquidator string, liqType, id uin
 	// TODO: send liquidation bonus to liquidator address logic
 	return nil
 }
+
+
+func (k Keeper) SetLiquidationWhiteListing(ctx sdk.Context, liquidationWhiteListing types.LiquidationWhiteListing) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LiquidationWhiteListingKey(liquidationWhiteListing.AppId)
+		value = k.cdc.MustMarshal(&liquidationWhiteListing)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liquidationWhiteListing types.LiquidationWhiteListing, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LiquidationWhiteListingKey(appId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return liquidationWhiteListing, false
+	}
+
+	k.cdc.MustUnmarshal(value, &liquidationWhiteListing)
+	return liquidationWhiteListing, true
+}

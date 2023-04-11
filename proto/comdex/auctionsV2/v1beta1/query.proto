@@ -1,5 +1,5 @@
 syntax = "proto3";
-package comdex.newauc.v1beta1;
+package comdex.auctionsV2.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";

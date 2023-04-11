@@ -1,0 +1,13 @@
+syntax = "proto3";
+package comdex.auctionsV2.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/auctionsV2/v1beta1/bid.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
+
+message DutchAutoBidParamsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  DutchAutoBidParams dutchAutoBidParams = 3 [(gogoproto.nullable) = false];
+}
