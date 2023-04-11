@@ -57,6 +57,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 			if err != nil {
 
 				return fmt.Errorf(err.Error())
+				//or maybe continue
 			}
 
 			return nil
