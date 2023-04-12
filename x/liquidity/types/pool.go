@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	math "math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 )
 
@@ -21,6 +23,7 @@ var (
 	_ amm.Orderer = (*PoolOrderer)(nil)
 
 	poolCoinDenomRegexp = regexp.MustCompile(`^pool([1-9]-[1-9]\d*)$`)
+	farmCoinDenomRegexp = regexp.MustCompile(`^farm([1-9]-[1-9]\d*)$`)
 )
 
 type PoolTokenDeserializerKit struct {
@@ -63,8 +66,44 @@ func ParsePoolCoinDenom(denom string) (appID, poolID uint64, err error) {
 	return appID, poolID, nil
 }
 
+// FarmCoinDenom returns a unique farm coin denom for a pool.
+func FarmCoinDenom(appID, poolID uint64) string {
+	return fmt.Sprintf("farm%d-%d", appID, poolID)
+}
+
+// ParseFarmCoinDenom parses a farm coin denom and returns the app and pool id.
+func ParseFarmCoinDenom(denom string) (appID, poolID uint64, err error) {
+	chunks := farmCoinDenomRegexp.FindStringSubmatch(denom)
+	if len(chunks) == 0 {
+		return 0, 0, fmt.Errorf("%s is not a farm coin denom", denom)
+	}
+	appID, err = strconv.ParseUint(strings.Split(chunks[1], "-")[0], 10, 64)
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse app id: %w", err)
+	}
+	poolID, err = strconv.ParseUint(strings.Split(chunks[1], "-")[1], 10, 64)
+	if err != nil {
+		return 0, 0, fmt.Errorf("parse pool id: %w", err)
+	}
+	return appID, poolID, nil
+}
+
+func IsFarmCoinDenom(denom string) bool {
+	return len(farmCoinDenomRegexp.FindStringSubmatch(denom)) != 0
+}
+
+// FarmCoinDenom returns a unique farm coin denom for a pool.
+func FarmCoinDecimals(baseDecimals, quoteDecimals uint64) uint64 {
+	baseExponent := math.Log10(float64(baseDecimals))
+	quoteExponent := math.Log10(float64(quoteDecimals))
+	if baseExponent+quoteExponent >= 18 {
+		return uint64(math.Pow10(18))
+	}
+	return uint64(math.Pow10(int(baseExponent + quoteExponent)))
+}
+
 // NewBasicPool returns a new basic pool object.
-func NewBasicPool(appID, id, pairID uint64, creator sdk.AccAddress) Pool {
+func NewBasicPool(appID, id, pairID uint64, creator sdk.AccAddress, baseAsset, quoteAsset assettypes.Asset) Pool {
 	return Pool{
 		Type:                  PoolTypeBasic,
 		Id:                    id,
@@ -76,11 +115,15 @@ func NewBasicPool(appID, id, pairID uint64, creator sdk.AccAddress) Pool {
 		LastWithdrawRequestId: 0,
 		Disabled:              false,
 		AppId:                 appID,
+		FarmCoin: &FarmCoin{
+			Denom:    FarmCoinDenom(appID, id),
+			Decimals: FarmCoinDecimals(baseAsset.Decimals.Uint64(), quoteAsset.Decimals.Uint64()),
+		},
 	}
 }
 
 // NewRangedPool returns a new ranged pool object.
-func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, maxPrice sdk.Dec) Pool {
+func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, maxPrice sdk.Dec, baseAsset, quoteAsset assettypes.Asset) Pool {
 	return Pool{
 		Type:                  PoolTypeRanged,
 		Id:                    id,
@@ -94,6 +137,10 @@ func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, m
 		LastWithdrawRequestId: 0,
 		Disabled:              false,
 		AppId:                 appID,
+		FarmCoin: &FarmCoin{
+			Denom:    FarmCoinDenom(appID, id),
+			Decimals: FarmCoinDecimals(baseAsset.Decimals.Uint64(), quoteAsset.Decimals.Uint64()),
+		},
 	}
 }
 

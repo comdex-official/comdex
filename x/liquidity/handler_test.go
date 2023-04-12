@@ -385,7 +385,7 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Denom, "pool1-1")
 	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
 
-	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
+	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000farm1-1"))
 	_, err = handler(s.ctx, msgUnlock)
 	s.Require().NoError(err)
 

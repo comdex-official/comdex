@@ -42,6 +42,7 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKeep
 					k.ExecuteRequests(ctx, app.Id)
 					k.ProcessQueuedFarmers(ctx, app.Id)
 				}
+				k.BlockAllFarmCoinTransfers(ctx, app.Id)
 				return nil
 			})
 		}

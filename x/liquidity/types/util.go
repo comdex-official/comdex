@@ -94,6 +94,7 @@ func NewPoolResponse(pool Pool, rx, ry sdk.Coin, poolCoinSupply sdk.Int) PoolRes
 		MaxPrice:              pool.MaxPrice,
 		Price:                 price,
 		Disabled:              pool.Disabled,
+		FarmCoin:              pool.FarmCoin,
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
 )
@@ -97,6 +98,15 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 
 	if currentMintedStatistics.GT(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
+	}
+
+	// if the collateral token in farm token, then validate if the vault creator is the actual owner of that farm token if not return error.
+	if liquiditytypes.IsFarmCoinDenom(assetInData.Denom) {
+		farmCoin := sdk.NewCoin(assetInData.Denom, msg.AmountIn)
+		err := k.liquidity.ValidateFarmCoinOwnershipByFarmer(ctx, farmCoin, depositorAddress)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Calculate CR - make necessary changes to calculate collateralization function
@@ -276,6 +286,15 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 	}
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
+	}
+
+	// if the collateral token in farm token, then validate if the vault creator is the actual owner of that farm token if not return error.
+	if liquiditytypes.IsFarmCoinDenom(assetInData.Denom) {
+		farmCoin := sdk.NewCoin(assetInData.Denom, msg.Amount)
+		err := k.liquidity.ValidateFarmCoinOwnershipByFarmer(ctx, farmCoin, depositor)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)

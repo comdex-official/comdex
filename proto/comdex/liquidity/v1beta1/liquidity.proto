@@ -29,6 +29,12 @@ message Pair {
   uint64 app_id =  9;
 }
 
+// Farm Coin defines the basic implementation and meta data for the farm token.
+message FarmCoin {
+  string denom = 1;
+  uint64 decimals = 2;
+}
+
 // Pool defines a basic liquidity pool with no min-price and max-price.
 message Pool {
   uint64 id = 1;
@@ -55,7 +61,7 @@ message Pool {
 
   string max_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
 
-  
+  FarmCoin farm_coin = 13;
 
 
 }

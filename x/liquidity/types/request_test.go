@@ -9,6 +9,7 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 
 	utils "github.com/comdex-official/comdex/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
@@ -110,7 +111,7 @@ func TestDepositRequest_Validate(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			pool := types.NewBasicPool(1, 1, 1, testAddr)
+			pool := types.NewBasicPool(1, 1, 1, testAddr, assettypes.Asset{Decimals: sdk.NewInt(1000000)}, assettypes.Asset{Decimals: sdk.NewInt(1000000)})
 			depositor := sdk.AccAddress(crypto.AddressHash([]byte("depositor")))
 			msg := types.NewMsgDeposit(1, depositor, 1, utils.ParseCoins("1000000denom1,1000000denom2"))
 			req := types.NewDepositRequest(msg, pool, 1, 1)

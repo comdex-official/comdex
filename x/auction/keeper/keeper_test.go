@@ -1,9 +1,10 @@
 package keeper_test
 
 import (
-	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"testing"
 	"time"
+
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 
 	"github.com/stretchr/testify/suite"
 

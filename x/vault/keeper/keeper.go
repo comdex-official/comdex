@@ -21,9 +21,21 @@ type Keeper struct {
 	esm       expected.EsmKeeper
 	tokenmint expected.TokenMintKeeper
 	rewards   expected.RewardsKeeper
+	liquidity expected.LiquidityKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper, tokenmint expected.TokenMintKeeper, rewards expected.RewardsKeeper) Keeper {
+func NewKeeper(
+	cdc codec.BinaryCodec,
+	key sdk.StoreKey,
+	bank expected.BankKeeper,
+	asset expected.AssetKeeper,
+	oracle expected.MarketKeeper,
+	collector expected.CollectorKeeper,
+	esm expected.EsmKeeper,
+	tokenmint expected.TokenMintKeeper,
+	rewards expected.RewardsKeeper,
+	liquidity expected.LiquidityKeeper,
+) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		key:       key,
@@ -34,6 +46,7 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper
 		esm:       esm,
 		tokenmint: tokenmint,
 		rewards:   rewards,
+		liquidity: liquidity,
 	}
 }
 

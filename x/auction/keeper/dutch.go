@@ -6,6 +6,7 @@ import (
 	"time"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -264,6 +265,19 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, appID, auctionMappingID, a
 			return err
 		}
 	}
+
+	// if the bid is on farm token, then we have the transfer the ownership of that farm token from vault owner to bidder.
+	if liquiditytypes.IsFarmCoinDenom(outFlowTokenCoin.Denom) {
+		vaultOwner, err := sdk.AccAddressFromBech32(lockedVault.Owner)
+		if err != nil {
+			return err
+		}
+		err = k.liquidity.TransferFarmCoinOwnership(ctx, vaultOwner, bidder, outFlowTokenCoin)
+		if err != nil {
+			return err
+		}
+	}
+
 	if outFlowTokenCoin.Amount.GT(sdk.ZeroInt()) {
 		err = k.bank.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(outFlowTokenCoin))
 		if err != nil {

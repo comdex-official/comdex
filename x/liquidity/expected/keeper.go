@@ -20,6 +20,9 @@ type AccountKeeper interface {
 
 // BankKeeper is the expected bank keeper.
 type BankKeeper interface {
+	GetParams(ctx sdk.Context) (params banktypes.Params)
+	SetParams(ctx sdk.Context, params banktypes.Params)
+	IsSendEnabledCoin(ctx sdk.Context, coin sdk.Coin) bool
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin

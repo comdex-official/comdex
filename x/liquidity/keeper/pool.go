@@ -81,6 +81,14 @@ func (k Keeper) ValidateMsgCreatePool(ctx sdk.Context, msg *types.MsgCreatePool)
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
+	if !k.assetKeeper.HasAssetForDenom(ctx, pair.BaseCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed - expired pair", pair.BaseCoinDenom)
+	}
+
+	if !k.assetKeeper.HasAssetForDenom(ctx, pair.QuoteCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed - expired pair", pair.QuoteCoinDenom)
+	}
+
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
 		return sdkerrors.Wrap(err, "params retreval failed")
@@ -138,12 +146,17 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		return types.Pool{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
+	// asset existence validation in already done at this stage
+	baseAsset, _ := k.assetKeeper.GetAssetForDenom(ctx, pair.BaseCoinDenom)
+	quoteAsset, _ := k.assetKeeper.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
+
 	// Create and save the new pool object.
 	poolID := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
-	pool := types.NewBasicPool(msg.AppId, poolID, pair.Id, msg.GetCreator())
+	pool := types.NewBasicPool(msg.AppId, poolID, pair.Id, msg.GetCreator(), baseAsset, quoteAsset)
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)
+	k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
 
 	// Send deposit coins to the pool's reserve account.
 	creator := msg.GetCreator()
@@ -244,6 +257,14 @@ func (k Keeper) ValidateMsgCreateRangedPool(ctx sdk.Context, msg *types.MsgCreat
 		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
+	if !k.assetKeeper.HasAssetForDenom(ctx, pair.BaseCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed - expired pair", pair.BaseCoinDenom)
+	}
+
+	if !k.assetKeeper.HasAssetForDenom(ctx, pair.QuoteCoinDenom) {
+		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed - expired pair", pair.QuoteCoinDenom)
+	}
+
 	for _, coin := range msg.DepositCoins {
 		if coin.Denom != pair.BaseCoinDenom && coin.Denom != pair.QuoteCoinDenom {
 			return sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", coin.Denom)
@@ -289,12 +310,17 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 		return types.Pool{}, types.ErrInsufficientDepositAmount
 	}
 
+	// asset existence validation in already done at this stage
+	baseAsset, _ := k.assetKeeper.GetAssetForDenom(ctx, pair.BaseCoinDenom)
+	quoteAsset, _ := k.assetKeeper.GetAssetForDenom(ctx, pair.QuoteCoinDenom)
+
 	// Create and save the new pool object.
 	poolID := k.getNextPoolIDWithUpdate(ctx, msg.AppId)
-	pool := types.NewRangedPool(msg.AppId, poolID, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice)
+	pool := types.NewRangedPool(msg.AppId, poolID, pair.Id, msg.GetCreator(), msg.MinPrice, msg.MaxPrice, baseAsset, quoteAsset)
 	k.SetPool(ctx, pool)
 	k.SetPoolByReserveIndex(ctx, pool)
 	k.SetPoolsByPairIndex(ctx, pool)
+	k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
 
 	// Send deposit coins to the pool's reserve account.
 	creator := msg.GetCreator()
@@ -816,4 +842,11 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 	}
 
 	return nil
+}
+
+func (k Keeper) BlockAllFarmCoinTransfers(ctx sdk.Context, appID uint64) {
+	pools := k.GetAllPools(ctx, appID)
+	for _, pool := range pools {
+		k.BlockCoinTransferIfNotAlready(ctx, sdk.NewCoin(pool.FarmCoin.Denom, sdk.NewInt(0)))
+	}
 }

@@ -53,3 +53,7 @@ type RewardsKeeper interface {
 	GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards rewardstypes.StableVaultExternalRewards, found bool)
 	VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool
 }
+
+type LiquidityKeeper interface {
+	ValidateFarmCoinOwnershipByFarmer(ctx sdk.Context, farmCoin sdk.Coin, farmer sdk.AccAddress) error
+}

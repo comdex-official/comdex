@@ -39,4 +39,6 @@ var (
 	ErrorNotPositiveAmont              = sdkerrors.Register(ModuleName, 830, "amount should be positive")
 	ErrTooManyPools                    = sdkerrors.Register(ModuleName, 831, "too many pools in the pair")
 	ErrPriceNotOnTicks                 = sdkerrors.Register(ModuleName, 832, "price is not on ticks")
+	ErrNotActiveFarmer                 = sdkerrors.Register(ModuleName, 833, "inactive farmer")
+	ErrInvalidFarmAmount               = sdkerrors.Register(ModuleName, 834, "invalid farm amount")
 )

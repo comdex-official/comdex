@@ -328,6 +328,16 @@ func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
 		return err
 	}
 
+	// mint farm coin for 1:1 representation of pool coin and send it to the farmer.
+	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	farmCoin := sdk.NewCoin(pool.FarmCoin.Denom, msg.FarmingPoolCoin.Amount)
+	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(farmCoin)); err != nil {
+		return err
+	}
+	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(farmCoin)); err != nil {
+		return err
+	}
+
 	queuedFarmer, found := k.GetQueuedFarmer(ctx, msg.AppId, msg.PoolId, farmer)
 
 	if !found {
@@ -353,6 +363,7 @@ func (k Keeper) Farm(ctx sdk.Context, msg *types.MsgFarm) error {
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.FarmingPoolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyFarmCoin, farmCoin.String()),
 		),
 	})
 
@@ -375,8 +386,8 @@ func (k Keeper) ValidateMsgUnfarm(ctx sdk.Context, msg *types.MsgUnfarm) (sdk.Ac
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
-	if msg.UnfarmingPoolCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
+	if msg.UnfarmingPoolCoin.Denom != pool.FarmCoin.Denom {
+		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected farm coin denom %s, found %s", pool.FarmCoin.Denom, msg.UnfarmingPoolCoin.Denom)
 	}
 	if !msg.UnfarmingPoolCoin.Amount.IsPositive() {
 		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
@@ -445,7 +456,18 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 		activeFarmer.FarmedPoolCoin.Amount = activeFarmer.FarmedPoolCoin.Amount.Sub(msg.UnfarmingPoolCoin.Amount)
 	}
 
-	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(unFarmingCoin))
+	// take back farm coin from the farmer which was minted for 1:1 representation of pool coin and burn it.
+	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, farmer, types.ModuleName, sdk.NewCoins(unFarmingCoin))
+	if err != nil {
+		return err
+	}
+	if err := k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(unFarmingCoin)); err != nil {
+		return err
+	}
+
+	pool, _ := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, unFarmingCoin.Amount)
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, farmer, sdk.NewCoins(poolCoin))
 	if err != nil {
 		return err
 	}
@@ -467,8 +489,9 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 			sdk.NewAttribute(types.AttributeKeyFarmer, msg.Farmer),
 			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(msg.AppId, 10)),
 			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(msg.PoolId, 10)),
-			sdk.NewAttribute(types.AttributeKeyPoolCoin, msg.UnfarmingPoolCoin.String()),
+			sdk.NewAttribute(types.AttributeKeyPoolCoin, poolCoin.String()),
 			sdk.NewAttribute(types.AttributeKeyTimeStamp, ctx.BlockTime().String()),
+			sdk.NewAttribute(types.AttributeKeyFarmCoin, unFarmingCoin.String()),
 		),
 	})
 
@@ -560,4 +583,62 @@ func (k Keeper) GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64
 		}
 	}
 	return totalAmountFarmed, nil
+}
+
+func (k Keeper) ValidateFarmCoinOwnershipByFarmer(ctx sdk.Context, farmCoin sdk.Coin, farmer sdk.AccAddress) error {
+	appID, poolID, err := types.ParseFarmCoinDenom(farmCoin.Denom)
+	if err != nil {
+		return err
+	}
+
+	if !farmCoin.Amount.IsPositive() {
+		return sdkerrors.Wrapf(types.ErrInvalidFarmAmount, "amount should be positive")
+	}
+
+	_, found := k.assetKeeper.GetApp(ctx, appID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+	}
+	_, found = k.GetPool(ctx, appID, poolID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", poolID)
+	}
+
+	activeFarmer, found := k.GetActiveFarmer(ctx, appID, poolID, farmer)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNotActiveFarmer, "farmer is not active for given pool id : %d", poolID)
+	}
+
+	if farmCoin.Amount.GT(activeFarmer.FarmedPoolCoin.Amount) {
+		return sdkerrors.Wrapf(types.ErrInvalidFarmAmount, "actual farmed amount %s is smaller than %s", sdk.NewCoin(farmCoin.Denom, activeFarmer.FarmedPoolCoin.Amount), farmCoin.String())
+	}
+	return nil
+}
+
+func (k Keeper) TransferFarmCoinOwnership(ctx sdk.Context, from, to sdk.AccAddress, farmCoin sdk.Coin) error {
+	err := k.ValidateFarmCoinOwnershipByFarmer(ctx, farmCoin, from)
+	if err != nil {
+		return err
+	}
+
+	// basic coin and other validations are already done above.
+	appID, poolID, _ := types.ParseFarmCoinDenom(farmCoin.Denom)
+
+	activeFarmerFrom, _ := k.GetActiveFarmer(ctx, appID, poolID, from)
+	activeFarmerFrom.FarmedPoolCoin.Amount = activeFarmerFrom.FarmedPoolCoin.Amount.Sub(farmCoin.Amount)
+	if activeFarmerFrom.FarmedPoolCoin.IsZero() {
+		k.DeleteActiveFarmer(ctx, activeFarmerFrom)
+	} else {
+		k.SetActiveFarmer(ctx, activeFarmerFrom)
+	}
+
+	activeFarmerTo, found := k.GetActiveFarmer(ctx, appID, poolID, to)
+	if !found {
+		pool, _ := k.GetPool(ctx, appID, poolID)
+		activeFarmerTo = types.NewActivefarmer(appID, poolID, to, sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)))
+	}
+	activeFarmerTo.FarmedPoolCoin.Amount = activeFarmerTo.FarmedPoolCoin.Amount.Add(farmCoin.Amount)
+	k.SetActiveFarmer(ctx, activeFarmerTo)
+
+	return nil
 }

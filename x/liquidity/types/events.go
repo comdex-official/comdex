@@ -59,4 +59,5 @@ const (
 	AttributeKeyTimeStamp               = "timestamp"
 	AttributeKeyMatchedAmount           = "matched_amount"
 	AttributeKeyPaidCoin                = "paid_coin"
+	AttributeKeyFarmCoin                = "farm_coin"
 )
