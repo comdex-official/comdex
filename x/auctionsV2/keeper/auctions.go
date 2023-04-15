@@ -28,6 +28,7 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 }
 
 func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidationtypes.LockedVault) error {
-
+	// define opening price and closing price
+	// set data in generic auction params
 	return nil
 }
