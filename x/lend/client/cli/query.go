@@ -52,6 +52,8 @@ func GetQueryCmd() *cobra.Command {
 		QueryFundModBalByAssetPool(),
 		queryLendInterest(),
 		queryBorrowInterest(),
+		queryUserLendRewards(),
+		queryUserBorrowInterest(),
 	)
 
 	return cmd
@@ -915,9 +917,6 @@ func queryLendInterest() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err != nil {
-				return err
-			}
 			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryLendInterest(
 				context.Background(),
@@ -946,13 +945,76 @@ func queryBorrowInterest() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err != nil {
-				return err
-			}
 			queryClient := types.NewQueryClient(ctx)
 			res, err := queryClient.QueryBorrowInterest(
 				context.Background(),
 				&types.QueryBorrowInterestRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "lend_interest")
+
+	return cmd
+}
+
+func queryUserLendRewards() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user_lend_rewards [id]",
+		Short: "Query user lend rewards",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			ID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.QueryUserLendRewards(
+				context.Background(),
+				&types.QueryUserLendRewardsRequest{Id: ID},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "user_lend_rewards")
+
+	return cmd
+}
+
+func queryUserBorrowInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user_borrow_interest [id]",
+		Short: "Query all borrow interest",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			ID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.QueryUserBorrowInterest(
+				context.Background(),
+				&types.QueryUserBorrowInterestRequest{Id: ID},
 			)
 			if err != nil {
 				return err

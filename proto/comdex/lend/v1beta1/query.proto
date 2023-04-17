@@ -317,6 +317,30 @@ message QueryBorrowInterestResponse {
   ];
 }
 
+message QueryUserLendRewardsRequest {
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+}
+
+message QueryUserLendRewardsResponse {
+  string rewards = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"rewards\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}
+
+message QueryUserBorrowInterestRequest {
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+}
+
+message QueryUserBorrowInterestResponse {
+  string interest = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"interest\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -417,6 +441,14 @@ service Query {
 
   rpc QueryBorrowInterest(QueryBorrowInterestRequest) returns (QueryBorrowInterestResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/borrow_interest";
+  };
+
+  rpc QueryUserLendRewards(QueryUserLendRewardsRequest) returns (QueryUserLendRewardsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/user_lend_rewards";
+  };
+
+  rpc QueryUserBorrowInterest(QueryUserBorrowInterestRequest) returns (QueryUserBorrowInterestResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/user_borrow_interest";
   };
 }
 

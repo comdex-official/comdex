@@ -617,3 +617,27 @@ func (q QueryServer) QueryBorrowInterest(c context.Context, req *types.QueryBorr
 	borrowInterest, _ := q.IterateBorrowsForQuery(ctx)
 	return &types.QueryBorrowInterestResponse{PoolInterest: borrowInterest}, nil
 }
+
+func (q QueryServer) QueryUserLendRewards(c context.Context, req *types.QueryUserLendRewardsRequest) (*types.QueryUserLendRewardsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	reward, err := q.QueryFnUserLendRewards(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryUserLendRewardsResponse{Rewards: reward}, nil
+}
+
+func (q QueryServer) QueryUserBorrowInterest(c context.Context, req *types.QueryUserBorrowInterestRequest) (*types.QueryUserBorrowInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	interest, err := q.QueryFnUserBorrowInterest(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryUserBorrowInterestResponse{Interest: interest}, nil
+}

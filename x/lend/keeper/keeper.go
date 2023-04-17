@@ -1865,3 +1865,36 @@ func (k Keeper) DepositDraw(ctx sdk.Context, addr string, borrowID uint64, Amoun
 	}
 	return nil
 }
+
+func (k Keeper) QueryFnUserBorrowInterest(ctx sdk.Context, id uint64) (sdk.Int, error) {
+	borrow, found := k.GetBorrow(ctx, id)
+	if !found {
+		return sdk.Int{}, types.ErrBorrowNotFound
+	}
+	updatedBorrow, err := k.IterateBorrowForLiq(ctx, borrow)
+	if err != nil {
+		return sdk.Int{}, err
+	}
+	return sdk.Int(updatedBorrow.InterestAccumulated), err
+}
+
+func (k Keeper) IterateLendRewardsQuery(ctx sdk.Context, lend types.LendAsset) (sdk.Int, error) {
+	lendAPR, _ := k.GetLendAPRByAssetIDAndPoolID(ctx, lend.PoolID, lend.AssetID)
+	reward, _, err := k.CalculateLendReward(ctx, lend.AmountIn.Amount.String(), lendAPR, lend)
+	if err != nil {
+		return sdk.Int{}, err
+	}
+	return lend.TotalRewards.Add(reward.TruncateInt()), nil
+}
+
+func (k Keeper) QueryFnUserLendRewards(ctx sdk.Context, id uint64) (sdk.Int, error) {
+	lend, found := k.GetLend(ctx, id)
+	if !found {
+		return sdk.Int{}, types.ErrLendNotFound
+	}
+	reward, err := k.IterateLendRewardsQuery(ctx, lend)
+	if err != nil {
+		return sdk.Int{}, err
+	}
+	return reward, nil
+}
