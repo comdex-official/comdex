@@ -1875,7 +1875,7 @@ func (k Keeper) QueryFnUserBorrowInterest(ctx sdk.Context, id uint64) (sdk.Int, 
 	if err != nil {
 		return sdk.Int{}, err
 	}
-	return sdk.Int(updatedBorrow.InterestAccumulated), err
+	return updatedBorrow.InterestAccumulated.TruncateInt(), err
 }
 
 func (k Keeper) IterateLendRewardsQuery(ctx sdk.Context, lend types.LendAsset) (sdk.Int, error) {
