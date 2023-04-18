@@ -1451,3 +1451,22 @@ func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultIn
 
 	return &types.MsgVaultInterestCalcResponse{}, nil
 }
+
+func (k Keeper) VaultInterestCalc(ctx sdk.Context, appID, vaultID uint64) (sdk.Int, error) {
+	appMapping, found := k.asset.GetApp(ctx, appID)
+	if !found {
+		return sdk.Int{}, types.ErrorAppMappingDoesNotExist
+	}
+	userVault, found := k.GetVault(ctx, vaultID)
+	if !found {
+		return sdk.Int{}, types.ErrorVaultDoesNotExist
+	}
+
+	totalDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
+	vault, err1 := k.rewards.CalculateVaultInterestForQuery(ctx, appMapping.Id, userVault.ExtendedPairVaultID, vaultID, totalDebt, userVault.BlockHeight, userVault.BlockTime.Unix())
+	if err1 != nil {
+		return sdk.Int{}, err1
+	}
+
+	return vault.InterestAccumulated, nil
+}

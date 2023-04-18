@@ -1000,7 +1000,7 @@ func queryUserLendRewards() *cobra.Command {
 func queryUserBorrowInterest() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "user_borrow_interest [id]",
-		Short: "Query all borrow interest",
+		Short: "Query user borrow interest",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -1025,7 +1025,7 @@ func queryUserBorrowInterest() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "lend_interest")
+	flags.AddPaginationFlagsToCmd(cmd, "user_borrow_interest")
 
 	return cmd
 }

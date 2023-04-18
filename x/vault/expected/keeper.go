@@ -1,6 +1,7 @@
 package expected
 
 import (
+	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -52,4 +53,5 @@ type RewardsKeeper interface {
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
 	GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards rewardstypes.StableVaultExternalRewards, found bool)
 	VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool
+	CalculateVaultInterestForQuery(ctx sdk.Context, appID, extendedPairID, vaultID uint64, totalDebt sdk.Int, blockHeight int64, vaultBlockTime int64) (vaultTypes.Vault, error)
 }

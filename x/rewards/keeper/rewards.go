@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -853,4 +854,59 @@ func (k Keeper) VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool {
 		}
 	}
 	return false
+}
+
+func (k Keeper) CalculateVaultInterestForQuery(ctx sdk.Context, appID, extendedPairID, vaultID uint64, totalDebt sdk.Int, blockHeight int64, vaultBlockTime int64) (vaultTypes.Vault, error) {
+	_, found := k.GetAppIDByApp(ctx, appID)
+	if !found {
+		return vaultTypes.Vault{}, nil
+	}
+	ExtPairVaultData, found := k.asset.GetPairsVault(ctx, extendedPairID)
+	if !found {
+		return vaultTypes.Vault{}, assettypes.ErrorPairDoesNotExist
+	}
+
+	extPairVaultBTime := ExtPairVaultData.BlockTime.Unix()
+	if ExtPairVaultData.StabilityFee.IsZero() || ExtPairVaultData.IsStableMintVault {
+		return vaultTypes.Vault{}, nil
+	}
+
+	blockTime := vaultBlockTime
+	if blockHeight == 0 {
+		blockTime = extPairVaultBTime
+	}
+	interest, err := k.CalculationOfRewards(ctx, totalDebt, ExtPairVaultData.StabilityFee, blockTime)
+	if err != nil {
+		return vaultTypes.Vault{}, err
+	}
+
+	vaultData, _ := k.vault.GetVault(ctx, vaultID)
+	vaultInterestTracker, found := k.GetVaultInterestTracker(ctx, vaultData.Id, appID)
+	if !found {
+		vaultInterestTracker = types.VaultInterestTracker{
+			VaultId:             vaultData.Id,
+			AppMappingId:        appID,
+			InterestAccumulated: interest,
+		}
+	} else {
+		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
+	}
+
+	if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+		newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
+		newInterestDec := sdk.NewDecFromInt(newInterest)
+		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
+
+		vaultData.BlockTime = ctx.BlockTime()
+		vaultData.BlockHeight = ctx.BlockHeight()
+		intAcc := vaultData.InterestAccumulated
+		updatedIntAcc := (intAcc).Add(newInterest)
+		vaultData.InterestAccumulated = updatedIntAcc
+
+	} else {
+		vaultData.BlockTime = ctx.BlockTime()
+		vaultData.BlockHeight = ctx.BlockHeight()
+	}
+
+	return vaultData, nil
 }

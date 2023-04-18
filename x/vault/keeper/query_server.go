@@ -743,3 +743,15 @@ func (q QueryServer) QueryAllStableMintVaultRewards(c context.Context, req *type
 		StableMintVaultRewards: stableRewardsData,
 	}, nil
 }
+
+func (q QueryServer) QueryUserVaultInterest(c context.Context, req *types.QueryUserVaultInterestRequest) (*types.QueryUserVaultInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	interest, err := q.VaultInterestCalc(ctx, req.AppId, req.Id)
+	if err != nil {
+		return &types.QueryUserVaultInterestResponse{}, err
+	}
+	return &types.QueryUserVaultInterestResponse{Interest: interest}, nil
+}

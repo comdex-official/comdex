@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
@@ -48,6 +49,7 @@ func GetQueryCmd() *cobra.Command {
 		QueryUserExtendedPairTotalData(),
 		QueryPairsLockedAndMintedStatisticByApp(),
 		QueryAllStableMintVaultRewards(),
+		QueryUserBorrowInterest(),
 	)
 
 	return cmd
@@ -983,5 +985,45 @@ func QueryAllStableMintVaultRewards() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "stable_mint_vault_rewards")
+	return cmd
+}
+
+func QueryUserBorrowInterest() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "user_vault_interest [app_id] [id]",
+		Short: "Query user vault interest",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			ID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.QueryUserVaultInterest(
+				context.Background(),
+				&types.QueryUserVaultInterestRequest{
+					AppId: appID,
+					Id:    ID,
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "vault_interest")
+
 	return cmd
 }
