@@ -95,6 +95,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 	// Checking extended pair vault data for Minimum collateralisation ratio
 	extPair, _ := k.asset.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 	liqRatio := extPair.MinCr
+	pair, _ := k.asset.GetPair(ctx, extPair.PairId)
 	totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
 	collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 	if err != nil {
@@ -118,7 +119,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
 
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.AuctionType)
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.AuctionType)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -136,8 +137,12 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 
 	return nil
 }
+func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.Coin {
+	asset, _ := k.asset.GetAsset(ctx, assetID)
+	return sdk.NewCoin(asset.Denom, amount)
+}
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Int, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, initiatorType string, auctionType bool) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, initiatorType string, auctionType bool) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -335,7 +340,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, pool lendtypes.Pool, borrow
 	borrow.IsLiquidated = true
 	k.lend.SetBorrow(ctx, borrow)
 	//updatedLockedVault.CollateralToBeAuctioned = selloffAmount.TruncateInt()
-	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn.Amount, borrow.AmountOut.Amount, borrow.AmountIn.Amount, sellOffAmt.TruncateInt(), currentCollateralizationRatio, appID, false, false, "", "", bonusToBidderAmount.Add(penaltyToReserveAmount).TruncateInt())
+	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, sdk.NewCoin(assetIn.Denom, sellOffAmt.TruncateInt()), currentCollateralizationRatio, appID, false, false, "", "", bonusToBidderAmount.Add(penaltyToReserveAmount).TruncateInt(), "", true)
 	if err != nil {
 		return err
 	}
