@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
+
 option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -60,15 +61,14 @@ message LockedVault {
     (gogoproto.customname) = "Owner",
     (gogoproto.moretags) = "yaml:\"owner\""];
 
-  string amount_in = 6 [
-    (gogoproto.customname) = "AmountIn",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags) = "yaml:\"amount_in\"",
-    (gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin amount_in = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"amount_in\""
+    ];
 
-  string amount_out = 7 [
-    (gogoproto.customname) = "AmountOut",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+  cosmos.base.v1beta1.Coin amount_out = 7 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.moretags) = "yaml:\"amount_out\"",
     (gogoproto.nullable) = false];
 
@@ -77,18 +77,18 @@ message LockedVault {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
-    
-  string collateral_to_be_auctioned =9 [
+
+  cosmos.base.v1beta1.Coin collateral_to_be_auctioned =9 [
     (gogoproto.nullable) = false,
-    (gogoproto.customname) = "CollateralToBeAuctioned",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags) = "yaml:\"collateral_to_be_auctioned\""];
-  string target_debt =10 [
+    (gogoproto.moretags) = "yaml:\"CollateralToBeAuctioned\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  cosmos.base.v1beta1.Coin target_debt =10 [
     (gogoproto.nullable) = false,
-    (gogoproto.customname) = "TargetDebt",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.moretags) = "yaml:\"target_debt\""];
-    
+    (gogoproto.moretags) = "yaml:\"target_debt\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+    ];
+
   google.protobuf.Timestamp liquidation_timestamp = 11 [
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false,
