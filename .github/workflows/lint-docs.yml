@@ -18,7 +18,7 @@ jobs:
           # within `super-linter`.
           fetch-depth: 0
       - name: Run documentation linter
-        uses: github/super-linter@v4
+        uses: github/super-linter@v5
         env:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_MARKDOWN: true
