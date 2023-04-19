@@ -89,7 +89,7 @@ message Auctions{
 
 }
 
-// message bidOwnerMapping{
-//   uint64 bid_id = 1;
-//   string bid_owner = 2;
-// }
+ message bidOwnerMapping{
+   uint64 bid_id = 1;
+   string bid_owner = 2;
+ }

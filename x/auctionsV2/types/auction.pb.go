@@ -30,27 +30,32 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Auctions struct {
-	AuctionId                 uint64                                  `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty" yaml:"auction_id"`
-	OutflowTokenInitAmount    github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,2,opt,name=outflow_token_init_amount,json=outflowTokenInitAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"outflow_token_init_amount" yaml:"outflow_token_init_amount"`
-	OutflowTokenCurrentAmount github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,3,opt,name=outflow_token_current_amount,json=outflowTokenCurrentAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"outflow_token_current_amount" yaml:"outflow_token_current_amount"`
-	InflowTokenTargetAmount   github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=inflow_token_target_amount,json=inflowTokenTargetAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"inflow_token_target_amount" yaml:"inflow_token_target_amount"`
-	InflowTokenCurrentAmount  github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,5,opt,name=inflow_token_current_amount,json=inflowTokenCurrentAmount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"inflow_token_current_amount" yaml:"inflow_token_current_amount"`
-	ActiveBiddingId           uint64                                  `protobuf:"varint,6,opt,name=active_bidding_id,json=activeBiddingId,proto3" json:"active_bidding_id,omitempty" yaml:"active_bidding_id"`
-	BiddingIds                []*BidOwnerMapping                      `protobuf:"bytes,7,rep,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
-	BidFactor                 github_com_cosmos_cosmos_sdk_types.Dec  `protobuf:"bytes,8,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
+	AuctionId       uint64                                  `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty" yaml:"auction_id"`
+	CollateralToken github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,2,opt,name=collateral_token,json=collateralToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"collateral_token" yaml:"collateral_token"`
+	// cosmos.base.v1beta1.Coin outflow_token_current_amount = 3 [
+	//   (gogoproto.nullable) = false,
+	//   (gogoproto.moretags) = "yaml:\"outflow_token_current_amount\"",
+	//   (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+	// ];
+	DebtToken github_com_cosmos_cosmos_sdk_types.Coin `protobuf:"bytes,4,opt,name=debt_token,json=debtToken,proto3,casttype=github.com/cosmos/cosmos-sdk/types.Coin" json:"debt_token" yaml:"inflow_token_target_amount"`
+	// cosmos.base.v1beta1.Coin inflow_token_current_amount = 5 [
+	//   (gogoproto.nullable) = false,
+	//   (gogoproto.moretags) = "yaml:\"inflow_token_current_amount\"",
+	//   (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+	// ];
+	ActiveBiddingId uint64                                 `protobuf:"varint,6,opt,name=active_bidding_id,json=activeBiddingId,proto3" json:"active_bidding_id,omitempty" yaml:"active_bidding_id"`
+	BiddingIds      []*BidOwnerMapping                     `protobuf:"bytes,7,rep,name=bidding_ids,json=biddingIds,proto3" json:"bidding_ids,omitempty" yaml:"bidding_ids"`
+	BidFactor       github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
 	// price indicator only for dutch auctions
-	OutflowTokenInitialPrice github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,9,opt,name=outflow_token_initial_price,json=outflowTokenInitialPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"outflow_token_initial_price" yaml:"outflow_token_initial_price"`
-	OutflowTokenCurrentPrice github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,10,opt,name=outflow_token_current_price,json=outflowTokenCurrentPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"outflow_token_current_price" yaml:"outflow_token_current_price"`
-	OutflowTokenEndPrice     github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,11,opt,name=outflow_token_end_price,json=outflowTokenEndPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"outflow_token_end_price" yaml:"outflow_token_end_price"`
-	InflowTokenCurrentPrice  github_com_cosmos_cosmos_sdk_types.Dec        `protobuf:"bytes,12,opt,name=inflow_token_current_price,json=inflowTokenCurrentPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"inflow_token_current_price" yaml:"inflow_token_current_price"`
-	LockedVaultId            uint64                                        `protobuf:"varint,13,opt,name=locked_vault_id,json=lockedVaultId,proto3" json:"locked_vault_id,omitempty" yaml:"locked_vault_id"`
-	VaultOwner               github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,14,opt,name=vault_owner,json=vaultOwner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"vault_owner,omitempty" yaml:"vault_owner"`
-	StartTime                time.Time                                     `protobuf:"bytes,15,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
-	EndTime                  time.Time                                     `protobuf:"bytes,16,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
-	BidEndTime               time.Time                                     `protobuf:"bytes,17,opt,name=bid_end_time,json=bidEndTime,proto3,stdtime" json:"bid_end_time" yaml:"bid_end_time"`
-	AppId                    uint64                                        `protobuf:"varint,18,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
-	AuctionMappingId         uint64                                        `protobuf:"varint,19,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty" yaml:"auction_mapping_id"`
-	AuctionStatus            uint64                                        `protobuf:"varint,20,opt,name=auction_status,json=auctionStatus,proto3" json:"auction_status,omitempty" yaml:"auction_status"`
+	CollateralTokenInitialPrice github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=collateral_token_initial_price,json=collateralTokenInitialPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"collateral_token_initial_price" yaml:"outflow_token_initial_price"`
+	CollateralTokenCurrentPrice github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,10,opt,name=collateral_token_current_price,json=collateralTokenCurrentPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"collateral_token_current_price" yaml:"outflow_token_current_price"`
+	CollateralTokenEndPrice     github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=collateral_token_end_price,json=collateralTokenEndPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"collateral_token_end_price" yaml:"outflow_token_end_price"`
+	DebtTokenCurrentPrice       github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,12,opt,name=debt_token_current_price,json=debtTokenCurrentPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"debt_token_current_price" yaml:"inflow_token_current_price"`
+	LockedVaultId               uint64                                 `protobuf:"varint,13,opt,name=locked_vault_id,json=lockedVaultId,proto3" json:"locked_vault_id,omitempty" yaml:"locked_vault_id"`
+	StartTime                   time.Time                              `protobuf:"bytes,15,opt,name=start_time,json=startTime,proto3,stdtime" json:"start_time" yaml:"start_time"`
+	EndTime                     time.Time                              `protobuf:"bytes,16,opt,name=end_time,json=endTime,proto3,stdtime" json:"end_time" yaml:"end_time"`
+	AppId                       uint64                                 `protobuf:"varint,18,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AuctionType                 bool                                   `protobuf:"varint,19,opt,name=auction_type,json=auctionType,proto3" json:"auction_type,omitempty" yaml:"auction_type"`
 }
 
 func (m *Auctions) Reset()         { *m = Auctions{} }
@@ -93,30 +98,16 @@ func (m *Auctions) GetAuctionId() uint64 {
 	return 0
 }
 
-func (m *Auctions) GetOutflowTokenInitAmount() github_com_cosmos_cosmos_sdk_types.Coin {
+func (m *Auctions) GetCollateralToken() github_com_cosmos_cosmos_sdk_types.Coin {
 	if m != nil {
-		return m.OutflowTokenInitAmount
+		return m.CollateralToken
 	}
 	return github_com_cosmos_cosmos_sdk_types.Coin{}
 }
 
-func (m *Auctions) GetOutflowTokenCurrentAmount() github_com_cosmos_cosmos_sdk_types.Coin {
+func (m *Auctions) GetDebtToken() github_com_cosmos_cosmos_sdk_types.Coin {
 	if m != nil {
-		return m.OutflowTokenCurrentAmount
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-func (m *Auctions) GetInflowTokenTargetAmount() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.InflowTokenTargetAmount
-	}
-	return github_com_cosmos_cosmos_sdk_types.Coin{}
-}
-
-func (m *Auctions) GetInflowTokenCurrentAmount() github_com_cosmos_cosmos_sdk_types.Coin {
-	if m != nil {
-		return m.InflowTokenCurrentAmount
+		return m.DebtToken
 	}
 	return github_com_cosmos_cosmos_sdk_types.Coin{}
 }
@@ -142,13 +133,6 @@ func (m *Auctions) GetLockedVaultId() uint64 {
 	return 0
 }
 
-func (m *Auctions) GetVaultOwner() github_com_cosmos_cosmos_sdk_types.AccAddress {
-	if m != nil {
-		return m.VaultOwner
-	}
-	return ""
-}
-
 func (m *Auctions) GetStartTime() time.Time {
 	if m != nil {
 		return m.StartTime
@@ -163,13 +147,6 @@ func (m *Auctions) GetEndTime() time.Time {
 	return time.Time{}
 }
 
-func (m *Auctions) GetBidEndTime() time.Time {
-	if m != nil {
-		return m.BidEndTime
-	}
-	return time.Time{}
-}
-
 func (m *Auctions) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
@@ -177,18 +154,11 @@ func (m *Auctions) GetAppId() uint64 {
 	return 0
 }
 
-func (m *Auctions) GetAuctionMappingId() uint64 {
+func (m *Auctions) GetAuctionType() bool {
 	if m != nil {
-		return m.AuctionMappingId
+		return m.AuctionType
 	}
-	return 0
-}
-
-func (m *Auctions) GetAuctionStatus() uint64 {
-	if m != nil {
-		return m.AuctionStatus
-	}
-	return 0
+	return false
 }
 
 type BidOwnerMapping struct {
@@ -253,67 +223,58 @@ func init() {
 }
 
 var fileDescriptor_8ee47f5a405fa8ba = []byte{
-	// 961 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0xdd, 0x6e, 0x1b, 0x45,
-	0x14, 0xc7, 0xb3, 0xb4, 0x49, 0xe3, 0x71, 0x53, 0xd7, 0xd3, 0x7c, 0xac, 0x9d, 0xd6, 0xeb, 0x2e,
-	0x12, 0xb5, 0x90, 0xb2, 0x56, 0x43, 0xaf, 0xb8, 0x22, 0x0e, 0x01, 0x2c, 0x04, 0x54, 0x1b, 0x13,
-	0x21, 0x24, 0xb4, 0x9a, 0xdd, 0x19, 0xbb, 0xa3, 0xd8, 0x3b, 0xab, 0xdd, 0x71, 0x4a, 0x9f, 0x80,
-	0xdb, 0x48, 0x3c, 0x05, 0x12, 0x12, 0x12, 0x4f, 0xd1, 0xcb, 0x8a, 0x2b, 0xc4, 0xc5, 0x82, 0x92,
-	0x37, 0xf0, 0x25, 0x57, 0x68, 0x3e, 0xd6, 0xeb, 0x75, 0x13, 0x1c, 0x0b, 0xae, 0xec, 0x39, 0x73,
-	0xe6, 0x7f, 0x7e, 0x33, 0x7b, 0xce, 0x99, 0x01, 0x4f, 0x02, 0x36, 0xc2, 0xe4, 0xfb, 0x36, 0x1a,
-	0x07, 0x9c, 0xb2, 0x30, 0x39, 0xd9, 0x6f, 0x9f, 0x3d, 0xf5, 0x09, 0x47, 0x4f, 0x33, 0x93, 0x13,
-	0xc5, 0x8c, 0x33, 0x58, 0x53, 0x8e, 0x4e, 0xee, 0xe8, 0x68, 0xc7, 0xfa, 0xe6, 0x80, 0x0d, 0x98,
-	0xf4, 0x6a, 0x8b, 0x7f, 0x6a, 0x41, 0xdd, 0x1a, 0x30, 0x36, 0x18, 0x92, 0xb6, 0x1c, 0xf9, 0xe3,
-	0x7e, 0x9b, 0xd3, 0x11, 0x49, 0x38, 0x1a, 0x45, 0xda, 0xa1, 0x11, 0xb0, 0x64, 0xc4, 0x92, 0xb6,
-	0x8f, 0x12, 0x32, 0x0d, 0x1a, 0x30, 0xaa, 0x23, 0xda, 0xbf, 0x55, 0xc1, 0xfa, 0x81, 0x8e, 0x06,
-	0x9f, 0x01, 0xa0, 0x23, 0x7b, 0x14, 0x9b, 0x46, 0xd3, 0x68, 0xdd, 0xee, 0x6c, 0x4d, 0x52, 0xab,
-	0xfa, 0x0a, 0x8d, 0x86, 0x1f, 0xda, 0xf9, 0x9c, 0xed, 0x96, 0xf4, 0xa0, 0x8b, 0xe1, 0x4f, 0x06,
-	0xa8, 0xb1, 0x31, 0xef, 0x0f, 0xd9, 0x4b, 0x8f, 0xb3, 0x53, 0x12, 0x7a, 0x34, 0xa4, 0xdc, 0x43,
-	0x23, 0x36, 0x0e, 0xb9, 0xf9, 0x4e, 0xd3, 0x68, 0x95, 0xf7, 0x6b, 0x8e, 0xe2, 0x70, 0x04, 0x47,
-	0xb6, 0x27, 0xe7, 0x90, 0xd1, 0xb0, 0x73, 0xfc, 0x3a, 0xb5, 0x56, 0x26, 0xa9, 0xd5, 0x54, 0x41,
-	0xae, 0x55, 0xb2, 0xff, 0x4e, 0xad, 0x27, 0x03, 0xca, 0x5f, 0x8c, 0x7d, 0x27, 0x60, 0xa3, 0xb6,
-	0xde, 0x98, 0xfa, 0xd9, 0x4b, 0xf0, 0x69, 0x9b, 0xbf, 0x8a, 0x48, 0x22, 0x45, 0xdd, 0x6d, 0x2d,
-	0xd3, 0x13, 0x2a, 0xdd, 0x90, 0xf2, 0x03, 0xa9, 0x01, 0x7f, 0x35, 0xc0, 0xc3, 0x62, 0x84, 0x60,
-	0x1c, 0xc7, 0x24, 0x9c, 0xe2, 0xde, 0x5a, 0x84, 0x7b, 0xa2, 0x71, 0xdf, 0xbd, 0x0a, 0xb7, 0x28,
-	0xb6, 0x14, 0x71, 0x6d, 0x96, 0xf8, 0x50, 0xe9, 0x68, 0xe8, 0x9f, 0x0d, 0x50, 0xa7, 0xe1, 0x4c,
-	0x18, 0x8e, 0xe2, 0x01, 0x99, 0x22, 0xdf, 0x5e, 0x84, 0xdc, 0xd3, 0xc8, 0x8f, 0x15, 0xf2, 0xf5,
-	0x52, 0x4b, 0x01, 0xef, 0x28, 0x1d, 0xc9, 0xdb, 0x93, 0x2a, 0x1a, 0xf7, 0x17, 0x03, 0xec, 0x16,
-	0x62, 0xcc, 0x1d, 0xf1, 0xea, 0x22, 0xde, 0xaf, 0x35, 0xaf, 0x7d, 0x05, 0xef, 0x7f, 0x38, 0x61,
-	0x73, 0x06, 0xb8, 0x78, 0xc0, 0x9f, 0x81, 0x2a, 0x0a, 0x38, 0x3d, 0x23, 0x9e, 0x4f, 0x31, 0xa6,
-	0xe1, 0x40, 0xa4, 0xff, 0x9a, 0x4c, 0xff, 0x87, 0x93, 0xd4, 0x32, 0x75, 0xfa, 0xcf, 0xbb, 0xd8,
-	0x6e, 0x45, 0xd9, 0x3a, 0xca, 0xd4, 0xc5, 0x30, 0x00, 0xe5, 0x7c, 0x3e, 0x31, 0xef, 0x34, 0x6f,
-	0xb5, 0xca, 0xfb, 0xef, 0x3b, 0xd7, 0x96, 0xb5, 0xe3, 0x53, 0xfc, 0xd5, 0xcb, 0x90, 0xc4, 0x5f,
-	0xa0, 0x28, 0xa2, 0xe1, 0xa0, 0xb3, 0x3d, 0x49, 0x2d, 0xa8, 0xe2, 0xcd, 0x08, 0xd9, 0x2e, 0xf0,
-	0xb3, 0x18, 0x09, 0xf4, 0x81, 0x18, 0x79, 0x7d, 0x14, 0x70, 0x16, 0x9b, 0xeb, 0x4d, 0xa3, 0x55,
-	0xea, 0x1c, 0x8a, 0x33, 0xfb, 0x23, 0xb5, 0xde, 0xbb, 0xc1, 0x69, 0x7c, 0x4c, 0x82, 0xbc, 0xa8,
-	0x73, 0x25, 0xdb, 0x2d, 0xf9, 0x14, 0x7f, 0x22, 0xff, 0xc3, 0x1f, 0x0d, 0xb0, 0xfb, 0x76, 0x29,
-	0x52, 0x34, 0xf4, 0xa2, 0x98, 0x06, 0xc4, 0x2c, 0xc9, 0xa8, 0xbd, 0xa5, 0xa3, 0xda, 0xd7, 0x55,
-	0xf9, 0x54, 0xda, 0x76, 0xcd, 0xf9, 0xe2, 0xa5, 0x68, 0xf8, 0x5c, 0x4c, 0x5d, 0x41, 0x95, 0xe5,
-	0x83, 0xa2, 0x02, 0xff, 0x27, 0x55, 0x41, 0x7a, 0x8e, 0x4a, 0xe7, 0x8f, 0xa2, 0xfa, 0xc1, 0x00,
-	0x3b, 0xc5, 0xa5, 0x24, 0xc4, 0x9a, 0xa8, 0x2c, 0x89, 0x9e, 0x2f, 0x4d, 0xd4, 0xb8, 0x8a, 0x68,
-	0x2a, 0x6b, 0xbb, 0x9b, 0xb3, 0x34, 0x47, 0x21, 0x56, 0x24, 0xe7, 0xf3, 0x9d, 0xa2, 0x78, 0x3c,
-	0x77, 0x25, 0xcc, 0xf1, 0xd2, 0x30, 0x8f, 0xff, 0xa5, 0x10, 0x35, 0xcf, 0xce, 0xdb, 0xc5, 0xa5,
-	0x90, 0x3a, 0xa0, 0x32, 0x64, 0xc1, 0x29, 0xc1, 0xde, 0x19, 0x1a, 0x0f, 0xb9, 0xa8, 0xac, 0x0d,
-	0x59, 0x59, 0xf5, 0x49, 0x6a, 0x6d, 0x2b, 0xe1, 0x39, 0x07, 0xdb, 0xdd, 0x50, 0x96, 0x13, 0x61,
-	0xe8, 0x62, 0xf8, 0x02, 0x94, 0xd5, 0x1c, 0x13, 0xa5, 0x62, 0xde, 0x93, 0xdb, 0xf8, 0x34, 0xaf,
-	0x94, 0x99, 0x49, 0xd1, 0x11, 0xf6, 0x6e, 0xb0, 0xb1, 0x83, 0x20, 0x38, 0xc0, 0x38, 0x26, 0x49,
-	0xe2, 0x02, 0xb9, 0x5c, 0x56, 0x21, 0xfc, 0x06, 0x80, 0x84, 0xa3, 0x98, 0x7b, 0xe2, 0x1e, 0x35,
-	0x2b, 0xb2, 0x53, 0xd5, 0x1d, 0x75, 0xc9, 0x3a, 0xd9, 0x25, 0xeb, 0xf4, 0xb2, 0x4b, 0xb6, 0xf3,
-	0x48, 0xb7, 0x2a, 0x5d, 0x4c, 0xf9, 0x5a, 0xfb, 0xfc, 0x4f, 0xcb, 0x70, 0x4b, 0xd2, 0x20, 0xdc,
-	0xa1, 0x0b, 0xd6, 0xc5, 0xe7, 0x93, 0xba, 0xf7, 0x17, 0xea, 0xee, 0x6a, 0xdd, 0x8a, 0xd2, 0xcd,
-	0x56, 0x2a, 0xd5, 0x3b, 0x24, 0xc4, 0x52, 0xf3, 0x3b, 0x70, 0x57, 0x94, 0xef, 0x54, 0xb7, 0xba,
-	0x50, 0xd7, 0xd2, 0xba, 0x0f, 0xf2, 0xe2, 0x2f, 0x6a, 0x8b, 0xce, 0x72, 0xa4, 0xe5, 0x5b, 0x60,
-	0x0d, 0x45, 0x91, 0xf8, 0x62, 0x50, 0x7e, 0xb1, 0xea, 0x24, 0xb5, 0x36, 0x74, 0x2f, 0x94, 0x76,
-	0xdb, 0x5d, 0x45, 0x51, 0xd4, 0xc5, 0xf0, 0x73, 0x00, 0xb3, 0xc7, 0xc1, 0x48, 0x35, 0x32, 0xb1,
-	0xea, 0x81, 0x5c, 0xf5, 0x68, 0x92, 0x5a, 0xb5, 0xe2, 0x03, 0x22, 0xf7, 0xb1, 0xdd, 0xfb, 0xda,
-	0xa8, 0x1b, 0x60, 0x17, 0xc3, 0x8f, 0xc0, 0xbd, 0xcc, 0x31, 0xe1, 0x88, 0x8f, 0x13, 0x73, 0x53,
-	0x0a, 0xd5, 0x26, 0xa9, 0xb5, 0x55, 0x14, 0x52, 0xf3, 0xb6, 0xbb, 0xa1, 0x0d, 0xc7, 0x6a, 0x7c,
-	0x04, 0x2a, 0x73, 0x7d, 0x15, 0x6e, 0x81, 0x35, 0xb1, 0xd9, 0xec, 0x59, 0xe3, 0xae, 0xfa, 0x14,
-	0x77, 0x31, 0xdc, 0x05, 0xa2, 0xe7, 0xe9, 0xbc, 0x12, 0x4f, 0x95, 0x92, 0xbb, 0x9e, 0x2d, 0xed,
-	0x7c, 0xf9, 0xfa, 0xa2, 0x61, 0xbc, 0xb9, 0x68, 0x18, 0x7f, 0x5d, 0x34, 0x8c, 0xf3, 0xcb, 0xc6,
-	0xca, 0x9b, 0xcb, 0xc6, 0xca, 0xef, 0x97, 0x8d, 0x95, 0x6f, 0x9f, 0x15, 0x32, 0x4c, 0xf4, 0xf6,
-	0x3d, 0xd6, 0xef, 0xd3, 0x80, 0xa2, 0xa1, 0x1e, 0xb7, 0x0b, 0xaf, 0x3d, 0x99, 0x73, 0xfe, 0x9a,
-	0xfc, 0x20, 0x1f, 0xfc, 0x13, 0x00, 0x00, 0xff, 0xff, 0x30, 0xe5, 0xc2, 0x55, 0x0f, 0x0a, 0x00,
+	// 817 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x4f, 0x6f, 0xe3, 0x44,
+	0x14, 0x8f, 0x61, 0x37, 0x9b, 0x4c, 0x5a, 0x65, 0xeb, 0xa5, 0xbb, 0xde, 0x14, 0xec, 0xe0, 0xc3,
+	0x6e, 0x84, 0x54, 0x5b, 0x2d, 0x3d, 0x71, 0xc3, 0xa5, 0x88, 0x20, 0x01, 0x95, 0x89, 0x2a, 0xc4,
+	0xc5, 0x1a, 0x7b, 0x26, 0x66, 0x54, 0xc7, 0x63, 0xd9, 0x93, 0x96, 0x7e, 0x07, 0x40, 0xbd, 0xf2,
+	0x41, 0xf8, 0x0e, 0x3d, 0xf6, 0x88, 0x38, 0x18, 0x94, 0x7e, 0x83, 0x1c, 0x39, 0xa1, 0xf9, 0xe3,
+	0xba, 0x71, 0x8b, 0x4a, 0x24, 0x4e, 0xc9, 0xbc, 0x79, 0xef, 0xf7, 0xfb, 0xcd, 0xf3, 0xbc, 0xdf,
+	0x80, 0xb7, 0x11, 0x9d, 0x21, 0xfc, 0xa3, 0x0b, 0xe7, 0x11, 0x23, 0x34, 0x2d, 0x4e, 0xf6, 0xdd,
+	0xb3, 0xbd, 0x10, 0x33, 0xb8, 0x57, 0x85, 0x9c, 0x2c, 0xa7, 0x8c, 0xea, 0xaf, 0x65, 0xa2, 0x53,
+	0x27, 0x3a, 0x2a, 0x71, 0xf0, 0x5e, 0x4c, 0x63, 0x2a, 0xb2, 0x5c, 0xfe, 0x4f, 0x16, 0x0c, 0xac,
+	0x98, 0xd2, 0x38, 0xc1, 0xae, 0x58, 0x85, 0xf3, 0xa9, 0xcb, 0xc8, 0x0c, 0x17, 0x0c, 0xce, 0x32,
+	0x95, 0x60, 0x46, 0xb4, 0x98, 0xd1, 0xc2, 0x0d, 0x61, 0x81, 0x6f, 0x49, 0x23, 0x4a, 0x14, 0xa3,
+	0xfd, 0xdb, 0x06, 0xe8, 0x7c, 0xaa, 0xd8, 0xf4, 0x03, 0x00, 0x14, 0x73, 0x40, 0x90, 0xa1, 0x0d,
+	0xb5, 0xd1, 0x13, 0x6f, 0x7b, 0x59, 0x5a, 0x5b, 0x17, 0x70, 0x96, 0x7c, 0x62, 0xd7, 0x7b, 0xb6,
+	0xdf, 0x55, 0x8b, 0x31, 0xd2, 0x2f, 0x35, 0xf0, 0x3c, 0xa2, 0x49, 0x02, 0x19, 0xce, 0x61, 0x12,
+	0x30, 0x7a, 0x8a, 0x53, 0xe3, 0x9d, 0xa1, 0x36, 0xea, 0xed, 0xbf, 0x76, 0x24, 0xbd, 0xc3, 0xe9,
+	0xab, 0xa3, 0x38, 0x87, 0x94, 0xa4, 0xde, 0x97, 0x57, 0xa5, 0xd5, 0x5a, 0x96, 0xd6, 0x2b, 0x89,
+	0xdd, 0x04, 0xb0, 0xff, 0x2e, 0xad, 0xb7, 0x31, 0x61, 0x3f, 0xcc, 0x43, 0x27, 0xa2, 0x33, 0x57,
+	0x1d, 0x43, 0xfe, 0xec, 0x16, 0xe8, 0xd4, 0x65, 0x17, 0x19, 0x2e, 0x04, 0x96, 0xdf, 0xaf, 0xab,
+	0x27, 0xbc, 0x58, 0xff, 0x45, 0x03, 0x00, 0xe1, 0x90, 0x29, 0x31, 0x4f, 0x1e, 0x13, 0x33, 0x51,
+	0x62, 0x3e, 0x94, 0x62, 0x48, 0x3a, 0x4d, 0xe8, 0xb9, 0x2c, 0x0e, 0x18, 0xcc, 0x63, 0xcc, 0x02,
+	0x38, 0xa3, 0xf3, 0x94, 0xad, 0x25, 0xab, 0xcb, 0x25, 0x48, 0x41, 0x5f, 0x80, 0x2d, 0x18, 0x31,
+	0x72, 0x86, 0x83, 0x90, 0x20, 0x44, 0xd2, 0x98, 0x37, 0xb8, 0x2d, 0x1a, 0xfc, 0xfe, 0xb2, 0xb4,
+	0x0c, 0xd5, 0xe0, 0x66, 0x8a, 0xed, 0xf7, 0x65, 0xcc, 0x93, 0xa1, 0x31, 0xd2, 0x23, 0xd0, 0xab,
+	0xf7, 0x0b, 0xe3, 0xd9, 0xf0, 0xdd, 0x51, 0x6f, 0xff, 0x23, 0xe7, 0x5f, 0x2f, 0x8e, 0x13, 0x12,
+	0xf4, 0xcd, 0x79, 0x8a, 0xf3, 0xaf, 0x60, 0x96, 0x91, 0x34, 0xf6, 0x5e, 0x2e, 0x4b, 0x4b, 0x97,
+	0x7c, 0x77, 0x80, 0x6c, 0x1f, 0x84, 0x15, 0x47, 0xa1, 0x87, 0x80, 0xaf, 0x82, 0x29, 0x8c, 0x18,
+	0xcd, 0x8d, 0xce, 0x50, 0x1b, 0x75, 0xbd, 0x43, 0xde, 0xa3, 0x3f, 0x4a, 0xeb, 0xcd, 0x7f, 0x38,
+	0xfe, 0x67, 0x38, 0xaa, 0xaf, 0x4d, 0x8d, 0x64, 0xfb, 0xdd, 0x90, 0xa0, 0xcf, 0xc5, 0x7f, 0xfd,
+	0x57, 0x0d, 0x98, 0xcd, 0xaf, 0x1e, 0x90, 0x94, 0x30, 0x02, 0x93, 0x20, 0xcb, 0x49, 0x84, 0x8d,
+	0xae, 0x20, 0x9e, 0xac, 0x4d, 0x6c, 0x4b, 0x62, 0x3a, 0x67, 0x77, 0xbe, 0xe3, 0x0a, 0xb4, 0xed,
+	0xef, 0x34, 0xee, 0xcc, 0x58, 0x6e, 0x1f, 0xf3, 0xdd, 0x87, 0xb5, 0x45, 0xf3, 0x3c, 0xc7, 0x29,
+	0x53, 0xda, 0xc0, 0xff, 0xa9, 0x6d, 0x05, 0xfa, 0xbe, 0xb6, 0x43, 0xb9, 0x2d, 0xb5, 0xfd, 0xac,
+	0x81, 0xc1, 0x3d, 0x6d, 0x38, 0x45, 0x4a, 0x57, 0x4f, 0xe8, 0x3a, 0x5e, 0x5b, 0x97, 0xf9, 0x90,
+	0xae, 0x5b, 0x58, 0xdb, 0x7f, 0xd5, 0xd0, 0x74, 0x94, 0x22, 0xa9, 0xe7, 0x27, 0x0d, 0x18, 0xf5,
+	0xac, 0x35, 0xba, 0xb4, 0x21, 0xd4, 0x7c, 0xbb, 0xb6, 0x9a, 0x87, 0x06, 0xb1, 0xd1, 0xa4, 0xed,
+	0xdb, 0xe9, 0x5a, 0x69, 0x8f, 0x07, 0xfa, 0x09, 0x8d, 0x4e, 0x31, 0x0a, 0xce, 0xe0, 0x3c, 0x61,
+	0x7c, 0xce, 0x36, 0xc5, 0x9c, 0x0d, 0x96, 0xa5, 0xf5, 0x52, 0xc2, 0x36, 0x12, 0x6c, 0x7f, 0x53,
+	0x46, 0x4e, 0x78, 0x60, 0x8c, 0xf4, 0xef, 0x00, 0x28, 0x18, 0xcc, 0x59, 0xc0, 0xdd, 0xd4, 0xe8,
+	0x0b, 0xf7, 0x18, 0x38, 0xd2, 0x6a, 0x9d, 0xca, 0x6a, 0x9d, 0x49, 0x65, 0xb5, 0xde, 0x07, 0xca,
+	0x3e, 0xd4, 0x85, 0xaf, 0x6b, 0xed, 0xcb, 0x3f, 0x2d, 0xcd, 0xef, 0x8a, 0x00, 0x4f, 0xd7, 0x7d,
+	0xd0, 0xe1, 0x3d, 0x15, 0xb8, 0xcf, 0x1f, 0xc5, 0xdd, 0x51, 0xb8, 0x7d, 0x89, 0x5b, 0x55, 0x4a,
+	0xd4, 0x67, 0x38, 0x45, 0x02, 0x73, 0x04, 0xda, 0x30, 0xcb, 0xf8, 0x41, 0x75, 0x71, 0xd0, 0xad,
+	0x65, 0x69, 0x6d, 0x2a, 0x43, 0x11, 0x71, 0xdb, 0x7f, 0x0a, 0xb3, 0x6c, 0x8c, 0xf4, 0x31, 0xd8,
+	0xa8, 0x3c, 0x9c, 0x37, 0xdb, 0x78, 0x31, 0xd4, 0x46, 0x1d, 0xef, 0xcd, 0xa2, 0xb4, 0x7a, 0xea,
+	0x0d, 0x98, 0x5c, 0x64, 0x78, 0x59, 0x5a, 0x2f, 0x56, 0x0d, 0x9f, 0x27, 0xdb, 0x7e, 0x0f, 0xd6,
+	0x39, 0xf6, 0x11, 0xe8, 0x37, 0x8c, 0x45, 0xdf, 0x06, 0x6d, 0x3e, 0xea, 0xd5, 0xcb, 0xe1, 0x3f,
+	0x0d, 0x09, 0x1a, 0x23, 0x7d, 0x07, 0xf0, 0xa1, 0x0f, 0x28, 0x4f, 0x15, 0xcf, 0x42, 0xd7, 0xef,
+	0x54, 0xa5, 0xde, 0xd7, 0x57, 0x0b, 0x53, 0xbb, 0x5e, 0x98, 0xda, 0x5f, 0x0b, 0x53, 0xbb, 0xbc,
+	0x31, 0x5b, 0xd7, 0x37, 0x66, 0xeb, 0xf7, 0x1b, 0xb3, 0xf5, 0xfd, 0xc1, 0xca, 0x5d, 0xe1, 0xe6,
+	0xb6, 0x4b, 0xa7, 0x53, 0x12, 0x11, 0x98, 0xa8, 0xb5, 0xbb, 0xf2, 0xa0, 0x8a, 0xdb, 0x13, 0xb6,
+	0x45, 0x17, 0x3f, 0xfe, 0x27, 0x00, 0x00, 0xff, 0xff, 0xb5, 0x96, 0x9c, 0xaf, 0x72, 0x07, 0x00,
 	0x00,
 }
 
@@ -337,15 +298,13 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.AuctionStatus != 0 {
-		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionStatus))
+	if m.AuctionType {
 		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xa0
-	}
-	if m.AuctionMappingId != 0 {
-		i = encodeVarintAuction(dAtA, i, uint64(m.AuctionMappingId))
+		if m.AuctionType {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
 		i--
 		dAtA[i] = 0x1
 		i--
@@ -358,7 +317,7 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x90
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BidEndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime):])
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -367,41 +326,24 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x1
 	i--
-	dAtA[i] = 0x8a
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	dAtA[i] = 0x82
+	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
 	if err2 != nil {
 		return 0, err2
 	}
 	i -= n2
 	i = encodeVarintAuction(dAtA, i, uint64(n2))
 	i--
-	dAtA[i] = 0x1
-	i--
-	dAtA[i] = 0x82
-	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
-	if err3 != nil {
-		return 0, err3
-	}
-	i -= n3
-	i = encodeVarintAuction(dAtA, i, uint64(n3))
-	i--
 	dAtA[i] = 0x7a
-	if len(m.VaultOwner) > 0 {
-		i -= len(m.VaultOwner)
-		copy(dAtA[i:], m.VaultOwner)
-		i = encodeVarintAuction(dAtA, i, uint64(len(m.VaultOwner)))
-		i--
-		dAtA[i] = 0x72
-	}
 	if m.LockedVaultId != 0 {
 		i = encodeVarintAuction(dAtA, i, uint64(m.LockedVaultId))
 		i--
 		dAtA[i] = 0x68
 	}
 	{
-		size := m.InflowTokenCurrentPrice.Size()
+		size := m.DebtTokenCurrentPrice.Size()
 		i -= size
-		if _, err := m.InflowTokenCurrentPrice.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.DebtTokenCurrentPrice.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintAuction(dAtA, i, uint64(size))
@@ -409,9 +351,9 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x62
 	{
-		size := m.OutflowTokenEndPrice.Size()
+		size := m.CollateralTokenEndPrice.Size()
 		i -= size
-		if _, err := m.OutflowTokenEndPrice.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.CollateralTokenEndPrice.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintAuction(dAtA, i, uint64(size))
@@ -419,9 +361,9 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x5a
 	{
-		size := m.OutflowTokenCurrentPrice.Size()
+		size := m.CollateralTokenCurrentPrice.Size()
 		i -= size
-		if _, err := m.OutflowTokenCurrentPrice.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.CollateralTokenCurrentPrice.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintAuction(dAtA, i, uint64(size))
@@ -429,9 +371,9 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x52
 	{
-		size := m.OutflowTokenInitialPrice.Size()
+		size := m.CollateralTokenInitialPrice.Size()
 		i -= size
-		if _, err := m.OutflowTokenInitialPrice.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.CollateralTokenInitialPrice.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintAuction(dAtA, i, uint64(size))
@@ -468,17 +410,7 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x30
 	}
 	{
-		size, err := m.InflowTokenCurrentAmount.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintAuction(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x2a
-	{
-		size, err := m.InflowTokenTargetAmount.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.DebtToken.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -488,17 +420,7 @@ func (m *Auctions) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i--
 	dAtA[i] = 0x22
 	{
-		size, err := m.OutflowTokenCurrentAmount.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintAuction(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x1a
-	{
-		size, err := m.OutflowTokenInitAmount.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.CollateralToken.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -570,13 +492,9 @@ func (m *Auctions) Size() (n int) {
 	if m.AuctionId != 0 {
 		n += 1 + sovAuction(uint64(m.AuctionId))
 	}
-	l = m.OutflowTokenInitAmount.Size()
+	l = m.CollateralToken.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = m.OutflowTokenCurrentAmount.Size()
-	n += 1 + l + sovAuction(uint64(l))
-	l = m.InflowTokenTargetAmount.Size()
-	n += 1 + l + sovAuction(uint64(l))
-	l = m.InflowTokenCurrentAmount.Size()
+	l = m.DebtToken.Size()
 	n += 1 + l + sovAuction(uint64(l))
 	if m.ActiveBiddingId != 0 {
 		n += 1 + sovAuction(uint64(m.ActiveBiddingId))
@@ -589,35 +507,26 @@ func (m *Auctions) Size() (n int) {
 	}
 	l = m.BidFactor.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = m.OutflowTokenInitialPrice.Size()
+	l = m.CollateralTokenInitialPrice.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = m.OutflowTokenCurrentPrice.Size()
+	l = m.CollateralTokenCurrentPrice.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = m.OutflowTokenEndPrice.Size()
+	l = m.CollateralTokenEndPrice.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = m.InflowTokenCurrentPrice.Size()
+	l = m.DebtTokenCurrentPrice.Size()
 	n += 1 + l + sovAuction(uint64(l))
 	if m.LockedVaultId != 0 {
 		n += 1 + sovAuction(uint64(m.LockedVaultId))
-	}
-	l = len(m.VaultOwner)
-	if l > 0 {
-		n += 1 + l + sovAuction(uint64(l))
 	}
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
 	n += 1 + l + sovAuction(uint64(l))
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime)
 	n += 2 + l + sovAuction(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime)
-	n += 2 + l + sovAuction(uint64(l))
 	if m.AppId != 0 {
 		n += 2 + sovAuction(uint64(m.AppId))
 	}
-	if m.AuctionMappingId != 0 {
-		n += 2 + sovAuction(uint64(m.AuctionMappingId))
-	}
-	if m.AuctionStatus != 0 {
-		n += 2 + sovAuction(uint64(m.AuctionStatus))
+	if m.AuctionType {
+		n += 3
 	}
 	return n
 }
@@ -694,7 +603,7 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenInitAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollateralToken", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -721,46 +630,13 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.OutflowTokenInitAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenCurrentAmount", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.OutflowTokenCurrentAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollateralToken.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InflowTokenTargetAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DebtToken", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -787,40 +663,7 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.InflowTokenTargetAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InflowTokenCurrentAmount", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.InflowTokenCurrentAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.DebtToken.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -913,7 +756,7 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 9:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenInitialPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollateralTokenInitialPrice", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -941,13 +784,13 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.OutflowTokenInitialPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollateralTokenInitialPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 10:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenCurrentPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollateralTokenCurrentPrice", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -975,13 +818,13 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.OutflowTokenCurrentPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollateralTokenCurrentPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 11:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OutflowTokenEndPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CollateralTokenEndPrice", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1009,13 +852,13 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.OutflowTokenEndPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.CollateralTokenEndPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 12:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InflowTokenCurrentPrice", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DebtTokenCurrentPrice", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1043,7 +886,7 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.InflowTokenCurrentPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.DebtTokenCurrentPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1066,38 +909,6 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field VaultOwner", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.VaultOwner = github_com_cosmos_cosmos_sdk_types.AccAddress(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 15:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartTime", wireType)
@@ -1164,39 +975,6 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 17:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BidEndTime", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAuction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthAuction
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BidEndTime, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		case 18:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
@@ -1218,9 +996,9 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 			}
 		case 19:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionType", wireType)
 			}
-			m.AuctionMappingId = 0
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAuction
@@ -1230,30 +1008,12 @@ func (m *Auctions) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AuctionMappingId |= uint64(b&0x7F) << shift
+				v |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 20:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AuctionStatus", wireType)
-			}
-			m.AuctionStatus = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAuction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AuctionStatus |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
+			m.AuctionType = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAuction(dAtA[iNdEx:])
