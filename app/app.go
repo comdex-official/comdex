@@ -14,7 +14,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/rakyll/statik/fs"
 
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
@@ -166,12 +165,7 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv10 "github.com/comdex-official/comdex/app/upgrades/mainnet/v10"
-	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
-	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
-	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
-	mv8 "github.com/comdex-official/comdex/app/upgrades/mainnet/v8"
-	mv9 "github.com/comdex-official/comdex/app/upgrades/mainnet/v9"
+	tv10 "github.com/comdex-official/comdex/app/upgrades/testnet/v10"
 )
 
 const (
@@ -1218,8 +1212,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		mv10.UpgradeName,
-		mv10.CreateUpgradeHandlerV10(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
+		tv10.UpgradeName,
+		tv10.CreateUpgradeHandlerV10(a.mm, a.configurator),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1241,51 +1235,8 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	// prepare store for main net upgrade v5.0.0
-	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{
-				assettypes.ModuleName,
-				auctiontypes.ModuleName,
-				bandoraclemoduletypes.ModuleName,
-				collectortypes.ModuleName,
-				esmtypes.ModuleName,
-				liquidationtypes.ModuleName,
-				liquiditytypes.ModuleName,
-				lockertypes.ModuleName,
-				markettypes.ModuleName,
-				rewardstypes.ModuleName,
-				tokenminttypes.ModuleName,
-				vaulttypes.ModuleName,
-				feegrant.ModuleName,
-				icacontrollertypes.StoreKey,
-				icahosttypes.StoreKey,
-				authz.ModuleName,
-			},
-		}
-	case upgradeInfo.Name == mv6.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Deleted: []string{"lendV1"},
-			Added: []string{
-				lendtypes.ModuleName,
-			},
-		}
-	case upgradeInfo.Name == mv7.UpgradeName700 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
 
-	case upgradeInfo.Name == mv8.UpgradeName800 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv8.UpgradeName810 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv8.UpgradeName811 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 	}
 
