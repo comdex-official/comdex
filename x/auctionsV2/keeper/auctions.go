@@ -1,8 +1,7 @@
 package keeper
 
 import (
-
-	// "github.com/comdex-official/comdex/types"
+	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -28,15 +27,22 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 }
 
 func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidationtypes.LockedVault) error {
+
+	//Getting previous auction ID 
+	auctionID := k.GetAuctionID(ctx)
 	//Saving liquidation data to the auction struct
 
-	
 
+	auctionData := types.Auctions{
+		AuctionId: auctionID+1,
+		CollateralToken: liquidationData.AmountIn,
+		
+
+	}
 
 	return nil
 }
 
-
 //AUCTIONITERATOR
-	// -> DUCTHAUCTIONITERATOR
-	// -> ENGLISHAUCTIONITERATOR
+// -> DUCTHAUCTIONITERATOR
+// -> ENGLISHAUCTIONITERATOR

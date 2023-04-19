@@ -21,6 +21,9 @@ message LiquidationWhiteListing {
   bool auction_type = 2 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
+
+    //discount
+    //upar kitna se start hoga
 }
 
 

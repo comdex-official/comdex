@@ -17,6 +17,6 @@ const (
 	MemStoreKey = "mem_newauc"
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
+var (
+	AuctionIDKey = []byte{0x01}
+)

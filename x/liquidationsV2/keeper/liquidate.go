@@ -116,9 +116,11 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		}
 		//Calculating Liquidation Fees
 		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
+		//Getting app whitelisted Data
+		whitelistingData, _ := k.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
 
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected)
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.auctionType)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -137,7 +139,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Int, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Int, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, initiatorType string, auctionType bool) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -157,7 +159,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		InternalKeeperAddress:        "",
 		IsExternalKeeper:             "",
 		ExternalKeeperAddress:        "",
-		StructureType:                "vault",
+		InitiatorType:                initiatorType,
+		AuctionType:                  auctionType,
 	}
 
 	k.SetLockedVault(ctx, value)

@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/auctionsV2/expected"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,12 +14,12 @@ import (
 
 type (
 	Keeper struct {
-		cdc         codec.BinaryCodec
-		storeKey    sdk.StoreKey
-		memKey      sdk.StoreKey
-		paramstore  paramtypes.Subspace
+		cdc            codec.BinaryCodec
+		storeKey       sdk.StoreKey
+		memKey         sdk.StoreKey
+		paramstore     paramtypes.Subspace
 		LiquidationsV2 expected.LiquidationsV2Keeper
-		bankKeeper  types.BankKeeper
+		bankKeeper     types.BankKeeper
 	}
 )
 
@@ -42,15 +43,18 @@ func NewKeeper(
 
 	return Keeper{
 
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
+		cdc:            cdc,
+		storeKey:       storeKey,
+		memKey:         memKey,
+		paramstore:     ps,
 		LiquidationsV2: LiquidationsV2Keeper,
-		bankKeeper: bankKeeper,
+		bankKeeper:     bankKeeper,
 	}
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+}
+func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+	return ctx.KVStore(k.storeKey)
 }
