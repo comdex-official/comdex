@@ -61,15 +61,15 @@ message LockedVault {
     (gogoproto.customname) = "Owner",
     (gogoproto.moretags) = "yaml:\"owner\""];
 
-  cosmos.base.v1beta1.Coin amount_in = 6 [
+  cosmos.base.v1beta1.Coin collateral_token = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-    (gogoproto.moretags) = "yaml:\"amount_in\""
+    (gogoproto.moretags) = "yaml:\"collateral_token\""
     ];
 
-  cosmos.base.v1beta1.Coin amount_out = 7 [
+  cosmos.base.v1beta1.Coin debt_token = 7 [
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-    (gogoproto.moretags) = "yaml:\"amount_out\"",
+    (gogoproto.moretags) = "yaml:\"debt_token\"",
     (gogoproto.nullable) = false];
 
   string current_collateralisation_ratio = 8 [
