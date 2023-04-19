@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/wasmd v0.31.0
 	github.com/CosmWasm/wasmvm v1.2.3
 	github.com/bandprotocol/bandchain-packet v0.0.3
-	github.com/cosmos/cosmos-sdk v0.46.7
+	github.com/cosmos/cosmos-sdk v0.46.11
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -272,10 +272,10 @@ require (
 replace (
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 	github.com/cosmos/cosmos-sdk => github.com/comdex-official/cosmos-sdk v0.45.9-comdex.3
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	// Informal Tendermint fork to be replaced with skip-mev tendermint
-	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.26-mev.17
 	//breaking changes
 	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	// Informal Tendermint fork to be replaced with skip-mev tendermint
+	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.17
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
