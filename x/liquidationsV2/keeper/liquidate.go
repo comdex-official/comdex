@@ -87,7 +87,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 	}
 
 	//Checking if app has enabled liquidations or not
-	_, found = k.GetAppIDByAppForLiquidation(ctx, vault.AppId)
+	whitelistingData, found := k.GetAppIDByAppForLiquidation(ctx, vault.AppId)
 	if !found {
 		return fmt.Errorf("Liquidation not enabled for App ID  %d", vault.AppId)
 	}
@@ -116,11 +116,9 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		}
 		//Calculating Liquidation Fees
 		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
-		//Getting app whitelisted Data
-		whitelistingData, _ := k.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
 
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.auctionType)
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, vault.AmountIn, totalOut, vault.AmountIn, totalOut, collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.AuctionType)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -148,8 +146,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		OriginalVaultId:              OriginalVaultId,
 		ExtendedPairId:               ExtendedPairId,
 		Owner:                        Owner,
-		AmountIn:                     AmountIn,
-		AmountOut:                    AmountOut,
+		CollateralToken:              AmountIn,
+		DebtToken:                    AmountOut,
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      AmountIn,
 		TargetDebt:                   AmountOut,

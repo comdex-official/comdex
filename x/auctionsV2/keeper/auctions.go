@@ -35,8 +35,9 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 
 	auctionData := types.Auctions{
 		AuctionId: auctionID+1,
-		CollateralToken: liquidationData.AmountIn,
+		CollateralToken: liquidationData.CollateralToken,
 		
+
 
 	}
 
