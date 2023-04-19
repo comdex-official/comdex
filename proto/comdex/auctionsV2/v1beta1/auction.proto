@@ -11,26 +11,26 @@ message Auctions{
   uint64 auction_id = 1 [
     (gogoproto.moretags) = "yaml:\"auction_id\""
   ];
-  cosmos.base.v1beta1.Coin outflow_token_init_amount = 2 [
+  cosmos.base.v1beta1.Coin collateral_token = 2 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"outflow_token_init_amount\"",
+    (gogoproto.moretags) = "yaml:\"collateral_token\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  cosmos.base.v1beta1.Coin outflow_token_current_amount = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"outflow_token_current_amount\"",
-    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-  ];
-  cosmos.base.v1beta1.Coin inflow_token_target_amount = 4 [
+  // cosmos.base.v1beta1.Coin outflow_token_current_amount = 3 [
+  //   (gogoproto.nullable) = false,
+  //   (gogoproto.moretags) = "yaml:\"outflow_token_current_amount\"",
+  //   (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  // ];
+  cosmos.base.v1beta1.Coin debt_token = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"inflow_token_target_amount\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  cosmos.base.v1beta1.Coin inflow_token_current_amount = 5 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"inflow_token_current_amount\"",
-    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-  ];
+  // cosmos.base.v1beta1.Coin inflow_token_current_amount = 5 [
+  //   (gogoproto.nullable) = false,
+  //   (gogoproto.moretags) = "yaml:\"inflow_token_current_amount\"",
+  //   (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  // ];
   uint64 active_bidding_id = 6 [
     (gogoproto.moretags) = "yaml:\"active_bidding_id\""
   ];
@@ -43,32 +43,28 @@ message Auctions{
     (gogoproto.moretags) = "yaml:\"bid_factor\""
   ];
   // price indicator only for dutch auctions
-  string outflow_token_initial_price = 9 [
+  string collateral_token_initial_price = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"outflow_token_initial_price\""
   ];
-  string outflow_token_current_price = 10 [
+  string collateral_token_current_price = 10 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"outflow_token_current_price\""
   ];
-  string outflow_token_end_price = 11 [
+  string collateral_token_end_price = 11 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"outflow_token_end_price\""
   ];
-  string inflow_token_current_price = 12 [
+  string debt_token_current_price = 12 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"inflow_token_current_price\""
   ];
   uint64 locked_vault_id = 13 [
     (gogoproto.moretags) = "yaml:\"locked_vault_id\""
-  ];
-  string vault_owner = 14 [
-    (gogoproto.moretags) = "yaml:\"vault_owner\"",
-    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"
   ];
   google.protobuf.Timestamp start_time = 15 [
     (gogoproto.nullable) = false,
@@ -80,24 +76,20 @@ message Auctions{
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"end_time\""
   ];
-  google.protobuf.Timestamp bid_end_time = 17 [
-    (gogoproto.nullable) = false,
-    (gogoproto.stdtime) = true,
-    (gogoproto.moretags) = "yaml:\"bid_end_time\""
-  ];
+
   uint64 app_id = 18 [
     (gogoproto.moretags) = "yaml:\"app_id\""
   ];
-  uint64 auction_mapping_id = 19 [
-    (gogoproto.moretags) = "yaml:\"auction_mapping_id\""
-  ];
-  uint64 auction_status = 20 [
-    (gogoproto.moretags) = "yaml:\"auction_status\""
-  ];
+  bool auction_type = 19 [
+    (gogoproto.customname) = "AuctionType",
+    (gogoproto.moretags) = "yaml:\"auction_type\""];
+  // uint64 auction_status = 20 [
+  //   (gogoproto.moretags) = "yaml:\"auction_status\""
+  // ];
 
 }
 
-message bidOwnerMapping{
-  uint64 bid_id = 1;
-  string bid_owner = 2;
-}
+// message bidOwnerMapping{
+//   uint64 bid_id = 1;
+//   string bid_owner = 2;
+// }

@@ -28,9 +28,15 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 }
 
 func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidationtypes.LockedVault) error {
-	//Saving liquidatoin data to the auction struct
+	//Saving liquidation data to the auction struct
+
 	
 
 
 	return nil
 }
+
+
+//AUCTIONITERATOR
+	// -> DUCTHAUCTIONITERATOR
+	// -> ENGLISHAUCTIONITERATOR
