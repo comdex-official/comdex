@@ -442,8 +442,9 @@ func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRe
 						continue
 					}
 					dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
-					totalAPR = dailyRewardAmt.Quo(sdk.NewDecFromInt(totalAmount))
-
+					str, _ := sdk.NewDecFromStr(types.DaysInYear)
+					APR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalAmount))
+					totalAPR = APR.Mul(str)
 				}
 			}
 		}
