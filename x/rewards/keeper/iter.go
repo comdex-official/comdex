@@ -276,6 +276,9 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 							if !found {
 								continue
 							}
+							if borrow.IsLiquidated {
+								continue
+							}
 							lend, found := k.lend.GetLend(ctx, borrow.LendingID)
 							if !found {
 								continue

@@ -22,14 +22,11 @@ import (
 	"github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
 	ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
 
-	// IBC Transfer: Defines the "transfer" IBC port
-	transfer "github.com/cosmos/ibc-go/v4/modules/apps/transfer"
 
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
 	"github.com/rakyll/statik/fs"
 
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
@@ -183,11 +180,6 @@ import (
 
 	mv10 "github.com/comdex-official/comdex/app/upgrades/mainnet/v10"
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
-	mv5 "github.com/comdex-official/comdex/app/upgrades/mainnet/v5"
-	mv6 "github.com/comdex-official/comdex/app/upgrades/mainnet/v6"
-	mv7 "github.com/comdex-official/comdex/app/upgrades/mainnet/v7"
-	mv8 "github.com/comdex-official/comdex/app/upgrades/mainnet/v8"
-	mv9 "github.com/comdex-official/comdex/app/upgrades/mainnet/v9"
 )
 
 const (
@@ -367,7 +359,7 @@ type App struct {
 
 	// IBC modules
 	// transfer module
-	RawIcs20TransferAppModule transfer.AppModule
+	RawIcs20TransferAppModule ibctransfer.AppModule
 	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
 	TransferStack             *ibchooks.IBCMiddleware
 	Ics20WasmHooks            *ibchooks.WasmHooks
@@ -1156,7 +1148,7 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.ScopedIBCTransferKeeper,
 	)
 	a.IbcTransferKeeper = transferKeeper
-	a.RawIcs20TransferAppModule = transfer.NewAppModule(a.IbcTransferKeeper)
+	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
 
 	// Packet Forward Middleware
 	// Initialize packet forward middleware router
@@ -1172,7 +1164,7 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.HooksICS4Wrapper,
 	)
 	packetForwardMiddleware := packetforward.NewIBCMiddleware(
-		transfer.NewIBCModule(a.IbcTransferKeeper),
+		ibctransfer.NewIBCModule(a.IbcTransferKeeper),
 		a.PacketForwardKeeper,
 		0,
 		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
@@ -1382,49 +1374,6 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	// prepare store for main net upgrade v5.0.0
-	case upgradeInfo.Name == mv5.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{
-				assettypes.ModuleName,
-				auctiontypes.ModuleName,
-				bandoraclemoduletypes.ModuleName,
-				collectortypes.ModuleName,
-				esmtypes.ModuleName,
-				liquidationtypes.ModuleName,
-				liquiditytypes.ModuleName,
-				lockertypes.ModuleName,
-				markettypes.ModuleName,
-				rewardstypes.ModuleName,
-				tokenminttypes.ModuleName,
-				vaulttypes.ModuleName,
-				feegrant.ModuleName,
-				icacontrollertypes.StoreKey,
-				icahosttypes.StoreKey,
-				authz.ModuleName,
-			},
-		}
-	case upgradeInfo.Name == mv6.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Deleted: []string{"lendV1"},
-			Added: []string{
-				lendtypes.ModuleName,
-			},
-		}
-	case upgradeInfo.Name == mv7.UpgradeName700 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv8.UpgradeName800 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv8.UpgradeName810 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv8.UpgradeName811 && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
-
-	case upgradeInfo.Name == mv9.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{}
 
 	case upgradeInfo.Name == mv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
