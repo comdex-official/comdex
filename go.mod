@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/CosmWasm/wasmd v0.31.0
-	github.com/CosmWasm/wasmvm v1.2.3
+	github.com/CosmWasm/wasmvm v1.2.1
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cosmos/cosmos-sdk v0.46.11
 	github.com/gogo/protobuf v1.3.3
