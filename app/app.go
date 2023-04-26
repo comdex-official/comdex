@@ -718,17 +718,17 @@ func New(
 	)
 
 	// Create Transfer Keepers
-	app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
-		app.cdc,
-		app.keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IbcKeeper.ChannelKeeper,
-		app.IbcKeeper.ChannelKeeper,
-		&app.IbcKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		scopedTransferKeeper,
-	)
+	// app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
+	// 	app.cdc,
+	// 	app.keys[ibctransfertypes.StoreKey],
+	// 	app.GetSubspace(ibctransfertypes.ModuleName),
+	// 	app.RateLimitingICS4Wrapper,
+	// 	app.IbcKeeper.ChannelKeeper,
+	// 	&app.IbcKeeper.PortKeeper,
+	// 	app.AccountKeeper,
+	// 	app.BankKeeper,
+	// 	scopedTransferKeeper,
+	// )
 
 	app.LockerKeeper = lockerkeeper.NewKeeper(
 		app.cdc,
@@ -1117,7 +1117,7 @@ func (a *App) WireICS20PreWasmKeeper(
 ) {
 	// Setup the ICS4Wrapper used by the hooks middleware
 	cmdxPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, nil, cmdxPrefix) // The contract keeper needs to be set later
+	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, &wasmkeeper.PermissionedKeeper{}, cmdxPrefix) // The contract keeper needs to be set later
 	a.Ics20WasmHooks = &wasmHooks
 	a.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
 		a.IbcKeeper.ChannelKeeper,
