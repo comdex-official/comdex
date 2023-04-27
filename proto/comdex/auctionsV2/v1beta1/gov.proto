@@ -9,5 +9,5 @@ option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
 message DutchAutoBidParamsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  DutchAutoBidParams dutchAutoBidParams = 3 [(gogoproto.nullable) = false];
+  AuctionParams auctionParams = 3 [(gogoproto.nullable) = false];
 }

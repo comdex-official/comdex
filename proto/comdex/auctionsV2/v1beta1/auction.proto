@@ -93,10 +93,3 @@ message Auctions{
    uint64 bid_id = 1;
    string bid_owner = 2;
  }
-
-
-message AuctionParams{
-  uint64 auction_duration_seconds = 1 [
-    (gogoproto.moretags) = "yaml:\"auction_duration_seconds\""
-  ];
-}
