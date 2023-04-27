@@ -34,6 +34,8 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 
 //Price Calculation Function to determine auction different stage price
 
+
+
  //Saving liquidation data to the auction struct
 	auctionData := types.Auctions{
 		AuctionId: auctionID+1,
@@ -48,11 +50,6 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 		EndTime: 0,
 		AppId: liquidationData.AppId,
 		AuctionType: liquidationData.AuctionType,
-		
-
-
-
-
 	}
 
 	return nil
