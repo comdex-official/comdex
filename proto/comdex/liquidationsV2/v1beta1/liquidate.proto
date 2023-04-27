@@ -16,31 +16,65 @@ message LiquidationWhiteListing {
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
     (gogoproto.moretags) = "yaml:\"app_id\""];
-//------------Auction Types defn
-// true auction type - "dutch" 
-//false auction type - "english"
-  bool auction_type = 2 [
-    (gogoproto.customname) = "AuctionType",
-    (gogoproto.moretags) = "yaml:\"auction_type\""];
 
-    //discount
-    //upar kitna se start hoga
-  string buffer = 3 [
+  //AuctionTriggerer
+  //External Apps                  -------------> If external triggerer , then some params will be used from Comdex base app // If internal app triggerrer then params to be used from base app 
+  //Comdex Apps
+  //bool param 
+  //true - comdex apps
+  //false external apps
+ bool initiator = 6 [
+  (gogoproto.customname) = "Initiator",
+  (gogoproto.moretags) = "yaml:\"initiator\""];
+  //Sets of Params for Dutch Auction
+ bool is_dutch_activated=7  [
+  (gogoproto.customname) = "IsDutchActivated",
+  (gogoproto.moretags) = "yaml:\"is_dutch_activated\""];
+  DutchAuctionParam dutch_auction_param=8[
+    (gogoproto.customname) = "DutchAuctionParam",
+    (gogoproto.moretags) = "yaml:\"dutch_auction_param\""];
+     //Sets of Params for English Auction
+  bool is_english_activated=9  [
+    (gogoproto.customname) = "IsEnglishActivated",
+    (gogoproto.moretags) = "yaml:\"is_english_activated\""];
+
+      EnglishAuctionParam english_auction_param=10[
+        (gogoproto.customname) = "EnglishAuctionParam",
+        (gogoproto.moretags) = "yaml:\"english_auction_param\""];
+//One thing to keep in mind that somehow it should not happen that a void is created where something at level 2 gets triggerred and it has no data saved a level 1 for lookup and it fails . 
+
+
+
+}
+
+message DutchAuctionParam{
+
+  string buffer = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false,
     (gogoproto.moretags)   = "yaml:\"buffer\""
   ];
-  string cusp = 4 [
+  string cusp = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false,
     (gogoproto.moretags)   = "yaml:\"cusp\""
   ];
-  string step = 5 [
+  string step = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false,
     (gogoproto.moretags)   = "yaml:\"step\""
   ];
+
 }
+message EnglishAuctionParam{
+  string step = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false,
+    (gogoproto.moretags)   = "yaml:\"step\""
+  ];
+
+}
+
 
 
 message LiquidationOffsetHolder {
@@ -110,6 +144,7 @@ message LockedVault {
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
 
+// true for internal liquidator through bot , false if abci initiated liquidation
   bool is_internal_keeper = 12 [
     (gogoproto.customname) = "IsInternalKeeper",
     (gogoproto.moretags) = "yaml:\"is_intenal_keeper\""];
@@ -118,10 +153,11 @@ message LockedVault {
     (gogoproto.customname) = "InternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"internal_keeper_address\""];
 
-  string is_external_keeper = 14 [
+  bool is_external_keeper = 14 [
     (gogoproto.customname) = "IsExternalKeeper",
     (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
 
+    //To return funds to the external app back
   string external_keeper_address = 15 [
     (gogoproto.customname) = "ExternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
@@ -130,52 +166,18 @@ message LockedVault {
     (gogoproto.nullable) = false,
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
+    string bonus_to_be_given = 17 [
+      (gogoproto.customname) = "BonusToBeGiven",
+      (gogoproto.nullable) = false,
+      (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+      (gogoproto.moretags) = "yaml:\"bonus_to_be_given\""];
 
-  string initiator_type = 17 [
+  string initiator_type = 18 [
     (gogoproto.customname) = "InitiatorType",
     (gogoproto.moretags) = "yaml:\"initiator_type\""];
-  bool auction_type = 18 [
+  bool auction_type = 19 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
-
-//updated_amount_out = amount_out + interest_accumulated + opening_fee_accumulated
-//   // + closing_fee_accumulated
-//   string updated_amount_out = 8 [
-//     (gogoproto.customname) = "UpdatedAmountOut",
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-//     (gogoproto.moretags) = "yaml:\"updated_amount_out\"",
-//     (gogoproto.nullable) = false];
-
-//   string initiator = 9 [
-//     (gogoproto.customname) = "Initiator",
-//     (gogoproto.moretags) = "yaml:\"admin\""];
-
-//   bool is_auction_complete = 10 [
-//     (gogoproto.customname) = "IsAuctionComplete",
-//     (gogoproto.moretags) = "yaml:\"is_auction_complete\""];
-
-//   bool is_auction_in_progress = 11 [
-//     (gogoproto.customname) = "IsAuctionInProgress",
-//     (gogoproto.moretags) = "yaml:\"is_auction_in_progress\""];
-
-//   string cr_at_liquidation = 12 [
-//     (gogoproto.customname) = "CrAtLiquidation",
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"cr_at_liquidation\""];
-
-
-//   repeated string selloff_history = 16 [
-//     (gogoproto.customname) = "SellOffHistory",
-//     (gogoproto.moretags) = "yaml:\"selloff_history\""];
-
-//   string interest_accumulated = 17[
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-//     (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
-//     (gogoproto.nullable) = false];
-//   oneof kind {
-//     BorrowMetaData borrow_meta_data = 18;
-//   }
 }
 
 
@@ -186,20 +188,4 @@ message LockedVault {
 
 
 
-
-// message BorrowMetaData {
-//   uint64 lending_id = 1;
-//   bool is_stable_borrow = 2;
-//   string stable_borrow_rate = 3 [
-//     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"stable_borrow_rate\""
-//   ];
-//   cosmos.base.v1beta1.Coin bridged_asset_amount = 4 [
-//     (gogoproto.nullable) = false,
-//     (gogoproto.moretags) = "yaml:\"bridged_asset_amount\"",
-//     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-//   ];
-
-// }
 
