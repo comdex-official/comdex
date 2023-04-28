@@ -20,6 +20,8 @@ type (
 		paramstore     paramtypes.Subspace
 		LiquidationsV2 expected.LiquidationsV2Keeper
 		bankKeeper     types.BankKeeper
+		market         expected.MarketKeeper
+		asset          expected.AssetKeeper
 	}
 )
 
@@ -35,6 +37,8 @@ func NewKeeper(
 	ps paramtypes.Subspace,
 	LiquidationsV2Keeper expected.LiquidationsV2Keeper,
 	bankKeeper types.BankKeeper,
+	marketKeeper expected.MarketKeeper,
+	assetKeeper expected.AssetKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -42,13 +46,14 @@ func NewKeeper(
 	}
 
 	return Keeper{
-
 		cdc:            cdc,
 		storeKey:       storeKey,
 		memKey:         memKey,
 		paramstore:     ps,
 		LiquidationsV2: LiquidationsV2Keeper,
 		bankKeeper:     bankKeeper,
+		market:         marketKeeper,
+		asset:          assetKeeper,
 	}
 }
 
@@ -57,4 +62,31 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
+}
+
+func (k Keeper) SetAuctionParams(ctx sdk.Context, auctionParams types.AuctionParams) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AuctionParamsKey
+		value = k.cdc.MustMarshal(&auctionParams)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetAuctionParams(ctx sdk.Context) (auctionParams types.AuctionParams, found bool) {
+	key := types.AuctionParamsKey
+
+	var (
+		store = k.Store(ctx)
+
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return auctionParams, false
+	}
+
+	k.cdc.MustUnmarshal(value, &auctionParams)
+	return auctionParams, true
 }
