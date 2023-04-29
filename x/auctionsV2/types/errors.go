@@ -8,5 +8,5 @@ import (
 
 // x/auctionsV2 module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrDutchAuctionDisabled = sdkerrors.Register(ModuleName, 701, "Dutch auction not enabled for the app")
 )

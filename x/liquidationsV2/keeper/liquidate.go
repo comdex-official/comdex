@@ -107,7 +107,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		if err1 != nil {
 			return fmt.Errorf("error Calculating vault interest in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 		}
-		//Callling vault to use the updated values of the vault
+		//Calling vault to use the updated values of the vault
 		vault, _ := k.vault.GetVault(ctx, vault.Id)
 
 		totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
@@ -118,8 +118,15 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		//Calculating Liquidation Fees
 		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
 
+		//Calculating auction bonus to be given
+		auctionBonusToBeGiven := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
+
+		//Checking if the vault getting liquidated is a cmst based vault or not
+		//This is primarily to infer that primary market will consider cmst at $1 at the time of buying it
+		isCMST := !extPair.AssetOutOraclePrice
+
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, "vault", whitelistingData.AuctionType)
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.AuctionType, isCMST, extPair.PairId)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -142,7 +149,7 @@ func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.
 	return sdk.NewCoin(asset.Denom, amount)
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, initiatorType string, auctionType bool) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, pairId unit64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -158,12 +165,15 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		TargetDebt:                   AmountOut,
 		LiquidationTimestamp:         ctx.BlockTime(),
 		FeeToBeCollected:             feesToBeCollected,
-		IsInternalKeeper:             false,
-		InternalKeeperAddress:        "",
-		IsExternalKeeper:             "",
-		ExternalKeeperAddress:        "",
+		BonusToBeGiven:               bonusToBeGiven,
+		IsInternalKeeper:             isInternalKeeper,
+		InternalKeeperAddress:        internalKeeperAddress,
+		IsExternalKeeper:             isExternalKeeper,
+		ExternalKeeperAddress:        externalKeeperAddress,
 		InitiatorType:                initiatorType,
 		AuctionType:                  auctionType,
+		IsDebtCmst:                   isDebtCmst,
+		PairId:                       pairId,
 	}
 
 	k.SetLockedVault(ctx, value)

@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "auctionsV2"
@@ -18,5 +22,10 @@ const (
 )
 
 var (
-	AuctionIDKey = []byte{0x01}
+	AuctionIDKey     = []byte{0x01}
+	AuctionKeyPrefix = []byte{0x02}
 )
+
+func AuctionKey(appID uint64, auctionID uint64) []byte {
+	return append(append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(auctionID)...))
+}

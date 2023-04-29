@@ -6,13 +6,13 @@ func Multiply(a, b sdk.Dec) sdk.Dec {
 	return a.Mul(b)
 }
 
-func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.Dec {
-	result := buffer.Mul(price.ToDec())
+func (k Keeper) GetCollalteralTokenInitialPrice(price sdk.Int, premium sdk.Dec) sdk.Dec {
+	result := premium.Mul(price.ToDec())
 	return result
 }
 
-func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
-	result := Multiply(price, cusp)
+func (k Keeper) GetCollalteralTokenEndPrice(price, discount sdk.Dec) sdk.Dec {
+	result := Multiply(price, discount)
 	return result
 }
 
