@@ -159,13 +159,13 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		ExtendedPairId:               ExtendedPairId,
 		Owner:                        Owner,
 		CollateralToken:              AmountIn,
-		DebtToken:                    AmountOut,
+		DebtToken:                    AmountOut,//just a representation of the total debt the vault had incurred at the time of liquidation. // Target debt is a correct measure of what will get collected in the auction from bidders.
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      AmountIn,
-		TargetDebt:                   AmountOut,
+		TargetDebt:                   AmountOut,//to add debt+liquidation+auction bonus here---- 
 		LiquidationTimestamp:         ctx.BlockTime(),
-		FeeToBeCollected:             feesToBeCollected,
-		BonusToBeGiven:               bonusToBeGiven,
+		FeeToBeCollected:             feesToBeCollected,//just for calculation purpose
+		BonusToBeGiven:               bonusToBeGiven,//just for calculation purpose
 		IsInternalKeeper:             isInternalKeeper,
 		InternalKeeperAddress:        internalKeeperAddress,
 		IsExternalKeeper:             isExternalKeeper,
@@ -175,6 +175,15 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		IsDebtCmst:                   isDebtCmst,
 		PairId:                       pairId,
 	}
+	//To understand a condition in which case target debt becomes equal to dollar value of collateral token 
+	//at some point in the auction
+	//1. what happens in that case
+	//2. what if the bid on the auction makes the auction lossy, 
+	//should be use the liquidation penalty ? most probably yes to cover the difference.
+	//what if then liquidation penalty still falls short, should we then reduce the auction bonus from the debt , to make things even?
+	//will this be enough to make sure auction does not not gets bid due to collateral not being able to cover the debt?
+	//can a case occur in which liquidation penalty and auction bonus are still not enough?
+	
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
