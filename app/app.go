@@ -316,8 +316,8 @@ type App struct {
 	// keepers
 	AccountKeeper     authkeeper.AccountKeeper
 	FeegrantKeeper    feegrantkeeper.Keeper
-	BankKeeper        bankkeeper.Keeper
-	BankBaseKeeper    *bankkeeper.BaseKeeper
+	// BankKeeper        bankkeeper.Keeper
+	BankKeeper    bankkeeper.BaseKeeper
 	AuthzKeeper       authzkeeper.Keeper
 	CapabilityKeeper  *capabilitykeeper.Keeper
 	StakingKeeper     stakingkeeper.Keeper
@@ -490,6 +490,13 @@ func New(
 		authtypes.ProtoBaseAccount,
 		app.ModuleAccountsPermissions(),
 	)
+	// app.BankKeeper = bankkeeper.NewBaseKeeper(
+	// 	app.cdc,
+	// 	app.keys[banktypes.StoreKey],
+	// 	app.AccountKeeper,
+	// 	app.GetSubspace(banktypes.ModuleName),
+	// 	app.ModuleAccountAddrs(),
+	// )
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		app.cdc,
 		app.keys[banktypes.StoreKey],
@@ -718,17 +725,17 @@ func New(
 	)
 
 	// Create Transfer Keepers
-	// app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
-	// 	app.cdc,
-	// 	app.keys[ibctransfertypes.StoreKey],
-	// 	app.GetSubspace(ibctransfertypes.ModuleName),
-	// 	app.RateLimitingICS4Wrapper,
-	// 	app.IbcKeeper.ChannelKeeper,
-	// 	&app.IbcKeeper.PortKeeper,
-	// 	app.AccountKeeper,
-	// 	app.BankKeeper,
-	// 	scopedTransferKeeper,
-	// )
+	app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
+		app.cdc,
+		app.keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		app.RateLimitingICS4Wrapper,
+		app.IbcKeeper.ChannelKeeper,
+		&app.IbcKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		scopedTransferKeeper,
+	)
 
 	app.LockerKeeper = lockerkeeper.NewKeeper(
 		app.cdc,
@@ -828,7 +835,7 @@ func New(
 	var (
 		evidenceRouter      = evidencetypes.NewRouter()
 		ibcRouter           = ibcporttypes.NewRouter()
-		transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
+		// transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		// transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
 		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
@@ -876,7 +883,7 @@ func New(
 		ibc.NewAppModule(app.IbcKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		transferModule,
+		// transferModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
 		vault.NewAppModule(app.cdc, app.VaultKeeper),
 		oracleModule,
@@ -1130,29 +1137,11 @@ func (a *App) WireICS20PreWasmKeeper(
 		&a.AccountKeeper,
 		// wasm keeper we set later.
 		nil,
-		a.BankBaseKeeper,
+		a.BankKeeper,
 		a.GetSubspace(ibcratelimittypes.ModuleName),
 	)
 	a.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
 
-	// Create Transfer Keepers
-	transferKeeper := ibctransferkeeper.NewKeeper(
-		appCodec,
-		a.keys[ibctransfertypes.StoreKey],
-		a.GetSubspace(ibctransfertypes.ModuleName),
-		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
-		a.RateLimitingICS4Wrapper,
-		a.IbcKeeper.ChannelKeeper,
-		&a.IbcKeeper.PortKeeper,
-		a.AccountKeeper,
-		a.BankBaseKeeper,
-		a.ScopedIBCTransferKeeper,
-	)
-	a.IbcTransferKeeper = transferKeeper
-	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
-
-	// Packet Forward Middleware
-	// Initialize packet forward middleware router
 	a.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		a.keys[packetforwardtypes.StoreKey],
@@ -1160,10 +1149,30 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.IbcTransferKeeper,
 		a.IbcKeeper.ChannelKeeper,
 		a.DistrKeeper,
-		a.BankBaseKeeper,
+		a.BankKeeper,
 		// The ICS4Wrapper is replaced by the HooksICS4Wrapper instead of the channel so that sending can be overridden by the middleware
 		a.HooksICS4Wrapper,
 	)
+
+	// Create Transfer Keepers
+	transferKeeper := ibctransferkeeper.NewKeeper(
+		appCodec,
+		a.keys[ibctransfertypes.StoreKey],
+		a.GetSubspace(ibctransfertypes.ModuleName),
+		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
+		a.PacketForwardKeeper,
+		a.IbcKeeper.ChannelKeeper,
+		&a.IbcKeeper.PortKeeper,
+		a.AccountKeeper,
+		a.BankKeeper,
+		a.ScopedIBCTransferKeeper,
+	)
+	a.IbcTransferKeeper = transferKeeper
+	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
+	a.PacketForwardKeeper.SetTransferKeeper(transferKeeper)
+	// Packet Forward Middleware
+	// Initialize packet forward middleware router
+	
 	packetForwardMiddleware := packetforward.NewIBCMiddleware(
 		ibctransfer.NewIBCModule(a.IbcTransferKeeper),
 		a.PacketForwardKeeper,
@@ -1346,7 +1355,6 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
-		ibchookstypes.ModuleName:       nil,
 	}
 }
 
