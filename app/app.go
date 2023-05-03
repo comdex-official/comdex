@@ -316,8 +316,8 @@ type App struct {
 	// keepers
 	AccountKeeper     authkeeper.AccountKeeper
 	FeegrantKeeper    feegrantkeeper.Keeper
-	// BankKeeper        bankkeeper.Keeper
-	BankKeeper    bankkeeper.BaseKeeper
+	BankKeeper        bankkeeper.Keeper
+	BankBaseKeeper    *bankkeeper.BaseKeeper
 	AuthzKeeper       authzkeeper.Keeper
 	CapabilityKeeper  *capabilitykeeper.Keeper
 	StakingKeeper     stakingkeeper.Keeper
@@ -497,13 +497,15 @@ func New(
 	// 	app.GetSubspace(banktypes.ModuleName),
 	// 	app.ModuleAccountAddrs(),
 	// )
-	app.BankKeeper = bankkeeper.NewBaseKeeper(
+	bKeeper := bankkeeper.NewBaseKeeper(
 		app.cdc,
 		app.keys[banktypes.StoreKey],
 		app.AccountKeeper,
 		app.GetSubspace(banktypes.ModuleName),
 		app.ModuleAccountAddrs(),
 	)
+	app.BankKeeper = bKeeper
+	app.BankBaseKeeper = &bKeeper
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.cdc,
 		app.keys[stakingtypes.StoreKey],
@@ -835,7 +837,7 @@ func New(
 	var (
 		evidenceRouter      = evidencetypes.NewRouter()
 		ibcRouter           = ibcporttypes.NewRouter()
-		// transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
+		transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		// transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
 		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
@@ -883,7 +885,7 @@ func New(
 		ibc.NewAppModule(app.IbcKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		// transferModule,
+		transferModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
 		vault.NewAppModule(app.cdc, app.VaultKeeper),
 		oracleModule,
@@ -1136,12 +1138,29 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.HooksICS4Wrapper,
 		&a.AccountKeeper,
 		// wasm keeper we set later.
-		nil,
-		a.BankKeeper,
+		&wasmkeeper.PermissionedKeeper{},
+		a.BankBaseKeeper,
 		a.GetSubspace(ibcratelimittypes.ModuleName),
 	)
 	a.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
 
+	// Create Transfer Keepers
+	transferKeeper := ibctransferkeeper.NewKeeper(
+		appCodec,
+		a.keys[ibctransfertypes.StoreKey],
+		a.GetSubspace(ibctransfertypes.ModuleName),
+		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
+		a.RateLimitingICS4Wrapper,
+		a.IbcKeeper.ChannelKeeper,
+		&a.IbcKeeper.PortKeeper,
+		a.AccountKeeper,
+		a.BankKeeper,
+		a.ScopedIBCTransferKeeper,
+	)
+	a.IbcTransferKeeper = transferKeeper
+	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
+	// Packet Forward Middleware
+	// Initialize packet forward middleware router
 	a.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		a.keys[packetforwardtypes.StoreKey],
@@ -1153,26 +1172,7 @@ func (a *App) WireICS20PreWasmKeeper(
 		// The ICS4Wrapper is replaced by the HooksICS4Wrapper instead of the channel so that sending can be overridden by the middleware
 		a.HooksICS4Wrapper,
 	)
-
-	// Create Transfer Keepers
-	transferKeeper := ibctransferkeeper.NewKeeper(
-		appCodec,
-		a.keys[ibctransfertypes.StoreKey],
-		a.GetSubspace(ibctransfertypes.ModuleName),
-		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
-		a.PacketForwardKeeper,
-		a.IbcKeeper.ChannelKeeper,
-		&a.IbcKeeper.PortKeeper,
-		a.AccountKeeper,
-		a.BankKeeper,
-		a.ScopedIBCTransferKeeper,
-	)
-	a.IbcTransferKeeper = transferKeeper
-	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
 	a.PacketForwardKeeper.SetTransferKeeper(transferKeeper)
-	// Packet Forward Middleware
-	// Initialize packet forward middleware router
-	
 	packetForwardMiddleware := packetforward.NewIBCMiddleware(
 		ibctransfer.NewIBCModule(a.IbcTransferKeeper),
 		a.PacketForwardKeeper,
@@ -1188,7 +1188,6 @@ func (a *App) WireICS20PreWasmKeeper(
 	hooksTransferModule := ibchooks.NewIBCMiddleware(&rateLimitingTransferModule, &a.HooksICS4Wrapper)
 	a.TransferStack = &hooksTransferModule
 }
-
 // Name returns the name of the App
 func (a *App) Name() string { return a.BaseApp.Name() }
 
