@@ -367,6 +367,7 @@ type App struct {
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
 	WasmKeeper wasm.Keeper
+	ContractKeeper            *wasmkeeper.PermissionedKeeper
 	// the module manager
 	mm *module.Manager
 	// Module configurator
@@ -807,6 +808,11 @@ func New(
 		wasmOpts...,
 	)
 
+	// Pass the contract keeper to all the structs (generally ICS4Wrappers for ibc middlewares) that need it
+	app.ContractKeeper = wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)
+	app.RateLimitingICS4Wrapper.ContractKeeper = app.ContractKeeper
+	app.Ics20WasmHooks.ContractKeeper = app.ContractKeeper
+
 	// register the proposal types
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
@@ -1126,7 +1132,7 @@ func (a *App) WireICS20PreWasmKeeper(
 ) {
 	// Setup the ICS4Wrapper used by the hooks middleware
 	cmdxPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, &wasmkeeper.PermissionedKeeper{}, cmdxPrefix) // The contract keeper needs to be set later
+	wasmHooks := ibchooks.NewWasmHooks(hooksKeeper, nil, cmdxPrefix) // The contract keeper needs to be set later
 	a.Ics20WasmHooks = &wasmHooks
 	a.HooksICS4Wrapper = ibchooks.NewICS4Middleware(
 		a.IbcKeeper.ChannelKeeper,
@@ -1138,7 +1144,7 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.HooksICS4Wrapper,
 		&a.AccountKeeper,
 		// wasm keeper we set later.
-		&wasmkeeper.PermissionedKeeper{},
+		nil,
 		a.BankBaseKeeper,
 		a.GetSubspace(ibcratelimittypes.ModuleName),
 	)
