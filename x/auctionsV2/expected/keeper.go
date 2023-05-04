@@ -9,6 +9,7 @@ import (
 
 type LiquidationsV2Keeper interface {
 	GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liquidationWhiteListing liquidationsV2types.LiquidationWhiteListing, found bool)
+	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationsV2types.LockedVault, found bool)
 }
 
 type MarketKeeper interface {
@@ -22,4 +23,5 @@ type AssetKeeper interface {
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
+	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
 }

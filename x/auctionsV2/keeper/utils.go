@@ -72,3 +72,25 @@ func (k Keeper) GetAuction(ctx sdk.Context, appID, auctionMappingID, auctionID u
 	k.cdc.MustUnmarshal(value, &auction)
 	return auction, nil
 }
+
+func (k Keeper) GetAuctions(ctx sdk.Context) (auctions []types.Auctions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.AuctionKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var auction types.Auctions
+		k.cdc.MustUnmarshal(iter.Value(), &auction)
+		auctions = append(auctions, auction)
+	}
+
+	return auctions
+}

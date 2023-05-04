@@ -22,3 +22,8 @@ func (k Keeper) getPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int
 	result3 := result2.Quo(tau.ToDec())
 	return result3
 }
+
+func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
+	result := Multiply(price, cusp)
+	return result
+}

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	utils "github.com/comdex-official/comdex/types"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -85,7 +86,10 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	}
 
 	k.SetAuctionID(ctx, auctionData.AuctionId)
-	k.SetAuction(ctx, auctionData)
+	err := k.SetAuction(ctx, auctionData)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -121,8 +125,86 @@ func (k Keeper) EnglishAuctionActivator(ctx sdk.Context, liquidationData liquida
 		AuctionType:   liquidationData.AuctionType,
 	}
 	k.SetAuctionID(ctx, auctionData.AuctionId)
-	k.SetAuction(ctx, auctionData)
+	err := k.SetAuction(ctx, auctionData)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
+}
+
+// DutchAuctionsIterator iterates over existing active dutch auctions and does 2 main job
+// First: if auction time is comple and target not reached with collateral available then Restart
+// Second: if not restarting update the price
+func (k Keeper) DutchAuctionsIterator(ctx sdk.Context) error {
+	dutchAuctions := k.GetAuctions(ctx)
+	// SET current price of inflow token and outflow token
+
+	for _, dutchAuction := range dutchAuctions {
+		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
+			// First case to check if we have to restart the auction
+			if ctx.BlockTime().After(dutchAuction.EndTime) {
+				// restart
+
+			} else {
+				// Second case to only reduce the price
+				err := k.UpdateDutchAuctionsPrice(ctx, dutchAuction)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	}
+	return nil
+}
+
+func (k Keeper) UpdateDutchAuctionsPrice(ctx sdk.Context, dutchAuction types.Auctions) error {
+	lockedVault, found := k.LiquidationsV2.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
+	if !found {
+		return auctiontypes.ErrorInvalidLockedVault
+	}
+	auctionParams, _ := k.GetAuctionParams(ctx)
+	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, dutchAuction.AppId)
+
+	if !liquidationWhitelistingAppData.IsDutchActivated {
+		return types.ErrDutchAuctionDisabled
+	}
+	dutchAuctionParams := liquidationWhitelistingAppData.DutchAuctionParam
+
+	// TODO: if internal apps then check idf price to be taken from ext pair else direct market call
+	var debtTokenOraclePrice uint64
+	debtToken, _ := k.asset.GetAssetForDenom(ctx, lockedVault.DebtToken.Denom)
+	ExtendedPairVault, found := k.asset.GetPairsVault(ctx, lockedVault.ExtendedPairId)
+	if !found {
+		return auctiontypes.ErrorInvalidExtendedPairVault
+	}
+
+	if lockedVault.IsInternalKeeper && !ExtendedPairVault.AssetOutOraclePrice {
+		debtTokenOraclePrice = ExtendedPairVault.AssetOutPrice
+	} else {
+		twaData, found := k.market.GetTwa(ctx, debtToken.Id)
+		if !found || !twaData.IsPriceActive {
+			return auctiontypes.ErrorPrices
+		}
+		debtTokenOraclePrice = twaData.Twa
+	}
+
+	numerator := dutchAuction.CollateralTokenAuctionPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
+	CollateralTokenAuctionEndPrice := k.getOutflowTokenEndPrice(dutchAuction.CollateralTokenAuctionPrice, dutchAuctionParams.Discount)
+
+	denominator := dutchAuction.CollateralTokenAuctionPrice.Sub(CollateralTokenAuctionEndPrice)
+	resultant := numerator.Quo(denominator)
+	tau := sdk.NewInt(resultant.TruncateInt64())
+	dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
+	seconds := sdk.NewInt(int64(dur.Seconds()))
+	collateralTokenAuctionPrice := k.getPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenAuctionPrice, tau, seconds)
+	dutchAuction.DebtTokenOraclePrice = sdk.NewDec(int64(debtTokenOraclePrice))
+	dutchAuction.CollateralTokenAuctionPrice = collateralTokenAuctionPrice
+	err := k.SetAuction(ctx, dutchAuction)
+	if err != nil {
+		return err
+	}
+	return nil
 }
