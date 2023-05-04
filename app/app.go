@@ -22,7 +22,6 @@ import (
 	"github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
 	ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
 
-
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
@@ -366,8 +365,8 @@ type App struct {
 	HooksICS4Wrapper          ibchooks.ICS4Middleware
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
 
-	WasmKeeper wasm.Keeper
-	ContractKeeper            *wasmkeeper.PermissionedKeeper
+	WasmKeeper     wasm.Keeper
+	ContractKeeper *wasmkeeper.PermissionedKeeper
 	// the module manager
 	mm *module.Manager
 	// Module configurator
@@ -491,22 +490,13 @@ func New(
 		authtypes.ProtoBaseAccount,
 		app.ModuleAccountsPermissions(),
 	)
-	// app.BankKeeper = bankkeeper.NewBaseKeeper(
-	// 	app.cdc,
-	// 	app.keys[banktypes.StoreKey],
-	// 	app.AccountKeeper,
-	// 	app.GetSubspace(banktypes.ModuleName),
-	// 	app.ModuleAccountAddrs(),
-	// )
-	bKeeper := bankkeeper.NewBaseKeeper(
+	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		app.cdc,
 		app.keys[banktypes.StoreKey],
 		app.AccountKeeper,
 		app.GetSubspace(banktypes.ModuleName),
 		app.ModuleAccountAddrs(),
 	)
-	app.BankKeeper = bKeeper
-	app.BankBaseKeeper = &bKeeper
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.cdc,
 		app.keys[stakingtypes.StoreKey],
@@ -841,9 +831,9 @@ func New(
 	)
 
 	var (
-		evidenceRouter      = evidencetypes.NewRouter()
-		ibcRouter           = ibcporttypes.NewRouter()
-		transferModule      = ibctransfer.NewAppModule(app.IbcTransferKeeper)
+		evidenceRouter = evidencetypes.NewRouter()
+		ibcRouter      = ibcporttypes.NewRouter()
+		transferModule = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		// transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
 		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
@@ -1194,6 +1184,7 @@ func (a *App) WireICS20PreWasmKeeper(
 	hooksTransferModule := ibchooks.NewIBCMiddleware(&rateLimitingTransferModule, &a.HooksICS4Wrapper)
 	a.TransferStack = &hooksTransferModule
 }
+
 // Name returns the name of the App
 func (a *App) Name() string { return a.BaseApp.Name() }
 
