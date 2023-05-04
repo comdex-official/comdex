@@ -73,7 +73,7 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	auctionData := types.Auctions{
 		AuctionId:                   auctionID + 1,
 		CollateralToken:             liquidationData.CollateralToken,
-		DebtToken:                   liquidationData.DebtToken,
+		DebtToken:                   liquidationData.TargetDebt,
 		CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
 		CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
 		DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
@@ -94,6 +94,34 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 // -> DUCTHAUCTIONITERATOR
 // -> ENGLISHAUCTIONITERATOR
 func (k Keeper) EnglishAuctionActivator(ctx sdk.Context, liquidationData liquidationtypes.LockedVault) error {
+
+	//Getting previous auction ID
+	auctionID := k.GetAuctionID(ctx)
+
+	//Price Calculation Function to determine auction different stage price
+	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
+
+	if !liquidationWhitelistingAppData.IsEnglishActivated {
+		return types.ErrEnglishAuctionDisabled
+	}
+	// englishAuctionParams := liquidationWhitelistingAppData.EnglishAuctionParam
+	auctionParams, _ := k.GetAuctionParams(ctx)
+
+	auctionData := types.Auctions{
+		AuctionId:       auctionID + 1,
+		CollateralToken: liquidationData.CollateralToken,
+		DebtToken:       liquidationData.TargetDebt,
+		// CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
+		// CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
+		// DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
+		LockedVaultId: liquidationData.LockedVaultId,
+		StartTime:     ctx.BlockTime(),
+		EndTime:       ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+		AppId:         liquidationData.AppId,
+		AuctionType:   liquidationData.AuctionType,
+	}
+	k.SetAuctionID(ctx, auctionData.AuctionId)
+	k.SetAuction(ctx, auctionData)
 
 	return nil
 
