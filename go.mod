@@ -24,7 +24,7 @@ require (
 )
 
 require (
-	github.com/cosmos/ibc-go/v4 v4.3.0
+	github.com/cosmos/ibc-go/v4 v4.4.0
 	github.com/golangci/golangci-lint v1.51.2
 	github.com/osmosis-labs/osmosis/v15 v15.0.0
 	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
