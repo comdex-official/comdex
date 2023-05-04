@@ -276,6 +276,6 @@ replace (
 	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
-	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.17
+	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

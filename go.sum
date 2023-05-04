@@ -2126,8 +2126,8 @@ github.com/sivchari/nosnakecase v1.7.0/go.mod h1:CwDzrzPea40/GB6uynrNLiorAlgFRvR
 github.com/sivchari/tenv v1.7.0/go.mod h1:64yStXKSOxDfX47NlhVwND4dHwfZDdbp2Lyl018Icvg=
 github.com/sivchari/tenv v1.7.1 h1:PSpuD4bu6fSmtWMxSGWcvqUUgIn7k3yOJhOIzVWn8Ak=
 github.com/sivchari/tenv v1.7.1/go.mod h1:64yStXKSOxDfX47NlhVwND4dHwfZDdbp2Lyl018Icvg=
-github.com/skip-mev/mev-tendermint v0.34.24-mev.17 h1:VOrj03cPpZ2PBsyvjUHx7mATz+4BpRD677vtrymfV/c=
-github.com/skip-mev/mev-tendermint v0.34.24-mev.17/go.mod h1:m3iKcdA/hSGrBwhwgg1fre71te6Ln6SZEstGroM5CJs=
+github.com/skip-mev/mev-tendermint v0.34.24-mev.18 h1:Xqq3vtJxE2cSBUAIXproDiUwW9qXkHNgNSFLS07/QQA=
+github.com/skip-mev/mev-tendermint v0.34.24-mev.18/go.mod h1:m3iKcdA/hSGrBwhwgg1fre71te6Ln6SZEstGroM5CJs=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.0.0/go.mod h1:kHHU4qYBaI3q23Pp3VPrmWhuIUrLW/7eUrw0BU5VaoM=
 github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9/go.mod h1:SnhjPscd9TpLiy1LpzGSKh3bXCfxxXuqd9xmQJy3slM=
