@@ -574,7 +574,7 @@ func New(
 	)
 	app.IbcHooksKeeper = &hooksKeeper
 
-	app.WireICS20PreWasmKeeper(appCodec, baseApp, app.IbcHooksKeeper)
+	app.WireICS20PreWasmKeeper(appCodec, baseApp, app.IbcHooksKeeper, scopedTransferKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, app.keys[icahosttypes.StoreKey],
@@ -717,19 +717,6 @@ func New(
 		app.BankKeeper,
 	)
 
-	// Create Transfer Keepers
-	app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
-		app.cdc,
-		app.keys[ibctransfertypes.StoreKey],
-		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.RateLimitingICS4Wrapper,
-		app.IbcKeeper.ChannelKeeper,
-		&app.IbcKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.BankKeeper,
-		scopedTransferKeeper,
-	)
-
 	app.LockerKeeper = lockerkeeper.NewKeeper(
 		app.cdc,
 		app.keys[lockertypes.StoreKey],
@@ -833,7 +820,7 @@ func New(
 	var (
 		evidenceRouter = evidencetypes.NewRouter()
 		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.IbcTransferKeeper)
+		// transferModule = ibctransfer.NewAppModule(app.IbcTransferKeeper)
 		// transferIBCModule   = ibctransfer.NewIBCModule(app.IbcTransferKeeper)
 		oracleModule        = market.NewAppModule(app.cdc, app.MarketKeeper, app.BandoracleKeeper, app.AssetKeeper)
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
@@ -881,7 +868,7 @@ func New(
 		ibc.NewAppModule(app.IbcKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		transferModule,
+		app.RawIcs20TransferAppModule,
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
 		vault.NewAppModule(app.cdc, app.VaultKeeper),
 		oracleModule,
@@ -1119,6 +1106,7 @@ func (a *App) WireICS20PreWasmKeeper(
 	appCodec codec.Codec,
 	bApp *baseapp.BaseApp,
 	hooksKeeper *ibchookskeeper.Keeper,
+	scopedTransferKeeper capabilitykeeper.ScopedKeeper,
 ) {
 	// Setup the ICS4Wrapper used by the hooks middleware
 	cmdxPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
@@ -1151,7 +1139,7 @@ func (a *App) WireICS20PreWasmKeeper(
 		&a.IbcKeeper.PortKeeper,
 		a.AccountKeeper,
 		a.BankKeeper,
-		a.ScopedIBCTransferKeeper,
+		scopedTransferKeeper,
 	)
 	a.IbcTransferKeeper = transferKeeper
 	a.RawIcs20TransferAppModule = ibctransfer.NewAppModule(a.IbcTransferKeeper)
@@ -1379,7 +1367,6 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-
 	case upgradeInfo.Name == mv10.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{}
 
