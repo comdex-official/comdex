@@ -87,7 +87,9 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 	}
 
 	//Checking if app has enabled liquidations or not
-	whitelistingData, found := k.GetAppIDByAppForLiquidation(ctx, vault.AppId)
+	// whitelistingData, found := k.GetAppIDByAppForLiquidation(ctx, vault.AppId)
+	whitelistingData, found := k.GetLiquidationWhiteListing(ctx, vault.AppId)
+
 	if !found {
 		return fmt.Errorf("Liquidation not enabled for App ID  %d", vault.AppId)
 	}
@@ -149,7 +151,7 @@ func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.
 	return sdk.NewCoin(asset.Denom, amount)
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, pairId unit64) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, pairId uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
