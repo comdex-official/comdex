@@ -22,6 +22,7 @@ type (
 		bankKeeper     types.BankKeeper
 		market         expected.MarketKeeper
 		asset          expected.AssetKeeper
+		esm            expected.EsmKeeper
 	}
 )
 
@@ -39,6 +40,7 @@ func NewKeeper(
 	bankKeeper types.BankKeeper,
 	marketKeeper expected.MarketKeeper,
 	assetKeeper expected.AssetKeeper,
+	esm expected.EsmKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -54,6 +56,7 @@ func NewKeeper(
 		bankKeeper:     bankKeeper,
 		market:         marketKeeper,
 		asset:          assetKeeper,
+		esm:            esm,
 	}
 }
 

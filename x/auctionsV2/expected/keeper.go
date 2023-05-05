@@ -2,6 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquidationsV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,4 +25,14 @@ type AssetKeeper interface {
 	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
+}
+
+type EsmKeeper interface {
+	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
+	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
+	CalcDollarValueOfToken(ctx sdk.Context, rate uint64, amt sdk.Int, decimals sdk.Int) (price sdk.Dec)
+	SetAssetToAmount(ctx sdk.Context, assetToAmount esmtypes.AssetToAmount)
+	GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCoolOff esmtypes.DataAfterCoolOff, found bool)
+	SetDataAfterCoolOff(ctx sdk.Context, esmDataAfterCoolOff esmtypes.DataAfterCoolOff)
+	GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (price uint64, found bool)
 }
