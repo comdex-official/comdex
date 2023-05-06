@@ -124,7 +124,14 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		isCMST := !extPair.AssetOutOraclePrice
 
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.AuctionType, isCMST, extPair.PairId)
+		//This function will only triggger dutch auction
+		//before creating locked vault, checking that dutch auction is already there in the whitelisted liquidation data
+		if !whitelistingData.IsDutchActivated {
+			return fmt.Errorf("Error , dutch auction not activated by the app, this function is only to trigger dutch auctions %d", whitelistingData.IsDutchActivated)
+
+		}
+
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, extPair.PairId)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -321,6 +328,10 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 }
 
 func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdk.Dec, assetRatesStats lendtypes.AssetRatesParams) error {
+	whitelistingData, found := k.GetLiquidationWhiteListing(ctx, appID)
+	if !found {
+		return fmt.Errorf("Liquidation not enabled for App ID  %d", appID)
+	}
 	borrow.IsLiquidated = true
 	k.lend.SetBorrow(ctx, borrow)
 	//Calculating Liquidation Fees
@@ -329,7 +340,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	//Calculating auction bonus to be given
 	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
 
-	err := k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, true, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", true, false, 0)
+	err := k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, true, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, 0)
 	if err != nil {
 		return err
 	}

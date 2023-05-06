@@ -1,7 +1,10 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
+	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -47,6 +50,31 @@ func (k Keeper) SetAuction(ctx sdk.Context, auction types.Auctions) error {
 	store.Set(key, value)
 	return nil
 }
+
+// func (k Keeper) AddAuctionParams(ctx sdk.Context, liquidationData liquidationtypes.LockedVault,auctionID uint64) (auction types.Auctions, err error) {
+
+// 	auctionData := types.Auctions{
+// 		AuctionId:                   auctionID + 1,
+// 		CollateralToken:             liquidationData.CollateralToken,
+// 		DebtToken:                   liquidationData.TargetDebt,
+// 		CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
+// 		CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
+// 		DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
+// 		LockedVaultId:               liquidationData.LockedVaultId,
+// 		StartTime:                   ctx.BlockTime(),
+// 		EndTime:                     ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+// 		AppId:                       liquidationData.AppId,
+// 		AuctionType:                 liquidationData.AuctionType,
+// 	}
+
+// 	err := k.SetAuction(ctx, auctionData)
+// 	if err != nil {
+// 		return auction, err
+// 	}
+
+// 	return auctionData, nil
+
+// }
 
 func (k Keeper) DeleteAuction(ctx sdk.Context, auction types.Auctions) error {
 
