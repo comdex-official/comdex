@@ -128,7 +128,14 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		isCMST := !extPair.AssetOutOraclePrice
 
 		//Creating locked vault struct , which will trigger auction
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.AuctionType, isCMST, extPair.PairId)
+		//This function will only triggger dutch auction
+		//before creating locked vault, checking that dutch auction is already there in the whitelisted liquidation data
+		if !whitelistingData.IsDutchActivated {
+			return fmt.Errorf("Error , dutch auction not activated by the app, this function is only to trigger dutch auctions %d", whitelistingData.IsDutchActivated)
+
+		}
+
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault",whitelistingData.IsDutchActivated , isCMST, extPair.PairId)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -161,13 +168,13 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		ExtendedPairId:               ExtendedPairId,
 		Owner:                        Owner,
 		CollateralToken:              AmountIn,
-		DebtToken:                    AmountOut,//just a representation of the total debt the vault had incurred at the time of liquidation. // Target debt is a correct measure of what will get collected in the auction from bidders.
+		DebtToken:                    AmountOut, //just a representation of the total debt the vault had incurred at the time of liquidation. // Target debt is a correct measure of what will get collected in the auction from bidders.
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      AmountIn,
-		TargetDebt:                   AmountOut.Add(sdk.NewCoin(AmountOut.Denom,feesToBeCollected)).Add(sdk.NewCoin(AmountOut.Denom,bonusToBeGiven)),//to add debt+liquidation+auction bonus here---- 
+		TargetDebt:                   AmountOut.Add(sdk.NewCoin(AmountOut.Denom, feesToBeCollected)).Add(sdk.NewCoin(AmountOut.Denom, bonusToBeGiven)), //to add debt+liquidation+auction bonus here----
 		LiquidationTimestamp:         ctx.BlockTime(),
-		FeeToBeCollected:             feesToBeCollected,//just for calculation purpose
-		BonusToBeGiven:               bonusToBeGiven,//just for calculation purpose
+		FeeToBeCollected:             feesToBeCollected, //just for calculation purpose
+		BonusToBeGiven:               bonusToBeGiven,    //just for calculation purpose
 		IsInternalKeeper:             isInternalKeeper,
 		InternalKeeperAddress:        internalKeeperAddress,
 		IsExternalKeeper:             isExternalKeeper,
@@ -177,15 +184,14 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		IsDebtCmst:                   isDebtCmst,
 		PairId:                       pairId,
 	}
-	//To understand a condition in which case target debt becomes equal to dollar value of collateral token 
+	//To understand a condition in which case target debt becomes equal to dollar value of collateral token
 	//at some point in the auction
 	//1. what happens in that case
-	//2. what if the bid on the auction makes the auction lossy, 
+	//2. what if the bid on the auction makes the auction lossy,
 	//should be use the liquidation penalty ? most probably yes to cover the difference.
 	//what if then liquidation penalty still falls short, should we then reduce the auction bonus from the debt , to make things even?
 	//will this be enough to make sure auction does not not gets bid due to collateral not being able to cover the debt?
 	//can a case occur in which liquidation penalty and auction bonus are still not enough?
-
 
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
@@ -199,6 +205,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 
 	return nil
 }
+
+//
 
 func (k Keeper) LiquidateBorrows(ctx sdk.Context) error {
 	borrows, found := k.lend.GetBorrows(ctx)

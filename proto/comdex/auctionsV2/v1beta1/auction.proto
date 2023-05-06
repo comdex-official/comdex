@@ -83,6 +83,14 @@ message Auctions{
   //   (gogoproto.moretags) = "yaml:\"auction_status\""
   // ];
 
+  uint64 collateral_asset_id = 15 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+  ];
+  uint64 debt_asset_id = 16 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+  ];
+
+
 }
 
  message bidOwnerMapping{
