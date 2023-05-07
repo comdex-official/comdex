@@ -145,9 +145,10 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 			if auction.AuctionType {
 
 				esmStatus, found := k.esm.GetESMStatus(ctx, auction.AppId)
-
+				//FOr esm , can also check vault as initiator exists or not just to be sure
 				if found && esmStatus.Status {
 					//Checking if auction price is supposed to be reduced or restared
+					//Check here if initiator is vault , then for vault do esm trigger option accordingly
 
 					//Checking condition
 
@@ -157,7 +158,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 
 					} else {
 						//Else reduce - normal operation
-						err := k.UpdateDutchAuctionPrice(ctx, auction)
+						err := k.UpdateDutchAuction(ctx, auction)
 						if err != nil {
 							return err
 						}
@@ -173,14 +174,14 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 
 					if ctx.BlockTime().After(auction.EndTime) {
 						//Restart
-						err := k.RestartDutchAuctions(ctx, auction)
+						err := k.RestartDutchAuction(ctx, auction)
 						if err != nil {
 							return err
 						}
 
 					} else {
 						//Else udate price params
-						err := k.UpdateDutchAuctionPrice(ctx, auction)
+						err := k.UpdateDutchAuction(ctx, auction)
 						if err != nil {
 							return err
 						}
@@ -193,6 +194,24 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 				//English Auction=false
 				//Check if auction time has ended, then close auction - if there is at least a single bid
 				//English auction does not require price so no important operation
+				if ctx.BlockTime().After(auction.EndTime) {
+
+					if auction.ActiveBiddingId != nil {
+						//If atleast there is one bidding on the auction
+						err := k.CloseEnglishAuction(ctx, auction)
+						if err != nil {
+							return err
+						}
+
+					} else {
+						//Restart the auction by updating the end time param
+						err := k.RestartEnglishAuction(ctx, auction)
+						if err != nil {
+							return err
+						}
+					}
+
+				}
 
 			}
 			return nil
@@ -236,7 +255,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 // 	return nil
 // }
 
-func (k Keeper) RestartDutchAuctions(ctx sdk.Context, dutchAuction types.Auctions) error {
+func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auctions) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)
 	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, dutchAuction.AppId)
 
@@ -271,7 +290,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, dutchAuction types.Auction
 	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
 	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
-	dutchAuction.StartTime = ctx.BlockTime()
+	// dutchAuction.StartTime = ctx.BlockTime()
 	dutchAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 
 	err := k.SetAuction(ctx, dutchAuction)
@@ -282,7 +301,7 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, dutchAuction types.Auction
 	return nil
 }
 
-func (k Keeper) UpdateDutchAuctionPrice(ctx sdk.Context, dutchAuction types.Auctions) error {
+func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)
 	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, dutchAuction.AppId)
 
@@ -304,12 +323,9 @@ func (k Keeper) UpdateDutchAuctionPrice(ctx sdk.Context, dutchAuction types.Auct
 
 	//Now calculating the auction price of the Collateral Token
 
-
-
 	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
 	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
-
 
 	numerator := dutchAuction.CollateralTokenAuctionPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
 	CollateralTokenAuctionEndPrice := k.GetCollateralTokenEndPrice(dutchAuction.CollateralTokenAuctionPrice, dutchAuctionParams.Discount)
@@ -328,4 +344,25 @@ func (k Keeper) UpdateDutchAuctionPrice(ctx sdk.Context, dutchAuction types.Auct
 		return err
 	}
 	return nil
+}
+
+func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auctions) error {
+
+	auctionParams, _ := k.GetAuctionParams(ctx)
+	englishAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+	err := k.SetAuction(ctx, englishAuction)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctions) error {
+
+	//Send Collateral To the user 
+	//Delete Auction Data
+
+	return nil
+
 }
