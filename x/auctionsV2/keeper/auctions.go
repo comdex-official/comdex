@@ -191,7 +191,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 
 			} else {
 				//English Auction=false
-				//Check if auction time has ended, then close auction
+				//Check if auction time has ended, then close auction - if there is at least a single bid
 				//English auction does not require price so no important operation
 
 			}
@@ -266,16 +266,15 @@ func (k Keeper) RestartDutchAuctions(ctx sdk.Context, dutchAuction types.Auction
 	// CollateralTokenEndPrice := k.getOutflowTokenEndPrice(CollateralTokenInitialPrice, dutchAuctionParams.Cusp)
 
 	//Saving liquidation data to the auction struct
-	auctionData := types.Auctions{
-		CollateralToken:             liquidationData.CollateralToken,
-		DebtToken:                   liquidationData.TargetDebt,
-		CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
-		CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
-		DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
-		StartTime:                   ctx.BlockTime(),
-		EndTime:                     ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
-	}
-	err := k.SetAuction(ctx, auctionData)
+	//Only updating necessary params
+
+	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
+	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
+	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
+	dutchAuction.StartTime = ctx.BlockTime()
+	dutchAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
+
+	err := k.SetAuction(ctx, dutchAuction)
 	if err != nil {
 		return err
 	}
@@ -303,7 +302,14 @@ func (k Keeper) UpdateDutchAuctionPrice(ctx sdk.Context, dutchAuction types.Auct
 		twaDataDebt.Twa = 1000000
 	}
 
-	//Now calculating the auction price of the COllateral Token
+	//Now calculating the auction price of the Collateral Token
+
+
+
+	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
+	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
+	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
+
 
 	numerator := dutchAuction.CollateralTokenAuctionPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
 	CollateralTokenAuctionEndPrice := k.GetCollateralTokenEndPrice(dutchAuction.CollateralTokenAuctionPrice, dutchAuctionParams.Discount)
@@ -316,6 +322,7 @@ func (k Keeper) UpdateDutchAuctionPrice(ctx sdk.Context, dutchAuction types.Auct
 	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenAuctionPrice, tau, seconds)
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDec(int64(twaDataDebt.Twa))
 	dutchAuction.CollateralTokenAuctionPrice = collateralTokenAuctionPrice
+
 	err := k.SetAuction(ctx, dutchAuction)
 	if err != nil {
 		return err
