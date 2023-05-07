@@ -11,11 +11,11 @@ func (k Keeper) GetCollalteralTokenInitialPrice(price sdk.Int, premium sdk.Dec) 
 	return result
 }
 
-func (k Keeper) GetPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int) sdk.Dec {
-	result1 := tau.Sub(dur)
-	result2 := top.Mul(result1.ToDec())
-	result3 := result2.Quo(tau.ToDec())
-	return result3
+func (k Keeper) GetPriceFromLinearDecreaseFunction(CollateralTokenAuctionPrice sdk.Dec, timeToReachZeroPrice, timeElapsed sdk.Int) sdk.Dec {
+	timeDifference := timeToReachZeroPrice.Sub(timeElapsed)
+	resultantPrice := CollateralTokenAuctionPrice.Mul(timeDifference.ToDec())
+	currentPrice := resultantPrice.Quo(timeToReachZeroPrice.ToDec())
+	return currentPrice
 }
 
 func (k Keeper) GetCollateralTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {

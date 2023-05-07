@@ -329,13 +329,21 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions)
 
 	numerator := dutchAuction.CollateralTokenAuctionPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
 	CollateralTokenAuctionEndPrice := k.GetCollateralTokenEndPrice(dutchAuction.CollateralTokenAuctionPrice, dutchAuctionParams.Discount)
-
 	denominator := dutchAuction.CollateralTokenAuctionPrice.Sub(CollateralTokenAuctionEndPrice)
-	resultant := numerator.Quo(denominator)
-	tau := sdk.NewInt(resultant.TruncateInt64())
-	dur := ctx.BlockTime().Sub(dutchAuction.StartTime)
-	seconds := sdk.NewInt(int64(dur.Seconds()))
-	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenAuctionPrice, tau, seconds)
+	timeToReachZeroPrice := numerator.Quo(denominator)
+	timeElapsed := ctx.BlockTime().Sub(dutchAuction.StartTime)
+	// Example: CollateralTokenAuctionPrice = 1.2
+	// AuctionDurationSeconds = 10 unit
+	// numerator = 1.2*10 = 12, CollateralTokenAuctionEndPrice = 1.2*0.7 = 0.84
+	// denominator = 1.2- 0.84 = 0.36
+	// timeToReachZeroPrice = 12/0.36 = 33.3 unit
+	// now assuming auction just started
+	// timeElapsed = 0
+	// collateralTokenAuctionPrice = GetPriceFromLinearDecreaseFunction(1.2, 33.3, 0)
+	// timeDifference = 33.3- 0 = 33.3
+	// resultantPrice = 1.2 *33.3
+	// currentPrice = 1.2*33.3/33.3 = 1.2 unit
+	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenAuctionPrice, sdk.NewInt(timeToReachZeroPrice.TruncateInt64()), sdk.NewInt(int64(timeElapsed.Seconds())))
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDec(int64(twaDataDebt.Twa))
 	dutchAuction.CollateralTokenAuctionPrice = collateralTokenAuctionPrice
 
@@ -360,7 +368,7 @@ func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auct
 
 func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctions) error {
 
-	//Send Collateral To the user 
+	//Send Collateral To the user
 	//Delete Auction Data
 
 	return nil
