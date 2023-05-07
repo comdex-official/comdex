@@ -358,8 +358,7 @@ func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auct
 	err := k.SetAuction(ctx, englishAuction)
 	if err != nil {
 		return err
-	}so gya kya?
-	
+	}
 	return nil
 
 }
