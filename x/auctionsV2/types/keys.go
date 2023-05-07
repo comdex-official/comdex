@@ -26,6 +26,6 @@ var (
 	AuctionKeyPrefix = []byte{0x02}
 )
 
-func AuctionKey(appID uint64, auctionID uint64) []byte {
-	return append(append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(auctionID)...))
+func AuctionKey(auctionID uint64) []byte {
+	return append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(auctionID)...))
 }

@@ -43,7 +43,7 @@ func (k Keeper) SetAuction(ctx sdk.Context, auction types.Auctions) error {
 
 	var (
 		store = k.Store(ctx)
-		key   = types.AuctionKey(auction.AppId, auction.AuctionId)
+		key   = types.AuctionKey(auction.AuctionId)
 		value = k.cdc.MustMarshal(&auction)
 	)
 
@@ -80,16 +80,16 @@ func (k Keeper) DeleteAuction(ctx sdk.Context, auction types.Auctions) error {
 
 	var (
 		store = k.Store(ctx)
-		key   = types.AuctionKey(auction.AppId, auction.AuctionId)
+		key   = types.AuctionKey(auction.AuctionId)
 	)
 	store.Delete(key)
 	return nil
 }
 
-func (k Keeper) GetAuction(ctx sdk.Context, appID, auctionMappingID, auctionID uint64) (auction types.Auctions, err error) {
+func (k Keeper) GetAuction(ctx sdk.Context, auctionID uint64) (auction types.Auctions, err error) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AuctionKey(appID, auctionID)
+		key   = types.AuctionKey(auctionID)
 		value = store.Get(key)
 	)
 

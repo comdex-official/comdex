@@ -322,8 +322,6 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions)
 	}
 
 	//Now calculating the auction price of the Collateral Token
-
-	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
 	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
 
@@ -344,7 +342,6 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions)
 	// resultantPrice = 1.2 *33.3
 	// currentPrice = 1.2*33.3/33.3 = 1.2 unit
 	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenAuctionPrice, sdk.NewInt(timeToReachZeroPrice.TruncateInt64()), sdk.NewInt(int64(timeElapsed.Seconds())))
-	dutchAuction.DebtTokenOraclePrice = sdk.NewDec(int64(twaDataDebt.Twa))
 	dutchAuction.CollateralTokenAuctionPrice = collateralTokenAuctionPrice
 
 	err := k.SetAuction(ctx, dutchAuction)
@@ -361,7 +358,8 @@ func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auct
 	err := k.SetAuction(ctx, englishAuction)
 	if err != nil {
 		return err
-	}
+	}so gya kya?
+	
 	return nil
 
 }

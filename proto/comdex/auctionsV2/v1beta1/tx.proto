@@ -4,5 +4,24 @@ package comdex.auctionsV2.v1beta1;
 
 option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
 
-service Msg {
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+message MsgPlaceMarketBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
+
+message MsgPlaceMarketBidResponse{}
+
+service Msg {
+    rpc MsgPlaceMarketBid(MsgPlaceMarketBidRequest) returns (MsgPlaceMarketBidResponse);
+  
+  }
+  
