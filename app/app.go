@@ -1345,7 +1345,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		mv11.UpgradeName,
-		mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.WasmKeeper, a.AccountKeeper, a.ParamsKeeper, *a.PacketForwardKeeper, *a.RateLimitingICS4Wrapper),
+		mv11.CreateUpgradeHandlerV11(a.mm, a.configurator),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1372,7 +1372,7 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 
 	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
+			Added: []string{ibchookstypes.StoreKey},
 		}
 	}
 
