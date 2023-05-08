@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -389,4 +388,9 @@ func (k Keeper) GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liqui
 
 	k.cdc.MustUnmarshal(value, &liquidationWhiteListing)
 	return liquidationWhiteListing, true
+}
+
+func (k Keeper) WhitelistLiquidation(ctx sdk.Context, msg types.LiquidationWhiteListing) error {
+	k.SetLiquidationWhiteListing(ctx, msg)
+	return nil
 }

@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	flag "github.com/spf13/pflag"
 	"strconv"
 	"time"
 
@@ -72,4 +76,100 @@ func txLiquidateInternalKeeper() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+func NewCmdSubmitWhitelistingLiquidationProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-liquidation-whitelisting [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit liquidation whitelisting proposal",
+		Long:  `Must provide path to a add liquidation whitelisting in JSON file (--add-liquidation-whitelisting) describing the it in an app to be created`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := WhitelistLiquidation(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetWhitelistLiquidation())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func WhitelistLiquidation(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	liquidationWhitelisting, err := parseLiquidationWhitelistingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse liquidationWhitelisting: %w", err)
+	}
+	from := clientCtx.GetFromAddress()
+
+	appId, err := strconv.ParseUint(liquidationWhitelisting.AppId, 10, 64)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
+	}
+
+	premium, err := sdk.NewDecFromStr(liquidationWhitelisting.Premium)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	discount, err := sdk.NewDecFromStr(liquidationWhitelisting.Discount)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	decrementFactor, err := strconv.ParseInt(liquidationWhitelisting.DecrementFactor, 10, 64)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse decrementFactor: %w", err)
+	}
+
+	decrementFactorEnglish, err := strconv.ParseInt(liquidationWhitelisting.DecrementFactorEnglish, 10, 64)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse decrementFactor: %w", err)
+	}
+
+	dutchAuctionParam := types.DutchAuctionParam{
+		Premium:         premium,
+		Discount:        discount,
+		DecrementFactor: sdk.NewInt(decrementFactor),
+	}
+	englishAuctionParam := types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(decrementFactorEnglish)}
+
+	liquidationWhitelistingStruct := types.LiquidationWhiteListing{
+		AppId:               appId,
+		Initiator:           ParseBoolFromString(liquidationWhitelisting.Initiator),
+		IsDutchActivated:    ParseBoolFromString(liquidationWhitelisting.IsDutchActivated),
+		DutchAuctionParam:   &dutchAuctionParam,
+		IsEnglishActivated:  ParseBoolFromString(liquidationWhitelisting.IsEnglishActivated),
+		EnglishAuctionParam: &englishAuctionParam,
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(liquidationWhitelisting.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewLiquidationWhiteListingProposal(liquidationWhitelisting.Title, liquidationWhitelisting.Description, liquidationWhitelistingStruct)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
 }
