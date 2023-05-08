@@ -740,3 +740,14 @@ message AssetRatesPoolPairs {
   uint64 min_usd_value_left = 19 [
     (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
 }
+
+message PoolDepreciate{
+  uint64 app_id = 1[
+    (gogoproto.customname) = "AppID",
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  repeated uint64 pool_id = 2 [
+    (gogoproto.customname) = "PoolID",
+    (gogoproto.moretags) = "yaml:\"pool_id\""
+  ];
+}

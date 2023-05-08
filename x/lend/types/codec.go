@@ -46,6 +46,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&AddMultipleAssetToPairProposal{},
 		&AddPoolPairsProposal{},
 		&AddAssetRatesPoolPairsProposal{},
+		&AddPoolDepreciateProposal{},
 	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),

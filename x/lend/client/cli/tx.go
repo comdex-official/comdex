@@ -1357,3 +1357,59 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 
 	return txf, msg, nil
 }
+
+func CmdDepreciatePoolsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "depreciate-pools [flag] ",
+		Short: "Depreciate the pool",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewDepreciatePools(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetDepreciatePoolsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	depreciatePools, err := parseDepreciatePoolsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse add asset rates, lend pool file: %w", err)
+	}
+	appID, err := strconv.ParseUint(depreciatePools.AppID, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
+	poolIDs, err := ParseUint64SliceFromString(depreciatePools.PoolID, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+
+	depreciatePoolsStruct := types.PoolDepreciate{
+		AppID:  appID,
+		PoolID: poolIDs,
+	}
+
+	content := types.NewAddDepreciatePool(depreciatePools.Title, depreciatePools.Description, depreciatePoolsStruct)
+	from := clientCtx.GetFromAddress()
+	deposit, err := sdk.ParseCoinsNormalized(depreciatePools.Deposit)
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}

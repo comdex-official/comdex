@@ -539,3 +539,51 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 	}
 	return nil
 }
+
+func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) error {
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx, msg.AppID)
+	if !found {
+		k.SetPoolDepreciateRecords(ctx, msg)
+	}
+	depreciatedPoolRecords.PoolID = append(depreciatedPoolRecords.PoolID, msg.PoolID...)
+	k.SetPoolDepreciateRecords(ctx, depreciatedPoolRecords)
+	return nil
+}
+
+func (k Keeper) SetPoolDepreciateRecords(ctx sdk.Context, msg types.PoolDepreciate) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepreciatedPoolKey(msg.AppID)
+		value = k.cdc.MustMarshal(&msg)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetPoolDepreciateRecords(ctx sdk.Context, appID uint64) (msg types.PoolDepreciate, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepreciatedPoolKey(appID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return msg, false
+	}
+
+	k.cdc.MustUnmarshal(value, &msg)
+	return msg, true
+}
+
+func (k Keeper) IsPoolDepreciated(ctx sdk.Context, appID, poolID uint64) bool {
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx, appID)
+	if !found {
+		return false
+	}
+	for _, v := range depreciatedPoolRecords.PoolID {
+		if v == poolID {
+			return true
+		}
+	}
+	return false
+}

@@ -16,6 +16,7 @@ const (
 	FlagSetAuctionParamsFile       = "add-auction-params-file"
 	FlagAddLendPoolPairsFile       = "add-lend-pool-pairs-file"
 	FlagAddAssetRatesPoolPairsFile = "add-asset-rates-pool-pairs-file"
+	FlagDepreciatePoolsFile        = "depreciate-pools-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -95,6 +96,13 @@ func FlagSetAuctionParams() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
 	fs.String(FlagSetAuctionParamsFile, "", "add auction params json file path")
+	return fs
+}
+
+func FlagSetDepreciatePoolsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagDepreciatePoolsFile, "", "depreciates existing pool, json file path")
 	return fs
 }
 
@@ -192,4 +200,12 @@ type addAssetRatesPoolPairsInputs struct {
 	Title                string
 	Description          string
 	Deposit              string
+}
+
+type addDepreciatePoolsInputs struct {
+	AppID       string `json:"app_id"`
+	PoolID      string `json:"pool_id"`
+	Title       string
+	Description string
+	Deposit     string
 }

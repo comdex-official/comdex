@@ -202,6 +202,7 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		lendclient.AddMultipleLendPairsHandler,
 		lendclient.AddPoolPairsHandler,
 		lendclient.AddAssetRatesPoolPairsHandler,
+		lendclient.AddDepreciatePoolsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
