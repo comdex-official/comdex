@@ -177,7 +177,6 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 	tv11 "github.com/comdex-official/comdex/app/upgrades/testnet/v11"
 )
 
@@ -1367,16 +1366,10 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey},
-		}
-
 	case upgradeInfo.Name == tv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{ibchookstypes.StoreKey},
 		}
 	}
-
 	return storeUpgrades
 }
