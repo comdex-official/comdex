@@ -768,7 +768,6 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 
 func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID uint64, amount sdk.Int, pool []uint64, votingRatio []sdk.Int) error {
 	var assetID uint64
-	var perUserShareByAmt sdk.Int
 
 	totalVote := sdk.ZeroInt()
 	app, _ := k.assetKeeper.GetApp(ctx, appID)
@@ -800,14 +799,13 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 			continue
 		}
 		perUserShareByAmtDec := shareByPool.Quo(farmedCoins.Amount.ToDec())
-		perUserShareByAmt = perUserShareByAmtDec.TruncateInt()
 		allActiveFarmer := k.GetAllActiveFarmers(ctx, cswapAppID, extP)
 
 		for _, farmerDetail := range allActiveFarmer {
-			amt := farmerDetail.FarmedPoolCoin.Amount.Mul(perUserShareByAmt)
+			amt := sdk.NewDecFromInt(farmerDetail.FarmedPoolCoin.Amount).Mul(perUserShareByAmtDec)
 			addr, _ := sdk.AccAddressFromBech32(farmerDetail.Farmer)
-			if amt.GT(sdk.ZeroInt()) {
-				err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt)))
+			if amt.GT(sdk.NewDec(0)) {
+				err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt.TruncateInt())))
 				if err != nil {
 					return err
 				}

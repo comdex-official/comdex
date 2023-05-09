@@ -615,7 +615,6 @@ func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdk.Int) (use
 
 func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount sdk.Int, extPair []uint64, votingRatio []sdk.Int) error {
 	var assetID uint64
-	var perUserShareByAmt sdk.Int
 	var vaultsData types.AppExtendedPairVaultMappingData
 
 	totalVote := sdk.ZeroInt()
@@ -646,15 +645,14 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 			continue
 		}
 		perUserShareByAmtDec := shareByExtPair.Quo(extPairVaultMappingData.TokenMintedAmount.ToDec())
-		perUserShareByAmt = perUserShareByAmtDec.TruncateInt()
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 
 		for _, vaultID := range vaultsData.VaultIds {
 			vault, _ := k.GetVault(ctx, vaultID)
-			amt := vault.AmountOut.Mul(perUserShareByAmt)
+			amt := sdk.NewDecFromInt(vault.AmountOut).Mul(perUserShareByAmtDec)
 			addr, _ := sdk.AccAddressFromBech32(vault.Owner)
-			if amt.GT(sdk.ZeroInt()) {
-				err := k.bank.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt)))
+			if amt.GT(sdk.NewDec(0)) {
+				err := k.bank.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt.TruncateInt())))
 				if err != nil {
 					return err
 				}
