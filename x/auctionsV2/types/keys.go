@@ -22,8 +22,14 @@ const (
 )
 
 var (
-	AuctionIDKey     = []byte{0x01}
-	AuctionKeyPrefix = []byte{0x02}
+	TypePlaceMarketBidRequest   = ModuleName + ":market-bid-request"
+	TypePlaceLimitBidRequest    = ModuleName + ":limit-bid-request"
+	TypeCancelLimitBidRequest   = ModuleName + ":cancel-limit-bid-request"
+	TypeWithdrawLimitBidRequest = ModuleName + ":withdraw-limit-bid-request"
+	AuctionIDKey                = []byte{0x01}
+	AuctionKeyPrefix            = []byte{0x02}
+	LimitAuctionBidIDKey        = []byte{0x03}
+	AuctionParamsKey            = []byte{0x04}
 )
 
 func AuctionKey(auctionID uint64) []byte {

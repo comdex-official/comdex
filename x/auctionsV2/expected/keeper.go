@@ -36,3 +36,12 @@ type EsmKeeper interface {
 	SetDataAfterCoolOff(ctx sdk.Context, esmDataAfterCoolOff esmtypes.DataAfterCoolOff)
 	GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (price uint64, found bool)
 }
+
+type BankKeeper interface {
+	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
+	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+}

@@ -19,7 +19,7 @@ type (
 		memKey         sdk.StoreKey
 		paramstore     paramtypes.Subspace
 		LiquidationsV2 expected.LiquidationsV2Keeper
-		bankKeeper     types.BankKeeper
+		bankKeeper     expected.BankKeeper
 		market         expected.MarketKeeper
 		asset          expected.AssetKeeper
 		esm            expected.EsmKeeper
@@ -37,7 +37,7 @@ func NewKeeper(
 	memKey sdk.StoreKey,
 	ps paramtypes.Subspace,
 	LiquidationsV2Keeper expected.LiquidationsV2Keeper,
-	bankKeeper types.BankKeeper,
+	bankKeeper expected.BankKeeper,
 	marketKeeper expected.MarketKeeper,
 	assetKeeper expected.AssetKeeper,
 	esm expected.EsmKeeper,

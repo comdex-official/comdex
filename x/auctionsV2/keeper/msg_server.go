@@ -50,3 +50,38 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	// ctx.GasMeter().ConsumeGas(types.DutchBidGas, "DutchBidGas")
 	return &types.MsgPlaceMarketBidResponse{}, nil
 }
+
+func (k msgServer) MsgPlaceLimitBid(goCtx context.Context, msg *types.MsgPlaceLimitBidRequest) (*types.MsgPlaceLimitBidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	err := k.PlaceLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount, msg.Amount)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgPlaceLimitBidResponse{}, nil
+}
+
+func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancelLimitBidRequest) (*types.MsgCancelLimitBidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
+	if err != nil {
+		return nil, err
+	}
+	err = k.CancelLimitAuctionBid(ctx, bidder, msg.CollateralTokenId, msg.DebtTokenId)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgCancelLimitBidResponse{}, nil
+}
+
+func (k msgServer) MsgWithdrawLimitBid(goCtx context.Context, msg *types.MsgWithdrawLimitBidRequest) (*types.MsgWithdrawLimitBidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
+	if err != nil {
+		return nil, err
+	}
+	err = k.WithdrawLimitAuctionBid(ctx, bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount)
+	if err != nil {
+		return nil, err
+	}
+	return &types.MsgWithdrawLimitBidResponse{}, nil
+}
