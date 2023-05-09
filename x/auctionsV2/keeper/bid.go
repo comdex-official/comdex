@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
@@ -45,7 +46,32 @@ func (k Keeper) GetLimitAuctionBidID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k Keeper) PlaceLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount string, amount sdk.Coin) error {
+func (k Keeper) SetUserLimitBidData(ctx sdk.Context, mappingData types.LimitOrderBid, collateralTokenID uint64, debtTokenID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLimitBidKey(mappingData.BidderAddress, collateralTokenID, debtTokenID)
+		value = k.cdc.MustMarshal(&mappingData)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetUserLimitBidData(ctx sdk.Context, address string, collateralTokenID uint64, debtTokenID uint64) (mappingData types.LimitOrderBid, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLimitBidKey(address, collateralTokenID, debtTokenID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return mappingData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &mappingData)
+	return mappingData, true
+}
+
+func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount string, amount sdk.Coin) error {
 	id := k.GetLimitAuctionBidID(ctx)
 	bidderAddr, err := sdk.AccAddressFromBech32(bidder)
 	if err != nil {
@@ -59,16 +85,26 @@ func (k Keeper) PlaceLimitAuctionBid(ctx sdk.Context, bidder string, CollateralT
 	if err != nil {
 		return err
 	}
-
-	limitBid := types.LimitOrderBid{
-		LimitOrderBiddingId: id + 1,
-		BidderAddress:       bidder,
-		CollateralToken:     sdk.Coin{},
-		DebtToken:           sdk.Coin{},
-		BiddingId:           nil,
-		PremiumDiscount:     premiumDiscount,
+	collateralAsset, found := k.asset.GetAsset(ctx, CollateralTokenId)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
 	}
-	k.SetLimitAuctionBidID(ctx, limitBid.LimitOrderBiddingId)
+	collateralAssetToken := sdk.NewCoin(collateralAsset.Denom, sdk.NewInt(0))
+	userLimitBid, found := k.GetUserLimitBidData(ctx, bidder, CollateralTokenId, DebtTokenId)
+	if !found {
+		userLimitBid = types.LimitOrderBid{
+			LimitOrderBiddingId: id + 1,
+			BidderAddress:       bidder,
+			CollateralToken:     collateralAssetToken, // zero
+			DebtToken:           amount,               // user's balance
+			BiddingId:           nil,
+			PremiumDiscount:     premiumDiscount,
+		}
+	} else {
+		userLimitBid.CollateralToken = userLimitBid.CollateralToken.Add(amount)
+	}
+
+	k.SetLimitAuctionBidID(ctx, userLimitBid.LimitOrderBiddingId)
 	return nil
 }
 
@@ -76,6 +112,6 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder sdk.AccAddress, Co
 	return nil
 }
 
-func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder sdk.AccAddress, CollateralTokenId, DebtTokenId uint64, PremiumDiscount string) error {
+func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64) error {
 	return nil
 }

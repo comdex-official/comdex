@@ -18,8 +18,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.MsgPlaceMarketBid(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgPlaceLimitBidRequest:
-			res, err := server.MsgPlaceLimitBid(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgDepositLimitBidRequest:
+			res, err := server.MsgDepositLimitBid(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgCancelLimitBidRequest:

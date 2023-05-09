@@ -10,7 +10,7 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPlaceMarketBidRequest{}, "comdex/auctionsV2/MsgPlaceMarketBidRequest", nil)
-	cdc.RegisterConcrete(&MsgPlaceLimitBidRequest{}, "comdex/auctionsV2/MsgPlaceLimitBidRequest", nil)
+	cdc.RegisterConcrete(&MsgDepositLimitBidRequest{}, "comdex/auctionsV2/MsgPlaceLimitBidRequest", nil)
 	cdc.RegisterConcrete(&MsgCancelLimitBidRequest{}, "comdex/auctionsV2/MsgCancelLimitBidRequest", nil)
 	cdc.RegisterConcrete(&MsgWithdrawLimitBidRequest{}, "comdex/auctionsV2/MsgWithdrawLimitBidRequest", nil)
 }
@@ -19,7 +19,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgPlaceMarketBidRequest{},
-		&MsgPlaceLimitBidRequest{},
+		&MsgDepositLimitBidRequest{},
 		&MsgCancelLimitBidRequest{},
 		&MsgWithdrawLimitBidRequest{},
 	)

@@ -41,8 +41,8 @@ func (msg *MsgPlaceMarketBidRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgPlaceLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount string, amount sdk.Coin) *MsgPlaceLimitBidRequest {
-	return &MsgPlaceLimitBidRequest{
+func NewMsgDepositLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount string, amount sdk.Coin) *MsgDepositLimitBidRequest {
+	return &MsgDepositLimitBidRequest{
 		CollateralTokenId: collateralTokenId,
 		DebtTokenId:       debtTokenId,
 		PremiumDiscount:   premiumDiscount,
@@ -51,10 +51,10 @@ func NewMsgPlaceLimitBid(bidder string, collateralTokenId, debtTokenId uint64, p
 	}
 }
 
-func (msg MsgPlaceLimitBidRequest) Route() string { return ModuleName }
-func (msg MsgPlaceLimitBidRequest) Type() string  { return TypePlaceLimitBidRequest }
+func (msg MsgDepositLimitBidRequest) Route() string { return ModuleName }
+func (msg MsgDepositLimitBidRequest) Type() string  { return TypePlaceLimitBidRequest }
 
-func (msg *MsgPlaceLimitBidRequest) ValidateBasic() error {
+func (msg *MsgDepositLimitBidRequest) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Bidder)
 	if err != nil {
 		return err
@@ -68,13 +68,13 @@ func (msg *MsgPlaceLimitBidRequest) ValidateBasic() error {
 	return nil
 }
 
-func (msg *MsgPlaceLimitBidRequest) GetSigners() []sdk.AccAddress {
+func (msg *MsgDepositLimitBidRequest) GetSigners() []sdk.AccAddress {
 	Bidder, _ := sdk.AccAddressFromBech32(msg.Bidder)
 	return []sdk.AccAddress{Bidder}
 }
 
 // GetSignBytes get the bytes for the message signer to sign on.
-func (msg *MsgPlaceLimitBidRequest) GetSignBytes() []byte {
+func (msg *MsgDepositLimitBidRequest) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
