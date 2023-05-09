@@ -1,121 +1,167 @@
 package v11
 
 import (
-	// "embed"
-	// "fmt"
-
-	// wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	// wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
+	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
+	lockertypes "github.com/comdex-official/comdex/x/locker/types"
+	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	// authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	// govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	// paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	// transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	// ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
-	// ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
-	// packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
-	// packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 )
 
-// var embedFs embed.FS
+// An error occurred during the creation of the CMST/STJUNO pair, as it was mistakenly created in the Harbor app (ID-2) instead of the cSwap app (ID-1).
+// As a result, the transaction fee was charged to the creator of the pair, who is entitled to a refund.
+// The provided code is designed to initiate the refund process.
+// The transaction hash for the pair creation is EF408AD53B8BB0469C2A593E4792CB45552BD6495753CC2C810A1E4D82F3982F.
+// MintSan - https://www.mintscan.io/comdex/txs/EF408AD53B8BB0469C2A593E4792CB45552BD6495753CC2C810A1E4D82F3982F
 
-// func SetupIBCRateLimitingContract(
-// 	ctx sdk.Context,
-// 	wasmKeeper wasmkeeper.Keeper,
-// 	accountKeeper authkeeper.AccountKeeper,
-// 	paramKeeper paramskeeper.Keeper,
-// ) error {
-// 	govModule := accountKeeper.GetModuleAddress(govtypes.ModuleName)
-// 	code, err := embedFs.ReadFile("rate_limiter.wasm")
-// 	if err != nil {
-// 		return err
-// 	}
-// 	contractKeeper := wasmkeeper.NewGovPermissionKeeper(wasmKeeper)
-// 	instantiateConfig := wasmtypes.AccessConfig{Permission: wasmtypes.AccessTypeOnlyAddress, Address: govModule.String()}
-// 	codeID, _, err := contractKeeper.Create(ctx, govModule, code, &instantiateConfig)
-// 	if err != nil {
-// 		return err
-// 	}
+func RefundFeeForAccidentallyCreatedPirToOwner(
+	ctx sdk.Context,
+	liquidityKeeper liquiditykeeper.Keeper,
+	assetKeeper assetkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
+) {
+	allApps, found := assetKeeper.GetApps(ctx)
+	if !found {
+		panic("apps not found")
+	}
+	harborAppID := 0
+	for _, app := range allApps {
+		if app.Name == "harbor" {
+			harborAppID = int(app.Id)
+			break
+		}
+	}
+	if harborAppID == 0 {
+		panic("harbor app not found")
+	}
+	liquidityParams, err := liquidityKeeper.GetGenericParams(ctx, uint64(harborAppID))
+	if err != nil {
+		panic(err.Error())
+	}
 
-// 	transferModule := accountKeeper.GetModuleAddress(transfertypes.ModuleName)
+	refundAmount := sdk.NewCoin("ucmdx", sdk.NewInt(2000000000))
 
-// 	initMsgBz := []byte(fmt.Sprintf(`{
-//            "gov_module":  "%s",
-//            "ibc_module":"%s",
-//            "paths": []
-//         }`,
-// 		govModule, transferModule))
+	feeCollectorAddress := sdk.MustAccAddressFromBech32(liquidityParams.FeeCollectorAddress)
+	feeCollectorCmdxBalance := bankKeeper.GetBalance(ctx, feeCollectorAddress, "ucmdx")
+	if feeCollectorCmdxBalance.Amount.LT(refundAmount.Amount) {
+		panic("isufficient balance in fee collector of harbor app")
+	}
 
-// 	addr, _, err := contractKeeper.Instantiate(ctx, codeID, govModule, govModule, initMsgBz, "rate limiting contract", nil)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	addrStr, err := sdk.Bech32ifyAddressBytes("comdex", addr)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	params, err := ibcratelimittypes.NewParams(addrStr)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	paramSpace, ok := paramKeeper.GetSubspace(ibcratelimittypes.ModuleName)
-// 	if !ok {
-// 		return sdkerrors.New("rate-limiting-upgrades", 2, "can't create paramspace")
-// 	}
-// 	paramSpace.SetParamSet(ctx, &params)
-// 	return nil
-// }
+	pairCreatorAddress := sdk.MustAccAddressFromBech32("comdex19wmd9xzhjnvmr90z8r3cnjlns5kgem9qglt2ll")
+	pairCreatorCmdxBalance := bankKeeper.GetBalance(ctx, pairCreatorAddress, "ucmdx")
+	err = bankKeeper.SendCoins(ctx, feeCollectorAddress, pairCreatorAddress, sdk.NewCoins(refundAmount))
+	if err != nil {
+		panic(err)
+	}
+	pairCreatorCmdxBalanceNew := bankKeeper.GetBalance(ctx, pairCreatorAddress, "ucmdx")
 
-// func setRateLimits(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper, rateLimitingICS4Wrapper ibcratelimit.ICS4Wrapper, wasmKeeper wasmkeeper.Keeper) {
-// 	govModule := accountKeeper.GetModuleAddress(govtypes.ModuleName)
-// 	contractKeeper := wasmkeeper.NewGovPermissionKeeper(wasmKeeper)
+	if !pairCreatorCmdxBalance.Add(refundAmount).IsEqual(pairCreatorCmdxBalanceNew) {
+		panic("account balance invariant after pair creation fee refund")
+	}
+}
 
-// 	paths := []string{
-// 		`{"add_path": {"channel_id": "any", "denom": "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-//           "quotas":
-//             [
-//               {"name":"ATOM-DAY-1","duration":86400,"send_recv":[30,30]},
-//               {"name":"ATOM-DAY-2","duration":129600,"send_recv":[30,30]},
-//               {"name":"ATOM-WEEK-1","duration":604800,"send_recv":[60,60]},
-//               {"name":"ATOM-WEEK-2","duration":907200,"send_recv":[60,60]}
-//             ]
-//           }}`,
-// 	}
-
-// 	contract := rateLimitingICS4Wrapper.GetContractAddress(ctx)
-// 	if contract == "" {
-// 		panic("rate limiting contract not set")
-// 	}
-// 	rateLimitingContract, err := sdk.AccAddressFromBech32(contract)
-// 	if err != nil {
-// 		panic("contract address improperly formatted")
-// 	}
-// 	for _, denom := range paths {
-// 		_, err := contractKeeper.Execute(ctx, rateLimitingContract, govModule, []byte(denom), nil)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 	}
-// }
-
-func CreateUpgradeHandlerV11(
+func CreateUpgradeHandlerV10(
 	mm *module.Manager,
 	configurator module.Configurator,
+	liquidityKeeper liquiditykeeper.Keeper,
+	assetKeeper assetkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
+	accountKeeper authkeeper.AccountKeeper,
+	rewardsKeeper rewardskeeper.Keeper,
+	icahostkeeper icahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// if err := SetupIBCRateLimitingContract(ctx, wasmKeeper, accountKeeper, paramKeeper); err != nil {
-		// 	return nil, err
-		// }
-		// packetforwardKeeper.SetParams(ctx, packetforwardtypes.DefaultParams())
-		//  N.B.: this is done to avoid initializing genesis for ibcratelimit module.
-		// Otherwise, it would overwrite migrations with InitGenesis().
-		// See RunMigrations() for details.
-		// fromVM[ibcratelimittypes.ModuleName] = 0
-		// setRateLimits(ctx, accountKeeper, rateLimitingICS4Wrapper, wasmKeeper)
+		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		hostParams := icahosttypes.Params{
+			HostEnabled: true,
+			AllowMessages: []string{
+				sdk.MsgTypeURL(&ibctransfertypes.MsgTransfer{}),
+				sdk.MsgTypeURL(&banktypes.MsgSend{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
+				sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
+				sdk.MsgTypeURL(&distrtypes.MsgWithdrawDelegatorReward{}),
+				sdk.MsgTypeURL(&distrtypes.MsgSetWithdrawAddress{}),
+				sdk.MsgTypeURL(&distrtypes.MsgWithdrawValidatorCommission{}),
+				sdk.MsgTypeURL(&distrtypes.MsgFundCommunityPool{}),
+				sdk.MsgTypeURL(&govtypes.MsgVote{}),
+				sdk.MsgTypeURL(&auctiontypes.MsgPlaceSurplusBidRequest{}),
+				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDebtBidRequest{}),
+				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDutchBidRequest{}),
+				sdk.MsgTypeURL(&auctiontypes.MsgPlaceDutchLendBidRequest{}),
+				sdk.MsgTypeURL(&lendtypes.MsgLend{}),
+				sdk.MsgTypeURL(&lendtypes.MsgWithdraw{}),
+				sdk.MsgTypeURL(&lendtypes.MsgDeposit{}),
+				sdk.MsgTypeURL(&lendtypes.MsgCloseLend{}),
+				sdk.MsgTypeURL(&lendtypes.MsgBorrow{}),
+				sdk.MsgTypeURL(&lendtypes.MsgDraw{}),
+				sdk.MsgTypeURL(&lendtypes.MsgRepay{}),
+				sdk.MsgTypeURL(&lendtypes.MsgDepositBorrow{}),
+				sdk.MsgTypeURL(&lendtypes.MsgCloseBorrow{}),
+				sdk.MsgTypeURL(&lendtypes.MsgBorrowAlternate{}),
+				sdk.MsgTypeURL(&lendtypes.MsgCalculateInterestAndRewards{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCreatePair{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCreatePool{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCreateRangedPool{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgDeposit{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgWithdraw{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgLimitOrder{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgMarketOrder{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgMMOrder{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCancelOrder{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCancelAllOrders{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgCancelMMOrder{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgFarm{}),
+				sdk.MsgTypeURL(&liquiditytypes.MsgUnfarm{}),
+				sdk.MsgTypeURL(&lockertypes.MsgCreateLockerRequest{}),
+				sdk.MsgTypeURL(&lockertypes.MsgDepositAssetRequest{}),
+				sdk.MsgTypeURL(&lockertypes.MsgWithdrawAssetRequest{}),
+				sdk.MsgTypeURL(&lockertypes.MsgCloseLockerRequest{}),
+				sdk.MsgTypeURL(&lockertypes.MsgLockerRewardCalcRequest{}),
+				sdk.MsgTypeURL(&rewardstypes.MsgCreateGauge{}),
+				sdk.MsgTypeURL(&tokenminttypes.MsgMintNewTokensRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgCreateRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgDepositRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgWithdrawRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgDrawRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgRepayRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgCloseRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgDepositAndDrawRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgCreateStableMintRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgDepositStableMintRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgWithdrawStableMintRequest{}),
+				sdk.MsgTypeURL(&vaulttypes.MsgVaultInterestCalcRequest{}),
+			},
+		}
+		icahostkeeper.SetParams(ctx, hostParams)
+
+		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return nil, err
+		}
+		RefundFeeForAccidentallyCreatedPirToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
+		DistributeRewards(ctx, accountKeeper, bankKeeper, rewardsKeeper)
+		return vm, err
 	}
 }
