@@ -903,7 +903,7 @@ func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *
 		if !ok {
 			return txf, nil, types.ErrorInvalidDecimals
 		}
-		newAssetOut, ok := sdk.NewIntFromString(assetOut[i])
+		newAssetOut, _ := sdk.NewIntFromString(assetOut[i])
 
 		assets = append(assets, types.AssetPair{
 			Name:                  names[i],

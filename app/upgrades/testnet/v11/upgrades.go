@@ -1,4 +1,4 @@
-package v10
+package v11
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -6,15 +6,13 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func CreateUpgradeHandlerV10(
+func CreateUpgradeHandlerV11(
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
-		if err != nil {
-			return vm, err
-		}
-		return vm, err
+
+		ctx.Logger().Info("Applying test net upgrade - v.11.0.0")
+		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }

@@ -1,4 +1,4 @@
-package v10
+package v11
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -78,7 +78,7 @@ func RefundFeeForAccidentallyCreatedPirToOwner(
 	}
 }
 
-func CreateUpgradeHandlerV10(
+func CreateUpgradeHandlerV11(
 	mm *module.Manager,
 	configurator module.Configurator,
 	liquidityKeeper liquiditykeeper.Keeper,
@@ -89,6 +89,9 @@ func CreateUpgradeHandlerV10(
 	icahostkeeper icahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+		ctx.Logger().Info("Applying main net upgrade - v.11.0.1")
+
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
 		hostParams := icahosttypes.Params{
