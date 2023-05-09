@@ -71,6 +71,7 @@ func (k Keeper) GetUserLimitBidData(ctx sdk.Context, debtTokenID, collateralToke
 	k.cdc.MustUnmarshal(value, &mappingData)
 	return mappingData, true
 }
+
 func (k Keeper) DeleteUserLimitBidData(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium, address string) {
 	var (
 		store = k.Store(ctx)
@@ -167,6 +168,5 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	}
 	userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(amount.Amount)
 	k.SetUserLimitBidData(ctx, userLimitBid, DebtTokenId, CollateralTokenId, PremiumDiscount)
-
 	return nil
 }
