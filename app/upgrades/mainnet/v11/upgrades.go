@@ -1,4 +1,4 @@
-package v10
+package v11
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -78,7 +78,7 @@ func RefundFeeForAccidentallyCreatedPirToOwner(
 	}
 }
 
-func CreateUpgradeHandlerV10(
+func CreateUpgradeHandlerV11(
 	mm *module.Manager,
 	configurator module.Configurator,
 	liquidityKeeper liquiditykeeper.Keeper,
