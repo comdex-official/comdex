@@ -20,8 +20,38 @@ message MsgPlaceMarketBidRequest {
 
 message MsgPlaceMarketBidResponse{}
 
+message MsgPlaceLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3;
+  string bidder = 4;
+  cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
+}
+
+message MsgPlaceLimitBidResponse{}
+
+message MsgCancelLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3;
+  string bidder = 4;
+}
+
+message MsgCancelLimitBidResponse{}
+
+message MsgWithdrawLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3;
+  string bidder = 4;
+  cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
+}
+
+message MsgWithdrawLimitBidResponse{}
+
 service Msg {
-    rpc MsgPlaceMarketBid(MsgPlaceMarketBidRequest) returns (MsgPlaceMarketBidResponse);
-  
-  }
-  
+  rpc MsgPlaceMarketBid(MsgPlaceMarketBidRequest) returns (MsgPlaceMarketBidResponse);
+  rpc MsgPlaceLimitBid(MsgPlaceLimitBidRequest) returns (MsgPlaceLimitBidResponse);
+  rpc MsgCancelLimitBid(MsgCancelLimitBidRequest) returns (MsgCancelLimitBidResponse);
+  rpc MsgWithdrawLimitBid(MsgWithdrawLimitBidRequest) returns (MsgWithdrawLimitBidResponse);
+}
