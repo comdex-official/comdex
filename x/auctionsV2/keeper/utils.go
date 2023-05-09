@@ -1,10 +1,7 @@
 package keeper
 
 import (
-	"time"
-
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
-	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/gogo/protobuf/types"

@@ -23,7 +23,7 @@ const (
 
 var (
 	TypePlaceMarketBidRequest    = ModuleName + ":market-bid-request"
-	TypePlaceLimitBidRequest     = ModuleName + ":limit-bid-request"
+	TypePlaceLimitBidRequest     = ModuleName + ":deposit-limit-bid-request"
 	TypeCancelLimitBidRequest    = ModuleName + ":cancel-limit-bid-request"
 	TypeWithdrawLimitBidRequest  = ModuleName + ":withdraw-limit-bid-request"
 	AuctionIDKey                 = []byte{0x01}
@@ -37,6 +37,6 @@ func AuctionKey(auctionID uint64) []byte {
 	return append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(auctionID)...))
 }
 
-func UserLimitBidKey(address string, collateralTokenID, debtTokenID uint64) []byte {
-	return append(append(append(UserLimitBidMappingKeyPrefix, address...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian(debtTokenID)...)
+func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium, address string) []byte {
+	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), premium...), address...)
 }

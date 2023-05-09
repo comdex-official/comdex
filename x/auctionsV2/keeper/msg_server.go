@@ -62,11 +62,7 @@ func (k msgServer) MsgDepositLimitBid(goCtx context.Context, msg *types.MsgDepos
 
 func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancelLimitBidRequest) (*types.MsgCancelLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-	if err != nil {
-		return nil, err
-	}
-	err = k.CancelLimitAuctionBid(ctx, bidder, msg.CollateralTokenId, msg.DebtTokenId)
+	err := k.CancelLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +71,7 @@ func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancel
 
 func (k msgServer) MsgWithdrawLimitBid(goCtx context.Context, msg *types.MsgWithdrawLimitBidRequest) (*types.MsgWithdrawLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	err := k.WithdrawLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId)
+	err := k.WithdrawLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount, msg.Amount)
 	if err != nil {
 		return nil, err
 	}
