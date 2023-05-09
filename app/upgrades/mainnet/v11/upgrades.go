@@ -78,7 +78,7 @@ func RefundFeeForAccidentallyCreatedPirToOwner(
 	}
 }
 
-func CreateUpgradeHandlerV10(
+func CreateUpgradeHandlerV11(
 	mm *module.Manager,
 	configurator module.Configurator,
 	liquidityKeeper liquiditykeeper.Keeper,
