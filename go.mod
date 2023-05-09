@@ -26,7 +26,7 @@ require (
 require (
 	github.com/cosmos/ibc-go/v4 v4.4.0
 	github.com/golangci/golangci-lint v1.51.2
-	github.com/osmosis-labs/osmosis/v15 v15.0.0
+	github.com/osmosis-labs/osmosis/v15 v15.1.0
 	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
@@ -257,7 +257,7 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20230131160201-f062dba9d201 // indirect

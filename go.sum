@@ -1995,8 +1995,8 @@ github.com/ory/dockertest/v3 v3.9.1/go.mod h1:42Ir9hmvaAPm0Mgibk6mBPi7SFvTXxEcnz
 github.com/osmosis-labs/osmosis/osmomath v0.0.4 h1:5cJfDi8mOuAzLfsQFoTGJvm/qca7Gj7wvDiVSTE1ibk=
 github.com/osmosis-labs/osmosis/osmoutils v0.0.4 h1:W/lvzFsyt30GGi0+nD3Ktxlwe5Tl6ipKWilyyLjJ9Ro=
 github.com/osmosis-labs/osmosis/osmoutils v0.0.4/go.mod h1:2MStAdC2TajbhgkAwT3SZPtMW/Bbvp0JYGPRle+5Qsc=
-github.com/osmosis-labs/osmosis/v15 v15.0.0 h1:lwAha4K+6fg/XFnqwAKd7iqZ1NfvCGiOgkyZ/PWUro4=
-github.com/osmosis-labs/osmosis/v15 v15.0.0/go.mod h1:oG4n68FcMHsy5+MkjmwDa8iQNoJekYqn7bkzsc/85jY=
+github.com/osmosis-labs/osmosis/v15 v15.1.0 h1:3qt9Rmw2C9ZF0JHzlfAuukYAvDVU29XBmNw9Q8bUmw4=
+github.com/osmosis-labs/osmosis/v15 v15.1.0/go.mod h1:vdHn0ofXUNsO1rx/0u3T/UfvQ92JjfIb0uW9lN4r7SA=
 github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6 h1:PjfLL5rwwm44CeLnNQssrFgmj4BdeIS5DriKYhGz7IM=
 github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6/go.mod h1:2Aqs0L6JnMfo+P+It8q7hJsP1YB+Is5DJc4nRSiBF/U=
 github.com/otiai10/copy v1.2.0/go.mod h1:rrF5dJ5F0t/EWSYODDu4j9/vEeYHMkc8jt0zJChqQWw=
@@ -2653,8 +2653,8 @@ go.uber.org/multierr v1.4.0/go.mod h1:VgVr7evmIr6uPjLBxg28wmKNXyqE9akIJ5XnfpiKl+
 go.uber.org/multierr v1.6.0/go.mod h1:cdWPpRnG4AhwMwsgIHip0KRBQjJy5kYEpYjJxpXp9iU=
 go.uber.org/multierr v1.7.0/go.mod h1:7EAYxJLBy9rStEaz58O2t4Uvip6FSURkq8/ppBp95ak=
 go.uber.org/multierr v1.8.0/go.mod h1:7EAYxJLBy9rStEaz58O2t4Uvip6FSURkq8/ppBp95ak=
-go.uber.org/multierr v1.9.0 h1:7fIwc/ZtS0q++VgcfqFDxSBZVv/Xo49/SYnDFupUwlI=
-go.uber.org/multierr v1.9.0/go.mod h1:X2jQV1h+kxSjClGpnseKVIxpmcjrj7MNnI0bnlfKTVQ=
+go.uber.org/multierr v1.10.0 h1:S0h4aNzvfcFsC3dRF1jLoaov7oRaKqRGC/pUEJ2yvPQ=
+go.uber.org/multierr v1.10.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 go.uber.org/tools v0.0.0-20190618225709-2cfd321de3ee/go.mod h1:vJERXedbb3MVM5f9Ejo0C68/HhF8uaILCdgjnY+goOA=
 go.uber.org/zap v1.9.1/go.mod h1:vwi/ZaCAaUcBkycHslxD9B2zi4UTXhF60s6SWpuDF0Q=
 go.uber.org/zap v1.10.0/go.mod h1:vwi/ZaCAaUcBkycHslxD9B2zi4UTXhF60s6SWpuDF0Q=
