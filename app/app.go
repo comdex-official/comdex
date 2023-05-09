@@ -177,8 +177,8 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	tv11 "github.com/comdex-official/comdex/app/upgrades/testnet/v11"
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
+	tv11 "github.com/comdex-official/comdex/app/upgrades/testnet/v11"
 )
 
 const (
@@ -1350,12 +1350,14 @@ func (a *App) registerUpgradeHandlers() {
 	if err != nil {
 		panic(err)
 	}
-	if upgradeInfo.Name == tv11.UpgradeName {
+
+	switch {
+	case upgradeInfo.Name == tv11.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			tv11.UpgradeName,
 			tv11.CreateUpgradeHandlerV11(a.mm, a.configurator),
 		)
-	} else if upgradeInfo.Name == mv11.UpgradeName {
+	case upgradeInfo.Name == mv11.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			mv11.UpgradeName,
 			mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
