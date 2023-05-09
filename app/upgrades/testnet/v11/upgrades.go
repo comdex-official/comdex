@@ -11,6 +11,8 @@ func CreateUpgradeHandlerV11(
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+		ctx.Logger().Info("Applying test net upgrade - v.11.0.0")
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
