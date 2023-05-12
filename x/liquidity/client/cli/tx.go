@@ -42,6 +42,8 @@ func GetTxCmd() *cobra.Command {
 		NewCancelMMOrderCmd(),
 		NewFarmCmd(),
 		NewUnfarmCmd(),
+		NewDepositAndFarmCmd(),
+		NewUnfarmAndWithdrawCmd(),
 	)
 
 	return cmd
@@ -984,6 +986,107 @@ func NewCmdCreateNewLiquidityPairProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewDepositAndFarmCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit-and-farm [app-id] [pool-id] [deposit-coins]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Deposit coins to a liquidity pool  and farm pool tokens",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Deposit coins to a liquidity pool and farm pool tokens.
+Example:
+$ %s tx %s deposit-and-farm 1 1 1000000000uatom,50000000000stake --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid pool id: %w", err)
+			}
+
+			depositCoins, err := sdk.ParseCoinsNormalized(args[2])
+			if err != nil {
+				return fmt.Errorf("invalid deposit coins: %w", err)
+			}
+
+			msg := types.NewMsgDepositAndFarm(appID, clientCtx.GetFromAddress(), poolID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewUnfarmAndWithdrawCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "unfarm-and-withdraw [app-id] [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(3),
+		Short: "unfarm pool coin and withdraw liquidity from pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`unfarm pool coin and withdraw liquidity from pool
+Example:
+$ %s tx %s unfarm-and-withdraw 1 1 10000pool1 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			unfarmingPoolCoin, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUnfarmAndWithdraw(
+				appID,
+				poolID,
+				clientCtx.GetFromAddress(),
+				unfarmingPoolCoin,
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }
