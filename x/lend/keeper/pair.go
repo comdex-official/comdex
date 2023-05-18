@@ -169,7 +169,14 @@ func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) erro
 	// store data and, first create pair as current cPool main asset as assetIn and other {{poolID, mainAssetID}} as assetOut
 	// In second step reverse the pair
 
-	pools := k.GetPools(ctx)
+	allPools := k.GetPools(ctx) // implement changes to get only active pools
+	var pools []types.Pool
+	for _, v := range allPools {
+		if k.IsPoolDepreciated(ctx, v.PoolID) {
+			continue
+		}
+		pools = append(pools, v)
+	}
 	var diffPoolID, mainAssetID []uint64
 	if len(pools) > 1 {
 		for _, cPool := range pools {
@@ -541,7 +548,7 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 }
 
 func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) error {
-	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx, msg.AppID)
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx)
 	if !found {
 		k.SetPoolDepreciateRecords(ctx, msg)
 	}
@@ -553,17 +560,17 @@ func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) err
 func (k Keeper) SetPoolDepreciateRecords(ctx sdk.Context, msg types.PoolDepreciate) {
 	var (
 		store = k.Store(ctx)
-		key   = types.DepreciatedPoolKey(msg.AppID)
+		key   = types.DepreciatedPoolPrefix
 		value = k.cdc.MustMarshal(&msg)
 	)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPoolDepreciateRecords(ctx sdk.Context, appID uint64) (msg types.PoolDepreciate, found bool) {
+func (k Keeper) GetPoolDepreciateRecords(ctx sdk.Context) (msg types.PoolDepreciate, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.DepreciatedPoolKey(appID)
+		key   = types.DepreciatedPoolPrefix
 		value = store.Get(key)
 	)
 
@@ -575,8 +582,8 @@ func (k Keeper) GetPoolDepreciateRecords(ctx sdk.Context, appID uint64) (msg typ
 	return msg, true
 }
 
-func (k Keeper) IsPoolDepreciated(ctx sdk.Context, appID, poolID uint64) bool {
-	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx, appID)
+func (k Keeper) IsPoolDepreciated(ctx sdk.Context, poolID uint64) bool {
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx)
 	if !found {
 		return false
 	}

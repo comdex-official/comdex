@@ -134,7 +134,7 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	// sends the asset to pool's module-acc
 	// mints cAsset representative of the lent asset
 	// creates a lent Position and updates global lend
-	depreciated := k.IsPoolDepreciated(ctx, AppID, PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}
@@ -381,7 +381,7 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	if !found {
 		return types.ErrLendNotFound
 	}
-	depreciated := k.IsPoolDepreciated(ctx, lendPos.AppID, lendPos.PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}
@@ -530,7 +530,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return types.ErrLendNotFound
 	}
 
-	depreciated := k.IsPoolDepreciated(ctx, lendPos.AppID, lendPos.PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}
@@ -1035,7 +1035,7 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 		return types.ErrLendNotFound
 	}
 
-	depreciated := k.IsPoolDepreciated(ctx, lendPos.AppID, lendPos.PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}
@@ -1189,7 +1189,7 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 		return types.ErrLendNotFound
 	}
 
-	depreciated := k.IsPoolDepreciated(ctx, lendPos.AppID, lendPos.PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}
@@ -1367,7 +1367,7 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
 	}
-	depreciated := k.IsPoolDepreciated(ctx, AppID, PoolID)
+	depreciated := k.IsPoolDepreciated(ctx, PoolID)
 	if depreciated {
 		return types.ErrorPoolDepreciated
 	}

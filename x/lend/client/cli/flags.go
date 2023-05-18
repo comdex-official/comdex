@@ -203,7 +203,6 @@ type addAssetRatesPoolPairsInputs struct {
 }
 
 type addDepreciatePoolsInputs struct {
-	AppID       string `json:"app_id"`
 	PoolID      string `json:"pool_id"`
 	Title       string
 	Description string

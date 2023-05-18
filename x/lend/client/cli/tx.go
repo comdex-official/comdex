@@ -1389,17 +1389,12 @@ func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagS
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add asset rates, lend pool file: %w", err)
 	}
-	appID, err := strconv.ParseUint(depreciatePools.AppID, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
 	poolIDs, err := ParseUint64SliceFromString(depreciatePools.PoolID, ",")
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}
 
 	depreciatePoolsStruct := types.PoolDepreciate{
-		AppID:  appID,
 		PoolID: poolIDs,
 	}
 
