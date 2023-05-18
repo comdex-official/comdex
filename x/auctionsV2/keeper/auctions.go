@@ -371,3 +371,53 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 	return nil
 
 }
+
+func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
+	// Get Auctions One by One and for that particular auction check the current discount
+	// if we find any active limit bid for that premium then we will execute it and update both
+
+	auctions := k.GetAuctions(ctx)
+	for _, auction := range auctions {
+		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
+			if auction.CollateralTokenOraclePrice.GT(auction.CollateralTokenAuctionPrice) {
+				premium := (auction.CollateralTokenOraclePrice.Sub(auction.CollateralTokenAuctionPrice)).Quo(auction.CollateralTokenOraclePrice)
+				premiumPerc := premium.Mul(sdk.NewDecFromInt(sdk.NewInt(100)))
+				biddingData, found := k.GetUserLimitBidDataByPremium(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
+				if !found {
+					return nil
+				}
+				// Here we will check if the auction amount is greater than individual bids or vice versa,
+				// in any of the case update both user bids and individual auctions
+
+				for _, individualBids := range biddingData {
+					addr, _ := sdk.AccAddressFromBech32(individualBids.BidderAddress)
+					if individualBids.DebtToken.Amount.GTE(auction.DebtToken.Amount) {
+						// the auction is completed here, and now we will update user's limit bid data
+						err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, auction.DebtToken, auction)
+						if err != nil {
+							return err
+						}
+						if individualBids.DebtToken.Amount.Equal(auction.DebtToken.Amount) {
+							k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
+							return nil
+						}
+						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
+						//Todo: append bidding ID
+						//individualBids.BiddingId = append(individualBids.BiddingId, id)
+						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
+					} else {
+						err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction)
+						if err != nil {
+							return err
+						}
+						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
+					}
+
+				}
+
+			}
+			return nil
+		})
+	}
+	return nil
+}

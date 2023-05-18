@@ -81,6 +81,32 @@ func (k Keeper) DeleteUserLimitBidData(ctx sdk.Context, debtTokenID, collateralT
 	store.Delete(key)
 }
 
+func (k Keeper) GetUserLimitBidDataByPremium(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium string) (biddingData []types.LimitOrderBid, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLimitBidKeyForPremium(debtTokenID, collateralTokenID, premium)
+		iter  = sdk.KVStorePrefixIterator(store, key)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var mapData types.LimitOrderBid
+		k.cdc.MustUnmarshal(iter.Value(), &mapData)
+		biddingData = append(biddingData, mapData)
+	}
+	if biddingData == nil {
+		return nil, false
+	}
+
+	return biddingData, true
+}
+
 func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount string, amount sdk.Coin) error {
 	id := k.GetLimitAuctionBidID(ctx)
 	bidderAddr, err := sdk.AccAddressFromBech32(bidder)
