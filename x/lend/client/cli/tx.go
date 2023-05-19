@@ -1393,9 +1393,13 @@ func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagS
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}
+	var IndividualPoolDepreciateVar []types.IndividualPoolDepreciate
+	for _, poolID := range poolIDs {
+		IndividualPoolDepreciateVar = append(IndividualPoolDepreciateVar, types.IndividualPoolDepreciate{PoolID: poolID, IsPoolDepreciated: false})
+	}
 
 	depreciatePoolsStruct := types.PoolDepreciate{
-		PoolID: poolIDs,
+		IndividualPoolDepreciate: IndividualPoolDepreciateVar,
 	}
 
 	content := types.NewAddDepreciatePool(depreciatePools.Title, depreciatePools.Description, depreciatePoolsStruct)

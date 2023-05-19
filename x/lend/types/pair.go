@@ -165,7 +165,7 @@ func (m *AssetRatesPoolPairs) Validate() error {
 }
 
 func (m *PoolDepreciate) Validate() error {
-	if m.PoolID != nil {
+	if m.IndividualPoolDepreciate != nil {
 		return fmt.Errorf("PoolID cannot be empty")
 	}
 	return nil

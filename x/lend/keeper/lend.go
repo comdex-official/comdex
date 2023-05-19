@@ -149,6 +149,15 @@ func (k Keeper) GetPool(ctx sdk.Context, id uint64) (pool types.Pool, found bool
 	return pool, true
 }
 
+func (k Keeper) DeletePool(ctx sdk.Context, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PoolKey(id)
+	)
+
+	store.Delete(key)
+}
+
 func (k Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
 	var (
 		store = k.Store(ctx)

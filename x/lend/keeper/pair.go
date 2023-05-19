@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/lend/types"
@@ -552,7 +553,7 @@ func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) err
 	if !found {
 		k.SetPoolDepreciateRecords(ctx, msg)
 	}
-	depreciatedPoolRecords.PoolID = append(depreciatedPoolRecords.PoolID, msg.PoolID...)
+	depreciatedPoolRecords.IndividualPoolDepreciate = append(depreciatedPoolRecords.IndividualPoolDepreciate, msg.IndividualPoolDepreciate...)
 	k.SetPoolDepreciateRecords(ctx, depreciatedPoolRecords)
 	return nil
 }
@@ -587,10 +588,67 @@ func (k Keeper) IsPoolDepreciated(ctx sdk.Context, poolID uint64) bool {
 	if !found {
 		return false
 	}
-	for _, v := range depreciatedPoolRecords.PoolID {
-		if v == poolID {
+	for _, v := range depreciatedPoolRecords.IndividualPoolDepreciate {
+		if v.PoolID == poolID {
 			return true
 		}
 	}
 	return false
+}
+
+func (k Keeper) DeletePoolAndTransferFunds(ctx sdk.Context) error {
+	poolDepRecords, found := k.GetPoolDepreciateRecords(ctx)
+	if !found {
+		return nil
+	}
+	for _, poolDepRecord := range poolDepRecords.IndividualPoolDepreciate {
+		// condition when the proposal is passed and pool isn't deprecated yet
+		if !poolDepRecord.IsPoolDepreciated {
+			pool, _ := k.GetPool(ctx, poolDepRecord.PoolID)
+			var firstAssetID, secondAssetID, thirdAssetID uint64
+			// for getting transit assets details
+			for _, data := range pool.AssetData {
+				if data.AssetTransitType == 1 {
+					firstAssetID = data.AssetID
+				}
+				if data.AssetTransitType == 2 {
+					secondAssetID = data.AssetID
+				}
+				if data.AssetTransitType == 3 {
+					thirdAssetID = data.AssetID
+				}
+			}
+			firstAsset, _ := k.Asset.GetAsset(ctx, firstAssetID)
+			secondAsset, _ := k.Asset.GetAsset(ctx, secondAssetID)
+			thirdAsset, _ := k.Asset.GetAsset(ctx, thirdAssetID)
+			LBMappingFirstAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, firstAssetID)
+			LBMappingSecondAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, secondAssetID)
+			LBMappingThirdAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, thirdAssetID)
+			// condition when all lend and borrow positions are deleted
+			if LBMappingFirstAsset.LendIds == nil && LBMappingFirstAsset.BorrowIds == nil && LBMappingSecondAsset.LendIds == nil && LBMappingSecondAsset.BorrowIds == nil && LBMappingThirdAsset.LendIds == nil && LBMappingThirdAsset.BorrowIds == nil {
+				// transfer excess funds to the reserve
+				// make IsPoolDepreciated true
+				// delete Pool
+				modBalFirstAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), firstAsset.Denom)
+				modBalSecondAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), secondAsset.Denom)
+				modBalThirdAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), thirdAsset.Denom)
+				err := k.UpdateReserveBalances(ctx, firstAssetID, pool.ModuleName, modBalFirstAsset, true)
+				if err != nil {
+					return err
+				}
+				err = k.UpdateReserveBalances(ctx, secondAssetID, pool.ModuleName, modBalSecondAsset, true)
+				if err != nil {
+					return err
+				}
+				err = k.UpdateReserveBalances(ctx, thirdAssetID, pool.ModuleName, modBalThirdAsset, true)
+				if err != nil {
+					return err
+				}
+				poolDepRecord.IsPoolDepreciated = true
+				k.SetPoolDepreciateRecords(ctx, poolDepRecords)
+				k.DeletePool(ctx, poolDepRecord.PoolID)
+			}
+		}
+	}
+	return nil
 }
