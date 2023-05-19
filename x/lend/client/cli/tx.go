@@ -1405,6 +1405,9 @@ func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagS
 	content := types.NewAddDepreciatePool(depreciatePools.Title, depreciatePools.Description, depreciatePoolsStruct)
 	from := clientCtx.GetFromAddress()
 	deposit, err := sdk.ParseCoinsNormalized(depreciatePools.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
 		return txf, nil, err
