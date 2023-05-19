@@ -549,6 +549,12 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 }
 
 func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) error {
+	for _, individualPoolDepreciateData := range msg.IndividualPoolDepreciate {
+		_, found := k.GetPool(ctx, individualPoolDepreciateData.PoolID)
+		if !found {
+			return types.ErrPoolNotFound
+		}
+	}
 	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx)
 	if !found {
 		k.SetPoolDepreciateRecords(ctx, msg)
