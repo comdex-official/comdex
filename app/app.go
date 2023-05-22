@@ -591,6 +591,8 @@ func New(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
 		&app.BandoracleKeeper,
@@ -1339,6 +1341,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
+		assettypes.ModuleName:          nil,
 	}
 }
 
