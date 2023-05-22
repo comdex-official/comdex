@@ -2,9 +2,14 @@ syntax = "proto3";
 package comdex.asset.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message Params {}
+message Params {
+    cosmos.base.v1beta1.Coin asset_regisration_fee = 6 [
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false
+    ];
+}
