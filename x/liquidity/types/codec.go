@@ -25,6 +25,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCancelMMOrder{}, "comdex/liquidity/MsgCancelMMOrder", nil)
 	cdc.RegisterConcrete(&MsgFarm{}, "comdex/liquidity/MsgFarm", nil)
 	cdc.RegisterConcrete(&MsgUnfarm{}, "comdex/liquidity/MsgUnfarm", nil)
+	cdc.RegisterConcrete(&MsgDepositAndFarm{}, "comdex/liquidity/DepositAndFarm", nil)
+	cdc.RegisterConcrete(&MsgUnfarmAndWithdraw{}, "comdex/liquidity/UnfarmAndWithdraw", nil)
 	cdc.RegisterConcrete(&UpdateGenericParamsProposal{}, "comdex/liquidity/UpdateGenericParamsProposal", nil)
 	cdc.RegisterConcrete(&CreateNewLiquidityPairProposal{}, "comdex/liquidity/CreateNewLiquidityPairProposal", nil)
 }
@@ -53,6 +55,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCancelMMOrder{},
 		&MsgFarm{},
 		&MsgUnfarm{},
+		&MsgDepositAndFarm{},
+		&MsgUnfarmAndWithdraw{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

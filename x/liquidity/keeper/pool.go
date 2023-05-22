@@ -815,3 +815,125 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 
 	return nil
 }
+
+// ValidateMsgDepositAndFarm validates types.MsgDepositAndFarm.
+func (k Keeper) ValidateMsgDepositAndFarm(ctx sdk.Context, msg *types.MsgDepositAndFarm) error {
+	_, err := sdk.AccAddressFromBech32(msg.Depositor)
+	if err != nil {
+		return err
+	}
+
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	pool, found := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	if !found {
+		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pool %d not found", msg.PoolId)
+	}
+	if pool.Disabled {
+		return types.ErrDisabledPool
+	}
+
+	pair, _ := k.GetPair(ctx, msg.AppId, pool.PairId)
+
+	for _, coin := range msg.DepositCoins {
+		if coin.Denom != pair.BaseCoinDenom && coin.Denom != pair.QuoteCoinDenom {
+			return sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", coin.Denom)
+		}
+	}
+
+	rx, ry := k.getPoolBalances(ctx, pool, pair)
+	if rx.Amount.Add(msg.DepositCoins.AmountOf(rx.Denom)).GT(amm.MaxCoinAmount) {
+		return types.ErrTooLargePool
+	}
+	if ry.Amount.Add(msg.DepositCoins.AmountOf(ry.Denom)).GT(amm.MaxCoinAmount) {
+		return types.ErrTooLargePool
+	}
+
+	return nil
+}
+
+func (k Keeper) DepositAndFarm(
+	ctx sdk.Context,
+	msg *types.MsgDepositAndFarm,
+) error {
+	if err := k.ValidateMsgDepositAndFarm(ctx, msg); err != nil {
+		return err
+	}
+
+	depositor := sdk.MustAccAddressFromBech32(msg.Depositor)
+	depositRequest, err := k.Deposit(ctx, types.NewMsgDeposit(msg.AppId, depositor, msg.PoolId, msg.DepositCoins))
+	if err != nil {
+		return err
+	}
+	err = k.ExecuteDepositRequest(ctx, depositRequest)
+	if err != nil {
+		return err
+	}
+	depositRequest, _ = k.GetDepositRequest(ctx, msg.AppId, msg.PoolId, depositRequest.Id)
+	if depositRequest.Status != types.RequestStatusSucceeded || !depositRequest.MintedPoolCoin.IsPositive() {
+		return fmt.Errorf("deposit request execution failed, any coin deducted will be refunded - deposit request id %d ", depositRequest.Id)
+	}
+	err = k.Farm(ctx, types.NewMsgFarm(msg.AppId, msg.PoolId, depositor, depositRequest.MintedPoolCoin))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ValidateUnfarmAndWithdraw validates types.MsgUnfarmAndWithdraw.
+func (k Keeper) ValidateMsgUnfarmAndWithdraw(ctx sdk.Context, msg *types.MsgUnfarmAndWithdraw) error {
+	_, err := sdk.AccAddressFromBech32(msg.Farmer)
+	if err != nil {
+		return err
+	}
+
+	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+	}
+
+	pool, found := k.GetPool(ctx, msg.AppId, msg.PoolId)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
+	}
+
+	if msg.UnfarmingPoolCoin.Denom != pool.PoolCoinDenom {
+		return sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
+	}
+	if !msg.UnfarmingPoolCoin.Amount.IsPositive() {
+		return sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
+	}
+	return nil
+}
+
+func (k Keeper) UnfarmAndWithdraw(
+	ctx sdk.Context,
+	msg *types.MsgUnfarmAndWithdraw,
+) error {
+	err := k.ValidateMsgUnfarmAndWithdraw(ctx, msg)
+	if err != nil {
+		return err
+	}
+
+	farmer := sdk.MustAccAddressFromBech32(msg.Farmer)
+
+	err = k.Unfarm(ctx, types.NewMsgUnfarm(msg.AppId, msg.PoolId, farmer, msg.UnfarmingPoolCoin))
+	if err != nil {
+		return err
+	}
+
+	withdrawRequest, err := k.Withdraw(ctx, types.NewMsgWithdraw(msg.AppId, farmer, msg.PoolId, msg.UnfarmingPoolCoin))
+	if err != nil {
+		return err
+	}
+
+	err = k.ExecuteWithdrawRequest(ctx, withdrawRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
