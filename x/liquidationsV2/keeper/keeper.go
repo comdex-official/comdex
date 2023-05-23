@@ -27,6 +27,7 @@ type Keeper struct {
 	rewards    expected.RewardsKeeper
 	lend       expected.LendKeeper
 	auctionsV2 expected.AuctionsV2Keeper
+	collector  expected.CollectorKeeper
 }
 
 func NewKeeper(
@@ -43,6 +44,7 @@ func NewKeeper(
 	rewards expected.RewardsKeeper,
 	lend expected.LendKeeper,
 	auctionsV2Keeper expected.AuctionsV2Keeper,
+	collector expected.CollectorKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -63,6 +65,7 @@ func NewKeeper(
 		rewards:    rewards,
 		lend:       lend,
 		auctionsV2: auctionsV2Keeper,
+		collector:  collector,
 	}
 }
 
