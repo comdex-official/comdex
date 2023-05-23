@@ -593,6 +593,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return nil
 	}
 
+	err = k.CheckIsolatedModeForBorrow(ctx, addr, pair.AssetIn)
+	if err != nil {
+		return err
+	}
+
 	if AmountIn.Amount.GT(lendPos.AvailableToBorrow) {
 		return types.ErrAvailableToBorrowInsufficient
 	}
@@ -1888,6 +1893,19 @@ func (k Keeper) DepositDraw(ctx sdk.Context, addr string, borrowID uint64, Amoun
 	err = k.DrawAsset(ctx, borrowID, addr, loan)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (k Keeper) CheckIsolatedModeForBorrow(ctx sdk.Context, address string, assetID uint64) error {
+	mappingData := k.GetUserTotalMappingData(ctx, address)
+	for _, data := range mappingData {
+		lendPos, _ := k.GetLend(ctx, data.LendId)
+		if lendPos.AssetID == assetID {
+			if len(data.BorrowId) >= 1 {
+				return types.ErrorIsolatedModeActivated
+			}
+		}
 	}
 	return nil
 }

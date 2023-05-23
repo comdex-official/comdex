@@ -218,6 +218,10 @@ message Extended_Pair {
 
   uint64 min_usd_value_left = 6 [
     (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
+
+  bool is_e_mode = 7 [
+    (gogoproto.moretags) = "yaml:\"is_e_mode\""
+  ];
 }
 
 message AssetToPairMapping{
@@ -739,6 +743,16 @@ message AssetRatesPoolPairs {
   ];
   uint64 min_usd_value_left = 19 [
     (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
+
+  bool is_isolated = 20 [
+    (gogoproto.moretags) = "yaml:\"is_isolated\""
+  ];
+
+  string e_ltv = 21 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"e_ltv\""
+  ];
 }
 
 message PoolDepreciate{
