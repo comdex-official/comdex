@@ -17,6 +17,7 @@ const (
 	FlagAddLendPoolPairsFile       = "add-lend-pool-pairs-file"
 	FlagAddAssetRatesPoolPairsFile = "add-asset-rates-pool-pairs-file"
 	FlagDepreciatePoolsFile        = "depreciate-pools-file"
+	FlagAddEModePairsFile          = "e-mode-pairs-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -103,6 +104,13 @@ func FlagSetDepreciatePoolsMapping() *flag.FlagSet {
 	fs := flag.NewFlagSet("", flag.ContinueOnError)
 
 	fs.String(FlagDepreciatePoolsFile, "", "depreciates existing pool, json file path")
+	return fs
+}
+
+func FlagAddEModePairs() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddEModePairsFile, "", "enable e-mode for a pair, json file path")
 	return fs
 }
 
@@ -207,4 +215,14 @@ type addDepreciatePoolsInputs struct {
 	Title       string
 	Description string
 	Deposit     string
+}
+
+type addEModePairsInputs struct {
+	PairID                string `json:"pair_id"`
+	ELTV                  string `json:"e_ltv"`
+	ELiquidationThreshold string `json:"e_liquidation_threshold"`
+	ELiquidationPenalty   string `json:"e_liquidation_penalty"`
+	Title                 string
+	Description           string
+	Deposit               string
 }

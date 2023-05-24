@@ -27,6 +27,7 @@ type (
 	AddAssetRatesParamsRequest struct{}
 	AddAuctionParamsRequest    struct{}
 	AddDepreciatePoolsRequest  struct{}
+	AddEModePairsRequest       struct{}
 )
 
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
@@ -155,6 +156,23 @@ func AddDepreciatePoolsProposalRESTHandler(clientCtx client.Context) govrest.Pro
 func AddDepreciatePoolsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req AddDepreciatePoolsRequest
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+	}
+}
+
+func AddEModePairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add_e_mode_pairs",
+		Handler:  AddEModePairsRESTHandler(clientCtx),
+	}
+}
+
+func AddEModePairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddEModePairsRequest
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return

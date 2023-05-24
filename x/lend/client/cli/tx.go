@@ -1415,3 +1415,77 @@ func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagS
 
 	return txf, msg, nil
 }
+
+func CmdAddEModePairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add_e_mode_pairs [flag] ",
+		Short: "Enable pairs for E-Mode",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewAddEModePairs(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagAddEModePairs())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewAddEModePairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	eModePairs, err := parseAddEModePairsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse add E-Mode file: %w", err)
+	}
+	pairIDs, err := ParseUint64SliceFromString(eModePairs.PairID, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELtv, err := ParseDecSliceFromString(eModePairs.ELTV, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELiquidationThreshold, err := ParseDecSliceFromString(eModePairs.ELiquidationThreshold, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELiquidationPenalty, err := ParseDecSliceFromString(eModePairs.ELiquidationPenalty, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	var eModePair []types.EModePairs
+	for i, pairID := range pairIDs {
+
+		eModePair = append(eModePair, types.EModePairs{
+			PairID:                pairID,
+			ELtv:                  ELtv[i],
+			ELiquidationThreshold: ELiquidationThreshold[i],
+			ELiquidationPenalty:   ELiquidationPenalty[i],
+		})
+	}
+
+	eModePairsInput := types.EModePairsForProposal{EModePairs: eModePair}
+
+	content := types.NewAddEModePairs(eModePairs.Title, eModePairs.Description, eModePairsInput)
+	from := clientCtx.GetFromAddress()
+	deposit, err := sdk.ParseCoinsNormalized(eModePairs.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}

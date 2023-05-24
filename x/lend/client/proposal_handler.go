@@ -18,4 +18,5 @@ var (
 	AddPoolPairsHandler           = govclient.NewProposalHandler(cli.CmdAddPoolPairsProposal, rest.AddPoolPairsProposalRESTHandler)
 	AddAssetRatesPoolPairsHandler = govclient.NewProposalHandler(cli.CmdAddAssetRatesPoolPairsProposal, rest.AddAssetRatesPoolPairsProposalRESTHandler)
 	AddDepreciatePoolsHandler     = govclient.NewProposalHandler(cli.CmdDepreciatePoolsProposal, rest.AddDepreciatePoolsProposalRESTHandler)
+	AddEModePairsHandler          = govclient.NewProposalHandler(cli.CmdAddEModePairsProposal, rest.AddEModePairsProposalRESTHandler)
 )
