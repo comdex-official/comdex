@@ -592,10 +592,15 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		}
 		return nil
 	}
-
-	err = k.CheckIsolatedModeForBorrow(ctx, addr, pair.AssetIn)
-	if err != nil {
-		return err
+	if assetInRatesStats.IsIsolated {
+		err = k.CheckIsolatedModeForBorrow(ctx, addr, pair.AssetIn)
+		if err != nil {
+			return err
+		}
+	}
+	assetInRatesStatsLtv := assetInRatesStats.Ltv
+	if pair.IsEModeEnabled {
+		assetInRatesStatsLtv = assetInRatesStats.ELtv
 	}
 
 	if AmountIn.Amount.GT(lendPos.AvailableToBorrow) {
@@ -619,7 +624,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return sdkerrors.Wrap(types.ErrStableBorrowDisabled, loan.String())
 	}
 
-	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
+	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStatsLtv)
 	if err != nil {
 		return err
 	}
@@ -693,7 +698,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
-		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
+		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStatsLtv)
 		updatedAmtInPrice, err := k.Market.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
@@ -939,7 +944,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
 	} else if payment.Amount.GT(amtToReservePool.TruncateInt()) && payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// from reservePoolRecords amount send tokens to reserve pool
 		// send remaining payment back to cPool and mint additional tokens for that amount
@@ -956,7 +961,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := payment.Amount.Sub(amtToReservePool.TruncateInt())
@@ -994,7 +999,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
@@ -1238,7 +1243,11 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 	if amount.Amount.GT(assetOutModBal) {
 		return types.ErrInsufficientFundsInPool
 	}
-	err = k.VerifyCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()).Add(amount.Amount), assetOut, assetRatesStats.Ltv)
+	assetRatesStatsLtv := assetRatesStats.Ltv
+	if pair.IsEModeEnabled {
+		assetRatesStatsLtv = assetRatesStats.ELtv
+	}
+	err = k.VerifyCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()).Add(amount.Amount), assetOut, assetRatesStatsLtv)
 	if err != nil {
 		return err
 	}
@@ -1336,7 +1345,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
 	}
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 	if amtToMint.GT(sdk.ZeroInt()) {
@@ -1832,7 +1841,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 	return nil
 }
 
-func (k Keeper) UpdateReserverAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
+func (k Keeper) UpdateReserveAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
 	allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, id)
 	if !found {
 		allReserveStats = types.AllReserveStats{
