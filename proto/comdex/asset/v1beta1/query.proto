@@ -8,10 +8,19 @@ import "comdex/asset/v1beta1/asset.proto";
 import "comdex/asset/v1beta1/app.proto";
 import "comdex/asset/v1beta1/pair.proto";
 import "comdex/asset/v1beta1/extendedPairVault.proto";
+import "comdex/asset/v1beta1/params.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
 
 message QueryAssetsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
@@ -174,6 +183,11 @@ message QueryExtendedPairVaultsByAppWithoutStableResponse {
 }
 
 service Query {
+  // Params returns parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/asset/v1beta1/params";
+  }
+
   rpc QueryAssets(QueryAssetsRequest) returns (QueryAssetsResponse) {
     option (google.api.http).get = "/comdex/asset/v1beta1/assets";
   }

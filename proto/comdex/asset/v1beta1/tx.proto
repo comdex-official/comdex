@@ -1,0 +1,22 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/asset/v1beta1/asset.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.goproto_getters_all) = false;
+
+// Msg defines the Msg service.
+service Msg {
+  // AddAsset defines a method for adding new asset in asset module
+  rpc AddAsset(MsgAddAsset) returns (MsgAddAssetResponse);
+}
+
+// MsgAddAsset defines an SDK message for adding new asset in asset module.
+message MsgAddAsset {
+  string creator = 1;
+  Asset asset = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgAddAssetResponse {}

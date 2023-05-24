@@ -10,6 +10,8 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.params.SetParamSet(ctx, &params)
 }
 
-func (k Keeper) GetParams() types.Params {
-	return types.NewParams()
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	var params types.Params
+	k.params.GetParamSet(ctx, &params)
+	return params
 }
