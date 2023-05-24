@@ -103,6 +103,8 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddAssetRatesPoolPairsProposal(ctx, k, c)
 		case *types.AddPoolDepreciateProposal:
 			return handlePoolDepreciateProposal(ctx, k, c)
+		case *types.AddEModePairsProposal:
+			return handleEModePairsProposal(ctx, k, c)
 
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -148,4 +150,8 @@ func handleAddAssetRatesPoolPairsProposal(ctx sdk.Context, k keeper.Keeper, p *t
 
 func handlePoolDepreciateProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolDepreciateProposal) error {
 	return k.HandlePoolDepreciateProposal(ctx, p)
+}
+
+func handleEModePairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddEModePairsProposal) error {
+	return k.HandleEModePairsProposal(ctx, p)
 }

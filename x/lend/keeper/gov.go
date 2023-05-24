@@ -45,3 +45,7 @@ func (k Keeper) HandleAddAssetRatesPoolPairsRecords(ctx sdk.Context, p *types.Ad
 func (k Keeper) HandlePoolDepreciateProposal(ctx sdk.Context, p *types.AddPoolDepreciateProposal) error {
 	return k.AddPoolDepreciate(ctx, p.PoolDepreciate)
 }
+
+func (k Keeper) HandleEModePairsProposal(ctx sdk.Context, p *types.AddEModePairsProposal) error {
+	return k.AddEModePairs(ctx, p.EModePairsForProposal)
+}

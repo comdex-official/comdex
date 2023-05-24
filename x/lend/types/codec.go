@@ -32,6 +32,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgFundReserveAccounts{}, "comdex/lend/MsgFundReserveAccounts", nil)
 	cdc.RegisterConcrete(&AddPoolPairsProposal{}, "comdex/lend/AddPoolPairsProposal", nil)
 	cdc.RegisterConcrete(&AddAssetRatesPoolPairsProposal{}, "comdex/lend/AddAssetRatesPoolPairsProposal", nil)
+	cdc.RegisterConcrete(&AddEModePairsProposal{}, "comdex/lend/AddEModePairsProposal", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

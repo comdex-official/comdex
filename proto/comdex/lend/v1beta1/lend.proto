@@ -780,3 +780,33 @@ message IndividualPoolDepreciate{
     (gogoproto.moretags) = "yaml:\"is_pool_depreciated\""
   ];
 }
+
+message EModePairsForProposal {
+  repeated EModePairs e_mode_pairs = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.customname) = "EModePairs",
+    (gogoproto.moretags) = "yaml:\"e_mode_pairs\""
+  ];
+}
+
+message EModePairs {
+  uint64 pair_id = 1 [
+    (gogoproto.customname) = "PairID",
+    (gogoproto.moretags) = "yaml:\"pair_id\""
+  ];
+  string e_ltv = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"e_ltv\""
+  ];
+  string e_liquidation_threshold = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"e_liquidation_threshold\""
+  ];
+  string e_liquidation_penalty = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"e_liquidation_penalty\""
+  ];
+}

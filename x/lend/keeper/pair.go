@@ -658,3 +658,23 @@ func (k Keeper) DeletePoolAndTransferFunds(ctx sdk.Context) error {
 	}
 	return nil
 }
+
+func (k Keeper) AddEModePairs(ctx sdk.Context, msg types.EModePairsForProposal) error {
+	for _, eModePair := range msg.EModePairs {
+		pair, found := k.GetLendPair(ctx, eModePair.PairID)
+		if !found {
+			return types.ErrorPairNotFound
+		}
+		pair.IsEModeEnabled = true
+		assetRatesParam, found := k.GetAssetRatesParams(ctx, pair.AssetIn)
+		if !found {
+			return types.ErrorAssetRatesParamsNotFound
+		}
+		assetRatesParam.ELtv = eModePair.ELtv
+		assetRatesParam.ELiquidationThreshold = eModePair.ELiquidationThreshold
+		assetRatesParam.ELiquidationPenalty = eModePair.ELiquidationPenalty
+		k.SetLendPair(ctx, pair)
+		k.SetAssetRatesParams(ctx, assetRatesParam)
+	}
+	return nil
+}
