@@ -1231,7 +1231,7 @@ func CmdAddAssetRatesPoolPairsProposal() *cobra.Command {
 }
 
 func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
-	assetRatesPoolPairs, err := parseAddAssetratesPoolPairsFlags(fs)
+	assetRatesPoolPairs, err := parseAddAssetRatesPoolPairsFlags(fs)
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add asset rates, lend pool file: %w", err)
 	}
@@ -1273,7 +1273,10 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	if err != nil {
 		return txf, nil, err
 	}
-
+	isIsolated, err := strconv.ParseUint(assetRatesPoolPairs.IsIsolated, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
 	newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
 	newBase, _ := sdk.NewDecFromStr(base)
 	newSlope1, _ := sdk.NewDecFromStr(slope1)
@@ -1287,6 +1290,7 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
 	newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
 	newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
+	newIsIsolated := ParseBoolFromString(isIsolated)
 
 	moduleName := assetRatesPoolPairs.ModuleName
 	cPoolName := assetRatesPoolPairs.CPoolName
@@ -1346,6 +1350,7 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 		CPoolName:            cPoolName,
 		AssetData:            assetData,
 		MinUsdValueLeft:      minUSDValueLeft,
+		IsIsolated:           newIsIsolated,
 	}
 
 	content := types.NewAddassetRatesPoolPairs(assetRatesPoolPairs.Title, assetRatesPoolPairs.Description, assetRatesPoolPairsE)

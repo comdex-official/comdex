@@ -207,7 +207,7 @@ func parseAddPoolPairsFlags(fs *pflag.FlagSet) (*addLendPoolPairsInputs, error) 
 	return addPoolPairsParams, nil
 }
 
-func parseAddAssetratesPoolPairsFlags(fs *pflag.FlagSet) (*addAssetRatesPoolPairsInputs, error) {
+func parseAddAssetRatesPoolPairsFlags(fs *pflag.FlagSet) (*addAssetRatesPoolPairsInputs, error) {
 	addPoolPairsParams := &addAssetRatesPoolPairsInputs{}
 	addPoolPairsParamsFile, _ := fs.GetString(FlagAddAssetRatesPoolPairsFile)
 

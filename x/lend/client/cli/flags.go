@@ -205,6 +205,7 @@ type addAssetRatesPoolPairsInputs struct {
 	SupplyCap            string `json:"supply_cap"`
 	CPoolName            string `json:"c_pool_name"`
 	MinUSDValueLeft      string `json:"min_usd_value_left"`
+	IsIsolated           string `json:"is_isolated"`
 	Title                string
 	Description          string
 	Deposit              string

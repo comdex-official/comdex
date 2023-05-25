@@ -253,3 +253,35 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	s.Require().NotZero(appID)
 	return appID
 }
+
+func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64, moduleName, cPoolName string, assetData []*types.AssetDataPoolMapping, MinUsdValueLeft uint64, IsIsolated bool) uint64 {
+	err := s.app.LendKeeper.AddAssetRatesPoolPairs(s.ctx, types.AssetRatesPoolPairs{
+		AssetID:              AssetID,
+		UOptimal:             UOptimal,
+		Base:                 Base,
+		Slope1:               Slope1,
+		Slope2:               Slope2,
+		EnableStableBorrow:   EnableStableBorrow,
+		StableBase:           StableBase,
+		StableSlope1:         StableSlope1,
+		StableSlope2:         StableSlope2,
+		Ltv:                  LTV,
+		LiquidationThreshold: LiquidationThreshold,
+		LiquidationPenalty:   LiquidationPenalty,
+		LiquidationBonus:     LiquidationBonus,
+		ReserveFactor:        ReserveFactor,
+		CAssetID:             CAssetID,
+		ModuleName:           moduleName,
+		CPoolName:            cPoolName,
+		AssetData:            assetData,
+		MinUsdValueLeft:      MinUsdValueLeft,
+		IsIsolated:           IsIsolated,
+	})
+	s.Require().NoError(err)
+	return AssetID
+}
+
+func (s *KeeperTestSuite) AddEModePairs(EModePairs []types.EModePairs) {
+	err := s.app.LendKeeper.AddEModePairs(s.ctx, types.EModePairsForProposal{EModePairs: EModePairs})
+	s.Require().NoError(err)
+}

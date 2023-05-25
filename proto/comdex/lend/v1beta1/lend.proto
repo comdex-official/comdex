@@ -759,8 +759,11 @@ message AssetRatesPoolPairs {
     (gogoproto.moretags) = "yaml:\"asset_data\""
   ];
   uint64 min_usd_value_left = 19 [
-    (gogoproto.moretags) = "yaml:\"min_usd_value_left\""];
-
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\""
+  ];
+  bool is_isolated = 20 [
+    (gogoproto.moretags) = "yaml:\"is_isolated\""
+  ];
 }
 
 message PoolDepreciate{

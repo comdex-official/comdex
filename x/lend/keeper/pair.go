@@ -531,6 +531,7 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 		LiquidationBonus:     msg.LiquidationBonus,
 		ReserveFactor:        msg.ReserveFactor,
 		CAssetID:             msg.CAssetID,
+		IsIsolated:           msg.IsIsolated,
 	}
 
 	k.SetAssetRatesParams(ctx, assetRatesParams)
