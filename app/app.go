@@ -2,11 +2,18 @@ package app
 
 import (
 	"fmt"
+
+	ibctestingcore "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
+	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
+	"github.com/tendermint/spm/cosmoscmd"
+
+	ccvconsumerkeeper "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -179,6 +186,8 @@ import (
 
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 	tv11 "github.com/comdex-official/comdex/app/upgrades/testnet/v11"
+
+	_ "github.com/cosmos/interchain-security/x/ccv/consumer/keeper"
 )
 
 const (
@@ -229,6 +238,11 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 }
 
 var (
+	_ ibctesting.TestingApp = (*App)(nil)
+	//_ simapp.App              = (*App)(nil)
+	_ servertypes.Application = (*App)(nil)
+	_ cosmoscmd.CosmosApp     = (*App)(nil)
+
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 	// If EnableSpecificWasmProposals is "", and this is "true", then enable all x/wasm proposals.
@@ -292,6 +306,14 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+}
+
+type MyAppVersionGetter struct {
+	App *App
+}
+
+func (m MyAppVersionGetter) GetAppVersion(ctx sdk.Context, portID, channelID string) (string, bool) {
+	return strconv.FormatUint((m.App.BaseApp.AppVersion()), 10), true
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
@@ -364,6 +386,7 @@ type App struct {
 	Ics20WasmHooks            *ibchooks.WasmHooks
 	HooksICS4Wrapper          ibchooks.ICS4Middleware
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
+	ConsumerKeeper            ccvconsumerkeeper.Keeper
 
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
@@ -371,6 +394,12 @@ type App struct {
 	mm *module.Manager
 	// Module configurator
 	configurator module.Configurator
+}
+
+func (app App) GetAppVersionGetter() func(ctx sdk.Context, portID, channelID string) (uint64, bool) {
+	return func(ctx sdk.Context, portID, channelID string) (uint64, bool) {
+		return app.BaseApp.AppVersion(), true
+	}
 }
 
 // New returns a reference to an initialized App.
@@ -828,10 +857,11 @@ func New(
 		bandOracleIBCModule = bandoraclemodule.NewIBCModule(app.BandoracleKeeper)
 	)
 
+	appVersionGetter := MyAppVersionGetter{App: app}
 	// ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, app.TransferStack)
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
-	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper, app.IbcKeeper.ChannelKeeper))
+	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper, appVersionGetter))
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 	app.IbcKeeper.SetRouter(ibcRouter)
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
@@ -1175,6 +1205,10 @@ func (a *App) WireICS20PreWasmKeeper(
 	a.TransferStack = &hooksTransferModule
 }
 
+func (a *App) getAppVersion(ctx sdk.Context, portID, channelID string) (uint64, bool) {
+	return a.BaseApp.AppVersion(), true
+}
+
 // Name returns the name of the App
 func (a *App) Name() string { return a.BaseApp.Name() }
 
@@ -1231,7 +1265,7 @@ func (a *App) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (a *App) AppCodec() codec.BinaryCodec {
+func (a *App) AppCodec() codec.Codec {
 	return a.cdc
 }
 
@@ -1267,6 +1301,33 @@ func (a *App) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
 func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := a.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
+}
+
+// TestingApp functions
+
+// GetBaseApp implements the TestingApp interface.
+func (app *App) GetBaseApp() *baseapp.BaseApp {
+	return app.BaseApp
+}
+
+// GetStakingKeeper implements the TestingApp interface.
+func (app *App) GetStakingKeeper() ibctestingcore.StakingKeeper {
+	return app.ConsumerKeeper
+}
+
+// GetIBCKeeper implements the TestingApp interface.
+func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IbcKeeper
+}
+
+// GetScopedIBCKeeper implements the TestingApp interface.
+func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+
+// GetTxConfig implements the TestingApp interface.
+func (app *App) GetTxConfig() client.TxConfig {
+	return cosmoscmd.MakeEncodingConfig(ModuleBasics).TxConfig
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
