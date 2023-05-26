@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	github.com/cosmos/ibc-go/v4 v4.2.1
+	github.com/cosmos/ibc-go/v4 v4.2.2
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
