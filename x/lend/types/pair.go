@@ -165,15 +165,15 @@ func (m *AssetRatesPoolPairs) Validate() error {
 }
 
 func (m *PoolDepreciate) Validate() error {
-	if m.IndividualPoolDepreciate != nil {
-		return fmt.Errorf("PoolID cannot be empty")
+	if m.IndividualPoolDepreciate == nil {
+		return fmt.Errorf("PoolDepreciate struct cannot be empty")
 	}
 	return nil
 }
 
 func (m *EModePairsForProposal) Validate() error {
-	if m.EModePairs != nil {
-		return fmt.Errorf("PoolID cannot be empty")
+	if m.EModePairs == nil {
+		return fmt.Errorf("EmodePairs struct cannot be empty")
 	}
 	return nil
 }
