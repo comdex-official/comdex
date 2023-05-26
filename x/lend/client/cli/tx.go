@@ -1456,15 +1456,15 @@ func NewAddEModePairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}
-	ELtv, err := ParseDecSliceFromString(eModePairs.ELTV, ",")
+	ELtv, err := ParseDecSliceFromStringForDec(eModePairs.ELTV, ",")
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}
-	ELiquidationThreshold, err := ParseDecSliceFromString(eModePairs.ELiquidationThreshold, ",")
+	ELiquidationThreshold, err := ParseDecSliceFromStringForDec(eModePairs.ELiquidationThreshold, ",")
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}
-	ELiquidationPenalty, err := ParseDecSliceFromString(eModePairs.ELiquidationPenalty, ",")
+	ELiquidationPenalty, err := ParseDecSliceFromStringForDec(eModePairs.ELiquidationPenalty, ",")
 	if err != nil {
 		return tx.Factory{}, nil, err
 	}

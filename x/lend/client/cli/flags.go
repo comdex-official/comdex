@@ -114,6 +114,20 @@ func FlagAddEModePairs() *flag.FlagSet {
 	return fs
 }
 
+func ParseDecSliceFromStringForDec(s string, separator string) ([]sdk.Dec, error) {
+	var newParsedDec []sdk.Dec
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsed, err := sdk.NewDecFromStr(s)
+		if err != nil {
+			return []sdk.Dec{}, err
+		}
+		newParsedDec = append(newParsedDec, parsed)
+	}
+	return newParsedDec, nil
+}
+
 type addNewLendPairsInputs struct {
 	AssetIn         string `json:"asset_in"`
 	AssetOut        string `json:"asset_out"`
