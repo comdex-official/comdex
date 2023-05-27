@@ -39,6 +39,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txLiquidateInternalKeeper(),
+		txAppReserveFunds(),
 	)
 	return cmd
 }
@@ -65,6 +66,46 @@ func txLiquidateInternalKeeper() *cobra.Command {
 			}
 
 			msg := types.NewMsgLiquidateInternalKeeperRequest(ctx.FromAddress, liqType, id)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txAppReserveFunds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "app-reserve-funds [app-id] [asset-id] [amount]",
+		Short: "app reserve funds",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			assetId, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			amount, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgAppReserveFundsRequest(ctx.GetFromAddress().String(), appId, assetId, amount)
 
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -44,3 +44,41 @@ func (m *MsgLiquidateInternalKeeperRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgAppReserveFundsRequest(from string, appId, assetId uint64, TokenQuantity sdk.Coin) *MsgAppReserveFundsRequest {
+	return &MsgAppReserveFundsRequest{
+		AppId:         appId,
+		AssetId:       assetId,
+		TokenQuantity: TokenQuantity,
+		From:          from,
+	}
+}
+
+func (m *MsgAppReserveFundsRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgAppReserveFundsRequest) Type() string {
+	return TypeAppReserveFundsRequest
+}
+
+func (m *MsgAppReserveFundsRequest) ValidateBasic() error {
+	if m.AppId == 0 || m.AssetId == 0 || m.TokenQuantity.Amount == sdk.NewInt(0) {
+		return errors.Wrap(ErrVaultIDInvalid, "id cannot be zero")
+	}
+
+	return nil
+}
+
+func (m *MsgAppReserveFundsRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgAppReserveFundsRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

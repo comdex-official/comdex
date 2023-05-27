@@ -34,3 +34,11 @@ func (m msgServer) MsgLiquidateInternalKeeper(c context.Context, req *types.MsgL
 	})
 	return &types.MsgLiquidateInternalKeeperResponse{}, nil
 }
+
+func (m msgServer) MsgAppReserveFunds(c context.Context, req *types.MsgAppReserveFundsRequest) (*types.MsgAppReserveFundsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	if err := m.keeper.MsgAppReserveFundsFn(ctx, req.From, req.AppId, req.AssetId, req.TxType, req.TokenQuantity); err != nil {
+		return nil, err
+	}
+	return &types.MsgAppReserveFundsResponse{}, nil
+}

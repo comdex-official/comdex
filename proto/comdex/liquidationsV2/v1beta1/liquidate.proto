@@ -50,39 +50,42 @@ message LiquidationWhiteListing {
   ];
 }
 message AppReserveFunds{
-    uint64 app_id = 1 [
+  uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
     (gogoproto.moretags) = "yaml:\"app_id\""];
-    uint64 asset_id = 2 [
-    (gogoproto.customname) = "AppId",
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
     (gogoproto.moretags) = "yaml:\"asset_id\""];
-    cosmos.base.v1beta1.Coin token_quantity = 3 [
-      (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-      (gogoproto.moretags) = "yaml:\"token_quantity\"",
-      (gogoproto.nullable) = false];
-
+  cosmos.base.v1beta1.Coin token_quantity = 3 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"token_quantity\"",
+    (gogoproto.nullable) = false
+  ];
 }
 message AppReserveFundsTxData{
-    uint64 app_id = 1 [
+  uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
-    (gogoproto.moretags) = "yaml:\"app_id\""];
-    repeated AssetTxData asset_tx_data =2[ 
-      (gogoproto.customname) = "AssetTxData",
-    (gogoproto.moretags) = "yaml:\"asset_tx_data\""];
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  repeated AssetTxData asset_tx_data = 2[
+    (gogoproto.customname) = "AssetTxData",
+    (gogoproto.moretags) = "yaml:\"asset_tx_data\"",
+    (gogoproto.nullable) = false
+  ];
 
 }
 message AssetTxData{
-
   uint64 asset_id = 1 [
-    (gogoproto.customname) = "AppId",
+    (gogoproto.customname) = "AssetId",
     (gogoproto.moretags) = "yaml:\"asset_id\""];
-    string tx_type = 2 [
-      (gogoproto.moretags) = "yaml:\"tx_type\""
-    ];
-    cosmos.base.v1beta1.Coin token_quantity = 3 [
-      (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
-      (gogoproto.moretags) = "yaml:\"token_quantity\"",
-      (gogoproto.nullable) = false];
+  string tx_type = 2 [
+    (gogoproto.moretags) = "yaml:\"tx_type\""
+  ];
+  cosmos.base.v1beta1.Coin token_quantity = 3 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"token_quantity\"",
+    (gogoproto.nullable) = false
+  ];
 }
 
 message DutchAuctionParam{
@@ -143,8 +146,6 @@ message LockedVault {
   uint64 extended_pair_vault_id = 4 [
     (gogoproto.customname) = "ExtendedPairId",
     (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
-
- 
 
   string owner = 5 [
     (gogoproto.customname) = "Owner",
@@ -219,20 +220,20 @@ message LockedVault {
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
   bool is_debt_cmst = 20 [
-      (gogoproto.customname) = "IsDebtCmst",
-      (gogoproto.moretags) = "yaml:\"is_debt_cmst\""];
+    (gogoproto.customname) = "IsDebtCmst",
+    (gogoproto.moretags) = "yaml:\"is_debt_cmst\""];
 
-      // uint64 pair_id = 21 [
-      //   (gogoproto.customname) = "PairId",
-      //   (gogoproto.moretags) = "yaml:\"pair_id\""];
-        uint64 collateral_asset_id = 21 [
-          (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
-        ];
-        uint64 debt_asset_id = 22 [
-          (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+  // uint64 pair_id = 21 [
+  //   (gogoproto.customname) = "PairId",
+  //   (gogoproto.moretags) = "yaml:\"pair_id\""];
+  uint64 collateral_asset_id = 21 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+  ];
+  uint64 debt_asset_id = 22 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""
 
 
-        ];
+  ];
 }
 
 

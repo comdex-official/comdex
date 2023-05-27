@@ -21,11 +21,14 @@ const (
 
 var (
 	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeAppReserveFundsRequest       = ModuleName + ":app_reserve_funds"
 	AppIdsKeyPrefix                  = []byte{0x01}
 	LiquidationOffsetHolderKeyPrefix = []byte{0x02}
 	LockedVaultIDKey                 = []byte{0x03}
 	LockedVaultKeyPrefix             = []byte{0x04}
 	LiquidationWhiteListingKeyPrefix = []byte{0x05}
+	AppReserveFundsKeyPrefix         = []byte{0x06}
+	AppReserveFundsTxDataKeyPrefix   = []byte{0x07}
 )
 
 // LengthPrefixString returns length-prefixed bytes representation
@@ -59,4 +62,12 @@ func LockedVaultKeyByApp(appID uint64) []byte {
 
 func LiquidationWhiteListingKey(appId uint64) []byte {
 	return append(LiquidationWhiteListingKeyPrefix, sdk.Uint64ToBigEndian(appId)...)
+}
+
+func AppReserveFundsKey(appID, assetID uint64) []byte {
+	return append(append(AppReserveFundsKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func AppReserveFundsTxDataKey(appId uint64) []byte {
+	return append(AppReserveFundsTxDataKeyPrefix, sdk.Uint64ToBigEndian(appId)...)
 }
