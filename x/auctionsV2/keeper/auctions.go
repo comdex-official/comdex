@@ -46,13 +46,13 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	}
 	dutchAuctionParams := liquidationWhitelistingAppData.DutchAuctionParam
 
-	pair, _ := k.asset.GetPair(ctx, liquidationData.PairId)
+	// pair, _ := k.asset.GetPair(ctx, liquidationData.PairId)
 
-	twaDataCollateral, found := k.market.GetTwa(ctx, pair.AssetIn)
+	twaDataCollateral, found := k.market.GetTwa(ctx,liquidationData.CollateralAssetId)
 	if !found || !twaDataCollateral.IsPriceActive {
 		return auctionsV2types.ErrorPrices
 	}
-	twaDataDebt, found := k.market.GetTwa(ctx, pair.AssetOut)
+	twaDataDebt, found := k.market.GetTwa(ctx, liquidationData.DebtAssetId)
 	if !found || !twaDataDebt.IsPriceActive {
 		return auctionsV2types.ErrorPrices
 	}
@@ -72,7 +72,7 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	auctionParams, _ := k.GetAuctionParams(ctx)
 
 	//Saving liquidation data to the auction struct
-	auctionData := types.Auctions{
+	auctionData := types.Auction{
 		AuctionId:                   auctionID + 1,
 		CollateralToken:             liquidationData.CollateralToken,
 		DebtToken:                   liquidationData.TargetDebt,
@@ -113,7 +113,7 @@ func (k Keeper) EnglishAuctionActivator(ctx sdk.Context, liquidationData liquida
 	}
 	// englishAuctionParams := liquidationWhitelistingAppData.EnglishAuctionParam
 	auctionParams, _ := k.GetAuctionParams(ctx)
-	auctionData := types.Auctions{
+	auctionData := types.Auction{
 		AuctionId:       auctionID + 1,
 		CollateralToken: liquidationData.CollateralToken,
 		DebtToken:       liquidationData.TargetDebt,
@@ -255,7 +255,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 // 	return nil
 // }
 
-func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auctions) error {
+func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)
 	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, dutchAuction.AppId)
 
@@ -301,7 +301,7 @@ func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auctions
 	return nil
 }
 
-func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions) error {
+func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auction) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)
 	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, dutchAuction.AppId)
 
@@ -351,7 +351,7 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auctions)
 	return nil
 }
 
-func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auctions) error {
+func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auction) error {
 
 	auctionParams, _ := k.GetAuctionParams(ctx)
 	englishAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
@@ -363,7 +363,7 @@ func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auct
 
 }
 
-func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctions) error {
+func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auction) error {
 
 	//Send Collateral To the user
 	//Delete Auction Data
