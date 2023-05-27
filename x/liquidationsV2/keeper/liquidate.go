@@ -166,7 +166,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		DebtToken:                    AmountOut, //just a representation of the total debt the vault had incurred at the time of liquidation. // Target debt is a correct measure of what will get collected in the auction from bidders.
 		CurrentCollaterlisationRatio: collateralizationRatio,
 		CollateralToBeAuctioned:      AmountIn,
-		TargetDebt:                   AmountOut.Add(sdk.NewCoin(AmountOut.Denom, feesToBeCollected)).Add(sdk.NewCoin(AmountOut.Denom, bonusToBeGiven)), //to add debt+liquidation+auction bonus here----
+		TargetDebt:                   AmountOut.Add(sdk.NewCoin(AmountOut.Denom, feesToBeCollected)), //to add debt+liquidation+auction bonus here----
 		LiquidationTimestamp:         ctx.BlockTime(),
 		FeeToBeCollected:             feesToBeCollected, //just for calculation purpose
 		BonusToBeGiven:               bonusToBeGiven,    //just for calculation purpose

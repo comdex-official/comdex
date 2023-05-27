@@ -43,7 +43,11 @@ message LiquidationWhiteListing {
     (gogoproto.moretags) = "yaml:\"english_auction_param\""];
   //One thing to keep in mind that somehow it should not happen that a void is created where something at level 2 gets triggerred and it has no data saved a level 1 for lookup and it fails .
 
-
+  string keeeper_incentive = 11 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"keeper_incentive\""
+  ];
 }
 
 message DutchAuctionParam{
@@ -154,9 +158,9 @@ message LockedVault {
     (gogoproto.customname) = "InternalKeeperAddress",
     (gogoproto.moretags) = "yaml:\"internal_keeper_address\""];
 
-  bool is_external_keeper = 14 [
-    (gogoproto.customname) = "IsExternalKeeper",
-    (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
+  // bool is_external_keeper = 14 [
+  //   (gogoproto.customname) = "IsExternalKeeper",
+  //   (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
 
   //To return funds to the external app back
   string external_keeper_address = 15 [
@@ -183,9 +187,17 @@ message LockedVault {
       (gogoproto.customname) = "IsDebtCmst",
       (gogoproto.moretags) = "yaml:\"is_debt_cmst\""];
 
-      uint64 pair_id = 21 [
-        (gogoproto.customname) = "PairId",
-        (gogoproto.moretags) = "yaml:\"pair_id\""];
+      // uint64 pair_id = 21 [
+      //   (gogoproto.customname) = "PairId",
+      //   (gogoproto.moretags) = "yaml:\"pair_id\""];
+        uint64 collateral_asset_id = 21 [
+          (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+        ];
+        uint64 debt_asset_id = 22 [
+          (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+
+
+        ];
 }
 
 

@@ -5,7 +5,7 @@ import (
 
 	utils "github.com/comdex-official/comdex/types"
 
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,11 +50,11 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 
 	twaDataCollateral, found := k.market.GetTwa(ctx, pair.AssetIn)
 	if !found || !twaDataCollateral.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPrices
 	}
 	twaDataDebt, found := k.market.GetTwa(ctx, pair.AssetOut)
 	if !found || !twaDataDebt.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPrices
 	}
 	//Checking if DEBT  token is CMST  then setting its price to $1 , else all tokens price will come from oracle.
 	if liquidationData.IsDebtCmst {

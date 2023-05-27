@@ -675,7 +675,7 @@ func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec
 		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist
 	}
 
-	numerator := sdk.NewDecFromInt(amt1).Mul(rate1)
+	numerator := sdk.NewDecFromInt(amt1).Mul(rate1) //rate urate 1000000
 	denominator := sdk.NewDecFromInt(asset1.Decimals)
 	t1dAmount := numerator.Quo(denominator)
 
