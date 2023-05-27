@@ -154,12 +154,24 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//else call the module account to give funds to compensate the user.
 
 			leftOverCollateral := auctionData.CollateralToken.Amount
-			_, debtTokenForLeftOverCollateral, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice, leftOverCollateral, auctionData.DebtAssetId, debtPrice)
-		
+
+			_, debtTokenAgainstLeftOverCollateral, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice, leftOverCollateral, auctionData.DebtAssetId, debtPrice)
 
 			//Amount to call from reserve account for adjusting the auction target debt
-			debtGettingLeft := auctionData.DebtToken.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, debtTokenForLeftOverCollateral))
-		
+			debtGettingLeft := auctionData.DebtToken.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, debtTokenAgainstLeftOverCollateral))
+
+			//Calling reserve account for debt adjustment : debtGettingLeft
+
+			//Taking debtTokenAgainstLeftOverCollateral from user
+			//Sending leftOverCollateral to the user
+			//Burn Debt Token,
+			//Creating user bid struct
+
+			//Based on app type call perform specific function - external , internal and /or keeper incentive
+			//See if this was keeper initiated transaction- then incentivisation will be in place based on the percentage
+			//For apps that are external to comdex chain
+
+			//Add bidder data in auction
 
 		}
 
