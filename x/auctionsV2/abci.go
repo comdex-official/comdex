@@ -11,7 +11,10 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 
 	// defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
-	k.AuctionIterator(ctx)
+	err := k.AuctionIterator(ctx)
+	if err != nil {
+		return
+	}
 
 	// // auctionMapData, auctionMappingFound := collectorKeeper.GetAllAuctionMappingForApp(ctx)
 	// if auctionMappingFound {
@@ -98,4 +101,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKe
 	// 		}
 	// 	}
 	// }
+	err = k.LimitOrderBid(ctx)
+	if err != nil {
+		return
+	}
 }

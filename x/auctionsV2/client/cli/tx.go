@@ -36,7 +36,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txPlaceMarketDutchBid(),
-		txPlaceLimitDutchBid(),
+		txDepositLimitDutchBid(),
 		txCancelLimitDutchBid(),
 		txWithdrawLimitDutchBid(),
 	)
@@ -77,9 +77,9 @@ func txPlaceMarketDutchBid() *cobra.Command {
 	return cmd
 }
 
-func txPlaceLimitDutchBid() *cobra.Command {
+func txDepositLimitDutchBid() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "limit-bid-request [collateral-token-id] [debt-token-id] [discount] [bid-amount]",
+		Use:   "deposit-limit-bid-request [collateral-token-id] [debt-token-id] [discount] [bid-amount]",
 		Short: "Place a limit bid on a dutch auction",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -102,7 +102,7 @@ func txPlaceLimitDutchBid() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgPlaceLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, args[2], amt)
+			msg := types.NewMsgDepositLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, args[2], amt)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

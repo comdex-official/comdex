@@ -51,22 +51,18 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	return &types.MsgPlaceMarketBidResponse{}, nil
 }
 
-func (k msgServer) MsgPlaceLimitBid(goCtx context.Context, msg *types.MsgPlaceLimitBidRequest) (*types.MsgPlaceLimitBidResponse, error) {
+func (k msgServer) MsgDepositLimitBid(goCtx context.Context, msg *types.MsgDepositLimitBidRequest) (*types.MsgDepositLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	err := k.PlaceLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount, msg.Amount)
+	err := k.DepositLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount, msg.Amount)
 	if err != nil {
 		return nil, err
 	}
-	return &types.MsgPlaceLimitBidResponse{}, nil
+	return &types.MsgDepositLimitBidResponse{}, nil
 }
 
 func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancelLimitBidRequest) (*types.MsgCancelLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-	if err != nil {
-		return nil, err
-	}
-	err = k.CancelLimitAuctionBid(ctx, bidder, msg.CollateralTokenId, msg.DebtTokenId)
+	err := k.CancelLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount)
 	if err != nil {
 		return nil, err
 	}
@@ -75,11 +71,7 @@ func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancel
 
 func (k msgServer) MsgWithdrawLimitBid(goCtx context.Context, msg *types.MsgWithdrawLimitBidRequest) (*types.MsgWithdrawLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
-	if err != nil {
-		return nil, err
-	}
-	err = k.WithdrawLimitAuctionBid(ctx, bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount)
+	err := k.WithdrawLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount, msg.Amount)
 	if err != nil {
 		return nil, err
 	}

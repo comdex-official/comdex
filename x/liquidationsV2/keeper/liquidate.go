@@ -21,6 +21,11 @@ func (k Keeper) Liquidate(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
+
+	err = k.LiquidateForSurplusAndDebt(ctx)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -393,4 +398,69 @@ func (k Keeper) GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liqui
 func (k Keeper) WhitelistLiquidation(ctx sdk.Context, msg types.LiquidationWhiteListing) error {
 	k.SetLiquidationWhiteListing(ctx, msg)
 	return nil
+}
+
+func (k Keeper) LiquidateForSurplusAndDebt(ctx sdk.Context) error {
+	auctionMapData, _ := k.collector.GetAllAuctionMappingForApp(ctx)
+	for _, data := range auctionMapData {
+		err := k.CheckNetFeesCollectedStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (k Keeper) CheckNetFeesCollectedStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint64) error {
+	collector, found := k.collector.GetCollectorLookupTable(ctx, appID, assetID)
+	if !found {
+		return nil
+	}
+	// coin denomination will be of 2 type: Auctioned Asset the asset which is being sold; i.e. Collateral Token
+	// Asset required to bid on Collateral Asset; i.e. Debt Token
+	// traverse this to access appId , collector asset id  , debt threshold
+
+	netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, assetID)
+	if !found {
+		return nil
+	}
+	// for debt Auction
+	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) {
+		collateralAssetID := collector.CollectorAssetId
+		debtAssetID := collector.SecondaryAssetId
+		// net = 200 debtThreshold = 500 , lotSize = 100
+		collateralToken, debtToken := k.getDebtSellTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
+		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, true, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "", false, true, 0)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	//// for surplus auction
+	//if netFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) {
+	//	collateralAssetID := collector.SecondaryAssetId
+	//	debtAssetID := collector.CollectorAssetId
+	//
+	//	// net = 900 surplusThreshold = 500 , lotSize = 100
+	//	amount := collector.LotSize
+	//	debtToken, collateralToken := k.getSurplusBuyTokenAmount(ctx, collateralAssetID, debtAssetID, amount)
+	//
+	//	_, err := k.collector.GetAmountFromCollector(ctx, appID, assetID, sellToken.Amount)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+
+	return nil
+}
+
+func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, AssetInID, AssetOutID uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
+	collateralAsset, found1 := k.asset.GetAsset(ctx, AssetOutID)
+	debtAsset, found2 := k.asset.GetAsset(ctx, AssetInID)
+	if !found1 || !found2 {
+		return sdk.Coin{}, sdk.Coin{}
+	}
+	return sdk.NewCoin(collateralAsset.Denom, debtLotSize), sdk.NewCoin(debtAsset.Denom, lotSize)
 }

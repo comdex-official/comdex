@@ -2,6 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
@@ -95,4 +96,16 @@ type RewardsKeeper interface {
 
 type AuctionsV2Keeper interface {
 	AuctionActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
+}
+
+type CollectorKeeper interface {
+	GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData collectortypes.AppToAssetIdCollectorMapping, found bool)
+	UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
+	GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool)
+	GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable collectortypes.AppAssetIdToAuctionLookupTable, found bool)
+	GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool)
+	GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error)
+	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
+	SetAuctionMappingForApp(ctx sdk.Context, records collectortypes.AppAssetIdToAuctionLookupTable) error
+	GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []collectortypes.AppAssetIdToAuctionLookupTable, found bool)
 }
