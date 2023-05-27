@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -135,7 +136,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 
 		}
 
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, extPair.PairId)
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, pair.AssetIn, pair.AssetOut)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -158,7 +159,7 @@ func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.
 	return sdk.NewCoin(asset.Denom, amount)
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, pairId uint64) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, isExternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, collateralID uint64, DebtId uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -177,12 +178,12 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 		BonusToBeGiven:               bonusToBeGiven,    //just for calculation purpose
 		IsInternalKeeper:             isInternalKeeper,
 		InternalKeeperAddress:        internalKeeperAddress,
-		IsExternalKeeper:             isExternalKeeper,
 		ExternalKeeperAddress:        externalKeeperAddress,
 		InitiatorType:                initiatorType,
 		AuctionType:                  auctionType,
 		IsDebtCmst:                   isDebtCmst,
-		PairId:                       pairId,
+		CollateralAssetId:            collateralID,
+		DebtAssetId:                  DebtId,
 	}
 	//To understand a condition in which case target debt becomes equal to dollar value of collateral token
 	//at some point in the auction

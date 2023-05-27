@@ -15,9 +15,9 @@ message AuctionHistorical{
   Auction auction_historical=2[
     (gogoproto.moretags) = "yaml:\"auction_historical\""
   ];
-  LockedVault locked_vault= 3[
-    (gogoproto.moretags) = "yaml:\"locked_vault\""
-  ];
+  // LockedVault locked_vault= 3[
+  //   (gogoproto.moretags) = "yaml:\"locked_vault\""
+  // ];
   
 }
 message Auction{
