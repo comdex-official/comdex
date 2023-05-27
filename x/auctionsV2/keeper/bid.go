@@ -136,7 +136,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			bidOwnerMapppingData := auctionsV2types.BidOwnerMapping{bidding_id, string(bidder)}
 			auctionData.BiddingIds = append(auctionData.BiddingIds, &bidOwnerMapppingData)
 			//Savinga auction data to auction historical
-			auctionHistoricalData := auctionsV2types.AuctionHistorical{auctionID, &auctionData, liquidationData}
+			auctionHistoricalData := auctionsV2types.AuctionHistorical{auctionID, &auctionData, &liquidationData}
 			k.SetAuctionHistorical(ctx, auctionHistoricalData)
 			//Close Auction
 			k.DeleteAuction(ctx, auctionData)
@@ -152,6 +152,14 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//if yes - go for it
 
 			//else call the module account to give funds to compensate the user.
+
+			leftOverCollateral := auctionData.CollateralToken.Amount
+			_, debtTokenForLeftOverCollateral, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice, leftOverCollateral, auctionData.DebtAssetId, debtPrice)
+		
+
+			//Amount to call from reserve account for adjusting the auction target debt
+			debtGettingLeft := auctionData.DebtToken.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, debtTokenForLeftOverCollateral))
+		
 
 		}
 
@@ -176,6 +184,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		} else {
 
 			//Not sure if this condition will arise in which partial bids also arent able to be fulfilled due to shortage of collateral token
+			// Technically this case will also close the auction
 		}
 
 		//Deducting auction bonus value from liquidation data also for next bid.

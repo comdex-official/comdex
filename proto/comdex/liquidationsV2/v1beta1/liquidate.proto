@@ -49,6 +49,41 @@ message LiquidationWhiteListing {
     (gogoproto.moretags) = "yaml:\"keeper_incentive\""
   ];
 }
+message AppReserveFunds{
+    uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+    uint64 asset_id = 2 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""];
+    cosmos.base.v1beta1.Coin token_quantity = 3 [
+      (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+      (gogoproto.moretags) = "yaml:\"token_quantity\"",
+      (gogoproto.nullable) = false];
+
+}
+message AppReserveFundsTxData{
+    uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+    repeated AssetTxData asset_tx_data =2[ 
+      (gogoproto.customname) = "AssetTxData",
+    (gogoproto.moretags) = "yaml:\"asset_tx_data\""];
+
+}
+message AssetTxData{
+
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""];
+    string tx_type = 2 [
+      (gogoproto.moretags) = "yaml:\"tx_type\""
+    ];
+    cosmos.base.v1beta1.Coin token_quantity = 3 [
+      (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+      (gogoproto.moretags) = "yaml:\"token_quantity\"",
+      (gogoproto.nullable) = false];
+}
 
 message DutchAuctionParam{
 
