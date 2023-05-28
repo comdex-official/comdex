@@ -465,3 +465,90 @@ func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, AssetInID, AssetOutID ui
 	}
 	return sdk.NewCoin(collateralAsset.Denom, debtLotSize), sdk.NewCoin(debtAsset.Denom, lotSize)
 }
+
+func (k Keeper) MsgAppReserveFundsFn(ctx sdk.Context, from string, appId, assetId uint64, tokenQuantity sdk.Coin) error {
+	appReserveFunds, found := k.GetAppReserveFunds(ctx, appId, assetId)
+	if !found {
+		appReserveFunds = types.AppReserveFunds{
+			AppId:         appId,
+			AssetId:       assetId,
+			TokenQuantity: tokenQuantity,
+		}
+	} else {
+		appReserveFunds.TokenQuantity.Amount = appReserveFunds.TokenQuantity.Amount.Add(tokenQuantity.Amount)
+	}
+
+	addr, err := sdk.AccAddressFromBech32(from)
+	if err != nil {
+		return err
+	}
+
+	err = k.bank.SendCoinsFromAccountToModule(ctx, addr, types.ModuleName, sdk.NewCoins(tokenQuantity))
+	if err != nil {
+		return err
+	}
+	k.SetAppReserveFunds(ctx, appReserveFunds)
+
+	// trigger AppReserveFundsTxData
+
+	assetTxData := types.AssetTxData{
+		AssetId:       assetId,
+		TxType:        "credit",
+		TokenQuantity: tokenQuantity,
+	}
+
+	appReserveFundsTxData, _ := k.GetAppReserveFundsTxData(ctx, appId)
+	appReserveFundsTxData.AssetTxData = append(appReserveFundsTxData.AssetTxData, assetTxData)
+	k.SetAppReserveFundsTxData(ctx, appReserveFundsTxData)
+	return nil
+}
+
+func (k Keeper) SetAppReserveFunds(ctx sdk.Context, appReserveFunds types.AppReserveFunds) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppReserveFundsKey(appReserveFunds.AppId, appReserveFunds.AssetId)
+		value = k.cdc.MustMarshal(&appReserveFunds)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetAppReserveFunds(ctx sdk.Context, appId, assetId uint64) (appReserveFunds types.AppReserveFunds, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppReserveFundsKey(appId, assetId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appReserveFunds, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appReserveFunds)
+	return appReserveFunds, true
+}
+
+func (k Keeper) SetAppReserveFundsTxData(ctx sdk.Context, appReserveFundsTxData types.AppReserveFundsTxData) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppReserveFundsTxDataKey(appReserveFundsTxData.AppId)
+		value = k.cdc.MustMarshal(&appReserveFundsTxData)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetAppReserveFundsTxData(ctx sdk.Context, appId uint64) (appReserveFundsTxData types.AppReserveFundsTxData, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AppReserveFundsTxDataKey(appId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return appReserveFundsTxData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &appReserveFundsTxData)
+	return appReserveFundsTxData, true
+}

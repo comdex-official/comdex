@@ -12,12 +12,14 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgLiquidateInternalKeeperRequest{}, "comdex/liquidation/MsgLiquidateInternalKeeperRequest", nil)
+	cdc.RegisterConcrete(&MsgAppReserveFundsRequest{}, "comdex/liquidation/MsgAppReserveFundsRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgLiquidateInternalKeeperRequest{},
+		&MsgAppReserveFundsRequest{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

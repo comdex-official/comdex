@@ -11,10 +11,11 @@ option (gogoproto.goproto_getters_all) = false;
 
 service Msg {
   rpc MsgLiquidateInternalKeeper(MsgLiquidateInternalKeeperRequest) returns (MsgLiquidateInternalKeeperResponse);
+  rpc MsgAppReserveFunds(MsgAppReserveFundsRequest) returns (MsgAppReserveFundsResponse);
 }
 
 message MsgLiquidateInternalKeeperRequest {
-  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
 
   uint64 liq_type = 2 [
     (gogoproto.customname) = "LiqType",
@@ -25,3 +26,18 @@ message MsgLiquidateInternalKeeperRequest {
     (gogoproto.moretags) = "yaml:\"id\""];
 }
 message  MsgLiquidateInternalKeeperResponse{}
+
+message MsgAppReserveFundsRequest {
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  cosmos.base.v1beta1.Coin token_quantity = 3 [(gogoproto.nullable) = false];
+  string from = 4 [(gogoproto.moretags) = "yaml:\"from\""];
+
+}
+message  MsgAppReserveFundsResponse{}
