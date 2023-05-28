@@ -6,6 +6,7 @@ import (
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 
 	utils "github.com/comdex-official/comdex/types"
+	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -144,12 +145,15 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		k.vault.SetLengthOfVault(ctx, length-1)
 
 		//Removing data from existing structs
-		k.vault.DeleteVault(ctx, vault.Id)
+
 		var rewards rewardstypes.VaultInterestTracker
 		rewards.AppMappingId = vault.AppId
 		rewards.VaultId = vault.Id
 		k.rewards.DeleteVaultInterestTracker(ctx, rewards)
 		k.vault.DeleteAddressFromAppExtendedPairVaultMapping(ctx, vault.ExtendedPairVaultID, vault.Id, vault.AppId)
+		k.vault.DeleteUserVaultExtendedPairMapping(ctx, vault.Owner, vault.AppId, vault.ExtendedPairVaultID)
+		k.vault.DeleteVault(ctx, vault.Id)
+
 	}
 
 	return nil
@@ -497,6 +501,33 @@ func (k Keeper) MsgAppReserveFundsFn(ctx sdk.Context, from string, appId, assetI
 		TokenQuantity: tokenQuantity,
 	}
 
+	appReserveFundsTxData, _ := k.GetAppReserveFundsTxData(ctx, appId)
+	appReserveFundsTxData.AssetTxData = append(appReserveFundsTxData.AssetTxData, assetTxData)
+	k.SetAppReserveFundsTxData(ctx, appReserveFundsTxData)
+	return nil
+}
+func (k Keeper) WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin) error {
+	appReserveFunds, found := k.GetAppReserveFunds(ctx, appId, assetId)
+	if !found {
+		return types.ErrorInvalidAppOrAssetData
+	}
+
+	if appReserveFunds.TokenQuantity.Amount.Sub(tokenQuantity.Amount).GTE(sdk.ZeroInt()) {
+		if tokenQuantity.Amount.GT(sdk.ZeroInt()) {
+			err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(tokenQuantity))
+			if err != nil {
+				return err
+			}
+		}
+	}
+	appReserveFunds.TokenQuantity.Amount = appReserveFunds.TokenQuantity.Amount.Sub(tokenQuantity.Amount)
+	k.SetAppReserveFunds(ctx, appReserveFunds)
+	// trigger AppReserveFundsTxData
+	assetTxData := types.AssetTxData{
+		AssetId:       assetId,
+		TxType:        "debt",
+		TokenQuantity: tokenQuantity,
+	}
 	appReserveFundsTxData, _ := k.GetAppReserveFundsTxData(ctx, appId)
 	appReserveFundsTxData.AssetTxData = append(appReserveFundsTxData.AssetTxData, assetTxData)
 	k.SetAppReserveFundsTxData(ctx, appReserveFundsTxData)

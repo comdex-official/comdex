@@ -5,8 +5,8 @@ import (
 
 	utils "github.com/comdex-official/comdex/types"
 
-	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
+	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -48,13 +48,13 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 
 	// pair, _ := k.asset.GetPair(ctx, liquidationData.PairId)
 
-	twaDataCollateral, found := k.market.GetTwa(ctx,liquidationData.CollateralAssetId)
+	twaDataCollateral, found := k.market.GetTwa(ctx, liquidationData.CollateralAssetId)
 	if !found || !twaDataCollateral.IsPriceActive {
-		return auctionsV2types.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	twaDataDebt, found := k.market.GetTwa(ctx, liquidationData.DebtAssetId)
 	if !found || !twaDataDebt.IsPriceActive {
-		return auctionsV2types.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	//Checking if DEBT  token is CMST  then setting its price to $1 , else all tokens price will come from oracle.
 	if liquidationData.IsDebtCmst {
@@ -84,8 +84,9 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 		EndTime:                     ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		AppId:                       liquidationData.AppId,
 		AuctionType:                 liquidationData.AuctionType,
-		CollateralAssetId:           pair.AssetIn,
-		DebtAssetId:                 pair.AssetOut,
+		CollateralAssetId:           liquidationData.CollateralAssetId,
+		DebtAssetId:                 liquidationData.DebtAssetId,
+		BonusAmount:                 liquidationData.BonusToBeGiven,
 	}
 
 	k.SetAuctionID(ctx, auctionData.AuctionId)
@@ -148,13 +149,14 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 				//FOr esm , can also check vault as initiator exists or not just to be sure
 				if found && esmStatus.Status {
 					//Checking if auction price is supposed to be reduced or restared
-					//Check here if initiator is vault , then for vault do esm trigger option accordingly
 
 					//Checking condition
 
 					if ctx.BlockTime().After(auction.EndTime) {
 						//If restart - DO ESM specific operation
-						//MOst Probably Close Auction
+						//Most Probably Close Auction
+
+						//Check here if initiator is vault , then for vault do esm trigger option accordingly
 
 					} else {
 						//Else reduce - normal operation
@@ -165,7 +167,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 
 					}
 
-				} else if !found {
+				} else if !found || !esmStatus.Status {
 					//This app is not eligible for ESM
 					//Continue normal operation
 
@@ -196,7 +198,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 				//English auction does not require price so no important operation
 				if ctx.BlockTime().After(auction.EndTime) {
 
-					if auction.ActiveBiddingId != nil {
+					if auction.ActiveBiddingId != uint64(0) {
 						//If atleast there is one bidding on the auction
 						err := k.CloseEnglishAuction(ctx, auction)
 						if err != nil {
@@ -263,11 +265,11 @@ func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction)
 
 	twaDataCollateral, found := k.market.GetTwa(ctx, dutchAuction.CollateralAssetId)
 	if !found || !twaDataCollateral.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	twaDataDebt, found := k.market.GetTwa(ctx, dutchAuction.DebtAssetId)
 	if !found || !twaDataDebt.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	//Checking if DEBT  token is CMST  then setting its price to $1 , else all tokens price will come from oracle.
@@ -309,11 +311,11 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auction) 
 
 	twaDataCollateral, found := k.market.GetTwa(ctx, dutchAuction.CollateralAssetId)
 	if !found || !twaDataCollateral.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	twaDataDebt, found := k.market.GetTwa(ctx, dutchAuction.DebtAssetId)
 	if !found || !twaDataDebt.IsPriceActive {
-		return auctiontypes.ErrorPrices
+		return auctionsV2types.ErrorPriceNotFound
 	}
 	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
 	//Checking if DEBT  token is CMST  then setting its price to $1 , else all tokens price will come from oracle.

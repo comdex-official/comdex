@@ -102,6 +102,9 @@ message AuctionParams{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"closing_fee\""
   ];
+  uint64 min_usd_value_left=5[
+    (gogoproto.moretags) = "yaml:\"min_usd_value_left\""
+  ];
 }
 
 

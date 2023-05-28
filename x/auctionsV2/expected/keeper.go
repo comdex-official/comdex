@@ -14,6 +14,7 @@ type LiquidationsV2Keeper interface {
 	GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liquidationWhiteListing liquidationsV2types.LiquidationWhiteListing, found bool)
 	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationsV2types.LockedVault, found bool)
 	DeleteLockedVault(ctx sdk.Context,id uint64)
+	WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin)
 }
 
 type MarketKeeper interface {
