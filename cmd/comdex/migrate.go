@@ -8,19 +8,26 @@ import (
 
 // Migrate migrates exported state from v0.40 to a v0.43 genesis state.
 func Migrate(appState types.AppMap, clientCtx client.Context) types.AppMap {
-	// Migrate x/gov.
+	// Migrate packetfowardmiddleware.
 	if appState["packetfowardmiddleware"] != nil {
 		// unmarshal relative source genesis application state
 		var oldGovState packetforwardtypes.GenesisState
 		clientCtx.Codec.MustUnmarshalJSON(appState["packetfowardmiddleware"], &oldGovState)
 
-		// delete deprecated x/gov genesis state
+		// delete deprecated packetfowardmiddleware genesis state
 		delete(appState, "packetfowardmiddleware")
 
 		// Migrate relative source genesis application state and marshal it into
 		// the respective key.
-		// appState["packetfowardmiddleware"] = clientCtx.Codec.MustMarshalJSON(v043gov.MigrateJSON(&oldGovState))
+		appState["packetfowardmiddleware"] = clientCtx.Codec.MustMarshalJSON(MigrateJSON(&oldGovState))
 	}
 
 	return appState
+}
+
+func MigrateJSON(oldState *packetforwardtypes.GenesisState) *packetforwardtypes.GenesisState {
+	return &packetforwardtypes.GenesisState{
+		Params:          oldState.Params,
+		InFlightPackets: oldState.InFlightPackets,
+	}
 }
