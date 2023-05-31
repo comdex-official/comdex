@@ -1366,7 +1366,7 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == tv13.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			tv13.UpgradeName,
-			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator),
+			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.AssetKeeper),
 		)
 	case upgradeInfo.Name == mv11.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
