@@ -119,6 +119,10 @@ message EnglishAuctionParam{
 
 
 message LiquidationOffsetHolder {
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""];
+
   uint64 current_offset = 2;
 }
 

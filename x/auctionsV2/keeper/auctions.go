@@ -394,8 +394,9 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 				for _, individualBids := range biddingData {
 					addr, _ := sdk.AccAddressFromBech32(individualBids.BidderAddress)
 					if individualBids.DebtToken.Amount.GTE(auction.DebtToken.Amount) {
-						// the auction is completed here, and now we will update user's limit bid data
-						err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, auction.DebtToken, auction)
+						//User has more tokens than target debt, so their bid will close the auction
+						///Placing a user bid
+						bidding_id, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
@@ -404,11 +405,10 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 							return nil
 						}
 						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
-						//Todo: append bidding ID
-						//individualBids.BiddingId = append(individualBids.BiddingId, id)
+						individualBids.BiddingId = append(individualBids.BiddingId, bidding_id)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
 					} else {
-						err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction)
+						_, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}

@@ -45,6 +45,7 @@ func AuctionHistoricalKey(auctionID uint64) []byte {
 
 func UserBidKey(userBidId uint64) []byte {
 	return append(append(UserBidKeyPrefix, sdk.Uint64ToBigEndian(userBidId)...))
+}
 
 func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium, address string) []byte {
 	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), premium...), address...)
