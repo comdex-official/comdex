@@ -3,8 +3,8 @@ module github.com/comdex-official/comdex
 go 1.19
 
 require (
-	github.com/CosmWasm/wasmd v0.31.0-rc0
-	github.com/CosmWasm/wasmvm v1.2.3
+	github.com/CosmWasm/wasmd v0.31.0
+	github.com/CosmWasm/wasmvm v1.2.1
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cosmos/cosmos-sdk v0.46.10
 	github.com/cosmos/interchain-security v1.2.1
@@ -303,9 +303,10 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2
 	github.com/cosmos/cosmos-sdk => github.com/comdex-official/cosmos-sdk v0.45.15-ics-comdex.2
 	//breaking changes
-	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
+	//github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
 	github.com/tendermint/tendermint v0.34.27 => github.com/skip-mev/mev-cometbft v0.34.27-mev.17
+	github.com/tidwall/btree v1.6.0 => github.com/tidwall/btree v1.5.0
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
