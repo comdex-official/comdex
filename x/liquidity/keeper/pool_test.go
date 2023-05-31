@@ -1632,3 +1632,78 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_WithBurnRate()
 
 	s.Require().True(coinEq(utils.ParseCoin("0ucmdx"), s.getBalance(pair.GetSwapFeeCollectorAddress(), params.SwapFeeDistrDenom)))
 }
+
+func (s *KeeperTestSuite) TestDepositAndFarm() {
+	addr1 := s.addr(1)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "10000000uasset1,1500000uasset2")
+
+	depositCoins := utils.ParseCoins("1000000000uasset1,150000000uasset2")
+	s.fundAddr(addr1, depositCoins)
+	err := s.keeper.DepositAndFarm(s.ctx, types.NewMsgDepositAndFarm(appID1, addr1, pool.Id, depositCoins))
+	s.NoError(err)
+
+	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, addr1)
+	s.Require().True(found)
+
+	s.Require().Equal(appID1, queuedFarmer.AppId)
+	s.Require().Equal(pool.Id, queuedFarmer.PoolId)
+	s.Require().Len(queuedFarmer.QueudCoins, 1)
+
+	s.Require().Equal(addr1.String(), queuedFarmer.Farmer)
+
+	s.Require().Equal(utils.ParseCoin("100000000000000pool1-1"), queuedFarmer.QueudCoins[0].FarmedPoolCoin)
+}
+
+func (s *KeeperTestSuite) TestUnfarmAndWithdraw() {
+	addr1 := s.addr(1)
+	addr2 := s.addr(2)
+
+	appID1 := s.CreateNewApp("appone")
+
+	asset1 := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	asset2 := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
+
+	pair := s.CreateNewLiquidityPair(appID1, addr2, asset1.Denom, asset2.Denom)
+	pool := s.CreateNewLiquidityPool(appID1, pair.Id, addr2, "10000000uasset1,1500000uasset2")
+
+	depositCoins := utils.ParseCoins("1000000000uasset1,150000000uasset2")
+	s.fundAddr(addr1, depositCoins)
+
+	s.Equal(depositCoins, s.getBalances(addr1))
+
+	err := s.keeper.DepositAndFarm(s.ctx, types.NewMsgDepositAndFarm(appID1, addr1, pool.Id, depositCoins))
+	s.NoError(err)
+
+	s.Equal(sdk.Coins{}, s.getBalances(addr1))
+
+	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, addr1)
+	s.Require().True(found)
+
+	s.Require().Equal(appID1, queuedFarmer.AppId)
+	s.Require().Equal(pool.Id, queuedFarmer.PoolId)
+	s.Require().Len(queuedFarmer.QueudCoins, 1)
+
+	s.Require().Equal(addr1.String(), queuedFarmer.Farmer)
+
+	farmedCoin := utils.ParseCoin("100000000000000pool1-1")
+	s.Require().Equal(farmedCoin, queuedFarmer.QueudCoins[0].FarmedPoolCoin)
+
+	err = s.keeper.UnfarmAndWithdraw(s.ctx, types.NewMsgUnfarmAndWithdraw(appID1, pool.Id, addr1, farmedCoin))
+	s.NoError(err)
+
+	s.Equal(utils.ParseCoins("999999999uasset1,149999999uasset2"), s.getBalances(addr1))
+
+	queuedFarmer, found = s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, addr1)
+	s.Require().True(found)
+
+	s.Require().Equal(appID1, queuedFarmer.AppId)
+	s.Require().Equal(pool.Id, queuedFarmer.PoolId)
+	s.Require().Len(queuedFarmer.QueudCoins, 0)
+}

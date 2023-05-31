@@ -3,10 +3,13 @@ package cli
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
@@ -933,4 +936,60 @@ func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *
 	}
 
 	return txf, msg, nil
+}
+
+func NewAddAssetCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-asset [name] [denom] [decimals] [is-on-chain] [is-oracle-price-required] [is-cdp-mintable]",
+		Args:  cobra.ExactArgs(6),
+		Short: "Register/Whitelist a new asset in asset module ",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(` Add / Register / Whitelist new asset in asset module
+Example:
+$ %s tx %s add-asset CMDX ucmdx 1000000 true true true --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			name := args[0]
+			denom := args[1]
+
+			decimals, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse decimals: %w", err)
+			}
+
+			isOnChain, err := strconv.ParseBool(args[3])
+			if err != nil {
+				return fmt.Errorf("parse is-on-chain: %w", err)
+			}
+
+			isOraclePriceRequired, err := strconv.ParseBool(args[4])
+			if err != nil {
+				return fmt.Errorf("parse is-oracle-price-required: %w", err)
+			}
+
+			isCdpMintable, err := strconv.ParseBool(args[5])
+			if err != nil {
+				return fmt.Errorf("parse is-cdp-mintable: %w", err)
+			}
+
+			msg := types.NewMsgAddAsset(clientCtx.GetFromAddress(), name, denom, decimals, isOnChain, isOraclePriceRequired, isCdpMintable)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }

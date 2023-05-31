@@ -86,6 +86,7 @@ func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
 		// AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(comdex.ModuleBasics, banktypes.GenesisBalancesIterator{}),
+		MigrateStoreCmd(),
 		debug.Cmd(),
 		config.Cmd(),
 	)

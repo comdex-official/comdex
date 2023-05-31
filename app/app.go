@@ -178,7 +178,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
-	tv11 "github.com/comdex-official/comdex/app/upgrades/testnet/v11"
+	tv11_2 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_2"
 )
 
 const (
@@ -591,6 +591,8 @@ func New(
 		app.cdc,
 		app.keys[assettypes.StoreKey],
 		app.GetSubspace(assettypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
 		&app.BandoracleKeeper,
@@ -989,6 +991,7 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		wasmtypes.ModuleName,
 		authz.ModuleName,
 		vestingtypes.ModuleName,
 		paramstypes.ModuleName,
@@ -1008,11 +1011,6 @@ func New(
 		rewardstypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcratelimittypes.ModuleName,
-
-		// wasm after ibc transfer
-		wasmtypes.ModuleName,
-
-		// ibc_hooks after auth keeper
 		ibchookstypes.ModuleName,
 		packetforwardtypes.ModuleName,
 	)
@@ -1339,6 +1337,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
+		assettypes.ModuleName:          nil,
 	}
 }
 
@@ -1352,10 +1351,10 @@ func (a *App) registerUpgradeHandlers() {
 	}
 
 	switch {
-	case upgradeInfo.Name == tv11.UpgradeName:
+	case upgradeInfo.Name == tv11_2.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
-			tv11.UpgradeName,
-			tv11.CreateUpgradeHandlerV11(a.mm, a.configurator),
+			tv11_2.UpgradeName,
+			tv11_2.CreateUpgradeHandlerV112(a.mm, a.configurator, a.AssetKeeper),
 		)
 	case upgradeInfo.Name == mv11.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
@@ -1376,13 +1375,13 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	case upgradeInfo.Name == tv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv11_2.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey},
+			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
 		}
 	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey},
+			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
 		}
 	}
 	return storeUpgrades

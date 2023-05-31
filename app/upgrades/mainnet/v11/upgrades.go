@@ -2,6 +2,7 @@ package v11
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
@@ -90,7 +91,7 @@ func CreateUpgradeHandlerV11(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 
-		ctx.Logger().Info("Applying main net upgrade - v.11.0.1")
+		ctx.Logger().Info("Applying main net upgrade - v.11.3.0")
 
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
@@ -158,6 +159,8 @@ func CreateUpgradeHandlerV11(
 			},
 		}
 		icahostkeeper.SetParams(ctx, hostParams)
+
+		assetKeeper.SetParams(ctx, assettypes.NewParams())
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
