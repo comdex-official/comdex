@@ -6,7 +6,6 @@ import (
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 )
 
-// Migrate migrates exported state from v0.40 to a v0.43 genesis state.
 func Migrate(appState types.AppMap, clientCtx client.Context) types.AppMap {
 	// Migrate packetfowardmiddleware.
 	if appState["packetfowardmiddleware"] != nil {

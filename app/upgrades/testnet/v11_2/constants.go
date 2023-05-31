@@ -1,7 +1,7 @@
-package v12
+package v11_2 //nolint:revive,stylecheck
 
 const (
-	UpgradeName   = "v12.0.0"
+	UpgradeName   = "v11.2.0"
 	UpgradeHeight = ""
 	UpgradeInfo   = `'{
 		"binaries": {
