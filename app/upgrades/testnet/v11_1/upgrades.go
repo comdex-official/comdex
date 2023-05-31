@@ -1,4 +1,4 @@
-package v13
+package v11_1 //nolint:revive,stylecheck
 
 import (
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
@@ -8,7 +8,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func CreateUpgradeHandlerV13(
+func CreateUpgradeHandlerV111(
 	mm *module.Manager,
 	configurator module.Configurator,
 	assetKeeper assetkeeper.Keeper,
@@ -17,7 +17,7 @@ func CreateUpgradeHandlerV13(
 
 		assetKeeper.SetParams(ctx, assettypes.NewParams())
 
-		ctx.Logger().Info("Applying test net upgrade - v.13.0.0")
+		ctx.Logger().Info("Applying test net upgrade - v.11.1.0")
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
