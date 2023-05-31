@@ -26,8 +26,6 @@ require (
 require (
 	github.com/cosmos/ibc-go/v4 v4.4.0
 	github.com/golangci/golangci-lint v1.51.2
-	github.com/osmosis-labs/osmosis/v15 v15.0.0
-	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
 	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4
@@ -147,6 +145,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -197,7 +196,6 @@ require (
 	github.com/nunnatsa/ginkgolinter v0.8.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/osmosis-labs/osmosis/osmoutils v0.0.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
