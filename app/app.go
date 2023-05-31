@@ -164,8 +164,6 @@ import (
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
-
-	tv12 "github.com/comdex-official/comdex/app/upgrades/testnet/v12"
 )
 
 const (
@@ -1219,14 +1217,6 @@ func (a *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 
-	switch {
-	case upgradeInfo.Name == tv12.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			tv12.UpgradeName,
-			tv12.CreateUpgradeHandlerV12(a.mm, a.configurator),
-		)
-	}
-
 	var storeUpgrades *storetypes.StoreUpgrades
 
 	storeUpgrades = upgradeHandlers(upgradeInfo, a, storeUpgrades)
@@ -1238,13 +1228,6 @@ func (a *App) registerUpgradeHandlers() {
 }
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
-	switch {
-
-	case upgradeInfo.Name == tv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{},
-		}
-	}
 
 	return storeUpgrades
 }
