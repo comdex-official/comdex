@@ -15,6 +15,7 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		queryParams(),
 		queryAsset(),
 		queryAssets(),
 		queryPair(),
@@ -42,7 +43,9 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand()
+	cmd.AddCommand(
+		NewAddAssetCmd(),
+	)
 
 	return cmd
 }
