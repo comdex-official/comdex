@@ -41,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 		txFundModuleAccounts(),
 		txCalculateInterestAndRewards(),
 		txFundReserveAccounts(),
+		txRepayWithdraw(),
 	)
 
 	return cmd
@@ -1493,4 +1494,30 @@ func NewAddEModePairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet
 	}
 
 	return txf, msg, nil
+}
+
+func txRepayWithdraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay-withdraw [borrow-id] ",
+		Short: "repay-withdraw for a borrow position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRepayWithdraw(ctx.GetFromAddress().String(), borrowID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

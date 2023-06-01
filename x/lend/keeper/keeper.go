@@ -1918,3 +1918,17 @@ func (k Keeper) CheckIsolatedModeForBorrow(ctx sdk.Context, address string, asse
 	}
 	return nil
 }
+
+func (k Keeper) RepayWithdraw(ctx sdk.Context, borrowID uint64, borrowerAddr string) error {
+	borrow, _ := k.GetBorrow(ctx, borrowID)
+	err := k.CloseBorrow(ctx, borrowerAddr, borrowID)
+	if err != nil {
+		return err
+	}
+	lend, _ := k.GetLend(ctx, borrow.LendingID)
+	err = k.WithdrawAsset(ctx, borrowerAddr, borrow.LendingID, sdk.NewCoin(lend.AmountIn.Denom, borrow.AmountIn.Amount))
+	if err != nil {
+		return err
+	}
+	return nil
+}
