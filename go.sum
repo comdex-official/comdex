@@ -1801,8 +1801,6 @@ github.com/huin/goupnp v1.0.3-0.20220313090229-ca81a64b4204/go.mod h1:ZxNlw5WqJj
 github.com/huin/goutil v0.0.0-20170803182201-1ca381bf3150/go.mod h1:PpLOETDnJ0o3iZrZfqZzyLl6l7F3c6L1oWn7OICBi6o=
 github.com/hydrogen18/memlistener v0.0.0-20141126152155-54553eb933fb/go.mod h1:qEIFzExnS6016fRpRfxrExeVn2gbClQA99gQhnIcdhE=
 github.com/hydrogen18/memlistener v0.0.0-20200120041712-dcc25e7acd91/go.mod h1:qEIFzExnS6016fRpRfxrExeVn2gbClQA99gQhnIcdhE=
-github.com/iancoleman/orderedmap v0.2.0 h1:sq1N/TFpYH++aViPcaKjys3bDClUEU7s5B+z6jq8pNA=
-github.com/iancoleman/orderedmap v0.2.0/go.mod h1:N0Wam8K1arqPXNWjMo21EXnBPOPp36vB07FNRdD2geA=
 github.com/iancoleman/strcase v0.2.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
@@ -2391,13 +2389,6 @@ github.com/openzipkin/zipkin-go v0.2.5/go.mod h1:KpXfKdgRDnnhsxw4pNIH9Md5lyFqKUa
 github.com/ory/dockertest v3.3.5+incompatible h1:iLLK6SQwIhcbrG783Dghaaa3WPzGc+4Emza6EbVUUGA=
 github.com/ory/dockertest v3.3.5+incompatible/go.mod h1:1vX4m9wsvi00u5bseYwXaSnhNrne+V0E6LAcBILJdPs=
 github.com/ory/dockertest/v3 v3.9.1/go.mod h1:42Ir9hmvaAPm0Mgibk6mBPi7SFvTXxEcnztDYOJ//uM=
-github.com/osmosis-labs/osmosis/osmomath v0.0.4 h1:5cJfDi8mOuAzLfsQFoTGJvm/qca7Gj7wvDiVSTE1ibk=
-github.com/osmosis-labs/osmosis/osmoutils v0.0.4 h1:W/lvzFsyt30GGi0+nD3Ktxlwe5Tl6ipKWilyyLjJ9Ro=
-github.com/osmosis-labs/osmosis/osmoutils v0.0.4/go.mod h1:2MStAdC2TajbhgkAwT3SZPtMW/Bbvp0JYGPRle+5Qsc=
-github.com/osmosis-labs/osmosis/v15 v15.0.0 h1:lwAha4K+6fg/XFnqwAKd7iqZ1NfvCGiOgkyZ/PWUro4=
-github.com/osmosis-labs/osmosis/v15 v15.0.0/go.mod h1:oG4n68FcMHsy5+MkjmwDa8iQNoJekYqn7bkzsc/85jY=
-github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6 h1:PjfLL5rwwm44CeLnNQssrFgmj4BdeIS5DriKYhGz7IM=
-github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6/go.mod h1:2Aqs0L6JnMfo+P+It8q7hJsP1YB+Is5DJc4nRSiBF/U=
 github.com/otiai10/copy v1.2.0/go.mod h1:rrF5dJ5F0t/EWSYODDu4j9/vEeYHMkc8jt0zJChqQWw=
 github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=
 github.com/otiai10/copy v1.6.0/go.mod h1:XWfuS3CrI0R6IE0FbgHsEazaXO8G0LpMp9o8tos0x4E=
@@ -2764,9 +2755,6 @@ github.com/stbenjam/no-sprintf-host-port v0.1.1 h1:tYugd/yrm1O0dV+ThCbaKZh195Dfm
 github.com/stbenjam/no-sprintf-host-port v0.1.1/go.mod h1:TLhvtIvONRzdmkFiio4O8LHsN9N74I+PhRquPsxpL0I=
 github.com/stefanberger/go-pkcs11uri v0.0.0-20201008174630-78d3cae3a980/go.mod h1:AO3tvPzVZ/ayst6UlUKUv6rcPQInYe3IknH3jYhAKu8=
 github.com/stoewer/go-strcase v1.2.0/go.mod h1:IBiWB2sKIp3wVVQ3Y035++gc+knqhUQag1KpM8ahLw8=
-github.com/strangelove-ventures/async-icq/v4 v4.0.0-rc0 h1:foE/5O2/XiqGsdTKx3R0BTfKgW9KnUYyQLZt0WFSesE=
-github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4 h1:8Tn4Gy/DAq7wzV1CxEGv80ujZ+nUvzgwwdCobO/Gj8Y=
-github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4/go.mod h1:AG8F5pdk3x1h7PlRvPoMem3623W+w8HJHrWYkVJ51kk=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v1.0.0/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
