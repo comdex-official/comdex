@@ -9,7 +9,7 @@ option go_package = "github.com/comdex-official/comdex/x/vault/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-//app_vault_type_id will be the key for  the KVStore for this value.
+//app_vault_type_id will be the key for  the KVStore for this value
 message Vault {
   uint64 id = 1 ;
   uint64 app_id = 2
