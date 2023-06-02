@@ -102,14 +102,22 @@ message AuctionParams{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"closing_fee\""
   ];
-  uint64 min_usd_value_left=5[
+  uint64 min_usd_value_left = 5[
     (gogoproto.moretags) = "yaml:\"min_usd_value_left\""
   ];
 }
 
 
 
-
+message LimitOrderBidsForUser{
+  string bidder_address = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated LimitOrderBid limit_order_bid = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bid\""
+  ];
+}
 
 // Bidding Structs 
 //1. Market Bid
