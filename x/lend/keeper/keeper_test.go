@@ -2,6 +2,8 @@ package keeper_test
 
 import (
 	"encoding/binary"
+	"github.com/comdex-official/comdex/x/lend"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"testing"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -284,4 +286,19 @@ func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base,
 func (s *KeeperTestSuite) AddEModePairs(EModePairs []types.EModePairs) {
 	err := s.app.LendKeeper.AddEModePairs(s.ctx, types.EModePairsForProposal{EModePairs: EModePairs})
 	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) PoolDepreciate(individualPool []types.IndividualPoolDepreciate) {
+	err := s.app.LendKeeper.AddPoolDepreciate(s.ctx, types.PoolDepreciate{IndividualPoolDepreciate: individualPool})
+	s.Require().NoError(err)
+}
+
+func (s *KeeperTestSuite) nextBlock() {
+	lend.BeginBlocker(s.ctx, abci.RequestBeginBlock{
+		Hash:                nil,
+		Header:              tmproto.Header{},
+		LastCommitInfo:      abci.LastCommitInfo{},
+		ByzantineValidators: nil,
+	}, s.keeper)
+
 }
