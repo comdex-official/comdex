@@ -354,7 +354,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		//Calculating collateral token value from bid(debt) token value
 		_, collateralTokenQuanitity, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.DebtAssetId, debtPrice, bid.Amount, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice)
 		debtLeft := bid.Amount.Sub(bid.Amount)
-		debtuDollar, _ := k.CalcDollarValueForToken(ctx, debtPrice, debtLeft)
+		debtuDollar, _ := k.CalcDollarValueForToken(ctx,auctionData.DebtAssetId, debtPrice, debtLeft)
 		if !(debtuDollar).GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.MinUsdValueLeft))) {
 			return bidId, types.ErrCannotLeaveDebtLessThanDust
 		}
@@ -616,7 +616,8 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	return nil
 }
 
-func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
+func (k Keeper) CalcDollarValueForToken(ctx sdk.Context,id uint64, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
+	asset, _ := k.asset.GetAsset(ctx, id)
 	numerator := sdk.NewDecFromInt(amt).Mul(rate)
 	denominator := sdk.NewDecFromInt(asset.Decimals)
 	return numerator.Quo(denominator), nil
