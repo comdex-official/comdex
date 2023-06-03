@@ -7,6 +7,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -157,6 +158,15 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 						//Most Probably Close Auction
 
 						//Check here if initiator is vault , then for vault do esm trigger option accordingly
+						liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, auction.AppId, auction.LockedVaultId)
+						if liquidationData.InitiatorType == "vault" {
+
+							err := k.TriggerEsm(ctx, auction, liquidationData)
+							if err != nil {
+								return err
+							}
+
+						}
 
 					} else {
 						//Else reduce - normal operation
@@ -369,6 +379,47 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 
 	//Send Collateral To the user
 	//Delete Auction Data
+
+	return nil
+
+}
+
+func (k Keeper) TriggerEsm(ctx sdk.Context, auctionData types.Auction, liquidationData liquidationtypes.LockedVault) error {
+
+	//Check if liquidation penalty has been recovered
+	debtCollected := liquidationData.TargetDebt.Sub(auctionData.DebtToken)
+	collateralAuctioned := liquidationData.CollateralToken.Amount.Sub(auctionData.CollateralToken.Amount)
+	tokensToTransfer := debtCollected
+	//If more debt collected, send liquidation penalty to collector, and open the vault from the rest amount and update params
+	if debtCollected.Amount.GT(liquidationData.FeeToBeCollected) {
+		//Send Liquidation Penalty to the Collector Module
+		tokensToTransfer = sdk.NewCoin(auctionData.DebtToken.Denom, liquidationData.FeeToBeCollected)
+		//burning rest collected tokens
+		tokensToBurn := debtCollected.Amount.Sub(liquidationData.FeeToBeCollected)
+		if tokensToBurn.GT(sdk.ZeroInt()) {
+			err := k.bankKeeper.BurnCoins(ctx, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, tokensToBurn)))
+			if err != nil {
+				return err
+			}
+		}
+		//updating token minted
+		//updating collateral locked data
+		k.vault.UpdateTokenMintedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, tokensToBurn, false)
+	}
+
+	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(tokensToTransfer))
+	if err != nil {
+		return err
+	}
+	//Update Collector Data for CMST
+	// Updating fees data in collector
+	err = k.collector.SetNetFeeCollectedData(ctx, auctionData.AppId, auctionData.CollateralAssetId, tokensToTransfer.Amount)
+	if err != nil {
+		return err
+	}
+	//Opening vault
+	k.vault.CreateNewVault(ctx, liquidationData.Owner, auctionData.AppId, liquidationData.ExtendedPairId, auctionData.CollateralToken.Amount, auctionData.DebtToken.Amount)
+	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, collateralAuctioned, false)
 
 	return nil
 

@@ -591,6 +591,8 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	newVault.ExtendedPairVaultID = extendedPairVault.Id
 	k.SetVault(ctx, newVault)
 	k.SetIDForVault(ctx, newID)
+	length := k.GetLengthOfVault(ctx)
+	k.SetLengthOfVault(ctx, length+1)
 
 	var mappingData types.OwnerAppExtendedPairVaultMappingData
 	mappingData.Owner = From
