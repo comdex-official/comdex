@@ -561,6 +561,7 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 	// Set ID and LimitBid Data
 	k.SetLimitAuctionBidID(ctx, userLimitBid.LimitOrderBiddingId)
 	k.SetUserLimitBidData(ctx, userLimitBid, DebtTokenId, CollateralTokenId, PremiumDiscount)
+	k.AppendUserLimitBidDataForAddress(ctx, userLimitBid, true)
 	return nil
 }
 
@@ -582,6 +583,7 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 
 	// delete userLimitBid from KV store
 	k.DeleteUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
+	k.AppendUserLimitBidDataForAddress(ctx, userLimitBid, false)
 
 	return nil
 }
@@ -610,6 +612,7 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	}
 	userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(amount.Amount)
 	k.SetUserLimitBidData(ctx, userLimitBid, DebtTokenId, CollateralTokenId, PremiumDiscount)
+	k.AppendUserLimitBidDataForAddress(ctx, userLimitBid, true)
 	return nil
 }
 
@@ -617,4 +620,57 @@ func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, rate sdk.Dec, amt sdk.I
 	numerator := sdk.NewDecFromInt(amt).Mul(rate)
 	denominator := sdk.NewDecFromInt(asset.Decimals)
 	return numerator.Quo(denominator), nil
+}
+
+func (k Keeper) SetUserLimitBidDataForAddress(ctx sdk.Context, userLimitBidData types.LimitOrderBidsForUser) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLimitBidKeyForAddress(userLimitBidData.BidderAddress)
+		value = k.cdc.MustMarshal(&userLimitBidData)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) AppendUserLimitBidDataForAddress(ctx sdk.Context, userLimitBid types.LimitOrderBid, inc bool) {
+	userLimitBidForAddress, found := k.GetUserLimitBidDataForAddress(ctx, userLimitBid.BidderAddress)
+	if inc {
+		if !found {
+			userLimitBidForAddress.BidderAddress = userLimitBid.BidderAddress
+			userLimitBidForAddress.LimitOrderBid = append(userLimitBidForAddress.LimitOrderBid, userLimitBid)
+		} else {
+			for _, individualLimitOrderBid := range userLimitBidForAddress.LimitOrderBid {
+				if individualLimitOrderBid.LimitOrderBiddingId == userLimitBid.LimitOrderBiddingId {
+					individualLimitOrderBid = userLimitBid
+				}
+			}
+		}
+	} else {
+		if !found {
+			userLimitBidForAddress.BidderAddress = userLimitBid.BidderAddress
+		} else {
+			for index, individualLimitOrderBid := range userLimitBidForAddress.LimitOrderBid {
+				if individualLimitOrderBid.LimitOrderBiddingId == userLimitBid.LimitOrderBiddingId {
+					userLimitBidForAddress.LimitOrderBid = append(userLimitBidForAddress.LimitOrderBid[:index], userLimitBidForAddress.LimitOrderBid[index+1:]...)
+				}
+			}
+		}
+	}
+
+	k.SetUserLimitBidDataForAddress(ctx, userLimitBidForAddress)
+}
+
+func (k Keeper) GetUserLimitBidDataForAddress(ctx sdk.Context, address string) (mappingData types.LimitOrderBidsForUser, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.UserLimitBidKeyForAddress(address)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return mappingData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &mappingData)
+	return mappingData, true
 }

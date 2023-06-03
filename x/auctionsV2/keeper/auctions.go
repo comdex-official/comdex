@@ -453,17 +453,20 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 						}
 						if individualBids.DebtToken.Amount.Equal(auction.DebtToken.Amount) {
 							k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
+							k.AppendUserLimitBidDataForAddress(ctx, individualBids, false)
 							return nil
 						}
 						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
 						individualBids.BiddingId = append(individualBids.BiddingId, bidding_id)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
+						k.AppendUserLimitBidDataForAddress(ctx, individualBids, true)
 					} else {
 						_, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
 						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
+						k.AppendUserLimitBidDataForAddress(ctx, individualBids, false)
 					}
 
 				}

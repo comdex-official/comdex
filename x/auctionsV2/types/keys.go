@@ -22,18 +22,19 @@ const (
 )
 
 var (
-	TypePlaceMarketBidRequest   = ModuleName + ":market-bid-request"
-	TypePlaceLimitBidRequest    = ModuleName + ":limit-bid-request"
-	TypeCancelLimitBidRequest   = ModuleName + ":cancel-limit-bid-request"
-	TypeWithdrawLimitBidRequest = ModuleName + ":withdraw-limit-bid-request"
-	AuctionIDKey                = []byte{0x01}
-	AuctionKeyPrefix            = []byte{0x02}
-	LimitAuctionBidIDKey        = []byte{0x03}
-	AuctionParamsKey            = []byte{0x04}
-	UserBidIDKey                = []byte{0x05}
-	UserBidKeyPrefix            = []byte{0x06}
-	AuctionHistoricalKeyPrefix  = []byte{0x07}
-	UserLimitBidMappingKeyPrefix = []byte{0x08}
+	TypePlaceMarketBidRequest              = ModuleName + ":market-bid-request"
+	TypePlaceLimitBidRequest               = ModuleName + ":limit-bid-request"
+	TypeCancelLimitBidRequest              = ModuleName + ":cancel-limit-bid-request"
+	TypeWithdrawLimitBidRequest            = ModuleName + ":withdraw-limit-bid-request"
+	AuctionIDKey                           = []byte{0x01}
+	AuctionKeyPrefix                       = []byte{0x02}
+	LimitAuctionBidIDKey                   = []byte{0x03}
+	AuctionParamsKey                       = []byte{0x04}
+	UserBidIDKey                           = []byte{0x05}
+	UserBidKeyPrefix                       = []byte{0x06}
+	AuctionHistoricalKeyPrefix             = []byte{0x07}
+	UserLimitBidMappingKeyPrefix           = []byte{0x08}
+	UserLimitBidMappingKeyForAddressPrefix = []byte{0x09}
 )
 
 func AuctionKey(auctionID uint64) []byte {
@@ -53,4 +54,8 @@ func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium, address str
 
 func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium string) []byte {
 	return append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), premium...)
+}
+
+func UserLimitBidKeyForAddress(address string) []byte {
+	return append(UserLimitBidMappingKeyForAddressPrefix, address...)
 }
