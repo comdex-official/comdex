@@ -20,7 +20,7 @@ const flagGenesisTime = "genesis-time"
 const chainUpgradeGuide = "https://docs.cosmos.network/master/migrations/chain-upgrade-guide-040.html"
 
 var migrationMap = types.MigrationMap{
-	"v11.1.0": Migrate,
+	"v11.3.0": Migrate,
 }
 
 // GetMigrationCallback returns a MigrationCallback for a given version.
@@ -35,7 +35,7 @@ func MigrateStoreCmd() *cobra.Command {
 		Long: fmt.Sprintf(`Migrate the source genesis into the target version and print to STDOUT.
 
 Example:
-$ %s migrate v11.1.0 /path/to/genesis.json --chain-id=test-2 --genesis-time=2019-04-22T17:00:00Z
+$ %s migrate v11.3.0 /path/to/genesis.json --chain-id=test-2 --genesis-time=2019-04-22T17:00:00Z
 `, version.AppName),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

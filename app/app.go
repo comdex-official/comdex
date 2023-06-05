@@ -178,7 +178,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
-	tv11_2 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_2"
+	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
 )
 
 const (
@@ -1351,10 +1351,10 @@ func (a *App) registerUpgradeHandlers() {
 	}
 
 	switch {
-	case upgradeInfo.Name == tv11_2.UpgradeName:
+	case upgradeInfo.Name == tv11_4.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
-			tv11_2.UpgradeName,
-			tv11_2.CreateUpgradeHandlerV112(a.mm, a.configurator, a.AssetKeeper),
+			tv11_4.UpgradeName,
+			tv11_4.CreateUpgradeHandlerV114(a.mm, a.configurator, a.AssetKeeper),
 		)
 	case upgradeInfo.Name == mv11.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
@@ -1375,7 +1375,7 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	case upgradeInfo.Name == tv11_2.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == tv11_4.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
 		}

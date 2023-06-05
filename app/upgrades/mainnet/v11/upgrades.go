@@ -91,7 +91,7 @@ func CreateUpgradeHandlerV11(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 
-		ctx.Logger().Info("Applying main net upgrade - v.11.3.0")
+		ctx.Logger().Info("Applying main net upgrade - v.11.5.0")
 
 		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
