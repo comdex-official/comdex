@@ -20,17 +20,15 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 		//Trigger Dutch Auction
 		err := k.DutchAuctionActivator(ctx, liquidationData)
 		if err != nil {
-
+			return err
 		}
-
 	} else {
 		//Trigger English Auction
 		err := k.EnglishAuctionActivator(ctx, liquidationData)
 		if err != nil {
-
+			return err
 		}
 	}
-
 	return nil
 }
 

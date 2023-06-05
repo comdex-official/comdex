@@ -12,6 +12,7 @@ option (gogoproto.goproto_getters_all) = false;
 service Msg {
   rpc MsgLiquidateInternalKeeper(MsgLiquidateInternalKeeperRequest) returns (MsgLiquidateInternalKeeperResponse);
   rpc MsgAppReserveFunds(MsgAppReserveFundsRequest) returns (MsgAppReserveFundsResponse);
+  rpc MsgLiquidateExternalKeeper(MsgLiquidateExternalKeeperRequest) returns (MsgLiquidateExternalKeeperResponse);
 }
 
 message MsgLiquidateInternalKeeperRequest {
@@ -41,3 +42,53 @@ message MsgAppReserveFundsRequest {
 
 }
 message  MsgAppReserveFundsResponse{}
+
+message MsgLiquidateExternalKeeperRequest {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+
+  uint64 app_id = 2 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+
+  string owner = 3 [
+    (gogoproto.customname) = "Owner",
+    (gogoproto.moretags) = "yaml:\"owner\""];
+
+  cosmos.base.v1beta1.Coin collateral_token = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"collateral_token\""
+  ];
+
+  cosmos.base.v1beta1.Coin debt_token = 5 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"debt_token\"",
+    (gogoproto.nullable) = false];
+
+  string fee_to_be_collected = 6 [
+    (gogoproto.customname) = "FeeToBeCollected",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
+
+  string bonus_to_be_given = 7 [
+    (gogoproto.customname) = "BonusToBeGiven",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.moretags) = "yaml:\"bonus_to_be_given\""];
+
+  bool auction_type = 8 [
+    (gogoproto.customname) = "AuctionType",
+    (gogoproto.moretags) = "yaml:\"auction_type\""];
+
+  uint64 collateral_asset_id = 9 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""];
+
+  uint64 debt_asset_id = 10 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""];
+
+  string initiator_type = 11 [
+    (gogoproto.customname) = "InitiatorType",
+    (gogoproto.moretags) = "yaml:\"initiator_type\""];
+}
+message  MsgLiquidateExternalKeeperResponse{}

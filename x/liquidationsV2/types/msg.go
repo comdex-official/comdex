@@ -82,3 +82,57 @@ func (m *MsgAppReserveFundsRequest) GetSigners() []sdk.AccAddress {
 
 	return []sdk.AccAddress{from}
 }
+
+func NewMsgLiquidateExternalKeeperRequest(
+	from sdk.AccAddress,
+	appId uint64,
+	owner string,
+	collateralToken, debtToken sdk.Coin,
+	feeToBeCollected, bonusToBeGiven sdk.Dec,
+	auctionType bool,
+	collateralAssetId, debtAssetId uint64,
+	initiatorType string,
+) *MsgLiquidateExternalKeeperRequest {
+	return &MsgLiquidateExternalKeeperRequest{
+		From:              from.String(),
+		AppId:             appId,
+		Owner:             owner,
+		CollateralToken:   collateralToken,
+		DebtToken:         debtToken,
+		FeeToBeCollected:  feeToBeCollected,
+		BonusToBeGiven:    bonusToBeGiven,
+		AuctionType:       auctionType,
+		CollateralAssetId: collateralAssetId,
+		DebtAssetId:       debtAssetId,
+		InitiatorType:     initiatorType,
+	}
+}
+
+func (m *MsgLiquidateExternalKeeperRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgLiquidateExternalKeeperRequest) Type() string {
+	return TypeMsgLiquidateExternalRequest
+}
+
+func (m *MsgLiquidateExternalKeeperRequest) ValidateBasic() error {
+	if m.AppId == 0 {
+		return errors.Wrap(ErrVaultIDInvalid, "app_id cannot be zero")
+	}
+
+	return nil
+}
+
+func (m *MsgLiquidateExternalKeeperRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgLiquidateExternalKeeperRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}

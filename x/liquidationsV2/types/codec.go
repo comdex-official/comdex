@@ -13,6 +13,7 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgLiquidateInternalKeeperRequest{}, "comdex/liquidation/MsgLiquidateInternalKeeperRequest", nil)
 	cdc.RegisterConcrete(&MsgAppReserveFundsRequest{}, "comdex/liquidation/MsgAppReserveFundsRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateExternalKeeperRequest{}, "comdex/liquidation/MsgLiquidateExternalKeeperRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -20,6 +21,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgLiquidateInternalKeeperRequest{},
 		&MsgAppReserveFundsRequest{},
+		&MsgLiquidateExternalKeeperRequest{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

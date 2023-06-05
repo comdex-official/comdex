@@ -21,6 +21,7 @@ const (
 
 var (
 	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
+	TypeMsgLiquidateExternalRequest  = ModuleName + ":liquidate_external"
 	TypeAppReserveFundsRequest       = ModuleName + ":app_reserve_funds"
 	AppIdsKeyPrefix                  = []byte{0x01}
 	LiquidationOffsetHolderKeyPrefix = []byte{0x02}

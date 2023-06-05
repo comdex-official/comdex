@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 
@@ -131,8 +132,8 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 		isCMST := !extPair.AssetOutOraclePrice
 
 		//Creating locked vault struct , which will trigger auction
-		//This function will only triggger dutch auction
-		//before creating locked vault, checking that dutch auction is already there in the whitelisted liquidation data
+		//This function will only trigger Dutch auction
+		//before creating locked vault, checking that Dutch auction is already there in the whitelisted liquidation data
 		if !whitelistingData.IsDutchActivated {
 			return fmt.Errorf("Error , dutch auction not activated by the app, this function is only to trigger dutch auctions %d", whitelistingData.IsDutchActivated)
 
@@ -194,9 +195,9 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	//at some point in the auction
 	//1. what happens in that case
 	//2. what if the bid on the auction makes the auction lossy,
-	//should be use the liquidation penalty ? most probably yes to cover the difference.
+	//should be used the liquidation penalty ? most probably yes to cover the difference.
 	//what if then liquidation penalty still falls short, should we then reduce the auction bonus from the debt , to make things even?
-	//will this be enough to make sure auction does not not gets bid due to collateral not being able to cover the debt?
+	//will this be enough to make sure auction does not get bid due to collateral not being able to cover the debt?
 	//can a case occur in which liquidation penalty and auction bonus are still not enough?
 
 	k.SetLockedVault(ctx, value)
@@ -206,8 +207,8 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	if err != nil {
 		return fmt.Errorf("Auction could not be initiated for %d %d", value, err)
 	}
-	//struct for auction will stay same for english and dutch
-	// based on type recieved from
+	//struct for auction will stay same for english and Dutch
+	// based on type received from
 
 	return nil
 }
@@ -583,4 +584,40 @@ func (k Keeper) GetAppReserveFundsTxData(ctx sdk.Context, appId uint64) (appRese
 
 	k.cdc.MustUnmarshal(value, &appReserveFundsTxData)
 	return appReserveFundsTxData, true
+}
+
+func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64, owner string, collateralToken, debtToken sdk.Coin, liquidationFee, auctionBonus sdk.Dec, auctionType bool, collateralAssetId, debtAssetId uint64, initiatorType string) error {
+	// check if the assets exists
+	// check if reserve funds are added for the debt or not
+	// send tokens from the liquidator's address to the auction module
+
+	_, found := k.asset.GetAsset(ctx, collateralAssetId)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+	_, found = k.asset.GetAsset(ctx, debtAssetId)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
+	appReserveFunds, found := k.GetAppReserveFunds(ctx, appID, debtAssetId)
+	if !found || appReserveFunds.TokenQuantity.Amount.LTE(sdk.NewInt(0)) {
+		return fmt.Errorf("reserve funds not added for debt asset id")
+	}
+
+	feeToBeCollected := sdk.NewDecFromInt(debtToken.Amount).Mul(liquidationFee).TruncateInt()
+	//Calculating auction bonus to be given
+	bonusToBeGiven := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionBonus).TruncateInt()
+
+	addr, err := sdk.AccAddressFromBech32(from)
+	err = k.bank.SendCoinsFromAccountToModule(ctx, addr, auctionsV2types.ModuleName, sdk.NewCoins(collateralToken))
+	if err != nil {
+		return err
+	}
+	err = k.CreateLockedVault(ctx, 0, 0, owner, collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", from, feeToBeCollected, bonusToBeGiven, initiatorType, auctionType, false, collateralAssetId, debtAssetId)
+	if err != nil {
+		return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for External liquidation ")
+	}
+
+	return nil
 }

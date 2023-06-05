@@ -22,6 +22,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgAppReserveFundsRequest:
 			res, err := server.MsgAppReserveFunds(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgLiquidateExternalKeeperRequest:
+			res, err := server.MsgLiquidateExternalKeeper(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:
 			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
