@@ -7,13 +7,9 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var (
-	DefaultAssetRegistrationFee = sdk.NewCoin("ucmdx", sdk.NewInt(100_000_000))
-)
+var DefaultAssetRegistrationFee = sdk.NewCoin("ucmdx", sdk.NewInt(100_000_000))
 
-var (
-	KeyAssetRegistrationFee = []byte("AssetRegistrationFee")
-)
+var KeyAssetRegistrationFee = []byte("AssetRegistrationFee")
 
 var _ paramstypes.ParamSet = (*Params)(nil)
 
