@@ -180,7 +180,6 @@ import (
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 
 	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
-	tv11_2 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_2"
 	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
 )
 
