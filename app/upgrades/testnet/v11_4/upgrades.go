@@ -14,7 +14,6 @@ func CreateUpgradeHandlerV114(
 	assetKeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-
 		assetKeeper.SetParams(ctx, assettypes.NewParams())
 
 		ctx.Logger().Info("Applying test net upgrade - v.11.4.0")

@@ -5,9 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var (
-	_ sdk.Msg = (*MsgAddAsset)(nil)
-)
+var _ sdk.Msg = (*MsgAddAsset)(nil)
 
 // Message types for the liquidity module.
 const (
