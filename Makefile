@@ -17,10 +17,13 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
 BUILDDIR ?= $(CURDIR)/build
 GOBIN = $(shell go env GOPATH)/bin
 GOARCH = $(shell go env GOARCH)
 GOOS = $(shell go env GOOS)
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 
 export GO111MODULE = on
 
@@ -90,8 +93,15 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
+check_version:
+ifneq ($(GO_MINOR_VERSION),19)
+	@echo "ERROR: Please upgrade Go version to 1.19+"
+	exit 1
+endif
 
-all: install test
+all: install
+	@echo "--> project root: go mod tidy"
+	@go mod tidy
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
@@ -107,7 +117,8 @@ clean:
 distclean: clean
 	rm -rf vendor/
 
-install: go.sum
+install: check_version go.sum
+	@echo "--> installing"
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
 build:
@@ -172,6 +183,26 @@ else
 endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
+
+protoVer=v0.1
+containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
+
+proto-swagger-gen:
+	@echo
+	@echo "=========== Generating Docs ============"
+	@echo
+	./scripts/protoc_swagger_gen.sh
+
+	@if [ -n "$(git status --porcelain)" ]; then \
+        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+        exit 1;\
+    else \
+        echo "\033[92mSwagger docs are in sync\033[0m";\
+    fi
+	@echo
+	@echo "=========== Docs Generation Complete ============"
+	@echo
+.PHONY: docs
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
