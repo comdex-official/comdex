@@ -447,7 +447,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 					if individualBids.DebtToken.Amount.GTE(auction.DebtToken.Amount) {
 						//User has more tokens than target debt, so their bid will close the auction
 						///Placing a user bid
-						bidding_id, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
+						biddingId, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
@@ -457,7 +457,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 							return nil
 						}
 						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
-						individualBids.BiddingId = append(individualBids.BiddingId, bidding_id)
+						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
 						k.AppendUserLimitBidDataForAddress(ctx, individualBids, true)
 					} else {

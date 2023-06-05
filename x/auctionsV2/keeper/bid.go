@@ -4,6 +4,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -295,7 +296,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		}
 		//Add bid data to struct
 		//Creating user bid struct
-		bidding_id, err := k.CreateUserBid(ctx, auctionData.AppId, string(bidder), auctionID, sdk.NewCoin(auctionData.CollateralToken.Denom, totalCollateralTokenQuanitity), sdk.NewCoin(auctionData.DebtToken.Denom, bid.Amount), "dutch")
+		biddingId, err := k.CreateUserBid(ctx, auctionData.AppId, string(bidder), auctionID, sdk.NewCoin(auctionData.CollateralToken.Denom, totalCollateralTokenQuanitity), sdk.NewCoin(auctionData.DebtToken.Denom, bid.Amount), "dutch")
 		if err != nil {
 			return bidId, err
 		}
@@ -339,22 +340,28 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//Check if they are initiated through a keeper, if so they will be incentivised
 		}
 		//Add bidder data in auction
-		bidOwnerMapppingData := auctionsV2types.BidOwnerMapping{bidding_id, string(bidder)}
+		bidOwnerMapppingData := auctionsV2types.BidOwnerMapping{biddingId, string(bidder)}
 		auctionData.BiddingIds = append(auctionData.BiddingIds, &bidOwnerMapppingData)
 		//Savinga auction data to auction historical
 		auctionHistoricalData := auctionsV2types.AuctionHistorical{auctionID, &auctionData, &liquidationData}
-		k.SetAuctionHistorical(ctx, auctionHistoricalData)
+		err = k.SetAuctionHistorical(ctx, auctionHistoricalData)
+		if err != nil {
+			return 0, err
+		}
 		//Close Auction
-		k.DeleteAuction(ctx, auctionData)
+		err = k.DeleteAuction(ctx, auctionData)
+		if err != nil {
+			return 0, err
+		}
 		//Delete liquidation Data
 		k.LiquidationsV2.DeleteLockedVault(ctx, liquidationData.LockedVaultId)
-		bidId = bidding_id
+		bidId = biddingId
 	} else {
 		//if bid amount is less than the target bid
 		//Calculating collateral token value from bid(debt) token value
 		_, collateralTokenQuanitity, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.DebtAssetId, debtPrice, bid.Amount, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice)
 		debtLeft := bid.Amount.Sub(bid.Amount)
-		debtuDollar, _ := k.CalcDollarValueForToken(ctx,auctionData.DebtAssetId, debtPrice, debtLeft)
+		debtuDollar, _ := k.CalcDollarValueForToken(ctx, auctionData.DebtAssetId, debtPrice, debtLeft)
 		if !(debtuDollar).GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.MinUsdValueLeft))) {
 			return bidId, types.ErrCannotLeaveDebtLessThanDust
 		}
@@ -400,7 +407,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		auctionData.DebtToken.Amount = auctionData.DebtToken.Amount.Sub(bid.Amount)
 		auctionData.BonusAmount = auctionData.BonusAmount.Sub(expectedBonusShareForCurrentBid)
 		//Set Auction
-		k.SetAuction(ctx, auctionData)
+		err = k.SetAuction(ctx, auctionData)
+		if err != nil {
+			return 0, err
+		}
 		bidId = bidding_id
 	}
 
@@ -416,7 +426,7 @@ func (k Keeper) CreateUserBid(ctx sdk.Context, appID uint64, BidderAddress strin
 		CollateralTokenAmount: collateralToken,
 		DebtTokenAmount:       debtToken,
 		BidderAddress:         BidderAddress,
-		BiddingTimestamp:      ctx.BlockHeader().Time,
+		BiddingTimestamp:      ctx.BlockTime(),
 		AppId:                 appID,
 		BidType:               bidType,
 	}
@@ -429,6 +439,96 @@ func (k Keeper) CreateUserBid(ctx sdk.Context, appID uint64, BidderAddress strin
 }
 
 func (k Keeper) PlaceEnglishAuctionBid(ctx sdk.Context, auctionID uint64, bidder sdk.AccAddress, bid sdk.Coin, auctionData types.Auction) error {
+	if bid.Amount.Equal(sdk.ZeroInt()) {
+		return types.ErrBidCannotBeZero
+	}
+	//TODO: an identifier for surplus or debt auction
+	if true { // for surplus auction
+		if bid.Denom != auctionData.DebtToken.Denom {
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Bid token is not the debt token ", bid.Denom)
+		}
+		if auctionData.BiddingIds != nil {
+			change := auctionData.BidFactor.MulInt(auctionData.DebtToken.Amount).Ceil().TruncateInt()
+			minBidAmount := auctionData.DebtToken.Amount.Add(change)
+			if bid.Amount.LT(minBidAmount) {
+				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", minBidAmount)
+			}
+		} else {
+			if bid.Amount.LTE(auctionData.DebtToken.Amount) {
+				return auctiontypes.ErrorLowBidAmount
+			}
+		}
+		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidder, auctiontypes.ModuleName, sdk.NewCoins(bid))
+		if err != nil {
+			return err
+		}
+		biddingId, err := k.CreateUserBid(ctx, auctionData.AppId, string(bidder), auctionID, auctionData.CollateralToken, sdk.NewCoin(auctionData.DebtToken.Denom, bid.Amount), "dutch")
+		if err != nil {
+			return err
+		}
+		if auctionData.ActiveBiddingId != 0 {
+			userBid, err := k.GetUserBid(ctx, auctionData.ActiveBiddingId)
+			if err != nil {
+				return err
+			}
+			addr, _ := sdk.AccAddressFromBech32(userBid.BidderAddress)
+			err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, addr, sdk.NewCoins(auctionData.DebtToken))
+			if err != nil {
+				return err
+			}
+		}
+
+		auctionData.DebtToken.Amount = bid.Amount
+		auctionData.ActiveBiddingId = biddingId
+		bidIDOwner := &auctiontypes.BidOwnerMapping{BidId: biddingId, BidOwner: bidder.String()}
+		auctionData.BiddingIds = append(auctionData.BiddingIds, bidIDOwner)
+
+	} else { // for debt auction
+		if bid.Denom != auctionData.CollateralToken.Denom {
+			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Bid token is not the CollateralToken token ", bid.Denom)
+		}
+		if auctionData.BiddingIds != nil {
+			change := auctionData.BidFactor.MulInt(auctionData.CollateralToken.Amount).Ceil().TruncateInt()
+			maxBidAmount := auctionData.CollateralToken.Amount.Sub(change)
+			if bid.Amount.GT(maxBidAmount) {
+				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount.Uint64())
+			}
+		} else {
+			if bid.Amount.GT(auctionData.CollateralToken.Amount) {
+				return auctiontypes.ErrorMaxBidAmount
+			}
+		}
+		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidder, auctiontypes.ModuleName, sdk.NewCoins(bid))
+		if err != nil {
+			return err
+		}
+		biddingId, err := k.CreateUserBid(ctx, auctionData.AppId, string(bidder), auctionID, sdk.NewCoin(auctionData.CollateralToken.Denom, bid.Amount), auctionData.DebtToken, "dutch")
+		if err != nil {
+			return err
+		}
+		if auctionData.ActiveBiddingId != 0 {
+			userBid, err := k.GetUserBid(ctx, auctionData.ActiveBiddingId)
+			if err != nil {
+				return err
+			}
+			addr, _ := sdk.AccAddressFromBech32(userBid.BidderAddress)
+			err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, addr, sdk.NewCoins(auctionData.CollateralToken))
+			if err != nil {
+				return err
+			}
+
+		}
+		auctionData.CollateralToken.Amount = bid.Amount
+		auctionData.ActiveBiddingId = biddingId
+		bidIDOwner := &auctiontypes.BidOwnerMapping{BidId: biddingId, BidOwner: bidder.String()}
+		auctionData.BiddingIds = append(auctionData.BiddingIds, bidIDOwner)
+
+	}
+	err := k.SetAuction(ctx, auctionData)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -616,7 +716,7 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	return nil
 }
 
-func (k Keeper) CalcDollarValueForToken(ctx sdk.Context,id uint64, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
+func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
 	asset, _ := k.asset.GetAsset(ctx, id)
 	numerator := sdk.NewDecFromInt(amt).Mul(rate)
 	denominator := sdk.NewDecFromInt(asset.Decimals)

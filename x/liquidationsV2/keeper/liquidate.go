@@ -14,12 +14,12 @@ import (
 
 func (k Keeper) Liquidate(ctx sdk.Context) error {
 
-	err := k.LiquidateVaults(ctx,0)
+	err := k.LiquidateVaults(ctx, 0)
 	if err != nil {
 		return err
 	}
 
-	err = k.LiquidateBorrows(ctx,1)
+	err = k.LiquidateBorrows(ctx, 1)
 	if err != nil {
 		return err
 	}
@@ -34,13 +34,13 @@ func (k Keeper) Liquidate(ctx sdk.Context) error {
 // Liquidate Vaults function can liquidate all vaults created using the vault module.
 //All vauts are looped and check if their underlying app has enabled liquidations.
 
-func (k Keeper) LiquidateVaults(ctx sdk.Context,offsetCounterId uint64) error {
+func (k Keeper) LiquidateVaults(ctx sdk.Context, offsetCounterId uint64) error {
 	params := k.GetParams(ctx)
 
 	//This allows us to loop over a slice of vaults per block , which doesnt stresses the abci.
 	//Eg: if there exists 1,000,000 vaults  and the batch size is 100,000. then at every block 100,000 vaults will be looped and it will take
 	//a total of 10 blocks to loop over all vaults.
-	liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix,offsetCounterId)
+	liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, offsetCounterId)
 	if !found {
 		liquidationOffsetHolder = types.NewLiquidationOffsetHolder(0)
 	}
@@ -70,7 +70,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context,offsetCounterId uint64) error {
 	}
 
 	liquidationOffsetHolder.CurrentOffset = uint64(end)
-	liquidationOffsetHolder.AppId=offsetCounterId
+	liquidationOffsetHolder.AppId = offsetCounterId
 	k.SetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, liquidationOffsetHolder)
 
 	return nil
@@ -212,14 +212,14 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	return nil
 }
 
-func (k Keeper) LiquidateBorrows(ctx sdk.Context,offsetCounterId uint64) error {
+func (k Keeper) LiquidateBorrows(ctx sdk.Context, offsetCounterId uint64) error {
 	borrows, found := k.lend.GetBorrows(ctx)
 	params := k.GetParams(ctx)
 	if !found {
 		ctx.Logger().Error("Params Not Found in Liquidation, liquidate_borrow.go")
 		return nil
 	}
-	liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix,offsetCounterId)
+	liquidationOffsetHolder, found := k.GetLiquidationOffsetHolder(ctx, types.VaultLiquidationsOffsetPrefix, offsetCounterId)
 	if !found {
 		liquidationOffsetHolder = types.NewLiquidationOffsetHolder(0)
 	}
@@ -350,7 +350,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	//Calculating auction bonus to be given
 	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
 
-	err := k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, )
+	err := k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false)
 	if err != nil {
 		return err
 	}
@@ -437,7 +437,7 @@ func (k Keeper) CheckNetFeesCollectedStatsForSurplusAndDebt(ctx sdk.Context, app
 		debtAssetID := collector.SecondaryAssetId
 		// net = 200 debtThreshold = 500 , lotSize = 100
 		collateralToken, debtToken := k.getDebtSellTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, true, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "", false, true, 0)
+		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, true, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "", false, true, collateralAssetID, collateralAssetID)
 		if err != nil {
 			return err
 		}
