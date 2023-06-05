@@ -34,14 +34,14 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	//If true triggering Dutch Auction Bid Request
 	if auctionData.AuctionType {
 
-		_,err = k.PlaceDutchAuctionBid(ctx, msg.AuctionId, bidder, msg.Amount, auctionData)
+		_, err = k.PlaceDutchAuctionBid(ctx, msg.AuctionId, bidder, msg.Amount, auctionData)
 		if err != nil {
 			return nil, err
 		}
 
 	} else {
 		//Else ENGLISH - triggering English Auction Bid Request
-		err = k.PlaceEnglishAuctionBid(ctx, msg.AuctionId, bidder, msg.Amount, auctionData)
+		err = k.PlaceEnglishAuctionBid(ctx, msg.AuctionId, msg.Bidder, msg.Amount, auctionData)
 		if err != nil {
 			return nil, err
 		}
