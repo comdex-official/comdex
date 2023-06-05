@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	migrationtypes "github.com/comdex-official/comdex/x/lend/migrations/v2/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -117,6 +118,100 @@ func SetResStats(store sdk.KVStore, cdc codec.BinaryCodec, allReserveStats types
 	var (
 		key   = types.AllReserveStatsKey(allReserveStats.AssetID)
 		value = cdc.MustMarshal(&allReserveStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (m Migrator) Migrate2to3(ctx sdk.Context) error {
+	return MigrateStoreV2(ctx, m.keeper.storeKey, m.keeper.cdc)
+}
+
+func MigrateStoreV2(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
+	//  Migrate these 2 for their store:
+	// 		LendPairs
+	//		AssetRatesParams
+
+	store := ctx.KVStore(storeKey)
+	err := MigrateLendPairs(store, cdc)
+	if err != nil {
+		return err
+	}
+
+	//err = MigrateAssetRatesParams(store, cdc)
+	//if err != nil {
+	//	return err
+	//}
+
+	return err
+}
+
+func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
+	key1 := types.LendPairKey(1)
+	value1 := store.Get(key1)
+	var pair1 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value1, &pair1)
+
+	store.Delete(key1)
+	SetLendPairs(store, cdc, pair1, 1)
+
+	key2 := types.LendPairKey(2)
+	value2 := store.Get(key2)
+	var pair2 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value2, &pair2)
+
+	store.Delete(key2)
+	SetLendPairs(store, cdc, pair2, 2)
+
+	key3 := types.LendPairKey(3)
+	value3 := store.Get(key3)
+	var pair3 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value3, &pair3)
+
+	store.Delete(key3)
+	SetLendPairs(store, cdc, pair3, 3)
+
+	key4 := types.LendPairKey(4)
+	value4 := store.Get(key4)
+	var pair4 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value4, &pair4)
+
+	store.Delete(key4)
+	SetLendPairs(store, cdc, pair4, 4)
+
+	key5 := types.LendPairKey(5)
+	value5 := store.Get(key5)
+	var pair5 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value5, &pair5)
+
+	store.Delete(key5)
+	SetLendPairs(store, cdc, pair5, 5)
+
+	key6 := types.LendPairKey(6)
+	value6 := store.Get(key6)
+	var pair6 migrationtypes.Extended_Pair
+	cdc.MustUnmarshal(value6, &pair6)
+
+	store.Delete(key6)
+	SetLendPairs(store, cdc, pair6, 6)
+
+	return nil
+}
+
+func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair, id uint64) {
+	newPair := types.Extended_Pair{
+		Id:              id,
+		AssetIn:         pair.AssetIn,
+		AssetOut:        pair.AssetOut,
+		IsInterPool:     pair.IsInterPool,
+		AssetOutPoolID:  pair.AssetOutPoolID,
+		MinUsdValueLeft: pair.MinUsdValueLeft,
+		IsEModeEnabled:  false,
+	}
+
+	var (
+		key   = types.LendPairKey(id)
+		value = cdc.MustMarshal(&newPair)
 	)
 
 	store.Set(key, value)
