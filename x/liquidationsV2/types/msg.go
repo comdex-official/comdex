@@ -91,20 +91,17 @@ func NewMsgLiquidateExternalKeeperRequest(
 	feeToBeCollected, bonusToBeGiven sdk.Dec,
 	auctionType bool,
 	collateralAssetId, debtAssetId uint64,
-	initiatorType string,
+	isDebtCmst bool,
 ) *MsgLiquidateExternalKeeperRequest {
 	return &MsgLiquidateExternalKeeperRequest{
-		From:              from.String(),
-		AppId:             appId,
-		Owner:             owner,
-		CollateralToken:   collateralToken,
-		DebtToken:         debtToken,
-		FeeToBeCollected:  feeToBeCollected,
-		BonusToBeGiven:    bonusToBeGiven,
-		AuctionType:       auctionType,
+		From:            from.String(),
+		AppId:           appId,
+		Owner:           owner,
+		CollateralToken: collateralToken,
+		DebtToken:       debtToken,
 		CollateralAssetId: collateralAssetId,
 		DebtAssetId:       debtAssetId,
-		InitiatorType:     initiatorType,
+		IsDebtCmst:        isDebtCmst,
 	}
 }
 

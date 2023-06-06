@@ -6,6 +6,7 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -97,6 +98,7 @@ type RewardsKeeper interface {
 
 type AuctionsV2Keeper interface {
 	AuctionActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
+	GetAuctionParams(ctx sdk.Context) (auctionParams auctiontypes.AuctionParams, found bool)
 }
 
 type CollectorKeeper interface {

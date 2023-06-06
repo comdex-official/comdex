@@ -375,6 +375,8 @@ func (k Keeper) RestartEnglishAuction(ctx sdk.Context, englishAuction types.Auct
 
 func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auction) error {
 
+	//check if there is any bid
+	//check for specific use cases
 	//Send Collateral To the user
 	//Delete Auction Data
 
@@ -433,7 +435,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 			if auction.CollateralTokenOraclePrice.GT(auction.CollateralTokenAuctionPrice) {
 				premium := (auction.CollateralTokenOraclePrice.Sub(auction.CollateralTokenAuctionPrice)).Quo(auction.CollateralTokenOraclePrice)
 				premiumPerc := premium.Mul(sdk.NewDecFromInt(sdk.NewInt(100)))
-				biddingData, found := k.GetUserLimitBidDataByPremium(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
+				biddingData, found := k.GetUserLimitBidDataByPremium(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
 				if !found {
 					return nil
 				}
@@ -445,26 +447,26 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 					if individualBids.DebtToken.Amount.GTE(auction.DebtToken.Amount) {
 						//User has more tokens than target debt, so their bid will close the auction
 						///Placing a user bid
-						biddingId, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
+						biddingId, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr.String(), individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
 						if individualBids.DebtToken.Amount.Equal(auction.DebtToken.Amount) {
-							k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
-							k.AppendUserLimitBidDataForAddress(ctx, individualBids, false)
+							k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt(), individualBids.BidderAddress)
+
+							k.UpdateUserLimitBidDataForAddress(ctx, individualBids, false)
 							return nil
 						}
 						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
 						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
-						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String())
-						k.AppendUserLimitBidDataForAddress(ctx, individualBids, true)
+						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
 					} else {
-						_, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr, individualBids.DebtToken, auction, true)
+						_, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr.String(), individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
-						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt().String(), individualBids.BidderAddress)
-						k.AppendUserLimitBidDataForAddress(ctx, individualBids, false)
+						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt(), individualBids.BidderAddress)
+						k.UpdateUserLimitBidDataForAddress(ctx, individualBids, false)
 					}
 
 				}

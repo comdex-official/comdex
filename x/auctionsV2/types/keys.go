@@ -35,10 +35,14 @@ var (
 	AuctionHistoricalKeyPrefix             = []byte{0x07}
 	UserLimitBidMappingKeyPrefix           = []byte{0x08}
 	UserLimitBidMappingKeyForAddressPrefix = []byte{0x09}
+	AuctionLimitBidFeeKeyPrefix            = []byte{0x10}
 )
 
 func AuctionKey(auctionID uint64) []byte {
 	return append(append(AuctionKeyPrefix, sdk.Uint64ToBigEndian(auctionID)...))
+}
+func AuctionLimitBidFeeKey(assetID uint64) []byte {
+	return append(append(AuctionLimitBidFeeKeyPrefix, sdk.Uint64ToBigEndian(assetID)...))
 }
 func AuctionHistoricalKey(auctionID uint64) []byte {
 	return append(append(AuctionHistoricalKeyPrefix, sdk.Uint64ToBigEndian(auctionID)...))
@@ -48,12 +52,12 @@ func UserBidKey(userBidId uint64) []byte {
 	return append(append(UserBidKeyPrefix, sdk.Uint64ToBigEndian(userBidId)...))
 }
 
-func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium, address string) []byte {
-	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), premium...), address...)
+func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium sdk.Int, address string) []byte {
+	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian((premium.Uint64()))...), address...)
 }
 
-func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium string) []byte {
-	return append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), premium...)
+func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium sdk.Int) []byte {
+	return append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian((premium.Uint64()))...)
 }
 
 func UserLimitBidKeyForAddress(address string) []byte {

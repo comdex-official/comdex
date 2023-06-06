@@ -23,7 +23,11 @@ message MsgPlaceMarketBidResponse{}
 message MsgDepositLimitBidRequest {
   uint64 collateral_token_id = 1;
   uint64 debt_token_id = 2;
-  string premium_discount = 3;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
   string bidder = 4;
   cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
 }
@@ -33,7 +37,11 @@ message MsgDepositLimitBidResponse{}
 message MsgCancelLimitBidRequest {
   uint64 collateral_token_id = 1;
   uint64 debt_token_id = 2;
-  string premium_discount = 3;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
   string bidder = 4;
 }
 
@@ -42,7 +50,11 @@ message MsgCancelLimitBidResponse{}
 message MsgWithdrawLimitBidRequest {
   uint64 collateral_token_id = 1;
   uint64 debt_token_id = 2;
-  string premium_discount = 3;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
   string bidder = 4;
   cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
 }

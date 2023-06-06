@@ -34,7 +34,7 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	//If true triggering Dutch Auction Bid Request
 	if auctionData.AuctionType {
 
-		_, err = k.PlaceDutchAuctionBid(ctx, msg.AuctionId, bidder, msg.Amount, auctionData,false)
+		_, err = k.PlaceDutchAuctionBid(ctx, msg.AuctionId, bidder.String(), msg.Amount, auctionData, false)
 		if err != nil {
 			return nil, err
 		}

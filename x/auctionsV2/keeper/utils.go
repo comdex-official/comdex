@@ -76,6 +76,33 @@ func (k Keeper) SetAuction(ctx sdk.Context, auction types.Auction) error {
 	store.Set(key, value)
 	return nil
 }
+
+func (k Keeper) SetAuctionLimitBidFeeData(ctx sdk.Context, feeData types.AuctionFeesCollectionFromLimitBidTx) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.AuctionLimitBidFeeKey(feeData.AssetId)
+		value = k.cdc.MustMarshal(&feeData)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+func (k Keeper) GetAuctionLimitBidFeeData(ctx sdk.Context, assetId uint64) (feeData types.AuctionFeesCollectionFromLimitBidTx, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.AuctionLimitBidFeeKey(assetId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return feeData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &feeData)
+	return feeData, true
+}
+
 func (k Keeper) SetAuctionHistorical(ctx sdk.Context, auction types.AuctionHistorical) error {
 
 	var (

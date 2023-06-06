@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -10,6 +11,7 @@ import (
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -59,7 +61,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context, offsetCounterId uint64) error {
 	for _, vault := range newVaults {
 		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 
-			err := k.LiquidateIndividualVault(ctx, vault.Id)
+			err := k.LiquidateIndividualVault(ctx, vault.Id, "", false)
 			if err != nil {
 
 				return fmt.Errorf(err.Error())
@@ -78,7 +80,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context, offsetCounterId uint64) error {
 
 }
 
-func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error {
+func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquidator string, isInternalkeeper bool) error {
 
 	vault, found := k.vault.GetVault(ctx, vaultID)
 	if !found {
@@ -139,7 +141,13 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64) error 
 
 		}
 
-		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, false, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, pair.AssetIn, pair.AssetOut)
+		if vault.AmountIn.GT(sdk.ZeroInt()) {
+			err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn)))
+			if err != nil {
+				return fmt.Errorf("Error , not enough token in vault to transfer %d", vault.AmountIn)
+			}
+		}
+		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, pair.AssetIn, pair.AssetOut)
 		if err != nil {
 			return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for Vault %d", vault.Id)
 		}
@@ -361,7 +369,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 
 func (k Keeper) MsgLiquidate(ctx sdk.Context, liquidator string, liqType, id uint64) error {
 	if liqType == 0 {
-		err := k.LiquidateIndividualVault(ctx, id)
+		err := k.LiquidateIndividualVault(ctx, id, liquidator, true)
 		if err != nil {
 			return err
 		}
@@ -586,10 +594,11 @@ func (k Keeper) GetAppReserveFundsTxData(ctx sdk.Context, appId uint64) (appRese
 	return appReserveFundsTxData, true
 }
 
-func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64, owner string, collateralToken, debtToken sdk.Coin, liquidationFee, auctionBonus sdk.Dec, auctionType bool, collateralAssetId, debtAssetId uint64, initiatorType string) error {
+func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64, owner string, collateralToken, debtToken sdk.Coin, collateralAssetId, debtAssetId uint64, isDebtCmst bool) error {
 	// check if the assets exists
 	// check if reserve funds are added for the debt or not
 	// send tokens from the liquidator's address to the auction module
+	auctionParams, _ := k.auctionsV2.GetAuctionParams(ctx)
 
 	_, found := k.asset.GetAsset(ctx, collateralAssetId)
 	if !found {
@@ -605,16 +614,17 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 		return fmt.Errorf("reserve funds not added for debt asset id")
 	}
 
-	feeToBeCollected := sdk.NewDecFromInt(debtToken.Amount).Mul(liquidationFee).TruncateInt()
+	feeToBeCollected := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionParams.LiquidationPenalty).TruncateInt()
+	feetoken := sdk.NewCoin(debtToken.Denom, feeToBeCollected)
 	//Calculating auction bonus to be given
-	bonusToBeGiven := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionBonus).TruncateInt()
+	bonusToBeGiven := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionParams.AuctionBonus).TruncateInt()
 
 	addr, err := sdk.AccAddressFromBech32(from)
 	err = k.bank.SendCoinsFromAccountToModule(ctx, addr, auctionsV2types.ModuleName, sdk.NewCoins(collateralToken))
 	if err != nil {
 		return err
 	}
-	err = k.CreateLockedVault(ctx, 0, 0, owner, collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", from, feeToBeCollected, bonusToBeGiven, initiatorType, auctionType, false, collateralAssetId, debtAssetId)
+	err = k.CreateLockedVault(ctx, 0, 0, owner, collateralToken, debtToken, collateralToken, debtToken.Add(feetoken), sdk.ZeroDec(), appID, false, "", from, feeToBeCollected, bonusToBeGiven, "external", true, isDebtCmst, collateralAssetId, debtAssetId)
 	if err != nil {
 		return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for External liquidation ")
 	}

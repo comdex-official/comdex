@@ -15,5 +15,6 @@ var (
 	ErrBidCannotBeZero             = sdkerrors.Register(ModuleName, 705, "Bid amount can't be Zero")
 	ErrorLowBidAmount              = sdkerrors.Register(ModuleName, 706, "bidding amount is lower than expected")
 	ErrorMaxBidAmount              = sdkerrors.Register(ModuleName, 707, "bidding amount is greater than maximum bidding amount")
-	ErrLiquidationNotFound=sdkerrors.Register(ModuleName, 708, "Liquidation data not found for the auction")
+	ErrLiquidationNotFound         = sdkerrors.Register(ModuleName, 708, "Liquidation data not found for the auction")
+	ErrBidNotFound                 = sdkerrors.Register(ModuleName, 709, "There exists no active bid for the user with given params")
 )

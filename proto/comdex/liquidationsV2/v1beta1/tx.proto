@@ -65,30 +65,15 @@ message MsgLiquidateExternalKeeperRequest {
     (gogoproto.moretags) = "yaml:\"debt_token\"",
     (gogoproto.nullable) = false];
 
-  string fee_to_be_collected = 6 [
-    (gogoproto.customname) = "FeeToBeCollected",
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
 
-  string bonus_to_be_given = 7 [
-    (gogoproto.customname) = "BonusToBeGiven",
-    (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.moretags) = "yaml:\"bonus_to_be_given\""];
-
-  bool auction_type = 8 [
-    (gogoproto.customname) = "AuctionType",
-    (gogoproto.moretags) = "yaml:\"auction_type\""];
-
-  uint64 collateral_asset_id = 9 [
+  uint64 collateral_asset_id = 6 [
     (gogoproto.moretags) = "yaml:\"collateral_asset_id\""];
 
-  uint64 debt_asset_id = 10 [
+  uint64 debt_asset_id = 7 [
     (gogoproto.moretags) = "yaml:\"debt_asset_id\""];
 
-  string initiator_type = 11 [
-    (gogoproto.customname) = "InitiatorType",
-    (gogoproto.moretags) = "yaml:\"initiator_type\""];
+    bool isDebtCmst=8[
+      (gogoproto.moretags) = "yaml:\"debt_asset_id\""];
+
 }
 message  MsgLiquidateExternalKeeperResponse{}
