@@ -18,7 +18,9 @@ const (
 	QuerierRoute = ModuleName
 
 	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_newauc"
+	MemStoreKey             = "mem_newauc"
+	SurplusAuctionInitiator = "surplus"
+	DebtAuctionInitiator    = "debt"
 )
 
 var (

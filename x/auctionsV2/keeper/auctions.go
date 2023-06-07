@@ -16,7 +16,6 @@ func (k Keeper) AuctionActivator(ctx sdk.Context, liquidationData liquidationtyp
 
 	//Dutch Auction Model Followed for auction type true
 	if liquidationData.AuctionType {
-
 		//Trigger Dutch Auction
 		err := k.DutchAuctionActivator(ctx, liquidationData)
 		if err != nil {
@@ -379,6 +378,14 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 	//check for specific use cases
 	//Send Collateral To the user
 	//Delete Auction Data
+
+	// First check if the auction initiator type is surplus or debt
+	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, englishAuction.AppId, englishAuction.LockedVaultId)
+	if liquidationData.InitiatorType == types.SurplusAuctionInitiator {
+
+	} else if liquidationData.InitiatorType == types.DebtAuctionInitiator {
+		
+	}
 
 	return nil
 
