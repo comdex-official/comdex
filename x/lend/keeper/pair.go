@@ -603,7 +603,7 @@ func (k Keeper) IsPoolDepreciated(ctx sdk.Context, poolID uint64) bool {
 	return false
 }
 
-func (k Keeper) DeletePoolAndTransferFunds(ctx sdk.Context) error {
+func (k Keeper) DeletePoolAndTransferInterest(ctx sdk.Context) error {
 	poolDepRecords, found := k.GetPoolDepreciateRecords(ctx)
 	if !found {
 		return nil

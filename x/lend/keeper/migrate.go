@@ -138,69 +138,41 @@ func MigrateStoreV2(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Bin
 		return err
 	}
 
-	//err = MigrateAssetRatesParams(store, cdc)
-	//if err != nil {
-	//	return err
-	//}
+	err = MigrateAssetRatesParams(store, cdc)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
 
 func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
-	key1 := types.LendPairKey(1)
-	value1 := store.Get(key1)
-	var pair1 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value1, &pair1)
 
-	store.Delete(key1)
-	SetLendPairs(store, cdc, pair1, 1)
+	iterator := store.Iterator(types.LendPairKeyPrefix, sdk.PrefixEndBytes(types.LendPairKeyPrefix))
+	defer func(iterator storetypes.Iterator) {
+		err := iterator.Close()
+		if err != nil {
+		}
+	}(iterator)
 
-	key2 := types.LendPairKey(2)
-	value2 := store.Get(key2)
-	var pair2 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value2, &pair2)
+	var pair migrationtypes.Extended_Pair_Old
 
-	store.Delete(key2)
-	SetLendPairs(store, cdc, pair2, 2)
+	for iterator.Valid() {
+		key := iterator.Key()
+		value := iterator.Value()
 
-	key3 := types.LendPairKey(3)
-	value3 := store.Get(key3)
-	var pair3 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value3, &pair3)
+		cdc.MustUnmarshal(value, &pair)
+		store.Delete(key)
+		SetLendPairs(store, cdc, pair)
 
-	store.Delete(key3)
-	SetLendPairs(store, cdc, pair3, 3)
-
-	key4 := types.LendPairKey(4)
-	value4 := store.Get(key4)
-	var pair4 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value4, &pair4)
-
-	store.Delete(key4)
-	SetLendPairs(store, cdc, pair4, 4)
-
-	key5 := types.LendPairKey(5)
-	value5 := store.Get(key5)
-	var pair5 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value5, &pair5)
-
-	store.Delete(key5)
-	SetLendPairs(store, cdc, pair5, 5)
-
-	key6 := types.LendPairKey(6)
-	value6 := store.Get(key6)
-	var pair6 migrationtypes.Extended_Pair
-	cdc.MustUnmarshal(value6, &pair6)
-
-	store.Delete(key6)
-	SetLendPairs(store, cdc, pair6, 6)
-
+		iterator.Next()
+	}
 	return nil
 }
 
-func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair, id uint64) {
+func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair_Old) {
 	newPair := types.Extended_Pair{
-		Id:              id,
+		Id:              pair.Id,
 		AssetIn:         pair.AssetIn,
 		AssetOut:        pair.AssetOut,
 		IsInterPool:     pair.IsInterPool,
@@ -210,8 +182,63 @@ func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.
 	}
 
 	var (
-		key   = types.LendPairKey(id)
+		key   = types.LendPairKey(pair.Id)
 		value = cdc.MustMarshal(&newPair)
+	)
+
+	store.Set(key, value)
+}
+
+func MigrateAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
+
+	iterator := store.Iterator(types.AssetRatesParamsKeyPrefix, sdk.PrefixEndBytes(types.AssetRatesParamsKeyPrefix))
+	defer func(iterator storetypes.Iterator) {
+		err := iterator.Close()
+		if err != nil {
+		}
+	}(iterator)
+
+	var assetRatesParams migrationtypes.AssetRatesParams_Old
+
+	for iterator.Valid() {
+		key := iterator.Key()
+		value := iterator.Value()
+
+		cdc.MustUnmarshal(value, &assetRatesParams)
+		store.Delete(key)
+		SetAssetRatesParams(store, cdc, assetRatesParams)
+
+		iterator.Next()
+	}
+	return nil
+}
+
+func SetAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec, assetRatesParams migrationtypes.AssetRatesParams_Old) {
+	newAssetRatesParams := types.AssetRatesParams{
+		AssetID:               assetRatesParams.AssetID,
+		UOptimal:              assetRatesParams.UOptimal,
+		Base:                  assetRatesParams.Base,
+		Slope1:                assetRatesParams.Slope1,
+		Slope2:                assetRatesParams.Slope2,
+		EnableStableBorrow:    assetRatesParams.EnableStableBorrow,
+		StableBase:            assetRatesParams.StableBase,
+		StableSlope1:          assetRatesParams.StableSlope1,
+		StableSlope2:          assetRatesParams.StableSlope2,
+		Ltv:                   assetRatesParams.Ltv,
+		LiquidationThreshold:  assetRatesParams.LiquidationThreshold,
+		LiquidationPenalty:    assetRatesParams.LiquidationPenalty,
+		LiquidationBonus:      assetRatesParams.LiquidationBonus,
+		ReserveFactor:         assetRatesParams.ReserveFactor,
+		CAssetID:              assetRatesParams.CAssetID,
+		IsIsolated:            false,
+		ELtv:                  sdk.NewDec(0),
+		ELiquidationThreshold: sdk.NewDec(0),
+		ELiquidationPenalty:   sdk.NewDec(0),
+	}
+
+	var (
+		key   = types.AssetRatesParamsKey(newAssetRatesParams.AssetID)
+		value = cdc.MustMarshal(&newAssetRatesParams)
 	)
 
 	store.Set(key, value)
