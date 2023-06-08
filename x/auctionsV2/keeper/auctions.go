@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"time"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -381,10 +382,39 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 
 	// First check if the auction initiator type is surplus or debt
 	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, englishAuction.AppId, englishAuction.LockedVaultId)
+	bidding, err := k.GetUserBid(ctx, englishAuction.ActiveBiddingId)
+	if err != nil {
+		return err
+	}
+	bidder, err := sdk.AccAddressFromBech32(bidding.BidderAddress)
+	if err != nil {
+		panic(err)
+	}
+	err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
+	if err != nil {
+		return err
+	}
+	err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
+	if err != nil {
+		return err
+	}
+
 	if liquidationData.InitiatorType == types.SurplusAuctionInitiator {
+		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
+		if err != nil {
+			return auctiontypes.ErrorUnableToSetNetFees
+		}
 
 	} else if liquidationData.InitiatorType == types.DebtAuctionInitiator {
-		
+		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
+		if err != nil {
+			return auctiontypes.ErrorUnableToSetNetFees
+		}
+	}
+
+	err = k.DeleteAuction(ctx, englishAuction)
+	if err != nil {
+		return err
 	}
 
 	return nil
