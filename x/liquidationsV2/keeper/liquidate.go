@@ -440,6 +440,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		return nil
 	}
 
+		//surplus condition
 	collateralAssetID := collector.CollectorAssetId //cmst
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
@@ -447,7 +448,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) {
 		// net = 200 debtThreshold = 500 , lotSize = 100
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, true, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, collateralAssetID)
+		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, collateralAssetID)
 		if err != nil {
 			return err
 		}
@@ -464,7 +465,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		if err != nil {
 			return err
 		}
-		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, true, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "surplus", false, true, collateralAssetID, collateralAssetID)
+		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "surplus", false, false, collateralAssetID, collateralAssetID)
 		if err != nil {
 			return err
 		}
@@ -472,7 +473,9 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 
 	return nil
 }
-
+//				Surplus  ``` | Debt`
+//--Collateral 		cmst		harbor
+//debt				harbor		cmst
 func (k Keeper) DebtTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAssetID uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
 	collateralAsset, found1 := k.asset.GetAsset(ctx, CollateralAssetId)
 	debtAsset, found2 := k.asset.GetAsset(ctx, DebtAssetID)
