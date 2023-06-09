@@ -38,6 +38,7 @@ var (
 	UserLimitBidMappingKeyPrefix           = []byte{0x08}
 	UserLimitBidMappingKeyForAddressPrefix = []byte{0x09}
 	AuctionLimitBidFeeKeyPrefix            = []byte{0x10}
+	ExternalAuctionLimitBidFeeKeyPrefix    = []byte{0x11}
 )
 
 func AuctionKey(auctionID uint64) []byte {
@@ -64,4 +65,8 @@ func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium sd
 
 func UserLimitBidKeyForAddress(address string) []byte {
 	return append(UserLimitBidMappingKeyForAddressPrefix, address...)
+}
+
+func ExternalAuctionLimitBidFeeKey(assetID uint64) []byte {
+	return append(append(ExternalAuctionLimitBidFeeKeyPrefix, sdk.Uint64ToBigEndian(assetID)...))
 }

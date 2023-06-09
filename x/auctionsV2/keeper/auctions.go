@@ -391,20 +391,27 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 	if err != nil {
 		panic(err)
 	}
-	// err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctiontypes.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
-	// if err != nil {
-	// 	return err
-	// }
-	// err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
-	// if err != nil {
-	// 	return err
-	// }
 
 	if liquidationData.InitiatorType == types.SurplusAuctionInitiator {
-		//Take collateral from collector
-		//send collateral to user
+		// Take collateral from collector
+		// send collateral to user
 		// send harbor to token mint to burn
-		//set net fees data
+		// set net fees data
+		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
+		if err != nil {
+			return err
+		}
+
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
+		if err != nil {
+			return err
+		}
+
+		err = k.tokenMint.BurnTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
+		if err != nil {
+			return err
+		}
+
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
@@ -415,6 +422,16 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		//send newly minted token((collateral)) to the user
 		// send debt to collector to get added
 		//set net fees data
+		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, bidding.BidderAddress, englishAuction.CollateralToken.Amount)
+		if err != nil {
+			return err
+		}
+
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
+		if err != nil {
+			return err
+		}
+
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
 		if err != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
@@ -424,7 +441,18 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		//TODO:
 		//1. Add external English auction activator
 		//2. Add Close auction functionality to send the debt token to the initiator
-
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
+		if err != nil {
+			return err
+		}
+		externalInitiator, err := sdk.AccAddressFromBech32(liquidationData.ExternalKeeperAddress)
+		if err != nil {
+			return err
+		}
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, externalInitiator, sdk.NewCoins(englishAuction.DebtToken))
+		if err != nil {
+			return err
+		}
 	}
 
 	err = k.DeleteAuction(ctx, englishAuction)
@@ -472,7 +500,7 @@ func (k Keeper) TriggerEsm(ctx sdk.Context, auctionData types.Auction, liquidati
 	//Opening vault
 
 	//TODO
-	//check if a vault exists 
+	//check if a vault exists
 	//if yes update params of the current vault
 	k.vault.CreateNewVault(ctx, liquidationData.Owner, auctionData.AppId, liquidationData.ExtendedPairId, auctionData.CollateralToken.Amount, auctionData.DebtToken.Amount)
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, collateralAuctioned, false)

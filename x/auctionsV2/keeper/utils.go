@@ -271,3 +271,29 @@ func (k Keeper) GetUserBids(ctx sdk.Context) (userBids []types.Bid) {
 
 	return userBids
 }
+
+func (k Keeper) SetAuctionLimitBidFeeDataExternal(ctx sdk.Context, feeData types.AuctionFeesCollectionFromLimitBidTx) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalAuctionLimitBidFeeKey(feeData.AssetId)
+		value = k.cdc.MustMarshal(&feeData)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+func (k Keeper) GetAuctionLimitBidFeeDataExternal(ctx sdk.Context, assetId uint64) (feeData types.AuctionFeesCollectionFromLimitBidTx, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ExternalAuctionLimitBidFeeKey(assetId)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return feeData, false
+	}
+
+	k.cdc.MustUnmarshal(value, &feeData)
+	return feeData, true
+}

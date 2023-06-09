@@ -342,6 +342,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 			}
 		}
 	}
+	k.lend.UpdateBorrowStats(ctx, lendPair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
 	return nil
 }
 
@@ -440,7 +441,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		return nil
 	}
 
-		//surplus condition
+	//surplus condition
 	collateralAssetID := collector.CollectorAssetId //cmst
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
@@ -473,9 +474,11 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 
 	return nil
 }
-//				Surplus  ``` | Debt`
-//--Collateral 		cmst		harbor
-//debt				harbor		cmst
+
+//	Surplus  ``` | Debt`
+//
+// --Collateral 		cmst		harbor
+// debt				harbor		cmst
 func (k Keeper) DebtTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAssetID uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
 	collateralAsset, found1 := k.asset.GetAsset(ctx, CollateralAssetId)
 	debtAsset, found2 := k.asset.GetAsset(ctx, DebtAssetID)
@@ -643,5 +646,87 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 		return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for External liquidation ")
 	}
 
+	return nil
+}
+
+func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData types.LockedVault, auctionData auctionsV2types.Auction) error {
+	//TODO:
+	// send money back to the debt pool (assetOut pool)
+	// liquidation penalty to the reserve and interest to the pool
+	// send token to the bidder
+	// if cross pool borrow, settle the transit asset to it's native pool
+	// close the borrow and update the stats
+
+	borrowPos, _ := k.lend.GetBorrow(ctx, liquidationData.OriginalVaultId)
+	pair, _ := k.lend.GetLendPair(ctx, borrowPos.PairID)
+	pool, _ := k.lend.GetPool(ctx, pair.AssetOutPoolID)
+	poolAssetLBMappingData, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	amountToPool := auctionData.DebtToken // subtract liquidation penalty and interest after sending all the collateral to pool
+	assetOutStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetOut)
+	cAsset, _ := k.asset.GetAsset(ctx, assetOutStats.CAssetID)
+
+	// sending tokens debt tokens to the pool
+	err := k.bank.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, pool.ModuleName, sdk.NewCoins(amountToPool))
+	if err != nil {
+		return err
+	}
+
+	reservePoolRecords, found := k.lend.GetBorrowInterestTracker(ctx, liquidationData.OriginalVaultId)
+	if !found {
+		reservePoolRecords = lendtypes.BorrowInterestTracker{
+			BorrowingId:         liquidationData.OriginalVaultId,
+			ReservePoolInterest: sdk.ZeroDec(),
+		}
+	}
+
+	// calculating amount sent to be reserve pool and the debt pool
+	// after recovering interest some part of the interest goes into the reserve pool
+	// and for the remaining quantity equivalent number of cToken is minted to be given to the lenders upon calculate interest and rewards
+	amtToReservePool := reservePoolRecords.ReservePoolInterest
+	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+		amount := sdk.NewCoin(auctionData.DebtToken.Denom, amtToReservePool.TruncateInt())
+		err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, amount, true)
+		if err != nil {
+			return err
+		}
+
+		allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetOut)
+		if !found {
+			allReserveStats = lendtypes.AllReserveStats{
+				AssetID:                        pair.AssetOut,
+				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+				AmountOutFromReserveForAuction: sdk.ZeroInt(),
+				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountInFromRepayments:         sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdk.ZeroInt(),
+			}
+		}
+		allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amount.Amount)
+		k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
+	}
+	// amount minted in the debt pool
+	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
+	if amtToMint.GT(sdk.ZeroInt()) {
+		err = k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, amtToMint)))
+		if err != nil {
+			return err
+		}
+		poolAssetLBMappingData.TotalInterestAccumulated = poolAssetLBMappingData.TotalInterestAccumulated.Add(amtToMint)
+		k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+	}
+	// if borrow position is having bridged asset then return to the initial pool
+	if borrowPos.BridgedAssetAmount.Amount.GT(sdk.NewInt(0)) {
+		lend, _ := k.lend.GetLend(ctx, borrowPos.LendingID)
+		assetInPool, _ := k.lend.GetPool(ctx, lend.PoolID)
+		err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, assetInPool.ModuleName, sdk.NewCoins(borrowPos.BridgedAssetAmount))
+		if err != nil {
+			return err
+		}
+	}
+
+	k.lend.DeleteIDFromAssetStatsMapping(ctx, pair.AssetOutPoolID, pair.AssetOut, liquidationData.OriginalVaultId, false)
+	k.lend.DeleteBorrowIDFromUserMapping(ctx, liquidationData.Owner, borrowPos.LendingID, liquidationData.OriginalVaultId)
+	k.lend.DeleteBorrow(ctx, liquidationData.OriginalVaultId)
+	k.lend.DeleteBorrowInterestTracker(ctx, liquidationData.OriginalVaultId)
 	return nil
 }
