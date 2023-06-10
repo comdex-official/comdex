@@ -21,7 +21,7 @@ linters:
     - ineffassign
     - misspell
     - revive
-    - nakedret
+    #- nakedret
     - nolintlint
     - rowserrcheck
     - staticcheck

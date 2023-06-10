@@ -1,7 +1,7 @@
-package v10
+package v11
 
 const (
-	UpgradeName   = "v10.0.0"
+	UpgradeName   = "v11.0.0"
 	UpgradeHeight = ""
 	UpgradeInfo   = `'{
 		"binaries": {

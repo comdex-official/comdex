@@ -16,6 +16,11 @@ func (im IBCModule) handleOraclePacket(
 ) (channeltypes.Acknowledgement, error) {
 	var ack channeltypes.Acknowledgement
 	var modulePacketData packet.OracleResponsePacketData
+	fetchPriceMsg := im.keeper.GetFetchPriceMsg(ctx)
+	if modulePacket.DestinationChannel != fetchPriceMsg.SourceChannel {
+		return channeltypes.Acknowledgement{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
+			"Module packet destination channel and source channel mismatch")
+	}
 	if err := types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &modulePacketData); err != nil {
 		return ack, nil
 	}

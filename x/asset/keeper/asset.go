@@ -7,6 +7,7 @@ import (
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) SetAssetID(ctx sdk.Context, id uint64) {
@@ -226,6 +227,20 @@ func (k *Keeper) AddMultipleAssetRecords(ctx sdk.Context, records ...types.Asset
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+// This particular method in meant to be called via asset modules transaction
+func (k *Keeper) AddAsset(ctx sdk.Context, msg *types.MsgAddAsset) error {
+	params := k.GetParams(ctx)
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetCreator(), types.ModuleName, sdk.NewCoins(params.AssetRegisrationFee)); err != nil {
+		return sdkerrors.Wrap(err, "insufficient asset registration fee")
+	}
+
+	err := k.AddAssetRecords(ctx, msg.Asset)
+	if err != nil {
+		return err
 	}
 	return nil
 }
