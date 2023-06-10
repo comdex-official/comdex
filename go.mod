@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
-	github.com/tendermint/tendermint v0.34.27
+	github.com/tendermint/tendermint v0.34.28
 	github.com/tendermint/tm-db v0.6.8-0.20220506192307-f628bb5dc95b
 	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.53.0
@@ -280,11 +280,13 @@ require (
 
 replace (
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
-	github.com/cosmos/cosmos-sdk => github.com/comdex-official/cosmos-sdk v0.45.9-comdex.4
+	// github.com/cosmos/cosmos-sdk => github.com/comdex-official/cosmos-sdk v0.45.9-comdex.4
 	//breaking changes
 	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/cosmos/cosmos-sdk => github.com/evmos/cosmos-sdk v0.46.13-ledger.3
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
-	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
+	// github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
+	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
