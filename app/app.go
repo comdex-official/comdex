@@ -773,18 +773,33 @@ func New(
 	)
 	app.NewliqKeeper = newliqkeeper.NewKeeper(
 		app.cdc,
-		app.keys[lendtypes.StoreKey],
-		app.keys[lendtypes.StoreKey],
-		app.GetSubspace(lendtypes.ModuleName),
+		app.keys[newliqtypes.StoreKey],
+		app.keys[newliqtypes.MemStoreKey],
+		app.GetSubspace(newliqtypes.ModuleName),
+		app.AccountKeeper,
 		app.BankKeeper,
+		app.AssetKeeper,
+		app.VaultKeeper,
+		app.MarketKeeper,
+		app.EsmKeeper,
+		app.Rewardskeeper,
+		app.LendKeeper,
+		app.NewaucKeeper,
+		app.CollectorKeeper,
 	)
 
 	app.NewaucKeeper = newauckeeper.NewKeeper(
 		app.cdc,
-		app.keys[lendtypes.StoreKey],
-		app.keys[lendtypes.StoreKey],
-		app.GetSubspace(lendtypes.ModuleName),
+		app.keys[newauctypes.StoreKey],
+		app.keys[newauctypes.MemStoreKey],
+		app.GetSubspace(newauctypes.ModuleName),
+		app.NewliqKeeper,
 		app.BankKeeper,
+		app.MarketKeeper,
+		app.AssetKeeper,
+		app.EsmKeeper,
+		app.VaultKeeper,
+		app.CollectorKeeper,
 	)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
@@ -915,7 +930,7 @@ func New(
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
-		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.AccountKeeper, app.BankKeeper),
+		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),

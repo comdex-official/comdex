@@ -418,7 +418,10 @@ func (k Keeper) TriggerEsm(ctx sdk.Context, auctionData types.Auction, liquidati
 		return err
 	}
 	//Opening vault
-	k.vault.CreateNewVault(ctx, liquidationData.Owner, auctionData.AppId, liquidationData.ExtendedPairId, auctionData.CollateralToken.Amount, auctionData.DebtToken.Amount)
+	err = k.vault.CreateNewVault(ctx, liquidationData.Owner, auctionData.AppId, liquidationData.ExtendedPairId, auctionData.CollateralToken.Amount, auctionData.DebtToken.Amount)
+	if err != nil {
+		return err
+	}
 	k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, collateralAuctioned, false)
 
 	return nil
