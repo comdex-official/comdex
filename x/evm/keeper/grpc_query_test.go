@@ -17,8 +17,8 @@ import (
 
 	"github.com/evmos/evmos/v12/server/config"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
-	"github.com/evmos/evmos/v12/x/evm/statedb"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 // Not valid Ethereum address

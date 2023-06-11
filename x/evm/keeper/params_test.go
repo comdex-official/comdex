@@ -3,7 +3,7 @@ package keeper_test
 import (
 	"reflect"
 
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 func (suite *KeeperTestSuite) TestParams() {

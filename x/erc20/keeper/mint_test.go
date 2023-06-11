@@ -7,7 +7,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 func (suite *KeeperTestSuite) TestMintingEnabled() {

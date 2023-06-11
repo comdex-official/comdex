@@ -26,8 +26,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	evmostypes "github.com/evmos/evmos/v12/types"
-	"github.com/evmos/evmos/v12/x/evm/keeper"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/keeper"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 // InitGenesis initializes genesis state based on exported genesis

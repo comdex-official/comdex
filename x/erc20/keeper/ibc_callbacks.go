@@ -30,7 +30,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/evmos/evmos/v12/ibc"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 // OnRecvPacket performs the ICS20 middleware receive callback for automatically

@@ -16,8 +16,8 @@ import (
 
 	"github.com/evmos/evmos/v12/app"
 	"github.com/evmos/evmos/v12/encoding"
-	utiltx "github.com/evmos/evmos/v12/testutil/tx"
-	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
+	utiltx "github.com/comdex-official/comdex/testutil/tx"
+	evmtypes "github.com/comdex-official/comdex/x/evm/types"
 
 	"github.com/stretchr/testify/require"
 )

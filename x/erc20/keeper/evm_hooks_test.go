@@ -10,7 +10,7 @@ import (
 
 	"github.com/evmos/evmos/v12/contracts"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 // ensureHooksSet tries to set the hooks on EVMKeeper, this will fail if the erc20 hook is already set

@@ -30,10 +30,10 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/evmos/evmos/v12/server/config"
-	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
+	evmtypes "github.com/comdex-official/comdex/x/evm/types"
 
 	"github.com/evmos/evmos/v12/contracts"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 // DeployERC20Contract creates and deploys an ERC20 contract on the EVM with the

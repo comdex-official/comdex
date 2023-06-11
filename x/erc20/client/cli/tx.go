@@ -33,7 +33,7 @@ import (
 
 	evmostypes "github.com/evmos/evmos/v12/types"
 
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 // NewTxCmd returns a root CLI command handler for erc20 transaction commands

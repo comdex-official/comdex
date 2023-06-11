@@ -31,7 +31,7 @@ import (
 
 	claimstypes "github.com/evmos/evmos/v12/x/claims/types"
 	"github.com/evmos/evmos/v12/x/evm/statedb"
-	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
+	evmtypes "github.com/comdex-official/comdex/x/evm/types"
 )
 
 // AccountKeeper defines the expected interface needed to retrieve account info.

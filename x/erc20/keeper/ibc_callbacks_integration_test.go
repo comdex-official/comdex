@@ -19,7 +19,7 @@ import (
 	teststypes "github.com/evmos/evmos/v12/types/tests"
 	"github.com/evmos/evmos/v12/utils"
 	claimstypes "github.com/evmos/evmos/v12/x/claims/types"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 	. "github.com/onsi/ginkgo/v2"
 )
 

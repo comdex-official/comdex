@@ -18,8 +18,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/evmos/evmos/v12/crypto/ethsecp256k1"
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
-	"github.com/evmos/evmos/v12/x/evm/statedb"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 func (suite *KeeperTestSuite) TestCreateAccount() {

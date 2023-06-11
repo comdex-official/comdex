@@ -32,8 +32,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	evmostypes "github.com/evmos/evmos/v12/types"
-	"github.com/evmos/evmos/v12/x/evm/statedb"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 // Keeper grants access to the EVM module state and implements the go-ethereum StateDB interface.

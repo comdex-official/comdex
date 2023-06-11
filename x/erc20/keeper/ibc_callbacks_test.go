@@ -28,7 +28,7 @@ import (
 	claimstypes "github.com/evmos/evmos/v12/x/claims/types"
 	"github.com/evmos/evmos/v12/x/erc20/types"
 	inflationtypes "github.com/evmos/evmos/v12/x/inflation/types"
-	vestingtypes "github.com/evmos/evmos/v12/x/vesting/types"
+	vestingtypes "github.com/comdex-official/comdex/x/vesting/types"
 )
 
 var erc20Denom = "erc20/0xdac17f958d2ee523a2206206994597c13d831ec7"

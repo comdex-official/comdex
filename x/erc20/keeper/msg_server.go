@@ -29,7 +29,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/evmos/evmos/v12/contracts"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 var _ types.MsgServer = &Keeper{}

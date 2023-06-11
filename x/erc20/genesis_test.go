@@ -18,8 +18,8 @@ import (
 	feemarkettypes "github.com/evmos/evmos/v12/x/feemarket/types"
 
 	"github.com/evmos/evmos/v12/app"
-	"github.com/evmos/evmos/v12/x/erc20"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 type GenesisTestSuite struct {

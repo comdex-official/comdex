@@ -15,9 +15,9 @@ import (
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
-	"github.com/evmos/evmos/v12/x/erc20/keeper"
-	"github.com/evmos/evmos/v12/x/erc20/types"
-	inflationtypes "github.com/evmos/evmos/v12/x/inflation/types"
+	"github.com/comdex-official/comdex/x/erc20/keeper"
+	"github.com/comdex-official/comdex/x/erc20/types"
+	inflationtypes "github.com/evmos/evmos/v12/inflation/types"
 )
 
 const (

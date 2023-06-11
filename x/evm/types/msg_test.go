@@ -22,7 +22,7 @@ import (
 
 	"github.com/evmos/evmos/v12/app"
 	"github.com/evmos/evmos/v12/encoding"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 const invalidAddress = "0x0000"

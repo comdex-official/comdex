@@ -40,8 +40,8 @@ import (
 	ethparams "github.com/ethereum/go-ethereum/params"
 
 	evmostypes "github.com/evmos/evmos/v12/types"
-	"github.com/evmos/evmos/v12/x/evm/statedb"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 var _ types.QueryServer = Keeper{}

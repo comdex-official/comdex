@@ -20,7 +20,7 @@ import (
 
 	"github.com/evmos/evmos/v12/app"
 	"github.com/evmos/evmos/v12/testutil"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 var _ = Describe("Performing EVM transactions", Ordered, func() {

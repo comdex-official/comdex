@@ -27,7 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	evmostypes "github.com/evmos/evmos/v12/types"
 
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 var _ types.QueryServer = Keeper{}

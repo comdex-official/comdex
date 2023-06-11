@@ -7,7 +7,7 @@ import (
 
 	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 	"github.com/evmos/evmos/v12/x/erc20/types"
-	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
+	evmtypes "github.com/comdex-official/comdex/x/evm/types"
 )
 
 func (suite *KeeperTestSuite) TestGetTokenPairs() {

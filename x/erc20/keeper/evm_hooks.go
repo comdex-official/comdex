@@ -27,7 +27,7 @@ import (
 	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
 	"github.com/evmos/evmos/v12/contracts"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 var _ evmtypes.EvmHooks = Hooks{}

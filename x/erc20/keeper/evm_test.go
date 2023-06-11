@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"github.com/evmos/evmos/v12/contracts"
-	"github.com/evmos/evmos/v12/x/erc20/keeper"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/keeper"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 func (suite *KeeperTestSuite) TestQueryERC20() {

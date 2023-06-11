@@ -11,7 +11,7 @@ import (
 	"github.com/evmos/evmos/v12/encoding"
 	erc20keeper "github.com/evmos/evmos/v12/x/erc20/keeper"
 	v3types "github.com/evmos/evmos/v12/x/erc20/migrations/v3/types"
-	"github.com/evmos/evmos/v12/x/erc20/types"
+	"github.com/comdex-official/comdex/x/erc20/types"
 )
 
 type mockSubspace struct {

@@ -28,7 +28,7 @@ import (
 	"github.com/spf13/cobra"
 
 	rpctypes "github.com/evmos/evmos/v12/rpc/types"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 // GetTxCmd returns the transaction commands for this module

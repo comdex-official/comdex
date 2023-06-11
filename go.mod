@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/wasmd v0.31.0
 	github.com/CosmWasm/wasmvm v1.2.1
 	github.com/bandprotocol/bandchain-packet v0.0.3
-	github.com/cosmos/cosmos-sdk v0.46.11
+	github.com/cosmos/cosmos-sdk v0.47.3
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -35,8 +35,13 @@ require (
 	mvdan.cc/gofumpt v0.4.0
 )
 
+
+
+
+
 require (
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
+	github.com/ethereum/go-ethereum v1.11.5
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
@@ -284,9 +289,10 @@ replace (
 	//breaking changes
 	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/cosmos/cosmos-sdk => github.com/evmos/cosmos-sdk v0.46.13-ledger.3
+	// github.com/cosmos/cosmos-sdk => github.com/evmos/cosmos-sdk v0.46.13-ledger.3
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
 	// github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+	github.com/ethereum/go-ethereum => github.com/evmos/go-ethereum v1.10.26-evmos-rc1
 )

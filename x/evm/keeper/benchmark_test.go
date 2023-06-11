@@ -13,7 +13,7 @@ import (
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	evmostypes "github.com/evmos/evmos/v12/types"
-	"github.com/evmos/evmos/v12/x/evm/types"
+	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 func SetupContract(b *testing.B) (*KeeperTestSuite, common.Address) {
