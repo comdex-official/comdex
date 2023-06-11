@@ -800,6 +800,7 @@ func New(
 		app.EsmKeeper,
 		app.VaultKeeper,
 		app.CollectorKeeper,
+		app.TokenmintKeeper,
 	)
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
