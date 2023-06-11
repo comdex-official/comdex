@@ -25,6 +25,7 @@ type (
 		esm            expected.EsmKeeper
 		vault          expected.VaultKeeper
 		collector      expected.CollectorKeeper
+		tokenMint      expected.TokenMintKeeper
 	}
 )
 
@@ -45,6 +46,7 @@ func NewKeeper(
 	esm expected.EsmKeeper,
 	vaultKeeper expected.VaultKeeper,
 	collector expected.CollectorKeeper,
+	tokenMintKeeper expected.TokenMintKeeper,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -63,6 +65,7 @@ func NewKeeper(
 		esm:            esm,
 		vault:          vaultKeeper,
 		collector:      collector,
+		tokenMint:      tokenMintKeeper,
 	}
 }
 

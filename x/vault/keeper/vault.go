@@ -574,6 +574,17 @@ func (k Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stabl
 func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
 	appMapping, _ := k.asset.GetApp(ctx, AppID)
 	extendedPairVault, _ := k.asset.GetPairsVault(ctx, ExtendedPairVaultID)
+	//checking if vault exists
+	userData, userExists := k.GetUserAppExtendedPairMappingData(ctx, From, AppID, ExtendedPairVaultID)
+	if userExists {
+
+		vaultData, _ := k.GetVault(ctx, userData.VaultId)
+		vaultData.AmountIn = vaultData.AmountIn.Add(AmountIn)
+		vaultData.AmountOut = vaultData.AmountOut.Add(AmountOut)
+		k.SetVault(ctx, vaultData)
+
+		return nil
+	}
 
 	zeroVal := sdk.ZeroInt()
 	oldID := k.GetIDForVault(ctx)

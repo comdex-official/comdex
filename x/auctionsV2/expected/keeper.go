@@ -2,6 +2,7 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquidationsV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -15,6 +16,7 @@ type LiquidationsV2Keeper interface {
 	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationsV2types.LockedVault, found bool)
 	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
 	WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin) error
+	MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData liquidationsV2types.LockedVault, auctionData auctionsV2types.Auction) error
 }
 
 type MarketKeeper interface {
@@ -56,14 +58,10 @@ type VaultKeeper interface {
 	CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
 }
 type CollectorKeeper interface {
-	// GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID uint64) (appAssetCollectorData types.AppToAssetIdCollectorMapping, found bool)
-	// UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
-	// // SetCollectorLookupTable(ctx sdk.Context, records ...types.CollectorLookupTable) error
-	// GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup types.CollectorLookupTableData, found bool)
-	// GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool)
-	// GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData types.AppAssetIdToFeeCollectedData, found bool)
-	// GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error)
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
-	// SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetIdToAuctionLookupTable) error
-	// GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool)
+}
+
+type TokenMintKeeper interface {
+	MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error
+	BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error
 }

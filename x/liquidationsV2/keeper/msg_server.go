@@ -45,7 +45,7 @@ func (m msgServer) MsgAppReserveFunds(c context.Context, req *types.MsgAppReserv
 
 func (m msgServer) MsgLiquidateExternalKeeper(c context.Context, req *types.MsgLiquidateExternalKeeperRequest) (*types.MsgLiquidateExternalKeeperResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	if err := m.keeper.MsgLiquidateExternal(ctx, req.From, req.AppId, req.Owner, req.CollateralToken, req.DebtToken, req.FeeToBeCollected, req.BonusToBeGiven, req.AuctionType, req.CollateralAssetId, req.DebtAssetId, req.InitiatorType); err != nil {
+	if err := m.keeper.MsgLiquidateExternal(ctx, req.From, req.AppId, req.Owner, req.CollateralToken, req.DebtToken, req.CollateralAssetId, req.DebtAssetId, req.IsDebtCmst); err != nil {
 		return nil, err
 	}
 	return &types.MsgLiquidateExternalKeeperResponse{}, nil
