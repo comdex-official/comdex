@@ -159,3 +159,23 @@ func (m msgServer) Unfarm(goCtx context.Context, msg *types.MsgUnfarm) (*types.M
 
 	return &types.MsgUnfarmResponse{}, nil
 }
+
+func (m msgServer) DepositAndFarm(goCtx context.Context, msg *types.MsgDepositAndFarm) (*types.MsgDepositAndFarmResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.DepositAndFarm(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgDepositAndFarmResponse{}, nil
+}
+
+func (m msgServer) UnfarmAndWithdraw(goCtx context.Context, msg *types.MsgUnfarmAndWithdraw) (*types.MsgUnfarmAndWithdrawResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.UnfarmAndWithdraw(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUnfarmAndWithdrawResponse{}, nil
+}

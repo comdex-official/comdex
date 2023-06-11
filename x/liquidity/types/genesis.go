@@ -143,10 +143,11 @@ func (genState GenesisState) Validate() error {
 				if _, ok := poolMap[activeFarmer.PoolId]; !ok {
 					return fmt.Errorf("active farmer at index %d has unknown pool id: %d", i, activeFarmer.PoolId)
 				}
-				if _, ok := activeFarmerMap[activeFarmer.Farmer]; ok {
+				activeFarmerKey := fmt.Sprintf("%s-%d-%d", activeFarmer.Farmer, activeFarmer.AppId, activeFarmer.PoolId)
+				if _, ok := activeFarmerMap[activeFarmerKey]; ok {
 					return fmt.Errorf("active farmer at index %d has a duplicate farmer : %s", i, activeFarmer.Farmer)
 				}
-				activeFarmerMap[activeFarmer.Farmer] = activeFarmer
+				activeFarmerMap[activeFarmerKey] = activeFarmer
 			}
 		}
 

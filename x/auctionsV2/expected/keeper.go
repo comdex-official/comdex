@@ -14,8 +14,8 @@ import (
 type LiquidationsV2Keeper interface {
 	GetLiquidationWhiteListing(ctx sdk.Context, appId uint64) (liquidationWhiteListing liquidationsV2types.LiquidationWhiteListing, found bool)
 	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault liquidationsV2types.LockedVault, found bool)
-	DeleteLockedVault(ctx sdk.Context, id uint64)
-	WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin)
+	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
+	WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin) error
 	MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData liquidationsV2types.LockedVault, auctionData auctionsV2types.Auction) error
 }
 
@@ -55,7 +55,7 @@ type VaultKeeper interface {
 	GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec) (sdk.Dec, sdk.Int, error)
 	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
 	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
-	CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int)
+	CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error
 }
 type CollectorKeeper interface {
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error

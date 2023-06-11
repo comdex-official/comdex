@@ -59,7 +59,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			debtGettingLeft := auctionData.DebtToken.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, debtTokenAgainstLeftOverCollateral))
 			//Calling reserve account for debt adjustment : debtGettingLeft
 			//Updating the protocol was in loss stuct
-			k.LiquidationsV2.WithdrawAppReserveFundsFn(ctx, auctionData.AppId, auctionData.DebtAssetId, debtGettingLeft)
+			err := k.LiquidationsV2.WithdrawAppReserveFundsFn(ctx, auctionData.AppId, auctionData.DebtAssetId, debtGettingLeft)
+			if err != nil {
+				return bidId, err
+			}
 		}
 		//Take Debt Token from user ,
 
@@ -207,7 +210,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			return 0, err
 		}
 		//Delete liquidation Data
-		k.LiquidationsV2.DeleteLockedVault(ctx, liquidationData.LockedVaultId)
+		k.LiquidationsV2.DeleteLockedVault(ctx, auctionData.AppId, liquidationData.LockedVaultId)
 		bidId = biddingId
 	} else {
 		//if bid amount is less than the target bid

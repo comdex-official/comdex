@@ -24,6 +24,14 @@ func NewQueryServer(k Keeper) types.QueryServer {
 	}
 }
 
+// Params queries the parameters of the liquidity module.
+func (q QueryServer) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	var params types.Params
+	q.Keeper.params.GetParamSet(ctx, &params)
+	return &types.QueryParamsResponse{Params: params}, nil
+}
+
 func (q QueryServer) QueryAssets(c context.Context, req *types.QueryAssetsRequest) (*types.QueryAssetsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")

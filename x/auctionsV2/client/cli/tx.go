@@ -97,12 +97,17 @@ func txDepositLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
+			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
+			}
+
 			amt, err := sdk.ParseCoinNormalized(args[3])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDepositLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, args[2], amt)
+			msg := types.NewMsgDepositLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, premiumDiscount, amt)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -134,7 +139,12 @@ func txCancelLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
-			msg := types.NewMsgCancelLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, args[2])
+			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
+			}
+
+			msg := types.NewMsgCancelLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, premiumDiscount)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -166,12 +176,17 @@ func txWithdrawLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
+			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
+			}
+
 			amt, err := sdk.ParseCoinNormalized(args[3])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, args[2], amt)
+			msg := types.NewMsgWithdrawLimitBid(clientCtx.GetFromAddress().String(), collateralTokenID, debtTokenID, premiumDiscount, amt)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

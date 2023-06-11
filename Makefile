@@ -123,6 +123,8 @@ install: check_version go.sum
 
 build:
 	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
+	mkdir build
+	cp -a bin/comdex ./build/
 
 release: install
 	mkdir -p release

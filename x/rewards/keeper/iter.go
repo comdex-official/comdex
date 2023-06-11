@@ -229,6 +229,9 @@ func (k Keeper) OraclePriceForRewards(ctx sdk.Context, id uint64, amt sdk.Int) (
 
 func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	// Give external rewards to borrowers for opening a vault with specific assetID
+	var addrArr []string
+	var amountArr []sdk.Dec
+	totalAmount := sdk.NewInt(0)
 	extRewards := k.GetExternalRewardLends(ctx)
 	for _, v := range extRewards {
 		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
@@ -239,19 +242,37 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 			epoch, _ := k.GetEpochTime(ctx, v.EpochId)
 			et := epoch.StartingTime
 			timeNow := ctx.BlockTime().Unix()
-
 			// checking if rewards are active
 			if et < timeNow {
 				if epoch.Count < uint64(v.DurationDays) {
-					// we will only consider the borrows of the pool and assetID defined
-					// initializing totalBorrowedAmt $ value to store total borrowed across different assetIDs for given cPool
-					totalBorrowedAmt := sdk.ZeroInt()
 					rewardsAssetPoolData := v.RewardsAssetPoolData
-					for _, assetID := range rewardsAssetPoolData.AssetId {
-						amt, _ := k.CalculateTotalBorrowedAmtByFarmers(ctx, assetID, rewardsAssetPoolData.CPoolId, rewardsAssetPoolData.CSwapAppId, v.MasterPoolId)
-						totalBorrowedAmt = totalBorrowedAmt.Add(amt.TruncateInt()) // in $USD
+					assetID := rewardsAssetPoolData.AssetId[0]
+					borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
+					if !found {
+						return nil
 					}
-					// calculating totalAPR
+					for _, borrowId := range borrowByPoolIDAssetID.BorrowIds {
+						borrowPos, found := k.lend.GetBorrow(ctx, borrowId)
+						if !found {
+							continue
+						}
+						if borrowPos.IsLiquidated {
+							continue
+						}
+						borrowAmt, found := k.OraclePriceForRewards(ctx, assetID, borrowPos.AmountOut.Amount)
+						if !found {
+							continue
+						}
+						lendPos, _ := k.lend.GetLend(ctx, borrowPos.LendingID)
+						addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
+						minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, addr, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, borrowAmt)
+						if !found {
+							continue
+						}
+						addrArr = append(addrArr, lendPos.Owner)
+						amountArr = append(amountArr, minAmt)
+						totalAmount = totalAmount.Add(minAmt.TruncateInt())
+					}
 					rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 					if !found {
 						continue
@@ -260,58 +281,27 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					if !found {
 						continue
 					}
-					if totalBorrowedAmt.LTE(sdk.ZeroInt()) {
+					if totalAmount.LTE(sdk.ZeroInt()) {
 						continue
 					}
 					dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
-					totalAPR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalBorrowedAmt))
-
-					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
-					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
-
-					for _, assetID := range rewardsAssetPoolData.AssetId { // iterating over assetIDs
-						borrowIDs, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, rewardsAssetPoolData.CPoolId, assetID)
-						for _, borrowID := range borrowIDs.BorrowIds { // iterating over borrowIDs
-							borrow, found := k.lend.GetBorrow(ctx, borrowID)
-							if !found {
+					totalAPR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalAmount))
+					amountRewardedTracker := sdk.NewInt(0)
+					for i, borrower := range addrArr {
+						user, _ := sdk.AccAddressFromBech32(borrower)
+						finalDailyRewardsPerUser := amountArr[i].Mul(totalAPR)
+						if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
+							amountRewardedTracker = amountRewardedTracker.Add(finalDailyRewardsPerUser.TruncateInt())
+							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
+							if err != nil {
 								continue
-							}
-							lend, found := k.lend.GetLend(ctx, borrow.LendingID)
-							if !found {
-								continue
-							}
-							user, _ := sdk.AccAddressFromBech32(lend.Owner)
-							pair, found := k.lend.GetLendPair(ctx, borrow.PairID)
-							if !found {
-								continue
-							}
-							borrowAmt, found := k.OraclePriceForRewards(ctx, pair.AssetOut, borrow.AmountOut.Amount)
-							if !found {
-								continue
-							}
-							liqFound, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, user, v.MasterPoolId, rewardsAssetPoolData.CSwapAppId, borrowAmt)
-							if !found {
-								continue
-							}
-
-							finalDailyRewardsPerUser := liqFound.Mul(totalAPR)
-							if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
-								amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt()))
-								err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
-								if err != nil {
-									continue
-								}
 							}
 						}
 					}
-					// after all the borrowers are rewarded
-					// setting the starting time to next day
 					epoch.Count = epoch.Count + types.UInt64One
 					epoch.StartingTime = timeNow + types.SecondsPerDay
 					k.SetEpochTime(ctx, epoch)
-
-					// setting the available rewards by subtracting the amount sent per epoch for the ext rewards
-					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker.Amount)
+					v.AvailableRewards.Amount = v.AvailableRewards.Amount.Sub(amountRewardedTracker)
 					k.SetExternalRewardLend(ctx, v)
 				} else {
 					v.IsActive = false
@@ -321,44 +311,6 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 		}
 	}
 	return nil
-}
-
-func (k Keeper) CalculateTotalBorrowedAmtByFarmers(ctx sdk.Context, assetID, poolID, appID uint64, masterPoolID int64) (sdk.Dec, bool) {
-	borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, poolID, assetID)
-	if !found {
-		return sdk.ZeroDec(), false
-	}
-
-	amt := sdk.ZeroDec()
-	for _, id := range borrowByPoolIDAssetID.BorrowIds {
-		borrowPos, found := k.lend.GetBorrow(ctx, id)
-		if !found {
-			return sdk.ZeroDec(), false
-		}
-		lendPos, found := k.lend.GetLend(ctx, borrowPos.LendingID)
-		if !found {
-			return sdk.ZeroDec(), false
-		}
-		if borrowPos.IsLiquidated {
-			continue
-		}
-		pair, found := k.lend.GetLendPair(ctx, borrowPos.PairID)
-		if !found {
-			return sdk.ZeroDec(), false
-		}
-		borrowAmt, found := k.OraclePriceForRewards(ctx, pair.AssetOut, borrowPos.AmountOut.Amount)
-		if !found {
-			return sdk.ZeroDec(), false
-		}
-		addr, _ := sdk.AccAddressFromBech32(lendPos.Owner)
-		minAmt, found := k.CheckMinOfBorrowersLiquidityAndBorrow(ctx, addr, masterPoolID, appID, borrowAmt)
-		if !found {
-			continue
-		}
-		amt = amt.Add(minAmt)
-	}
-
-	return amt, true
 }
 
 func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, borrowAmount sdk.Dec) (sdk.Dec, bool) {
