@@ -6,7 +6,7 @@ import (
 
 const (
 	// ModuleName defines the module name
-	ModuleName = "auctionsV2"
+	ModuleName = "auctions"
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName

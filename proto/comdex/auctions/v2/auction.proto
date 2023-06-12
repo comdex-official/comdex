@@ -1,12 +1,12 @@
 syntax = "proto3";
-package comdex.auctionsV2.v1beta1;
+package comdex.auctions.v2;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "comdex/liquidationsV2/v1beta1/liquidate.proto";
 
-option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
+option go_package = "github.com/comdex-official/comdex/x/auctions/types";
 
 message AuctionHistorical{
   uint64 auction_id = 1 [

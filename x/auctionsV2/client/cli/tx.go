@@ -27,7 +27,7 @@ const (
 // GetTxCmd returns the transaction commands for this module
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        "auctionsV2",
+		Use:                        "auctions",
 		Short:                      "AuctionsV2 module sub-commands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,

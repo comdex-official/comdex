@@ -14,7 +14,7 @@ import (
 )
 
 func GetQueryCmd(queryRoute string) *cobra.Command {
-	// Group auctionsV2 queries under a subcommand
+	// Group auctions queries under a subcommand
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),

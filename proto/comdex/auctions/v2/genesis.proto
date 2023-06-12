@@ -1,0 +1,11 @@
+syntax = "proto3";
+package comdex.auctions.v2;
+
+import "gogoproto/gogo.proto";
+import "comdex/auctions/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auctions/types";
+
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

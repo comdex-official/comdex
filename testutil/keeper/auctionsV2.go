@@ -3,8 +3,8 @@ package keeper
 //import (
 //	"testing"
 //
-//	"github.com/comdex-official/comdex/x/auctionsV2/keeper"
-//	"github.com/comdex-official/comdex/x/auctionsV2/types"
+//	"github.com/comdex-official/comdex/x/auctions/keeper"
+//	"github.com/comdex-official/comdex/x/auctions/types"
 //	"github.com/cosmos/cosmos-sdk/codec"
 //	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 //	"github.com/cosmos/cosmos-sdk/store"
