@@ -23,32 +23,33 @@ message LiquidationWhiteListing {
   //bool param 
   //true - comdex apps
   //false external apps
-  bool initiator = 6 [
+  bool initiator = 2 [
     (gogoproto.customname) = "Initiator",
     (gogoproto.moretags) = "yaml:\"initiator\""];
   //Sets of Params for Dutch Auction
-  bool is_dutch_activated = 7  [
+  bool is_dutch_activated = 3  [
     (gogoproto.customname) = "IsDutchActivated",
     (gogoproto.moretags) = "yaml:\"is_dutch_activated\""];
-  DutchAuctionParam dutch_auction_param = 8[
+  DutchAuctionParam dutch_auction_param = 4[
     (gogoproto.customname) = "DutchAuctionParam",
     (gogoproto.moretags) = "yaml:\"dutch_auction_param\""];
   //Sets of Params for English Auction
-  bool is_english_activated = 9  [
+  bool is_english_activated = 5  [
     (gogoproto.customname) = "IsEnglishActivated",
     (gogoproto.moretags) = "yaml:\"is_english_activated\""];
 
-  EnglishAuctionParam english_auction_param = 10[
+  EnglishAuctionParam english_auction_param = 6[
     (gogoproto.customname) = "EnglishAuctionParam",
     (gogoproto.moretags) = "yaml:\"english_auction_param\""];
   //One thing to keep in mind that somehow it should not happen that a void is created where something at level 2 gets triggerred and it has no data saved a level 1 for lookup and it fails .
 
-  string keeeper_incentive = 11 [
+  string keeeper_incentive = 7 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"keeper_incentive\""
   ];
 }
+
 message AppReserveFunds{
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
@@ -62,6 +63,7 @@ message AppReserveFunds{
     (gogoproto.nullable) = false
   ];
 }
+
 message AppReserveFundsTxData{
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
@@ -72,8 +74,8 @@ message AppReserveFundsTxData{
     (gogoproto.moretags) = "yaml:\"asset_tx_data\"",
     (gogoproto.nullable) = false
   ];
-
 }
+
 message AssetTxData{
   uint64 asset_id = 1 [
     (gogoproto.customname) = "AssetId",
@@ -107,6 +109,7 @@ message DutchAuctionParam{
   ];
 
 }
+
 message EnglishAuctionParam{
   string decrement_factor = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -116,8 +119,6 @@ message EnglishAuctionParam{
 
 }
 
-
-
 message LiquidationOffsetHolder {
   uint64 app_id = 1 [
     (gogoproto.customname) = "AppId",
@@ -126,12 +127,10 @@ message LiquidationOffsetHolder {
   uint64 current_offset = 2;
 }
 
-
 //Internal keepers are bots run by people to liquidate positions of comdex apps
 //They run tx function to liquidate the positions
 //External keeper function allows external projects to use comdex auction- 
 //market to liquidate their positions and take part in  auctions.
-
 
 message LockedVault {
 

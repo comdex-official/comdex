@@ -12,8 +12,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/comdex-official/comdex/x/auctionsV2/client/cli"
-	"github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	"github.com/comdex-official/comdex/x/auctionsV2/expected"
+	"github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -95,8 +95,8 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper        keeper.Keeper
-	bankKeeper    expected.BankKeeper
+	keeper     keeper.Keeper
+	bankKeeper expected.BankKeeper
 }
 
 func NewAppModule(
@@ -132,7 +132,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQueryServer(am.keeper))
 }
 
 // RegisterInvariants registers the capability module's invariants.

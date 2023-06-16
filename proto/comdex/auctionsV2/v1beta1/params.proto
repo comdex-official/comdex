@@ -1,9 +1,9 @@
 syntax = "proto3";
-package comdex.auctions.v2;
+package comdex.auctionsV2.v1beta1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/comdex-official/comdex/x/auctions/types";
+option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
 
 message Params {
   option (gogoproto.goproto_stringer) = false;

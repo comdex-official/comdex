@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/comdex-official/comdex/x/auctionsV2/expected"
@@ -28,11 +27,6 @@ type (
 		tokenMint      expected.TokenMintKeeper
 	}
 )
-
-func (k Keeper) Params(ctx context.Context, request *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	//TODO implement me
-	panic("implement me")
-}
 
 func NewKeeper(
 	cdc codec.BinaryCodec,

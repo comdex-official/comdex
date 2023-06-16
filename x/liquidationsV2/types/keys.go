@@ -30,6 +30,7 @@ var (
 	LiquidationWhiteListingKeyPrefix = []byte{0x05}
 	AppReserveFundsKeyPrefix         = []byte{0x06}
 	AppReserveFundsTxDataKeyPrefix   = []byte{0x07}
+	LockedVaultDataKeyHistory        = []byte{0x08}
 )
 
 // LengthPrefixString returns length-prefixed bytes representation
