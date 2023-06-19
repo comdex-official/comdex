@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -38,9 +39,12 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	//Getting previous auction ID
 	auctionID := k.GetAuctionID(ctx)
 
+	fmt.Println("auctionID", auctionID)
 	//Price Calculation Function to determine auction different stage price
-	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
-
+	liquidationWhitelistingAppData, found := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, liquidationData.AppId)
+	if !found {
+		return types.ErrAuctionParamsNotFound
+	}
 	if !liquidationWhitelistingAppData.IsDutchActivated {
 		return types.ErrDutchAuctionDisabled
 	}

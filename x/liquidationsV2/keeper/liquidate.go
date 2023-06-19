@@ -136,7 +136,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 		//This function will only trigger Dutch auction
 		//before creating locked vault, checking that Dutch auction is already there in the whitelisted liquidation data
 		if !whitelistingData.IsDutchActivated {
-			return fmt.Errorf("Error , dutch auction not activated by the app, this function is only to trigger dutch auctions %d", whitelistingData.IsDutchActivated)
+			return fmt.Errorf("error , dutch auction not activated by the app, this function is only to trigger dutch auctions")
 
 		}
 
@@ -212,7 +212,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	//Call auction activator
 	err := k.auctionsV2.AuctionActivator(ctx, value)
 	if err != nil {
-		return fmt.Errorf("Auction could not be initiated for %d %d", value, err)
+		return fmt.Errorf("Auction could not be initiated for %d ", err)
 	}
 	//struct for auction will stay same for english and Dutch
 	// based on type received from

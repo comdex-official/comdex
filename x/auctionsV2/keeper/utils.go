@@ -48,6 +48,7 @@ func (k Keeper) SetUserBidID(ctx sdk.Context, id uint64) {
 	)
 	store.Set(key, value)
 }
+
 func (k Keeper) GetUserBidID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)

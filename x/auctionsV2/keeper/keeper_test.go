@@ -4,7 +4,7 @@ import (
 	chain "github.com/comdex-official/comdex/app"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/auctionsV2/keeper"
-	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	collectKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
@@ -35,7 +35,7 @@ type KeeperTestSuite struct {
 	liquidationMsgServer liquidationTypes.MsgServer
 	vaultMsgServer       vaultTypes.MsgServer
 	keeper               keeper.Keeper
-	auctionMsgServer     auctionsV2types.MsgServer
+	auctionMsgServer     types.MsgServer
 	lendKeeper           lendkeeper.Keeper
 	lendQuerier          lendkeeper.QueryServer
 }

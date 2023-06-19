@@ -1389,6 +1389,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		wasm.ModuleName:                {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		newliqtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		newauctypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
 		assettypes.ModuleName:          nil,
 	}
