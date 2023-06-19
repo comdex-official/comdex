@@ -16,11 +16,11 @@
 package keeper
 
 import (
-	errorsmod "cosmossdk.io/errors"
+	"github.com/comdex-official/comdex/x/evm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 var _ types.EvmHooks = MultiEvmHooks{}

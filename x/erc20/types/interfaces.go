@@ -29,9 +29,9 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
 
-	claimstypes "github.com/evmos/evmos/v12/x/claims/types"
-	"github.com/evmos/evmos/v12/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/statedb"
 	evmtypes "github.com/comdex-official/comdex/x/evm/types"
+	claimstypes "github.com/evmos/evmos/v12/x/claims/types"
 )
 
 // AccountKeeper defines the expected interface needed to retrieve account info.

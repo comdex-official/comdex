@@ -20,10 +20,10 @@ import (
 
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 
-	evmostypes "github.com/evmos/evmos/v12/types"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/comdex-official/comdex/x/evm/statedb"
 	"github.com/comdex-official/comdex/x/evm/types"
 

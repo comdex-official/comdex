@@ -17,17 +17,17 @@
 package erc20
 
 import (
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 
-	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v6/modules/core/05-port/types"
-	"github.com/cosmos/ibc-go/v6/modules/core/exported"
+	transfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v4/modules/core/exported"
 
+	"github.com/comdex-official/comdex/x/erc20/keeper"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/evmos/evmos/v12/ibc"
-	"github.com/comdex-official/comdex/x/erc20/keeper"
 )
 
 var _ porttypes.IBCModule = &IBCMiddleware{}
@@ -58,7 +58,7 @@ func (im IBCMiddleware) OnRecvPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) exported.Acknowledgement {
-	ack := im.Module.OnRecvPacket(ctx, packet, relayer)
+	ack := im.OnRecvPacket(ctx, packet, relayer)
 
 	// return if the acknowledgement is an error ACK
 	if !ack.Success() {
@@ -87,7 +87,7 @@ func (im IBCMiddleware) OnAcknowledgementPacket(
 		return errorsmod.Wrapf(errortypes.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
 	}
 
-	if err := im.Module.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer); err != nil {
+	if err := im.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (im IBCMiddleware) OnTimeoutPacket(
 		return errorsmod.Wrapf(errortypes.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
 	}
 
-	if err := im.Module.OnTimeoutPacket(ctx, packet, relayer); err != nil {
+	if err := im.OnTimeoutPacket(ctx, packet, relayer); err != nil {
 		return err
 	}
 

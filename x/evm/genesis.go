@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	evmostypes "github.com/evmos/evmos/v12/types"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/comdex-official/comdex/x/evm/keeper"
 	"github.com/comdex-official/comdex/x/evm/types"
 )

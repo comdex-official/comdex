@@ -19,15 +19,15 @@ import (
 	"fmt"
 	"math/big"
 
-	sdkmath "cosmossdk.io/math"
+	sdkmath "math/big"
 
-	errorsmod "cosmossdk.io/errors"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ethereum/go-ethereum/common"
-	evmostypes "github.com/evmos/evmos/v12/types"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/comdex-official/comdex/x/evm/statedb"
 	"github.com/comdex-official/comdex/x/evm/types"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var _ statedb.Keeper = &Keeper{}

@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"strings"
 
-	errorsmod "cosmossdk.io/errors"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	v1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	v1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
-	evmostypes "github.com/evmos/evmos/v12/types"
 )
 
 // constants

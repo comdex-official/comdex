@@ -18,13 +18,13 @@ package keeper
 import (
 	"math/big"
 
-	errorsmod "cosmossdk.io/errors"
+	"github.com/comdex-official/comdex/x/evm/statedb"
+	"github.com/comdex-official/comdex/x/evm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/comdex-official/comdex/x/evm/statedb"
-	"github.com/comdex-official/comdex/x/evm/types"
 )
 
 // EVMConfig creates the EVMConfig based on current state

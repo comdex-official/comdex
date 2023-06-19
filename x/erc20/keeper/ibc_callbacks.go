@@ -17,11 +17,11 @@
 package keeper
 
 import (
-	errorsmod "cosmossdk.io/errors"
 	"github.com/armon/go-metrics"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	transfertypes "github.com/cosmos/ibc-go/v6/modules/apps/transfer/types"
@@ -29,8 +29,8 @@ import (
 	"github.com/cosmos/ibc-go/v6/modules/core/exported"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/evmos/evmos/v12/ibc"
 	"github.com/comdex-official/comdex/x/erc20/types"
+	"github.com/evmos/evmos/v12/ibc"
 )
 
 // OnRecvPacket performs the ICS20 middleware receive callback for automatically

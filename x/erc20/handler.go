@@ -17,8 +17,8 @@
 package erc20
 
 import (
-	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/comdex-official/comdex/x/erc20/types"

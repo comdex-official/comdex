@@ -7,10 +7,10 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	length "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	length "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 	"github.com/comdex-official/comdex/x/erc20/types"
+	utiltx "github.com/evmos/evmos/v12/testutil/tx"
 )
 
 type ProposalTestSuite struct {

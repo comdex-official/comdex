@@ -22,10 +22,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	evmostypes "github.com/evmos/evmos/v12/types"
 
 	"github.com/comdex-official/comdex/x/erc20/types"
 )

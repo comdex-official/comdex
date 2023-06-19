@@ -17,7 +17,7 @@
 package types
 
 import (
-	errorsmod "cosmossdk.io/errors"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // errors

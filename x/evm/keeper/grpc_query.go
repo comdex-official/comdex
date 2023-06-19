@@ -29,8 +29,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -39,7 +39,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/vm"
 	ethparams "github.com/ethereum/go-ethereum/params"
 
-	evmostypes "github.com/evmos/evmos/v12/types"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/comdex-official/comdex/x/evm/statedb"
 	"github.com/comdex-official/comdex/x/evm/types"
 )

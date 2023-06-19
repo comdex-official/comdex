@@ -18,11 +18,11 @@ package keeper
 import (
 	"math/big"
 
-	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -31,7 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/tendermint/tendermint/libs/log"
 
-	evmostypes "github.com/evmos/evmos/v12/types"
+	evmostypes "github.com/comdex-official/comdex/evmtypes"
 	"github.com/comdex-official/comdex/x/evm/statedb"
 	"github.com/comdex-official/comdex/x/evm/types"
 )

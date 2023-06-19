@@ -20,16 +20,16 @@ import (
 	"context"
 	"math/big"
 
-	errorsmod "cosmossdk.io/errors"
 	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errorsmod "github.com/cosmos/cosmos-sdk/types/errors"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/evmos/evmos/v12/contracts"
 	"github.com/comdex-official/comdex/x/erc20/types"
+	"github.com/evmos/evmos/v12/contracts"
 )
 
 var _ types.MsgServer = &Keeper{}

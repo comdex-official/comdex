@@ -20,14 +20,14 @@ import (
 	"bytes"
 	"math/big"
 
+	evmtypes "github.com/comdex-official/comdex/x/evm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
-	evmtypes "github.com/evmos/evmos/v12/x/evm/types"
 
-	"github.com/evmos/evmos/v12/contracts"
 	"github.com/comdex-official/comdex/x/erc20/types"
+	"github.com/evmos/evmos/v12/contracts"
 )
 
 var _ evmtypes.EvmHooks = Hooks{}
