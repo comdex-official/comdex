@@ -14,7 +14,7 @@ import (
 
 func (s *KeeperTestSuite) AddAppAssets() {
 
-	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 1000000)
+	assetOneID := s.CreateNewAsset("ASSETONE", "uasset1", 2000000)
 	assetTwoID := s.CreateNewAsset("ASSETTWO", "uasset2", 2000000)
 	assetThreeID := s.CreateNewAsset("ASSETTHREE", "uasset3", 1000000)
 	assetFourID := s.CreateNewAsset("ASSETFOUR", "uasset4", 2000000)
@@ -67,8 +67,9 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"), sdk.NewCoins(sdk.NewCoin("uasset1", newInt(1000000000000000))))
 	s.fundAddr(sdk.MustAccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"), sdk.NewCoins(sdk.NewCoin("uasset2", newInt(1000000000000000))))
 
-	msg := lendtypes.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(300)), 1, appThreeID)
+	msgLend1 := lendtypes.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", newInt(3000000000)), 1, appThreeID)
 	msgLend2 := lendtypes.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetTwoID, sdk.NewCoin("uasset2", newInt(10000000000)), 1, appThreeID)
+	msgLend3 := lendtypes.NewMsgLend("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", assetOneID, sdk.NewCoin("uasset1", newInt(10000000000)), 1, appThreeID)
 
 	msg3 := lendtypes.NewMsgFundModuleAccounts(1, assetOneID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset1", newInt(10000000000)))
 	msg4 := lendtypes.NewMsgFundModuleAccounts(1, assetTwoID, "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", sdk.NewCoin("uasset2", newInt(10000000000)))
@@ -79,16 +80,22 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	lendkeeper := &s.lendKeeper
 	server := lendKeeper.NewMsgServerImpl(*lendkeeper)
 
-	_, _ = server.Lend(sdk.WrapSDKContext(s.ctx), msg)
+	_, _ = server.Lend(sdk.WrapSDKContext(s.ctx), msgLend1)
 	_, _ = server.Lend(sdk.WrapSDKContext(s.ctx), msgLend2)
+	_, _ = server.Lend(sdk.WrapSDKContext(s.ctx), msgLend3)
 	_, _ = server.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg3)
 	_, _ = server.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg4)
 	_, _ = server.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg5)
 	_, _ = server.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg7)
 	_, _ = server.FundModuleAccounts(sdk.WrapSDKContext(s.ctx), msg8)
 
-	msg2 := lendtypes.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 1, false, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset2", newInt(10)))
-	_, _ = server.Borrow(sdk.WrapSDKContext(s.ctx), msg2)
+	msg2 := lendtypes.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 1, false, sdk.NewCoin("ucasset1", newInt(100000000)), sdk.NewCoin("uasset2", newInt(70000000)))
+	_, err := server.Borrow(sdk.WrapSDKContext(s.ctx), msg2)
+	s.Require().NoError(err)
+
+	msg22 := lendtypes.NewMsgBorrow("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 3, 1, false, sdk.NewCoin("ucasset1", newInt(1000000000)), sdk.NewCoin("uasset2", newInt(700000000)))
+	_, err = server.Borrow(sdk.WrapSDKContext(s.ctx), msg22)
+	s.Require().NoError(err)
 
 	pair := assetTypes.Pair{AssetIn: 2, AssetOut: 3}
 	extendedPairVault := bindings.MsgAddExtendedPairsVault{
@@ -110,7 +117,7 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	}
 
 	assetkeeper, ctx := &s.assetKeeper, &s.ctx
-	err := assetkeeper.AddPairsRecords(*ctx, pair)
+	err = assetkeeper.AddPairsRecords(*ctx, pair)
 	s.Require().NoError(err)
 
 	err = assetkeeper.WasmAddExtendedPairsVaultRecords(*ctx, &extendedPairVault)
@@ -198,6 +205,13 @@ func (s *KeeperTestSuite) GetVaultCount() int {
 	return len(res.Vault)
 }
 
+func (s *KeeperTestSuite) GetBorrowsCount() int {
+	ctx := &s.ctx
+	res, err := s.lendQuerier.QueryBorrows(sdk.WrapSDKContext(*ctx), &lendtypes.QueryBorrowsRequest{})
+	s.Require().NoError(err)
+	return len(res.Borrows)
+}
+
 func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uint64) int {
 	vaultKeeper, ctx := &s.vaultKeeper, &s.ctx
 	res, found := vaultKeeper.GetAppExtendedPairVaultMappingData(*ctx, appID, extID)
@@ -243,21 +257,93 @@ func (s *KeeperTestSuite) TestLiquidateVaults() {
 	id = liquidationKeeper.GetLockedVaultID(*ctx)
 	s.Require().Equal(id, uint64(2))
 	s.Require().Equal(s.GetVaultCount(), currentVaultsCount-2)
-	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(uint64(1), 1), currentVaultsCount-2)
+	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(2, 1), currentVaultsCount-2)
 
 	lockedVault := liquidationKeeper.GetLockedVaults(*ctx)
 	s.Require().Equal(lockedVault[0].OriginalVaultId, beforeVault.Id)
 	s.Require().Equal(lockedVault[0].ExtendedPairId, beforeVault.ExtendedPairVaultID)
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
-	//s.Require().Equal(lockedVault[0].AmountIn, beforeVault.AmountIn)
-	//s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
-	//s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
-	//s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
-	//s.Require().Equal(lockedVault[0].IsAuctionInProgress, true)
-	//s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
-	//s.Require().Equal(lockedVault[0].SellOffHistory, []string(nil))
-	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
+	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
+	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt())
+	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
+	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
+	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
+	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, 2, beforeVault.AmountIn)
 	s.Require().NoError(err)
-	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
-	//s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountIn.ToDec().Mul(s.GetAssetPrice(1)).Quo(lockedVault[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned.Amount, price.TruncateInt())
+}
+
+func (s *KeeperTestSuite) TestLiquidateBorrows() {
+	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
+	s.AddAppAssets()
+	currentBorrowsCount := 2
+	s.Require().Equal(s.GetBorrowsCount(), currentBorrowsCount)
+
+	beforeBorrow, found := s.lendKeeper.GetBorrow(*ctx, 1)
+	s.Require().True(found)
+
+	beforeLend, found := s.lendKeeper.GetLend(*ctx, beforeBorrow.LendingID)
+	s.Require().True(found)
+
+	// Liquidation shouldn't happen as price not changed
+	err := liquidationKeeper.Liquidate(*ctx)
+	s.Require().NoError(err)
+	id := liquidationKeeper.GetLockedVaultID(*ctx)
+	s.Require().Equal(id, uint64(0))
+
+	assetStatsLend, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
+	s.Require().Equal(len(assetStatsLend.LendIds), 2)
+	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+
+	assetStatsBorrow, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
+	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
+	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(770000000))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+
+	modBalInitial, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
+
+	// Liquidation should happen as price changed
+	s.ChangeOraclePrice(1)
+	err = liquidationKeeper.Liquidate(*ctx)
+	s.Require().NoError(err)
+	id = liquidationKeeper.GetLockedVaultID(*ctx)
+	s.Require().Equal(id, uint64(2))
+	s.Require().Equal(s.GetBorrowsCount(), currentBorrowsCount)
+
+	lockedVault := liquidationKeeper.GetLockedVaults(*ctx)
+	s.Require().Equal(lockedVault[0].OriginalVaultId, beforeBorrow.ID)
+	s.Require().Equal(lockedVault[0].ExtendedPairId, beforeBorrow.PairID)
+	s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
+	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
+	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt())
+	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
+	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
+	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
+
+	// get data of total borrow and lend and tally
+	assetStatsLend, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
+	s.Require().Equal(len(assetStatsLend.LendIds), 2)
+	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+
+	assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
+	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
+	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(0))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+
+	afterBorrow, found := s.lendKeeper.GetBorrow(*ctx, 1)
+	s.Require().True(found)
+	s.Require().Equal(afterBorrow.IsLiquidated, true)
+
+	modBalFinal, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
+	s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdk.NewInt(1100000000))
 }

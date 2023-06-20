@@ -1714,7 +1714,12 @@ func (k Keeper) IterateBorrowForLiq(ctx sdk.Context, borrow types.BorrowAsset) (
 	if err != nil {
 		return borrow, err
 	}
-	currBorrowAPR, _ := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
+
+	currBorrowAPR, err := k.GetBorrowAPRByAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut, borrow.IsStableBorrow)
+	if err != nil {
+		return borrow, err
+	}
+
 	interestPerInteraction, indexGlobalCurrent, _, reserveGlobalIndex, err := k.CalculateBorrowInterest(ctx, borrow.AmountOut.Amount.String(), currBorrowAPR, reserveRates, borrow)
 	if err != nil {
 		return borrow, err

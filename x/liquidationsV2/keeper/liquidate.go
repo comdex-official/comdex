@@ -3,7 +3,6 @@ package keeper
 import (
 	"fmt"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -167,6 +166,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 
 	return nil
 }
+
 func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.Coin {
 	asset, _ := k.asset.GetAsset(ctx, assetID)
 	return sdk.NewCoin(asset.Denom, amount)
@@ -276,7 +276,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 	// calculating and updating the interest accumulated before checking for liquidations
 	borrowPos, err := k.lend.CalculateBorrowInterestForLiquidation(ctx, borrowPos.ID)
 	if err != nil {
-		return fmt.Errorf("error in calculating Borrow Interest before liquidation")
+		return fmt.Errorf("error in calculating Borrow Interest before liquidation %d", err)
 	}
 	if !borrowPos.StableBorrowRate.Equal(sdk.ZeroDec()) {
 		borrowPos, err = k.lend.ReBalanceStableRates(ctx, borrowPos)
@@ -311,7 +311,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 			return err
 		}
 		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
-			err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold)
+			err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn)
 			if err != nil {
 				return fmt.Errorf("error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID ")
 			}
@@ -323,7 +323,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 				return err
 			}
 			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
-				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold)
+				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn)
 				if err != nil {
 					return fmt.Errorf("error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
 				}
@@ -335,18 +335,17 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64) erro
 			}
 
 			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
-				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold)
+				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn)
 				if err != nil {
 					return fmt.Errorf("error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
 				}
 			}
 		}
 	}
-	k.lend.UpdateBorrowStats(ctx, lendPair, borrowPos.IsStableBorrow, borrowPos.AmountOut.Amount, false)
 	return nil
 }
 
-func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdk.Dec, assetRatesStats lendtypes.AssetRatesParams) error {
+func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdk.Dec, assetRatesStats lendtypes.AssetRatesParams, lendPair lendtypes.Extended_Pair, pool lendtypes.Pool, assetIn assettypes.Asset) error {
 	whitelistingData, found := k.GetLiquidationWhiteListing(ctx, appID)
 	if !found {
 		return fmt.Errorf("Liquidation not enabled for App ID  %d", appID)
@@ -360,11 +359,17 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	//Calculating auction bonus to be given
 	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
 
-	err := k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
+	err := k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount)))
 	if err != nil {
 		return err
 	}
 
+	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, false, "", "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
+	if err != nil {
+		return err
+	}
+
+	k.lend.UpdateBorrowStats(ctx, lendPair, borrow.IsStableBorrow, borrow.AmountOut.Amount, false)
 	return nil
 }
 

@@ -771,6 +771,7 @@ func New(
 		&app.EsmKeeper,
 		&app.LendKeeper,
 	)
+
 	app.NewliqKeeper = newliqkeeper.NewKeeper(
 		app.cdc,
 		app.keys[newliqtypes.StoreKey],
@@ -802,6 +803,24 @@ func New(
 		app.CollectorKeeper,
 		app.TokenmintKeeper,
 	)
+
+	app.NewliqKeeper = newliqkeeper.NewKeeper(
+		app.cdc,
+		app.keys[newliqtypes.StoreKey],
+		app.keys[newliqtypes.MemStoreKey],
+		app.GetSubspace(newliqtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.AssetKeeper,
+		app.VaultKeeper,
+		app.MarketKeeper,
+		app.EsmKeeper,
+		app.Rewardskeeper,
+		app.LendKeeper,
+		app.NewaucKeeper,
+		app.CollectorKeeper,
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	if err != nil {
