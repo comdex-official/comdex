@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
@@ -346,4 +347,207 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 
 	modBalFinal, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
 	s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdk.NewInt(1100000000))
+}
+
+func (s *KeeperTestSuite) TestLiquidateInternalKeeperForVault() {
+	addr, _ := sdk.AccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
+	s.CreateVault()
+	currentVaultsCount := 2
+	s.Require().Equal(s.GetVaultCount(), currentVaultsCount)
+	s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(2, 1), currentVaultsCount)
+	beforeVault, found := s.vaultKeeper.GetVault(*ctx, 1)
+	s.Require().True(found)
+
+	// Liquidation shouldn't happen as price not changed
+	err := liquidationKeeper.Liquidate(*ctx)
+	s.Require().NoError(err)
+	id := liquidationKeeper.GetLockedVaultID(*ctx)
+	s.Require().Equal(id, uint64(0))
+
+	// Liquidation should happen as price changed
+	s.ChangeOraclePrice(2)
+
+	testCases := []struct {
+		Name    string
+		Msg     types.MsgLiquidateInternalKeeperRequest
+		ExpErr  error
+		ExpResp *types.MsgLiquidateInternalKeeperResponse
+	}{
+		{
+			Name:    "asset does not exist",
+			Msg:     *types.NewMsgLiquidateInternalKeeperRequest(addr, 0, 10),
+			ExpErr:  fmt.Errorf("Vault ID not found  0"),
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case",
+			Msg:     *types.NewMsgLiquidateInternalKeeperRequest(addr, 0, 1),
+			ExpErr:  nil,
+			ExpResp: &types.MsgLiquidateInternalKeeperResponse{},
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			// add funds to acount for valid case
+			//if tc.ExpErr == nil {
+			//
+			//
+			//}
+
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgLiquidateInternalKeeper(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				s.Require().NoError(err)
+				id = liquidationKeeper.GetLockedVaultID(s.ctx)
+				s.Require().Equal(id, uint64(1))
+				s.Require().Equal(s.GetVaultCount(), currentVaultsCount-1)
+				s.Require().Equal(s.GetVaultCountForExtendedPairIDbyAppID(2, 1), currentVaultsCount-1)
+
+				lockedVault := liquidationKeeper.GetLockedVaults(s.ctx)
+				s.Require().Equal(lockedVault[0].OriginalVaultId, beforeVault.Id)
+				s.Require().Equal(lockedVault[0].ExtendedPairId, beforeVault.ExtendedPairVaultID)
+				s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
+				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
+				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt())
+				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
+				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
+				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
+				price, err := s.app.MarketKeeper.CalcAssetPrice(s.ctx, 2, beforeVault.AmountIn)
+				s.Require().NoError(err)
+				s.Require().Equal(lockedVault[0].CollateralToBeAuctioned.Amount, price.TruncateInt())
+				s.Require().Equal(lockedVault[0].IsInternalKeeper, true)
+				s.Require().Equal(lockedVault[0].InternalKeeperAddress, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
+	addr, _ := sdk.AccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
+	s.AddAppAssets()
+	currentBorrowsCount := 2
+	s.Require().Equal(s.GetBorrowsCount(), currentBorrowsCount)
+
+	beforeBorrow, found := s.lendKeeper.GetBorrow(*ctx, 1)
+	s.Require().True(found)
+
+	beforeLend, found := s.lendKeeper.GetLend(*ctx, beforeBorrow.LendingID)
+	s.Require().True(found)
+
+	// Liquidation shouldn't happen as price not changed
+	err := liquidationKeeper.Liquidate(*ctx)
+	s.Require().NoError(err)
+	id := liquidationKeeper.GetLockedVaultID(*ctx)
+	s.Require().Equal(id, uint64(0))
+
+	assetStatsLend, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
+	s.Require().Equal(len(assetStatsLend.LendIds), 2)
+	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+
+	assetStatsBorrow, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
+	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
+	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(770000000))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+
+	modBalInitial, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
+	s.ChangeOraclePrice(1)
+
+	testCases := []struct {
+		Name    string
+		Msg     types.MsgLiquidateInternalKeeperRequest
+		ExpErr  error
+		ExpResp *types.MsgLiquidateInternalKeeperResponse
+	}{
+		{
+			Name:    "asset does not exist",
+			Msg:     *types.NewMsgLiquidateInternalKeeperRequest(addr, 1, 10),
+			ExpErr:  fmt.Errorf("vault ID not found 10"),
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case",
+			Msg:     *types.NewMsgLiquidateInternalKeeperRequest(addr, 1, 1),
+			ExpErr:  nil,
+			ExpResp: &types.MsgLiquidateInternalKeeperResponse{},
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			// add funds to acount for valid case
+			//if tc.ExpErr == nil {
+			//
+			//
+			//}
+
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgLiquidateInternalKeeper(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+				s.Require().NoError(err)
+				id = liquidationKeeper.GetLockedVaultID(s.ctx)
+				fmt.Println("id", id)
+				s.Require().Equal(id, uint64(1))
+				s.Require().Equal(s.GetBorrowsCount(), currentBorrowsCount)
+
+				lockedVault := liquidationKeeper.GetLockedVaults(s.ctx)
+				s.Require().Equal(lockedVault[0].OriginalVaultId, beforeBorrow.ID)
+				s.Require().Equal(lockedVault[0].ExtendedPairId, beforeBorrow.PairID)
+				s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
+				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
+				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt())
+				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
+				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
+				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
+
+				// get data of total borrow and lend and tally
+				assetStatsLend, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(s.ctx, 1, 1)
+				s.Require().Equal(len(assetStatsLend.LendIds), 2)
+				s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
+				s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
+				s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+
+				assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(s.ctx, 1, 2)
+				s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
+				s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
+				s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(700000000))
+				s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+
+				afterBorrow, found := s.lendKeeper.GetBorrow(s.ctx, 1)
+				s.Require().True(found)
+				s.Require().Equal(afterBorrow.IsLiquidated, true)
+
+				modBalFinal, _ := s.lendKeeper.GetModuleBalanceByPoolID(s.ctx, 1)
+				s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdk.NewInt(100000000))
+
+				s.Require().Equal(lockedVault[0].IsInternalKeeper, true)
+				s.Require().Equal(lockedVault[0].InternalKeeperAddress, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+			}
+		})
+	}
 }
