@@ -503,6 +503,20 @@ func (k Keeper) SurplusTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAsset
 }
 
 func (k Keeper) MsgAppReserveFundsFn(ctx sdk.Context, from string, appId, assetId uint64, tokenQuantity sdk.Coin) error {
+	asset, found := k.asset.GetAsset(ctx, assetId)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
+	if asset.Denom != tokenQuantity.Denom {
+		return assettypes.ErrorInvalidDenom
+	}
+
+	_, found = k.asset.GetApp(ctx, appId)
+	if !found {
+		return assettypes.ErrorUnknownAppType
+	}
+
 	appReserveFunds, found := k.GetAppReserveFunds(ctx, appId, assetId)
 	if !found {
 		appReserveFunds = types.AppReserveFunds{
@@ -533,11 +547,15 @@ func (k Keeper) MsgAppReserveFundsFn(ctx sdk.Context, from string, appId, assetI
 		TokenQuantity: tokenQuantity,
 	}
 
-	appReserveFundsTxData, _ := k.GetAppReserveFundsTxData(ctx, appId)
+	appReserveFundsTxData, found := k.GetAppReserveFundsTxData(ctx, appId)
+	if !found {
+		appReserveFundsTxData.AppId = appId
+	}
 	appReserveFundsTxData.AssetTxData = append(appReserveFundsTxData.AssetTxData, assetTxData)
 	k.SetAppReserveFundsTxData(ctx, appReserveFundsTxData)
 	return nil
 }
+
 func (k Keeper) WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64, tokenQuantity sdk.Coin) error {
 	appReserveFunds, found := k.GetAppReserveFunds(ctx, appId, assetId)
 	if !found {
@@ -620,9 +638,12 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 	// check if the assets exists
 	// check if reserve funds are added for the debt or not
 	// send tokens from the liquidator's address to the auction module
-	auctionParams, _ := k.auctionsV2.GetAuctionParams(ctx)
+	auctionParams, found := k.auctionsV2.GetAuctionParams(ctx)
+	if !found {
+		return auctionsV2types.ErrAuctionParamsNotFound
+	}
 
-	_, found := k.asset.GetAsset(ctx, collateralAssetId)
+	_, found = k.asset.GetAsset(ctx, collateralAssetId)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
 	}

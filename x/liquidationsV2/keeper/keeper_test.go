@@ -184,3 +184,8 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
 	err = s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, types.ModuleName, addr, amt)
 	s.Require().NoError(err)
 }
+
+func (s *KeeperTestSuite) addAuctionParams(auctionParams auctionsV2types.AuctionParams) {
+	s.T().Helper()
+	s.app.NewaucKeeper.SetAuctionParams(s.ctx, auctionParams)
+}

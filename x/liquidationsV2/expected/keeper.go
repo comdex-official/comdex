@@ -2,11 +2,11 @@ package expected
 
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctiontypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -32,6 +32,7 @@ type AssetKeeper interface {
 	GetPair(ctx sdk.Context, id uint64) (assettypes.Pair, bool)
 	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
 	GetPairsVault(ctx sdk.Context, id uint64) (pairs assettypes.ExtendedPairVault, found bool)
+	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
 }
 
 type VaultKeeper interface {

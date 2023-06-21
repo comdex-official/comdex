@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
+	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
@@ -153,6 +154,19 @@ func (s *KeeperTestSuite) AddAppAssets() {
 		KeeeperIncentive:    newDec("0.1"),
 	}
 	s.liquidationKeeper.SetLiquidationWhiteListing(s.ctx, liqWhitelistingCmdo)
+
+	auctionParams := auctionsV2types.AuctionParams{
+		AuctionDurationSeconds: 3600,
+		Step:                   newDec("0.1"),
+		WithdrawalFee:          newDec("0.0"),
+		ClosingFee:             newDec("0.0"),
+		MinUsdValueLeft:        100000,
+		BidFactor:              newDec("0.1"),
+		LiquidationPenalty:     newDec("0.1"),
+		AuctionBonus:           newDec("0.0"),
+	}
+
+	s.addAuctionParams(auctionParams)
 
 }
 
@@ -547,6 +561,129 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 
 				s.Require().Equal(lockedVault[0].IsInternalKeeper, true)
 				s.Require().Equal(lockedVault[0].InternalKeeperAddress, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestAppReserveFunds() {
+	liquidationKeeper := &s.liquidationKeeper
+	s.AddAppAssets()
+
+	testCases := []struct {
+		Name    string
+		Msg     types.MsgAppReserveFundsRequest
+		ExpErr  error
+		ExpResp *types.MsgAppReserveFundsResponse
+	}{
+		{
+			Name:    "asset does not exist",
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 10, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			ExpErr:  assetTypes.ErrorAssetDoesNotExist,
+			ExpResp: nil,
+		},
+		{
+			Name:    "wrong denom",
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 1, sdk.NewCoin("uasset2", sdk.NewInt(100000000))),
+			ExpErr:  assetTypes.ErrorInvalidDenom,
+			ExpResp: nil,
+		},
+		{
+			Name:    "wrong app",
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 10, 1, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			ExpErr:  assetTypes.ErrorUnknownAppType,
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case 1",
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 1, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			ExpErr:  nil,
+			ExpResp: &types.MsgAppReserveFundsResponse{},
+		},
+		{
+			Name:    "success valid case 2",
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 2, sdk.NewCoin("uasset2", sdk.NewInt(100000000))),
+			ExpErr:  nil,
+			ExpResp: &types.MsgAppReserveFundsResponse{},
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgAppReserveFunds(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+				appResFunds, found := liquidationKeeper.GetAppReserveFunds(s.ctx, 2, 1)
+				s.Require().Equal(found, true)
+				s.Require().Equal(appResFunds.AppId, uint64(2))
+				s.Require().Equal(appResFunds.AssetId, uint64(1))
+				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset1", sdk.NewInt(100000000)))
+
+				_, found = liquidationKeeper.GetAppReserveFundsTxData(s.ctx, 2)
+				s.Require().Equal(found, true)
+			}
+		})
+	}
+}
+
+func (s *KeeperTestSuite) TestLiquidateExternal() {
+	addr, _ := sdk.AccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
+	liquidationKeeper := &s.liquidationKeeper
+	s.AddAppAssets()
+	err := liquidationKeeper.MsgAppReserveFundsFn(s.ctx, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 3, 2, sdk.NewCoin("uasset2", sdk.NewInt(100000000)))
+	if err != nil {
+		return
+	}
+
+	testCases := []struct {
+		Name    string
+		Msg     types.MsgLiquidateExternalKeeperRequest
+		ExpErr  error
+		ExpResp *types.MsgLiquidateExternalKeeperResponse
+	}{
+		{
+			Name:    "asset does not exist",
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), sdk.NewDecFromInt(sdk.NewInt(0)), sdk.NewDecFromInt(sdk.NewInt(0)), true, 10, 2, false),
+			ExpErr:  assetTypes.ErrorAssetDoesNotExist,
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case",
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), sdk.NewDecFromInt(sdk.NewInt(0)), sdk.NewDecFromInt(sdk.NewInt(0)), true, 1, 2, false),
+			ExpErr:  nil,
+			ExpResp: &types.MsgLiquidateExternalKeeperResponse{},
+		},
+	}
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.msgServer.MsgLiquidateExternalKeeper(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+				appResFunds, found := liquidationKeeper.GetAppReserveFunds(s.ctx, 3, 2)
+				s.Require().Equal(found, true)
+				s.Require().Equal(appResFunds.AppId, uint64(3))
+				s.Require().Equal(appResFunds.AssetId, uint64(2))
+				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset2", sdk.NewInt(100000000)))
+
+				_, found = liquidationKeeper.GetAppReserveFundsTxData(s.ctx, 3)
+				s.Require().Equal(found, true)
+				id := liquidationKeeper.GetLockedVaultID(s.ctx)
+				s.Require().Equal(id, uint64(1))
 			}
 		})
 	}
