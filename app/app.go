@@ -175,10 +175,13 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
+	icq "github.com/cosmos/ibc-apps/modules/async-icq/v4"
+	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v4/keeper"
+	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v4/types"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
-	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
+	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
 )
 
 const (
@@ -339,6 +342,7 @@ type App struct {
 	ScopedIBCOracleKeeper   capabilitykeeper.ScopedKeeper
 	ScopedBandoracleKeeper  capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
+	ScopedICQKeeper         capabilitykeeper.ScopedKeeper
 
 	BandoracleKeeper bandoraclemodulekeeper.Keeper
 	AssetKeeper      assetkeeper.Keeper
@@ -364,6 +368,7 @@ type App struct {
 	Ics20WasmHooks            *ibchooks.WasmHooks
 	HooksICS4Wrapper          ibchooks.ICS4Middleware
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
+	ICQKeeper                 *icqkeeper.Keeper
 
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
@@ -401,7 +406,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
+			ibchookstypes.StoreKey, icqtypes.StoreKey, packetforwardtypes.StoreKey,
 		)
 	)
 
@@ -456,6 +461,7 @@ func New(
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
+	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
 	// set the BaseApp's parameter store
@@ -480,6 +486,7 @@ func New(
 		scopedWasmKeeper       = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 		scopedICAHostKeeper    = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 		scopedBandoracleKeeper = app.CapabilityKeeper.ScopeToModule(bandoraclemoduletypes.ModuleName)
+		scopedICQKeeper        = app.CapabilityKeeper.ScopeToModule(icqtypes.ModuleName)
 	)
 
 	// add keepers
@@ -758,6 +765,24 @@ func New(
 		&app.LendKeeper,
 	)
 
+	// ICQ Keeper
+	icqKeeper := icqkeeper.NewKeeper(
+		appCodec,
+		app.keys[icqtypes.StoreKey],
+		app.GetSubspace(icqtypes.ModuleName),
+		app.IbcKeeper.ChannelKeeper, // may be replaced with middleware
+		app.IbcKeeper.ChannelKeeper,
+		&app.IbcKeeper.PortKeeper,
+		app.ScopedICQKeeper,
+		app.GRPCQueryRouter(),
+	)
+	app.ICQKeeper = &icqKeeper
+
+	// Create Async ICQ module
+	icqModule := icq.NewIBCModule(*app.ICQKeeper)
+
+	// Note: the sealing is done after creating wasmd and wiring that up
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	if err != nil {
@@ -833,6 +858,7 @@ func New(
 	ibcRouter.AddRoute(bandoraclemoduletypes.ModuleName, bandOracleIBCModule)
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IbcKeeper.ChannelKeeper, app.IbcKeeper.ChannelKeeper))
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
+	ibcRouter.AddRoute(icqtypes.ModuleName, icqModule)
 	app.IbcKeeper.SetRouter(ibcRouter)
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -887,6 +913,7 @@ func New(
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
+		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 	)
 
@@ -930,6 +957,7 @@ func New(
 		esmtypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
+		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 	)
 
@@ -969,6 +997,7 @@ func New(
 		esmtypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
+		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 	)
 
@@ -1012,6 +1041,7 @@ func New(
 		crisistypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
+		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 	)
 
@@ -1082,6 +1112,7 @@ func New(
 	app.ScopedIBCOracleKeeper = scopedIBCOracleKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
 	app.ScopedBandoracleKeeper = scopedBandoracleKeeper
+	app.ScopedICQKeeper = scopedICQKeeper
 
 	app.ScopedWasmKeeper = scopedWasmKeeper
 	return app
@@ -1338,6 +1369,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
 		assettypes.ModuleName:          nil,
+		icqtypes.ModuleName:            nil,
 	}
 }
 
@@ -1350,18 +1382,10 @@ func (a *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 
-	switch {
-	case upgradeInfo.Name == tv11_4.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			tv11_4.UpgradeName,
-			tv11_4.CreateUpgradeHandlerV114(a.mm, a.configurator, a.AssetKeeper),
-		)
-	case upgradeInfo.Name == mv11.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			mv11.UpgradeName,
-			mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
-		)
-	}
+	a.UpgradeKeeper.SetUpgradeHandler(
+		mv12.UpgradeName,
+		mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper),
+	)
 
 	var storeUpgrades *storetypes.StoreUpgrades
 
@@ -1375,13 +1399,10 @@ func (a *App) registerUpgradeHandlers() {
 
 func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
-	case upgradeInfo.Name == tv11_4.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+
+	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
-		}
-	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
+			Added: []string{icqtypes.StoreKey},
 		}
 	}
 	return storeUpgrades
