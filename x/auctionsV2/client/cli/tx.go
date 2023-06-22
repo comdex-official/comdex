@@ -5,6 +5,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	flag "github.com/spf13/pflag"
 	"strconv"
 	"time"
 
@@ -196,4 +199,110 @@ func txWithdrawLimitDutchBid() *cobra.Command {
 	}
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+func NewAddAuctionParamsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-auction-params [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit auction params",
+		Long:  `Must provide path to a add auction params in JSON file (--add-auction-params)`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := AddAuctionParams(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetAuctionParams())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func AddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	auctionParams, err := parseAuctionParamsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse liquidationWhitelisting: %w", err)
+	}
+	from := clientCtx.GetFromAddress()
+
+	auctionDurationSeconds, err := strconv.ParseUint(auctionParams.AuctionDurationSeconds, 10, 64)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
+	}
+
+	step, err := sdk.NewDecFromStr(auctionParams.Step)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	withdrawalFee, err := sdk.NewDecFromStr(auctionParams.WithdrawalFee)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	closingFee, err := sdk.NewDecFromStr(auctionParams.ClosingFee)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	minUsdValueLeft, err := strconv.ParseUint(auctionParams.MinUsdValueLeft, 10, 64)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
+	}
+
+	bidFactor, err := sdk.NewDecFromStr(auctionParams.BidFactor)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	liquidationPenalty, err := sdk.NewDecFromStr(auctionParams.LiquidationPenalty)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionBonus, err := sdk.NewDecFromStr(auctionParams.AuctionBonus)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	auctionParamStruct := types.AuctionParams{
+		AuctionDurationSeconds: auctionDurationSeconds,
+		Step:                   step,
+		WithdrawalFee:          withdrawalFee,
+		ClosingFee:             closingFee,
+		MinUsdValueLeft:        minUsdValueLeft,
+		BidFactor:              bidFactor,
+		LiquidationPenalty:     liquidationPenalty,
+		AuctionBonus:           auctionBonus,
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(auctionParams.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewDutchAutoBidParamsProposal(auctionParams.Title, auctionParams.Description, auctionParamStruct)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
 }

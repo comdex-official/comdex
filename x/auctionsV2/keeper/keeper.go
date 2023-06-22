@@ -97,3 +97,8 @@ func (k Keeper) GetAuctionParams(ctx sdk.Context) (auctionParams types.AuctionPa
 	k.cdc.MustUnmarshal(value, &auctionParams)
 	return auctionParams, true
 }
+
+func (k Keeper) AddAuctionParams(ctx sdk.Context, auctionParams types.AuctionParams) error {
+	k.SetAuctionParams(ctx, auctionParams)
+	return nil
+}

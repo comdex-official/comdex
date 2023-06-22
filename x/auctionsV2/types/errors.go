@@ -18,4 +18,5 @@ var (
 	ErrLiquidationNotFound         = sdkerrors.Register(ModuleName, 708, "Liquidation data not found for the auction")
 	ErrBidNotFound                 = sdkerrors.Register(ModuleName, 709, "There exists no active bid for the user with given params")
 	ErrAuctionParamsNotFound       = sdkerrors.Register(ModuleName, 710, "There exists no auction params")
+	ErrorUnknownProposalType       = sdkerrors.Register(ModuleName, 711, "unknown proposal type")
 )

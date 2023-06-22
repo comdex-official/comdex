@@ -121,6 +121,7 @@ message AuctionParams{
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"liquidation_penalty\""
   ];
+
   string auction_bonus = 8 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
@@ -128,8 +129,6 @@ message AuctionParams{
   ];
 
 }
-
-
 
 message LimitOrderBidsForUser{
   string bidder_address = 1 [
@@ -140,6 +139,7 @@ message LimitOrderBidsForUser{
     (gogoproto.moretags) = "yaml:\"limit_order_bid_key\""
   ];
 }
+
 message LimitOrderUserKey{
   uint64 debt_token_id = 1 [
  

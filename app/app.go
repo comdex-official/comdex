@@ -176,10 +176,12 @@ import (
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
 	"github.com/comdex-official/comdex/x/liquidationsV2"
+	newliqclient "github.com/comdex-official/comdex/x/liquidationsV2/client"
 	newliqkeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	newliqtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 
 	"github.com/comdex-official/comdex/x/auctionsV2"
+	newaucclient "github.com/comdex-official/comdex/x/auctionsV2/client"
 	newauckeeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	newauctypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 
@@ -233,6 +235,9 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers = append(proposalHandlers, wasmclient.ProposalHandlers...)
 	proposalHandlers = append(proposalHandlers, assetclient.AddAssetsHandler...)
 	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
+	proposalHandlers = append(proposalHandlers, newliqclient.LiquidationsV2Handler...)
+	proposalHandlers = append(proposalHandlers, newaucclient.AuctionsV2Handler...)
+
 	return proposalHandlers
 }
 
