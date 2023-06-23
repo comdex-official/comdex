@@ -1,8 +1,14 @@
 package types
 
 import (
+	"encoding/binary"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"math/big"
 	"math/rand"
+	"runtime"
+	"runtime/debug"
 	"strings"
 	"time"
 
@@ -28,6 +34,16 @@ func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
 	}
 }
 
+func PP(data interface{}) {
+	var p []byte
+	p, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%s \n", p)
+}
+
 // DateRangesOverlap returns true if two date ranges overlap each other.
 // End time is exclusive and start time is inclusive.
 func DateRangesOverlap(startTimeA, endTimeA, startTimeB, endTimeB time.Time) bool {
@@ -42,12 +58,50 @@ func DateRangeIncludes(startTime, endTime, targetTime time.Time) bool {
 
 // ParseDec is a shortcut for sdk.MustNewDecFromStr.
 func ParseDec(s string) sdk.Dec {
-	return sdk.MustNewDecFromStr(s)
+	return sdk.MustNewDecFromStr(strings.ReplaceAll(s, "_", ""))
+}
+
+// ParseDecP is like ParseDec, but it returns a pointer to sdk.Dec.
+func ParseDecP(s string) *sdk.Dec {
+	d := ParseDec(s)
+	return &d
 }
 
 // ParseCoin parses and returns sdk.Coin.
+func ParseCoin(s string) sdk.Coin {
+	coin, err := sdk.ParseCoinNormalized(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coin
+}
 
 // ParseCoins parses and returns sdk.Coins.
+func ParseCoins(s string) sdk.Coins {
+	coins, err := sdk.ParseCoinsNormalized(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coins
+}
+
+// ParseDecCoin parses and returns sdk.DecCoin.
+func ParseDecCoin(s string) sdk.DecCoin {
+	coin, err := sdk.ParseDecCoin(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coin
+}
+
+// ParseDecCoins parses and returns sdk.DecCoins.
+func ParseDecCoins(s string) sdk.DecCoins {
+	coins, err := sdk.ParseDecCoins(strings.ReplaceAll(s, "_", ""))
+	if err != nil {
+		panic(err)
+	}
+	return coins
+}
 
 // ParseTime parses and returns time.Time in time.RFC3339 format.
 func ParseTime(s string) time.Time {
@@ -65,6 +119,16 @@ func DecApproxEqual(a, b sdk.Dec) bool {
 		a, b = b, a
 	}
 	return a.Sub(b).Quo(a).LTE(sdk.NewDecWithPrec(1, 3))
+}
+
+// DecApproxSqrt returns an approximate estimation of x's square root.
+func DecApproxSqrt(x sdk.Dec) (r sdk.Dec) {
+	var err error
+	r, err = x.ApproxSqrt()
+	if err != nil {
+		panic(err)
+	}
+	return
 }
 
 // RandomInt returns a random integer in the half-open interval [min, max).
@@ -90,7 +154,6 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 		[]uint64{account.GetSequence()},
 		txCtx.SimAccount.PrivKey,
 	)
-
 	if err != nil {
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
 	}
@@ -104,11 +167,40 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 }
 
 // GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.
+func GenAndDeliverTxWithFees(txCtx simulation.OperationInput, gas uint64, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
+
+	var err error
+
+	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
+	if hasNeg {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
+	}
+
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
+	}
+	return GenAndDeliverTx(txCtx, fees, gas)
+}
 
 // ShuffleSimAccounts returns randomly shuffled simulation accounts.
+func ShuffleSimAccounts(r *rand.Rand, accs []simtypes.Account) []simtypes.Account {
+	accs2 := make([]simtypes.Account, len(accs))
+	copy(accs2, accs)
+	r.Shuffle(len(accs2), func(i, j int) {
+		accs2[i], accs2[j] = accs2[j], accs2[i]
+	})
+	return accs2
+}
 
 // TestAddress returns an address for testing purpose.
 // TestAddress returns same address when addrNum is same.
+func TestAddress(addrNum int) sdk.AccAddress {
+	addr := make(sdk.AccAddress, 20)
+	binary.PutVarint(addr, int64(addrNum))
+	return addr
+}
 
 // SafeMath runs f in safe mode, which means that any panics occurred inside f
 // gets caught by recover() and if the panic was an overflow, onOverflow is run.
@@ -135,4 +227,54 @@ func IsOverflow(r interface{}) bool {
 		return strings.Contains(s, "overflow") || strings.HasSuffix(s, "out of bound")
 	}
 	return false
+}
+
+// LengthPrefixString returns length-prefixed bytes representation of a string.
+func LengthPrefixString(s string) []byte {
+	bz := []byte(s)
+	bzLen := len(bz)
+	return append([]byte{byte(bzLen)}, bz...)
+}
+
+// This function lets you run the function f. In case of panic recovery is done
+// if error occurs it is logged into the logger.
+// further modifications can me made to avoid any state changes in case if error is returned by f -
+// eg, revert state change if error returned by f else work as normal
+func ApplyFuncIfNoError(ctx sdk.Context, f func(ctx sdk.Context) error) (err error) {
+	// Add a panic safeguard
+	defer func() {
+		if recoveryError := recover(); recoveryError != nil {
+			PrintPanicRecoveryError(ctx, recoveryError)
+			err = errors.New("panic occurred during execution")
+		}
+	}()
+	cacheCtx, writeCache := ctx.CacheContext()
+	err = f(cacheCtx)
+	if err == nil {
+		// write state to the underlying multi-store
+		writeCache()
+	} else {
+		ctx.Logger().Error(err.Error())
+	}
+	return err
+}
+
+// PrintPanicRecoveryError error logs the recoveryError, along with the stacktrace, if it can be parsed.
+// If not emits them to stdout.
+func PrintPanicRecoveryError(ctx sdk.Context, recoveryError interface{}) {
+	errStackTrace := string(debug.Stack())
+	switch e := recoveryError.(type) {
+	case string:
+		ctx.Logger().Error("Recovering from (string) panic: " + e)
+	case runtime.Error:
+		ctx.Logger().Error("recovered (runtime.Error) panic: " + e.Error())
+	case error:
+		ctx.Logger().Error("recovered (error) panic: " + e.Error())
+	default:
+		ctx.Logger().Error("recovered (default) panic. Could not capture logs in ctx, see stdout")
+		fmt.Println("Recovering from panic ", recoveryError)
+		debug.PrintStack()
+		return
+	}
+	ctx.Logger().Error("stack trace: " + errStackTrace)
 }

@@ -1,0 +1,115 @@
+syntax = "proto3";
+package comdex.esm.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "comdex/esm/v1beta1/params.proto";
+import "comdex/esm/v1beta1/esm.proto";
+
+
+option go_package = "github.com/comdex-official/comdex/x/esm/types";
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryESMTriggerParamsRequest {
+  uint64 id = 1;
+}
+
+message QueryESMTriggerParamsResponse {
+  ESMTriggerParams esmTriggerParams = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"esm_trigger_params\""];
+}
+
+message QueryESMStatusRequest {
+  uint64 id = 1;
+}
+
+message QueryESMStatusResponse {
+  ESMStatus esmStatus = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"esm_status\""];
+}
+
+message QueryCurrentDepositStatsRequest {
+  uint64 id = 1;
+}
+
+message QueryCurrentDepositStatsResponse {
+  CurrentDepositStats currentDepositStats = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"current_deposit_stats\""];
+}
+
+message QueryUsersDepositMappingRequest {
+  uint64 id = 1;
+  string depositor = 2 [(gogoproto.moretags) = "yaml:\"depositor\""];
+
+}
+
+message QueryUsersDepositMappingResponse {
+  UsersDepositMapping usersDepositMapping = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"user_deposit_mapping\""];
+}
+
+message QueryDataAfterCoolOffRequest {
+  uint64 id = 1;
+}
+
+message QueryDataAfterCoolOffResponse {
+  DataAfterCoolOff dataAfterCoolOff = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"data_after_cool_off\""];
+}
+
+message QuerySnapshotPriceRequest {
+  uint64 app_id = 1;
+  uint64 asset_id = 2;
+}
+
+message QuerySnapshotPriceResponse {
+  uint64 price = 1; 
+}
+
+message QueryAssetDataAfterCoolOffRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAssetDataAfterCoolOffResponse {
+  repeated AssetToAmount assetToAmount = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_to_amount\""];
+}
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/v1beta1/esm/params";
+  }
+
+  rpc QueryESMTriggerParams(QueryESMTriggerParamsRequest) returns (QueryESMTriggerParamsResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/esm_trigger_params/{id}";
+  }
+
+  rpc QueryESMStatus(QueryESMStatusRequest) returns (QueryESMStatusResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/esm_status/{id}";
+  }
+
+  rpc QueryCurrentDepositStats(QueryCurrentDepositStatsRequest) returns (QueryCurrentDepositStatsResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/current_deposit_stats/{id}";
+  }
+
+  rpc QueryUsersDepositMapping(QueryUsersDepositMappingRequest) returns (QueryUsersDepositMappingResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/user_deposit_mapping/{id}/{depositor}";
+  }
+
+  rpc QueryDataAfterCoolOff(QueryDataAfterCoolOffRequest) returns (QueryDataAfterCoolOffResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/data_after_cool_off/{id}";
+  }
+
+  rpc QuerySnapshotPrice(QuerySnapshotPriceRequest) returns (QuerySnapshotPriceResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/price_snapshot/{app_id}/{asset_id}";
+  }
+
+  rpc QueryAssetDataAfterCoolOff(QueryAssetDataAfterCoolOffRequest) returns (QueryAssetDataAfterCoolOffResponse) {
+    option (google.api.http).get = "/comdex/esm/v1beta1/asset_data_after_cool_off/{app_id}";
+  }
+}

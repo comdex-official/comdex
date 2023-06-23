@@ -3,9 +3,15 @@ package comdex.liquidation.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/liquidation/v1beta1/params.proto";
+import "comdex/liquidation/v1beta1/locked_vault.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated LockedVault lockedVault = 1
+      [ (gogoproto.moretags) = "yaml:\"lockedVault\"", (gogoproto.nullable) = false ];
+  repeated uint64 whitelistedApps = 2
+      [ (gogoproto.moretags) = "yaml:\"whitelistedApps\""];
+ 
+  Params params = 4 [(gogoproto.nullable) = false];
 }

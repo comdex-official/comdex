@@ -1,6 +1,7 @@
 package auction
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -10,15 +11,16 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/auction/client/cli"
-	"github.com/comdex-official/comdex/x/auction/expected"
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	"github.com/comdex-official/comdex/x/auction/client/cli"
+	"github.com/comdex-official/comdex/x/auction/expected"
+	"github.com/comdex-official/comdex/x/auction/keeper"
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 var (
@@ -44,22 +46,18 @@ func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
-	types.RegisterCodec(cdc)
-}
-
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
 
 // DefaultGenesis returns the capability module's default genesis state.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesis())
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
 // ValidateGenesis performs genesis state validation for the capability module.
@@ -77,7 +75,7 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	// this line is used by starport scaffolding # 2
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
 // GetTxCmd returns the capability module's root tx command.
@@ -101,6 +99,9 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
+	collectKeeper expected.CollectorKeeper
+	assetKeeper   expected.AssetKeeper
+	esmKeeper     expected.EsmKeeper
 }
 
 func NewAppModule(
@@ -108,12 +109,18 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
+	collectorKeeper expected.CollectorKeeper,
+	assetKeeper expected.AssetKeeper,
+	esmKeeper expected.EsmKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		collectKeeper:  collectorKeeper,
+		assetKeeper:    assetKeeper,
+		esmKeeper:      esmKeeper,
 	}
 }
 
@@ -139,7 +146,7 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServiceServer(am.keeper))
-	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServiceServer(am.keeper))
+	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(am.keeper))
 }
 
 // RegisterInvariants registers the capability module's invariants.
@@ -152,7 +159,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.Ra
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 
-	InitGenesis(ctx, am.keeper, genState)
+	InitGenesis(ctx, am.keeper, &genState)
 
 	return []abci.ValidatorUpdate{}
 }
@@ -168,7 +175,7 @@ func (AppModule) ConsensusVersion() uint64 { return 2 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
-	BeginBlocker(ctx, req, am.keeper)
+	BeginBlocker(ctx, am.keeper, am.assetKeeper, am.collectKeeper, am.esmKeeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It

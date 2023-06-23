@@ -3,13 +3,12 @@ package comdex.auction.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "comdex/auction/v1beta1/params.proto";
 import "comdex/auction/v1beta1/auction.proto";
 import "comdex/auction/v1beta1/biddings.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/auction/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 //SURPLUS
@@ -23,14 +22,14 @@ message QuerySurplusAuctionRequest {
 
 message QuerySurplusAuctionResponse {
   SurplusAuction auction = 1
-      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\""];
 }
 
 message QuerySurplusAuctionsRequest {
   uint64 app_id = 1;
   bool history = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QuerySurplusAuctionsResponse {
@@ -39,13 +38,15 @@ message QuerySurplusAuctionsResponse {
     (gogoproto.moretags) = "yaml:\"auctions\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QuerySurplusBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
   bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QuerySurplusBiddingsResponse {
@@ -56,7 +57,8 @@ message QuerySurplusBiddingsResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"biddings\""
   ];
-
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 //DEBT
@@ -70,14 +72,16 @@ message QueryDebtAuctionRequest {
 
 message QueryDebtAuctionResponse {
   DebtAuction auction = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDebtAuctionsRequest {
   uint64 app_id = 1;
   bool history = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDebtAuctionsResponse {
@@ -86,13 +90,15 @@ message QueryDebtAuctionsResponse {
     (gogoproto.moretags) = "yaml:\"auctions\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDebtBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
   bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDebtBiddingsResponse {
@@ -103,6 +109,8 @@ message QueryDebtBiddingsResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"biddings\""
   ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 
@@ -117,14 +125,14 @@ message QueryDutchAuctionRequest {
 
 message QueryDutchAuctionResponse {
   DutchAuction auction = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\""];
 }
 
 message QueryDutchAuctionsRequest {
   uint64 app_id = 1;
   bool history = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDutchAuctionsResponse {
@@ -133,13 +141,15 @@ message QueryDutchAuctionsResponse {
     (gogoproto.moretags) = "yaml:\"auctions\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDutchBiddingsRequest {
   string bidder = 1;
   uint64 app_id = 2;
   bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryDutchBiddingsResponse {
@@ -150,6 +160,8 @@ message QueryDutchBiddingsResponse {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"biddings\""
   ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 
@@ -158,21 +170,23 @@ message QueryBiddingsForSurplusAuctionRequest {
   uint64 auction_mapping_id = 2;
   uint64 auction_id = 3;
   bool history = 4;
+  cosmos.base.query.v1beta1.PageRequest pagination = 5
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryBiddingsForSurplusAuctionResponse {
-  repeated  SurplusBiddings biddings= 1 [
+  repeated  SurplusBiddings biddings = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"biddings\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryProtocolStatisticsRequest {
   uint64 app_id = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 
 }
 
@@ -182,27 +196,82 @@ message  QueryProtocolStatisticsResponse {
     (gogoproto.moretags) = "yaml:\"ProtocolStatistics\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryParamsRequest {}
-
-message QueryParamsResponse {
-  Params params = 1 [
-    (gogoproto.moretags) = "yaml:\"params\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
-message QueryAuctionParamRequest {
+message QueryGenericAuctionParamRequest {
   uint64 app_id = 1;
 }
 
-message QueryAuctionParamResponse {
+message QueryGenericAuctionParamResponse {
   AuctionParams auctionParams = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\""];
 }
 
+message QueryDutchLendAuctionRequest {
+  uint64 app_id = 1;
+  uint64 auction_mapping_id = 2;
+  uint64 auction_id = 3;
+  bool history = 4;
+}
+
+message QueryDutchLendAuctionResponse {
+  DutchAuction auction = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\""];
+}
+
+message QueryDutchLendAuctionsRequest {
+  uint64 app_id = 1;
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryDutchLendAuctionsResponse {
+  repeated DutchAuction auctions = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auctions\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryDutchLendBiddingsRequest {
+  string bidder = 1;
+  uint64 app_id = 2;
+  bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryDutchLendBiddingsResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated DutchBiddings biddings = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"biddings\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryFilterDutchAuctionsRequest {
+  uint64 app_id = 1;
+  repeated string denom = 2;
+  bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryFilterDutchAuctionsResponse {
+  repeated DutchAuction auctions = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auctions\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
 
 service Query {
   rpc QuerySurplusAuction(QuerySurplusAuctionRequest) returns (QuerySurplusAuctionResponse) {
@@ -232,13 +301,22 @@ service Query {
   rpc QueryDutchBiddings(QueryDutchBiddingsRequest) returns (QueryDutchBiddingsResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/dutchbiddings/{bidder}/{app_id}/{history}";
   }
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-      option (google.api.http).get = "/comdex/auction/v1beta1/params";
-  }
   rpc QueryProtocolStatistics(QueryProtocolStatisticsRequest) returns (QueryProtocolStatisticsResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/protocolstats/{app_id}";
   }
-  rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
+  rpc QueryGenericAuctionParams(QueryGenericAuctionParamRequest) returns (QueryGenericAuctionParamResponse) {
     option (google.api.http).get = "/comdex/auction/v1beta1/auctionparams/{app_id}";
+  }
+  rpc QueryDutchLendAuction(QueryDutchLendAuctionRequest) returns (QueryDutchLendAuctionResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendauction/{app_id}/{auction_mapping_id}/{auction_id}/{history}";
+  }
+  rpc QueryDutchLendAuctions(QueryDutchLendAuctionsRequest) returns (QueryDutchLendAuctionsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendauctions/{app_id}/{history}";
+  }
+  rpc QueryDutchLendBiddings(QueryDutchLendBiddingsRequest) returns (QueryDutchLendBiddingsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/dutchlendbiddings/{bidder}/{app_id}/{history}";
+  }
+  rpc QueryFilterDutchAuctions(QueryFilterDutchAuctionsRequest) returns (QueryFilterDutchAuctionsResponse) {
+    option (google.api.http).get = "/comdex/auction/v1beta1/filterdutchauctions/{app_id}/{denom}/{history}";
   }
 }

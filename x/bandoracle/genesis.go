@@ -1,16 +1,17 @@
 package bandoracle
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/x/bandoracle/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
 	k.SetPort(ctx, genState.PortId)
+	k.SetCheckFlag(ctx, genState.Flag)
 	// Only try to bind to port if it is not already bound, since we may already own
 	// port capability from capability InitGenesis
 	if !k.IsBound(ctx, genState.PortId) {
@@ -30,7 +31,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
-	// this line is used by starport scaffolding # genesis/module/export
+	genesis.Flag = k.GetCheckFlag(ctx)
 
 	return genesis
 }

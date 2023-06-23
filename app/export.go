@@ -16,9 +16,7 @@ import (
 // file.
 func (a *App) ExportAppStateAndValidators(
 	forZeroHeight bool, jailAllowedAddrs []string,
-) (servertypes.ExportedApp, error) {
-
-	// as if they could withdraw from the start of the next block
+) (servertypes.ExportedApp, error) { // as if they could withdraw from the start of the next block
 	ctx := a.NewContext(true, tmprototypes.Header{Height: a.LastBlockHeight()})
 
 	// We export at last height + 1, because that's the height at which
@@ -49,7 +47,8 @@ func (a *App) ExportAppStateAndValidators(
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-//      in favour of export at a block height
+//
+//	in favour of export at a block height
 func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 

@@ -3,11 +3,12 @@ package rest
 import (
 	"net/http"
 
-	"github.com/comdex-official/comdex/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+
+	"github.com/comdex-official/comdex/x/asset/types"
 )
 
 type AddNewAssetsRequest struct {
@@ -18,11 +19,14 @@ type AddNewAssetsRequest struct {
 	Asset       []types.Asset `json:"assets" yaml:"assets"`
 }
 
-type AddNewPairsRequest struct{}
-type UpdateNewPairRequest struct{}
-type AddPoolRequest struct{}
-type AddAssetToPairRequest struct{}
-type AddAssetRatesStatsRequest struct{}
+type (
+	AddNewPairsRequest         struct{}
+	UpdateNewPairRequest       struct{}
+	AddPoolRequest             struct{}
+	AddAssetToPairRequest      struct{}
+	AddAssetRatesParamsRequest struct{}
+	AddAuctionParamsRequest    struct{}
+)
 
 func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
@@ -31,9 +35,9 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 	}
 }
 
-func UpdateNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func UpdatePairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "update-whitelisted-assets",
+		SubRoute: "update-new-pair",
 		Handler:  UpdateNewPairsRESTHandler(clientCtx),
 	}
 }
@@ -45,17 +49,38 @@ func AddPoolProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHa
 	}
 }
 
+func AddPoolPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-lend-pool-pairs",
+		Handler:  AddpoolRESTHandler(clientCtx),
+	}
+}
+
+func AddAssetRatesPoolPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-asset-pool-pairs",
+		Handler:  AddpoolRESTHandler(clientCtx),
+	}
+}
+
 func AddAssetToPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-lend-pools",
+		SubRoute: "add-asset-to-pair",
 		Handler:  AddAssetToPairRESTHandler(clientCtx),
 	}
 }
 
-func AddWNewAssetRatesStatsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewAssetRatesParamsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-asset-rates-stats",
-		Handler:  AddAssetRatesStatsRESTHandler(clientCtx),
+		SubRoute: "add-asset-rates-params",
+		Handler:  AddAssetRatesParamsRESTHandler(clientCtx),
+	}
+}
+
+func AddNewAuctionParamsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-auction-params",
+		Handler:  AddAuctionParamsRESTHandler(clientCtx),
 	}
 }
 
@@ -99,9 +124,19 @@ func AddAssetToPairRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func AddAssetRatesStatsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+func AddAssetRatesParamsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req AddAssetRatesStatsRequest
+		var req AddAssetRatesParamsRequest
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
+			return
+		}
+	}
+}
+
+func AddAuctionParamsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddAuctionParamsRequest
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return

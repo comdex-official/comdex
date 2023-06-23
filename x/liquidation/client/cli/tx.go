@@ -1,45 +1,76 @@
 package cli
 
+//goland:noinspection GoLinter
+
 import (
-	"github.com/comdex-official/comdex/x/liquidation/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cobra"
+	"fmt"
 	"strconv"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/spf13/cobra"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
-func txWhitelistAppID() *cobra.Command {
+func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "whitelist-app-id [app_mapping_Id]",
-		Short: "Add Whitelisted appId for liquidations",
-		Args:  cobra.ExactArgs(1),
+		Use:                        types.ModuleName,
+		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		DisableFlagParsing:         true,
+		SuggestionsMinimumDistance: 2,
+		RunE:                       client.ValidateCmd,
+	}
+
+	cmd.AddCommand(
+		txLiquidate(),
+		txLiquidateBorrow(),
+	)
+
+	return cmd
+}
+
+func txLiquidate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "liquidate_vault [appID] [VaultID]",
+		Short: "liquidate faulty vault",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWhitelistAppID(
-				appMappingID,
-				ctx.GetFromAddress(),
-			)
+			vaultID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgLiquidateRequest(ctx.FromAddress, appID, vaultID)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
-func txRemoveWhitelistAppID() *cobra.Command {
+
+func txLiquidateBorrow() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-whitelist-app-id [app_mapping_Id] ",
-		Short: "Remove Whitelisted appId for liquidations",
+		Use:   "liquidate_borrow [borrowID]",
+		Short: "liquidate faulty Borrow Position",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -47,15 +78,16 @@ func txRemoveWhitelistAppID() *cobra.Command {
 				return err
 			}
 
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRemoveWhitelistAsset(
-				appMappingID,
-				ctx.GetFromAddress(),
-			)
+			msg := types.NewMsgLiquidateBorrowRequest(ctx.FromAddress, borrowID)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

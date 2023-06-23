@@ -9,8 +9,6 @@ import "comdex/rewards/v1beta1/rewards.proto";
 import "comdex/rewards/v1beta1/gauge.proto";
 import "comdex/rewards/v1beta1/epochs.proto";
 
-// this line is used by starport scaffolding # 1
-
 option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
 // Query defines the gRPC querier service.
@@ -41,6 +39,27 @@ service Query {
   rpc QueryReward(QueryRewardRequest) returns (QueryRewardResponse) {
     option (google.api.http).get = "/comdex/rewards/v1beta1/reward/{id}";
   }
+  rpc QueryExternalRewardsLockers(QueryExternalRewardsLockersRequest) returns (QueryExternalRewardsLockersResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/locker_external_rewards";
+  }
+  rpc QueryExternalRewardVaults(QueryExternalRewardVaultsRequest) returns (QueryExternalRewardVaultsResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/vault_external_rewards";
+  }
+  rpc QueryWhitelistedAppIdsVault(QueryWhitelistedAppIdsVaultRequest) returns (QueryWhitelistedAppIdsVaultResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/whitelisted_appids_Vault";
+  }
+  rpc QueryExternalRewardLends(QueryExternalRewardLendsRequest) returns (QueryExternalRewardLendsResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/lend_external_rewards";
+  }
+  rpc QueryExternalRewardStableMint(QueryExternalRewardStableMintRequest) returns (QueryExternalRewardStableMintResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/stable_mint_external_rewards";
+  }
+  rpc QueryEpochTime(QueryEpochTimeRequest) returns (QueryEpochTimeResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/epoch_time";
+  }
+  rpc QueryExtLendRewardsAPR(QueryExtLendRewardsAPRRequest) returns (QueryExtLendRewardsAPRResponse) {
+    option (google.api.http).get = "/comdex/rewards/v1beta1/ext_rewards_lend_apr";
+  }
 }
 
 
@@ -54,7 +73,7 @@ message QueryParamsResponse {
 // ALL EPOCHES
 message QueryAllEpochsInfoRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 message QueryAllEpochsInfoResponse {
   repeated EpochInfo epochs = 1 [
@@ -62,7 +81,7 @@ message QueryAllEpochsInfoResponse {
     (gogoproto.moretags) = "yaml:\"epochs\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 // EPOCH BY DURATION
@@ -71,13 +90,13 @@ message QueryEpochInfoByDurationRequest {
 }
 message QueryEpochInfoByDurationResponse {
   EpochInfo epoch = 1
-      [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"epoch\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"epoch\""];
 }
 
 // ALL GAUGES
 message QueryAllGaugesRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 message QueryAllGaugesResponse {
   repeated Gauge gauges = 1 [
@@ -85,7 +104,7 @@ message QueryAllGaugesResponse {
     (gogoproto.moretags) = "yaml:\"gauges\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 // GAUGE BY ID
@@ -94,7 +113,7 @@ message QueryGaugeByIdRequest {
 }
 message QueryGaugeByIdResponse {
   Gauge gauge = 1
-    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauge\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauge\""];
 }
 
 // GAUGE BY TRIIGER DURATION
@@ -103,21 +122,21 @@ message QueryGaugesByDurationRequest {
 }
 message QueryGaugeByDurationResponse {
   repeated Gauge gauges = 1
-    [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauges\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"gauges\""];
 }
 
 message QueryRewardsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryRewardsResponse {
-  repeated Internal_rewards rewards = 1 [
+  repeated InternalRewards rewards = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"rewards\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryRewardRequest {
@@ -125,6 +144,98 @@ message QueryRewardRequest {
 }
 
 message QueryRewardResponse {
-  Internal_rewards reward = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\"" ];
+  repeated InternalRewards reward = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"reward\""];
+}
+
+// all ExternalRewardsLockers
+
+message QueryExternalRewardsLockersRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardsLockersResponse {
+  repeated LockerExternalRewards locker_external_rewards = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"locker_external_rewards\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardVaultsRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardVaultsResponse {
+  repeated VaultExternalRewards vault_external_rewards = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"vault_external_rewards\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhitelistedAppIdsVaultRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhitelistedAppIdsVaultResponse {
+  repeated uint64 whitelistedAppIdsVault = 1
+  [(gogoproto.moretags) = "yaml:\"whitelistedAppIdsVault\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardLendsRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardLendsResponse {
+  repeated LendExternalRewards lend_external_rewards = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lend_external_rewards\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardStableMintRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExternalRewardStableMintResponse {
+  repeated StableVaultExternalRewards stable_mint_external_rewards = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"stable_mint_external_rewards\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryEpochTimeRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryEpochTimeResponse {
+  repeated EpochTime epoch_time = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"epoch_time\""];
+
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryExtLendRewardsAPRRequest {
+  uint64 asset_id = 1;
+  uint64 c_pool_id = 2;
+}
+message QueryExtLendRewardsAPRResponse {
+  string apr = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"ext_rewards_lend_apr\""
+  ];
 }

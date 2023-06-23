@@ -15,15 +15,16 @@ var (
 	_ sdk.Msg = (*MsgCreateStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgDepositStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
+	_ sdk.Msg = (*MsgVaultInterestCalcRequest)(nil)
 )
 
 func NewMsgCreateRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) *MsgCreateRequest {
+	appID uint64, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int,
+) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		AmountIn:            amountIn,
 		AmountOut:           amountOut,
@@ -81,14 +82,14 @@ func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDepositRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDepositRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultID uint64, amount sdk.Int,
+) *MsgDepositRequest {
 	return &MsgDepositRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
-		UserVaultId:         userVaultid,
+		UserVaultId:         userVaultID,
 		Amount:              amount,
 	}
 }
@@ -108,7 +109,7 @@ func (m *MsgDepositRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultId) == 0 {
+	if m.UserVaultId == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -138,12 +139,12 @@ func (m *MsgDepositRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgWithdrawRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgWithdrawRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
+) *MsgWithdrawRequest {
 	return &MsgWithdrawRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -165,7 +166,7 @@ func (m *MsgWithdrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultId) == 0 {
+	if m.UserVaultId == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be zero")
 	}
 	if m.Amount.IsNil() {
@@ -195,12 +196,12 @@ func (m *MsgWithdrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDrawRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgDrawRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
+) *MsgDrawRequest {
 	return &MsgDrawRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -222,7 +223,7 @@ func (m *MsgDrawRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultId) == 0 {
+	if m.UserVaultId == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -252,12 +253,12 @@ func (m *MsgDrawRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgRepayRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, userVaultid string, amount sdk.Int) *MsgRepayRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
+) *MsgRepayRequest {
 	return &MsgRepayRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 		Amount:              amount,
@@ -279,7 +280,7 @@ func (m *MsgRepayRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultId) == 0 {
+	if m.UserVaultId == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 	if m.Amount.IsNil() {
@@ -309,12 +310,12 @@ func (m *MsgRepayRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgLiquidateRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, userVaultid string) *MsgCloseRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64,
+) *MsgCloseRequest {
 	return &MsgCloseRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		UserVaultId:         userVaultid,
 	}
@@ -335,7 +336,7 @@ func (m *MsgCloseRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-	if len(m.UserVaultId) == 0 {
+	if m.UserVaultId == 0 {
 		return errors.Wrap(ErrorInvalidID, "id cannot be null")
 	}
 
@@ -355,13 +356,70 @@ func (m *MsgCloseRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgCreateStableMintRequest(
-	// nolint
+func NewMsgDepositAndDrawRequest(
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int) *MsgCreateStableMintRequest {
+	appID uint64, extendedPairVaultID uint64, userVaultid uint64, amount sdk.Int,
+) *MsgDepositAndDrawRequest {
+	return &MsgDepositAndDrawRequest{
+		From:                from.String(),
+		AppId:               appID,
+		ExtendedPairVaultId: extendedPairVaultID,
+		UserVaultId:         userVaultid,
+		Amount:              amount,
+	}
+}
+
+func (m *MsgDepositAndDrawRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgDepositAndDrawRequest) Type() string {
+	return TypeMsgDepositDrawRequest
+}
+
+func (m *MsgDepositAndDrawRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+	if m.UserVaultId == 0 {
+		return errors.Wrap(ErrorInvalidID, "id cannot be null")
+	}
+	if m.Amount.IsNil() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+	}
+	if m.Amount.IsNegative() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+	}
+	if m.Amount.IsZero() {
+		return errors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+	}
+
+	return nil
+}
+
+func (m *MsgDepositAndDrawRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgDepositAndDrawRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgCreateStableMintRequest(
+	from sdk.AccAddress,
+	appID uint64, extendedPairVaultID uint64, amount sdk.Int,
+) *MsgCreateStableMintRequest {
 	return &MsgCreateStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 	}
@@ -372,7 +430,7 @@ func (m *MsgCreateStableMintRequest) Route() string {
 }
 
 func (m *MsgCreateStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgCreateStableMintRequest
 }
 
 func (m *MsgCreateStableMintRequest) ValidateBasic() error {
@@ -409,12 +467,12 @@ func (m *MsgCreateStableMintRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgDepositStableMintRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgDepositStableMintRequest {
+	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID uint64,
+) *MsgDepositStableMintRequest {
 	return &MsgDepositStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 		StableVaultId:       stablemintID,
@@ -426,7 +484,7 @@ func (m *MsgDepositStableMintRequest) Route() string {
 }
 
 func (m *MsgDepositStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgDepositStableMintRequest
 }
 
 func (m *MsgDepositStableMintRequest) ValidateBasic() error {
@@ -463,12 +521,12 @@ func (m *MsgDepositStableMintRequest) GetSigners() []sdk.AccAddress {
 }
 
 func NewMsgWithdrawStableMintRequest(
-	// nolint
 	from sdk.AccAddress,
-	appMappingID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID string) *MsgWithdrawStableMintRequest {
+	appID uint64, extendedPairVaultID uint64, amount sdk.Int, stablemintID uint64,
+) *MsgWithdrawStableMintRequest {
 	return &MsgWithdrawStableMintRequest{
 		From:                from.String(),
-		AppMappingId:        appMappingID,
+		AppId:               appID,
 		ExtendedPairVaultId: extendedPairVaultID,
 		Amount:              amount,
 		StableVaultId:       stablemintID,
@@ -480,7 +538,7 @@ func (m *MsgWithdrawStableMintRequest) Route() string {
 }
 
 func (m *MsgWithdrawStableMintRequest) Type() string {
-	return TypeMsgLiquidateRequest
+	return TypeMsgWithdrawStableMintRequest
 }
 
 func (m *MsgWithdrawStableMintRequest) ValidateBasic() error {
@@ -508,6 +566,49 @@ func (m *MsgWithdrawStableMintRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgWithdrawStableMintRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgVaultInterestCalcRequest(
+	from sdk.AccAddress,
+	appID uint64, userVaultID uint64,
+) *MsgVaultInterestCalcRequest {
+	return &MsgVaultInterestCalcRequest{
+		From:        from.String(),
+		AppId:       appID,
+		UserVaultId: userVaultID,
+	}
+}
+
+func (m *MsgVaultInterestCalcRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgVaultInterestCalcRequest) Type() string {
+	return TypeMsgVaultInterestCalcRequest
+}
+
+func (m *MsgVaultInterestCalcRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	return nil
+}
+
+func (m *MsgVaultInterestCalcRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgVaultInterestCalcRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

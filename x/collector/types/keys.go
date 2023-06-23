@@ -5,19 +5,19 @@ import (
 )
 
 const (
-	// ModuleName defines the module name
-	ModuleName = "collector"
+	// ModuleName defines the module name.
+	ModuleName = "collectorV1"
 
-	// StoreKey defines the primary module store key
+	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
 
-	// RouterKey is the message route for slashing
+	// RouterKey is the message route for slashing.
 	RouterKey = ModuleName
 
-	// QuerierRoute defines the module's query routing key
+	// QuerierRoute defines the module's query routing key.
 	QuerierRoute = ModuleName
 
-	// MemStoreKey defines the in-memory store key
+	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_collector"
 )
 
@@ -29,23 +29,27 @@ var (
 	NetFeeCollectedDataPrefix          = []byte{0x08}
 )
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
+func CollectorLookupTableMappingKey(appID, assetID uint64) []byte {
+	return append(append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
-func CollectorLookupTableMappingKey(appID uint64) []byte {
+func CollectorLookupTableMappingByAppKey(appID uint64) []byte {
 	return append(AddCollectorLookupKey, sdk.Uint64ToBigEndian(appID)...)
 }
 
-func AppidToAssetCollectorMappingKey(appID uint64) []byte {
-	return append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...)
+func AppidToAssetCollectorMappingKey(appID, assetID uint64) []byte {
+	return append(append(AppIDToAssetCollectorMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
-func AppIDToAuctionMappingKey(appId uint64) []byte {
-	return append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appId)...)
+func AppIDToAuctionMappingKey(appID, assetID uint64) []byte {
+	return append(append(AppIDToAuctionMappingPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
 }
 
-func NetFeeCollectedDataKey(appID uint64) []byte {
+func NetFeeCollectedDataKey(appID, assetID uint64) []byte {
+	return append(append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(assetID)...)
+}
+
+func AppNetFeeCollectedDataKey(appID uint64) []byte {
 	return append(NetFeeCollectedDataPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 

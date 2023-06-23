@@ -2,6 +2,7 @@ syntax = "proto3";
 package comdex.locker.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "comdex/locker/v1beta1/locker.proto";
 import "comdex/locker/v1beta1/params.proto";
 
 option go_package            = "github.com/comdex-official/comdex/x/locker/types";
@@ -9,10 +10,26 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message GenesisState {
-  // repeated Locker lockers = 1 [
-  //   (gogoproto.customname) = "Lockers",
-  //   (gogoproto.moretags)   = "yaml:\"lockers\"",
-  //   (gogoproto.nullable)   = false
-  // ];
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Locker lockers = 1 [
+    (gogoproto.customname) = "Lockers",
+    (gogoproto.moretags)   = "yaml:\"lockers\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated LockerProductAssetMapping lockerProductAssetMapping = 2 [
+    (gogoproto.moretags)   = "yaml:\"lockerProductAssetMapping\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated LockerTotalRewardsByAssetAppWise lockerTotalRewardsByAssetAppWise = 3 [
+    (gogoproto.moretags)   = "yaml:\"lockerTotalRewardsByAssetAppWise\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated LockerLookupTableData lockerLookupTable = 4 [
+    (gogoproto.moretags)   = "yaml:\"lockerLookupTable\"",
+    (gogoproto.nullable)   = false
+  ];
+  repeated UserAppAssetLockerMapping userLockerAssetMapping = 5 [
+    (gogoproto.moretags)   = "yaml:\"userLockerAssetMapping\"",
+    (gogoproto.nullable)   = false
+  ];
+  Params params = 6 [(gogoproto.nullable) = false];
 }

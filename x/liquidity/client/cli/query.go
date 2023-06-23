@@ -17,8 +17,8 @@ import (
 // GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Use:                        "liquidity",
+		Short:                      fmt.Sprintf("Querying commands for the %s module", "liquidity"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -37,10 +37,12 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryWithdrawRequestCmd(),
 		NewQueryOrdersCmd(),
 		NewQueryOrderCmd(),
-		NewQuerySoftLockCmd(),
+		NewQueryOrderBooksCmd(),
+		NewQueryFarmerCmd(),
 		NewQueryDeserializePoolCoinCmd(),
 		NewQueryPoolIncentivesCmd(),
 		NewQueryFarmedPoolCoinCmd(),
+		NewQueryTotalActiveAndQueuedPoolCoinCmd(),
 	)
 
 	return cmd
@@ -754,16 +756,79 @@ $ %s query %s order 1 1 1
 	return cmd
 }
 
-// NewQuerySoftLockCmd implements the soft lock query command.
-func NewQuerySoftLockCmd() *cobra.Command {
+// NewQueryOrderBooksCmd implements the order books query command.
+func NewQueryOrderBooksCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-lock [app-id] [pool-id] [depositor]",
-		Args:  cobra.ExactArgs(3),
-		Short: "Query details of the soft-lock",
+		Use:   "order-books [app-id] [pair-ids]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Query order books",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query details of the soft-lock in specific pool for adddress.
+			fmt.Sprintf(`Query order books of specified pairs.
+
 Example:
-$ %s query %s soft-lock 1 1 comdex...
+$ %s query %s order-books 1 1 --num-ticks=10
+$ %s query %s order-books 1 2,3
+`,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			numTicks, _ := cmd.Flags().GetUint32(FlagNumTicks)
+
+			pairIDStrings := strings.Split(args[1], ",")
+			var pairIds []uint64
+			for _, pairIDStr := range pairIDStrings {
+				pairID, err := strconv.ParseUint(pairIDStr, 10, 64)
+				if err != nil {
+					return fmt.Errorf("parse pair id: %w", err)
+				}
+				pairIds = append(pairIds, pairID)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.OrderBooks(
+				cmd.Context(),
+				&types.QueryOrderBooksRequest{
+					AppId:    appID,
+					PairIds:  pairIds,
+					NumTicks: numTicks,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	cmd.Flags().Uint32P(FlagNumTicks, "n", 20, "maximum number of ticks displayed on each buy/sell side")
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryFarmerCmd implements the farmer query command.
+func NewQueryFarmerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "farmer [app-id] [pool-id] [farmer]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Query farmer",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query farming status of the farmer.
+Example:
+$ %s query %s farmer 1 1 comdex...
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -781,17 +846,17 @@ $ %s query %s soft-lock 1 1 comdex...
 
 			poolID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
-				return err
+				return fmt.Errorf("parse pool id: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			res, err := queryClient.SoftLock(
+			res, err := queryClient.Farmer(
 				cmd.Context(),
-				&types.QuerySoftLockRequest{
-					AppId:     appID,
-					PoolId:    poolID,
-					Depositor: args[2],
+				&types.QueryFarmerRequest{
+					AppId:  appID,
+					PoolId: poolID,
+					Farmer: args[2],
 				})
 			if err != nil {
 				return err
@@ -806,7 +871,7 @@ $ %s query %s soft-lock 1 1 comdex...
 	return cmd
 }
 
-// NewQueryDeserializePoolCoinCmd implements the soft lock query command.
+// NewQueryDeserializePoolCoinCmd implements the deserialize query command.
 func NewQueryDeserializePoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deserialize [app-id] [pool-id] [pool-coin-amount]",
@@ -913,9 +978,9 @@ func NewQueryFarmedPoolCoinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "farmed-coin [app-id] [pool-id]",
 		Args:  cobra.ExactArgs(2),
-		Short: "Query total coins being farmed (in soft-lock)",
+		Short: "Query total coins being farmed",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query total coins being farmed (in soft-lock).
+			fmt.Sprintf(`Query total coins being farmed.
 Example:
 $ %s query %s farmed-coin 1 1
 `,
@@ -945,6 +1010,51 @@ $ %s query %s farmed-coin 1 1
 				&types.QueryFarmedPoolCoinRequest{
 					AppId:  appID,
 					PoolId: poolID,
+				})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryTotalActiveAndQueuedPoolCoinCmd implements the total-farmed-coin query command.
+func NewQueryTotalActiveAndQueuedPoolCoinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "total-farmed-coin [app-id]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Query total active and queued coins being farmed in each pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query total active and queued coins being farmed in each pool.
+Example:
+$ %s query %s total-farmed-coin 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			res, err := queryClient.TotalActiveAndQueuedPoolCoin(
+				cmd.Context(),
+				&types.QueryAllFarmedPoolCoinsRequest{
+					AppId: appID,
 				})
 			if err != nil {
 				return err

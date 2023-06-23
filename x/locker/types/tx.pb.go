@@ -30,10 +30,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgCreateLockerRequest struct {
-	Depositor    string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
-	Amount       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
-	AssetId      uint64                                 `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	AppMappingId uint64                                 `protobuf:"varint,4,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	Depositor string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	Amount    github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	AssetId   uint64                                 `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AppId     uint64                                 `protobuf:"varint,4,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
 func (m *MsgCreateLockerRequest) Reset()         { *m = MsgCreateLockerRequest{} }
@@ -106,9 +106,9 @@ func (m *MsgCreateLockerResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateLockerResponse proto.InternalMessageInfo
 
 type MsgAddWhiteListedAssetRequest struct {
-	From         string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId uint64 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
-	AssetId      uint64 `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId   uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId uint64 `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
 func (m *MsgAddWhiteListedAssetRequest) Reset()         { *m = MsgAddWhiteListedAssetRequest{} }
@@ -181,11 +181,11 @@ func (m *MsgAddWhiteListedAssetResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgAddWhiteListedAssetResponse proto.InternalMessageInfo
 
 type MsgDepositAssetRequest struct {
-	Depositor    string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
-	LockerId     string                                 `protobuf:"bytes,2,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
-	Amount       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
-	AssetId      uint64                                 `protobuf:"varint,4,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	AppMappingId uint64                                 `protobuf:"varint,5,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	Depositor string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	LockerId  uint64                                 `protobuf:"varint,2,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
+	Amount    github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	AssetId   uint64                                 `protobuf:"varint,4,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AppId     uint64                                 `protobuf:"varint,5,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
 func (m *MsgDepositAssetRequest) Reset()         { *m = MsgDepositAssetRequest{} }
@@ -258,11 +258,11 @@ func (m *MsgDepositAssetResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgDepositAssetResponse proto.InternalMessageInfo
 
 type MsgWithdrawAssetRequest struct {
-	Depositor    string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
-	LockerId     string                                 `protobuf:"bytes,2,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
-	Amount       github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
-	AssetId      uint64                                 `protobuf:"varint,4,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	AppMappingId uint64                                 `protobuf:"varint,5,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	Depositor string                                 `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	LockerId  uint64                                 `protobuf:"varint,2,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
+	Amount    github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+	AssetId   uint64                                 `protobuf:"varint,4,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	AppId     uint64                                 `protobuf:"varint,5,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 }
 
 func (m *MsgWithdrawAssetRequest) Reset()         { *m = MsgWithdrawAssetRequest{} }
@@ -334,6 +334,157 @@ func (m *MsgWithdrawAssetResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgWithdrawAssetResponse proto.InternalMessageInfo
 
+type MsgCloseLockerRequest struct {
+	Depositor string `protobuf:"bytes,1,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
+	AppId     uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	AssetId   uint64 `protobuf:"varint,3,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	LockerId  uint64 `protobuf:"varint,4,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
+}
+
+func (m *MsgCloseLockerRequest) Reset()         { *m = MsgCloseLockerRequest{} }
+func (m *MsgCloseLockerRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgCloseLockerRequest) ProtoMessage()    {}
+func (*MsgCloseLockerRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_907169e28dc0306d, []int{8}
+}
+func (m *MsgCloseLockerRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCloseLockerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCloseLockerRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCloseLockerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCloseLockerRequest.Merge(m, src)
+}
+func (m *MsgCloseLockerRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCloseLockerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCloseLockerRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCloseLockerRequest proto.InternalMessageInfo
+
+type MsgCloseLockerResponse struct {
+}
+
+func (m *MsgCloseLockerResponse) Reset()         { *m = MsgCloseLockerResponse{} }
+func (m *MsgCloseLockerResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCloseLockerResponse) ProtoMessage()    {}
+func (*MsgCloseLockerResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_907169e28dc0306d, []int{9}
+}
+func (m *MsgCloseLockerResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCloseLockerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCloseLockerResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCloseLockerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCloseLockerResponse.Merge(m, src)
+}
+func (m *MsgCloseLockerResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCloseLockerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCloseLockerResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCloseLockerResponse proto.InternalMessageInfo
+
+type MsgLockerRewardCalcRequest struct {
+	From     string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId    uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	LockerId uint64 `protobuf:"varint,3,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
+}
+
+func (m *MsgLockerRewardCalcRequest) Reset()         { *m = MsgLockerRewardCalcRequest{} }
+func (m *MsgLockerRewardCalcRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgLockerRewardCalcRequest) ProtoMessage()    {}
+func (*MsgLockerRewardCalcRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_907169e28dc0306d, []int{10}
+}
+func (m *MsgLockerRewardCalcRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgLockerRewardCalcRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgLockerRewardCalcRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgLockerRewardCalcRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLockerRewardCalcRequest.Merge(m, src)
+}
+func (m *MsgLockerRewardCalcRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgLockerRewardCalcRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLockerRewardCalcRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgLockerRewardCalcRequest proto.InternalMessageInfo
+
+type MsgLockerRewardCalcResponse struct {
+}
+
+func (m *MsgLockerRewardCalcResponse) Reset()         { *m = MsgLockerRewardCalcResponse{} }
+func (m *MsgLockerRewardCalcResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgLockerRewardCalcResponse) ProtoMessage()    {}
+func (*MsgLockerRewardCalcResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_907169e28dc0306d, []int{11}
+}
+func (m *MsgLockerRewardCalcResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgLockerRewardCalcResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgLockerRewardCalcResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgLockerRewardCalcResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLockerRewardCalcResponse.Merge(m, src)
+}
+func (m *MsgLockerRewardCalcResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgLockerRewardCalcResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLockerRewardCalcResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgLockerRewardCalcResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreateLockerRequest)(nil), "comdex.locker.v1beta1.MsgCreateLockerRequest")
 	proto.RegisterType((*MsgCreateLockerResponse)(nil), "comdex.locker.v1beta1.MsgCreateLockerResponse")
@@ -343,48 +494,56 @@ func init() {
 	proto.RegisterType((*MsgDepositAssetResponse)(nil), "comdex.locker.v1beta1.MsgDepositAssetResponse")
 	proto.RegisterType((*MsgWithdrawAssetRequest)(nil), "comdex.locker.v1beta1.MsgWithdrawAssetRequest")
 	proto.RegisterType((*MsgWithdrawAssetResponse)(nil), "comdex.locker.v1beta1.MsgWithdrawAssetResponse")
+	proto.RegisterType((*MsgCloseLockerRequest)(nil), "comdex.locker.v1beta1.MsgCloseLockerRequest")
+	proto.RegisterType((*MsgCloseLockerResponse)(nil), "comdex.locker.v1beta1.MsgCloseLockerResponse")
+	proto.RegisterType((*MsgLockerRewardCalcRequest)(nil), "comdex.locker.v1beta1.MsgLockerRewardCalcRequest")
+	proto.RegisterType((*MsgLockerRewardCalcResponse)(nil), "comdex.locker.v1beta1.MsgLockerRewardCalcResponse")
 }
 
 func init() { proto.RegisterFile("comdex/locker/v1beta1/tx.proto", fileDescriptor_907169e28dc0306d) }
 
 var fileDescriptor_907169e28dc0306d = []byte{
-	// 576 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x55, 0xcf, 0x6e, 0xd3, 0x30,
-	0x18, 0x4f, 0xda, 0x32, 0x56, 0xf3, 0xa7, 0x93, 0xd9, 0xa0, 0xab, 0x44, 0x52, 0x19, 0x09, 0xed,
-	0xd2, 0x84, 0x0e, 0xb8, 0x70, 0x99, 0x56, 0xb8, 0x54, 0x5a, 0x2f, 0xb9, 0x54, 0xe2, 0x32, 0xa5,
-	0xb5, 0x9b, 0x46, 0x6b, 0x6a, 0x13, 0xbb, 0xb0, 0x3d, 0x00, 0x77, 0x4e, 0x3c, 0x03, 0x2f, 0xc0,
-	0x3b, 0x14, 0x4e, 0x3b, 0x22, 0x0e, 0x11, 0xb4, 0x12, 0x0f, 0xd0, 0x27, 0x40, 0x89, 0xbd, 0xb2,
-	0x6c, 0x59, 0xb5, 0x16, 0x71, 0xe3, 0x14, 0x3b, 0xbf, 0xef, 0xf7, 0x7d, 0x9f, 0x7f, 0xfe, 0xd9,
-	0x06, 0x46, 0x97, 0x06, 0x98, 0x1c, 0xdb, 0x03, 0xda, 0x3d, 0x22, 0xa1, 0xfd, 0xb6, 0xde, 0x21,
-	0xc2, 0xad, 0xdb, 0xe2, 0xd8, 0x62, 0x21, 0x15, 0x14, 0x6e, 0x49, 0xdc, 0x92, 0xb8, 0xa5, 0xf0,
-	0xca, 0xa6, 0x47, 0x3d, 0x9a, 0x44, 0xd8, 0xf1, 0x48, 0x06, 0xa3, 0x8f, 0x39, 0x70, 0xbf, 0xc5,
-	0xbd, 0x97, 0x21, 0x71, 0x05, 0x39, 0x48, 0x18, 0x0e, 0x79, 0x33, 0x22, 0x5c, 0xc0, 0x5d, 0x50,
-	0xc4, 0x84, 0x51, 0xee, 0x0b, 0x1a, 0x96, 0xf5, 0xaa, 0xbe, 0x53, 0x6c, 0x6c, 0xce, 0x22, 0x73,
-	0xe3, 0xc4, 0x0d, 0x06, 0x2f, 0xd0, 0x1c, 0x42, 0xce, 0x9f, 0x30, 0xd8, 0x06, 0x6b, 0x6e, 0x40,
-	0x47, 0x43, 0x51, 0xce, 0x25, 0x84, 0xbd, 0x71, 0x64, 0x6a, 0xdf, 0x23, 0xf3, 0xb1, 0xe7, 0x8b,
-	0xfe, 0xa8, 0x63, 0x75, 0x69, 0x60, 0x77, 0x29, 0x0f, 0x28, 0x57, 0x9f, 0x1a, 0xc7, 0x47, 0xb6,
-	0x38, 0x61, 0x84, 0x5b, 0xcd, 0xa1, 0x98, 0x45, 0xe6, 0x1d, 0x99, 0x5e, 0x66, 0x41, 0x8e, 0x4a,
-	0x07, 0x2d, 0xb0, 0xee, 0x72, 0x4e, 0xc4, 0xa1, 0x8f, 0xcb, 0xf9, 0xaa, 0xbe, 0x53, 0x68, 0xdc,
-	0x9b, 0x45, 0x66, 0x49, 0x05, 0x2b, 0x04, 0x39, 0x37, 0x93, 0x61, 0x13, 0xc3, 0x3d, 0x70, 0xd7,
-	0x65, 0xec, 0x30, 0x70, 0x19, 0xf3, 0x87, 0x5e, 0xcc, 0x2a, 0x24, 0xac, 0xed, 0x59, 0x64, 0x6e,
-	0x29, 0x56, 0x0a, 0x47, 0xce, 0x6d, 0x97, 0xb1, 0x96, 0x9c, 0x37, 0x31, 0xda, 0x06, 0x0f, 0x2e,
-	0xe9, 0xc2, 0x19, 0x1d, 0x72, 0x82, 0x3e, 0xeb, 0xe0, 0x61, 0x8b, 0x7b, 0xfb, 0x18, 0xb7, 0xfb,
-	0xbe, 0x20, 0x07, 0x3e, 0x17, 0x04, 0xef, 0xc7, 0x85, 0xcf, 0xa4, 0x7b, 0x04, 0x0a, 0xbd, 0x90,
-	0x06, 0x4a, 0xb5, 0xd2, 0x2c, 0x32, 0x6f, 0xc9, 0x9a, 0xf1, 0x5f, 0xe4, 0x24, 0x60, 0x46, 0x8b,
-	0xb9, 0xa5, 0x5a, 0x5c, 0x56, 0x13, 0x54, 0x05, 0xc6, 0x55, 0x6d, 0xab, 0x95, 0x7d, 0x91, 0x6e,
-	0x78, 0x25, 0xf7, 0x33, 0xb5, 0xa4, 0x55, 0xdc, 0x50, 0x07, 0x45, 0x69, 0xc2, 0xb3, 0xc5, 0xa5,
-	0x38, 0x73, 0x08, 0x39, 0xeb, 0x72, 0xdc, 0xc4, 0xe7, 0x0c, 0x94, 0xff, 0x77, 0x06, 0x2a, 0xac,
-	0x64, 0xa0, 0x1b, 0xab, 0x18, 0x28, 0x2d, 0xa5, 0x92, 0xf9, 0x6b, 0x2e, 0xc1, 0xda, 0xbe, 0xe8,
-	0xe3, 0xd0, 0x7d, 0xf7, 0x5f, 0xe7, 0xbf, 0xd1, 0xb9, 0x02, 0xca, 0x97, 0xb5, 0x94, 0x42, 0xef,
-	0xfe, 0xca, 0x83, 0x7c, 0x8b, 0x7b, 0xf0, 0xbd, 0x9e, 0xf8, 0x3a, 0xc3, 0xfa, 0xf0, 0x99, 0x95,
-	0x79, 0x5d, 0x5a, 0x0b, 0x0f, 0x78, 0xe5, 0xf9, 0x92, 0x2c, 0xd9, 0x0f, 0x64, 0xa0, 0x74, 0xe1,
-	0x52, 0x81, 0xb5, 0xab, 0x33, 0x65, 0x5c, 0xca, 0x15, 0xeb, 0xba, 0xe1, 0xa9, 0x8a, 0xe7, 0x5d,
-	0xb8, 0xa8, 0x62, 0xc6, 0xc1, 0x5f, 0x54, 0x31, 0xcb, 0xdc, 0x90, 0x83, 0x8d, 0x8b, 0xfb, 0x01,
-	0x17, 0xe4, 0xc8, 0x3a, 0x04, 0x15, 0xfb, 0xda, 0xf1, 0xb2, 0x68, 0xc3, 0x19, 0xff, 0x34, 0xb4,
-	0x4f, 0x13, 0x43, 0x1b, 0x4f, 0x0c, 0xfd, 0x74, 0x62, 0xe8, 0x3f, 0x26, 0x86, 0xfe, 0x61, 0x6a,
-	0x68, 0xa7, 0x53, 0x43, 0xfb, 0x36, 0x35, 0xb4, 0xd7, 0x4f, 0x52, 0xc6, 0x8e, 0x93, 0xd7, 0x68,
-	0xaf, 0xe7, 0x77, 0x7d, 0x77, 0xa0, 0xe6, 0xf6, 0xfc, 0x49, 0x4d, 0x6c, 0xde, 0x59, 0x4b, 0x5e,
-	0xc8, 0xa7, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x23, 0xa9, 0x9f, 0xd1, 0x70, 0x07, 0x00, 0x00,
+	// 638 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0xb5, 0x13, 0xb7, 0xb4, 0x8b, 0xa0, 0xc5, 0x6d, 0x21, 0x18, 0xd5, 0xae, 0x16, 0x09, 0xf5,
+	0x40, 0x6c, 0x52, 0x6e, 0x5c, 0x50, 0x5b, 0x2e, 0x91, 0x9a, 0x8b, 0x2f, 0x95, 0xb8, 0x20, 0xd7,
+	0xbb, 0x75, 0xad, 0xc6, 0x5d, 0xe3, 0xdd, 0xd0, 0x56, 0xe2, 0x23, 0xf8, 0x02, 0xce, 0x9c, 0xe1,
+	0x27, 0x22, 0x71, 0xe9, 0xb1, 0xe2, 0x60, 0x41, 0xf2, 0x07, 0xf9, 0x01, 0x90, 0xbd, 0xdb, 0xc4,
+	0x6e, 0x9c, 0xc8, 0x41, 0xe4, 0xc6, 0x29, 0x9b, 0x9d, 0xd9, 0x79, 0xb3, 0x6f, 0x66, 0x9e, 0x17,
+	0xe8, 0x2e, 0x09, 0x10, 0xbe, 0xb0, 0xda, 0xc4, 0x3d, 0xc5, 0x91, 0xf5, 0xa1, 0x71, 0x84, 0x99,
+	0xd3, 0xb0, 0xd8, 0x85, 0x19, 0x46, 0x84, 0x11, 0x75, 0x83, 0xdb, 0x4d, 0x6e, 0x37, 0x85, 0x5d,
+	0x5b, 0xf7, 0x88, 0x47, 0x52, 0x0f, 0x2b, 0x59, 0x71, 0x67, 0xf8, 0x5b, 0x06, 0x0f, 0x5b, 0xd4,
+	0xdb, 0x8f, 0xb0, 0xc3, 0xf0, 0x41, 0x7a, 0xc2, 0xc6, 0xef, 0x3b, 0x98, 0x32, 0x75, 0x07, 0x2c,
+	0x23, 0x1c, 0x12, 0xea, 0x33, 0x12, 0xd5, 0xe4, 0x2d, 0x79, 0x7b, 0x79, 0x6f, 0x7d, 0x10, 0x1b,
+	0xab, 0x97, 0x4e, 0xd0, 0x7e, 0x05, 0x87, 0x26, 0x68, 0x8f, 0xdc, 0xd4, 0x43, 0xb0, 0xe8, 0x04,
+	0xa4, 0x73, 0xc6, 0x6a, 0x95, 0xf4, 0xc0, 0xeb, 0x6e, 0x6c, 0x48, 0x3f, 0x62, 0xe3, 0x99, 0xe7,
+	0xb3, 0x93, 0xce, 0x91, 0xe9, 0x92, 0xc0, 0x72, 0x09, 0x0d, 0x08, 0x15, 0x3f, 0x75, 0x8a, 0x4e,
+	0x2d, 0x76, 0x19, 0x62, 0x6a, 0x36, 0xcf, 0xd8, 0x20, 0x36, 0xee, 0xf1, 0xf0, 0x3c, 0x0a, 0xb4,
+	0x45, 0x38, 0xd5, 0x04, 0x4b, 0x0e, 0xa5, 0x98, 0xbd, 0xf3, 0x51, 0xad, 0xba, 0x25, 0x6f, 0x2b,
+	0x7b, 0x6b, 0x83, 0xd8, 0x58, 0x11, 0xce, 0xc2, 0x02, 0xed, 0x3b, 0xe9, 0xb2, 0x89, 0xd4, 0x6d,
+	0xb0, 0xe8, 0x84, 0x61, 0xe2, 0xad, 0xa4, 0xde, 0x0f, 0x32, 0xa1, 0xd3, 0x7d, 0x68, 0x2f, 0x38,
+	0x61, 0xd8, 0x44, 0xf0, 0x31, 0x78, 0x34, 0x46, 0x00, 0x0d, 0xc9, 0x19, 0xc5, 0xf0, 0xb3, 0x0c,
+	0x36, 0x5b, 0xd4, 0xdb, 0x45, 0xe8, 0xf0, 0xc4, 0x67, 0xf8, 0xc0, 0xa7, 0x0c, 0xa3, 0xdd, 0x04,
+	0xe1, 0x86, 0xa3, 0xa7, 0x40, 0x39, 0x8e, 0x48, 0x20, 0xe8, 0x59, 0x19, 0xc4, 0xc6, 0x5d, 0x0e,
+	0x92, 0xec, 0x42, 0x3b, 0x35, 0x66, 0x72, 0xa9, 0x4c, 0xcf, 0x65, 0xd6, 0x5b, 0xc2, 0x2d, 0xa0,
+	0x4f, 0xca, 0x4f, 0x5c, 0xe1, 0x6b, 0x25, 0xad, 0xef, 0x1b, 0x5e, 0xa1, 0x5c, 0xee, 0x7f, 0x53,
+	0xdf, 0x06, 0x58, 0xe6, 0x6d, 0x35, 0xba, 0x4d, 0xe6, 0xcc, 0xd0, 0x04, 0xed, 0x25, 0xbe, 0x6e,
+	0xa2, 0x4c, 0x4b, 0x54, 0xe7, 0xd7, 0x12, 0xca, 0x4c, 0x2d, 0xb1, 0x50, 0xaa, 0x25, 0xf2, 0x9c,
+	0x09, 0x3e, 0xbf, 0x55, 0x52, 0xdb, 0xa1, 0xcf, 0x4e, 0x50, 0xe4, 0x9c, 0xff, 0x27, 0xb4, 0x14,
+	0xa1, 0x1a, 0xa8, 0x8d, 0x93, 0x26, 0x18, 0xbd, 0x96, 0xc1, 0x46, 0x32, 0x80, 0x6d, 0x42, 0xff,
+	0x81, 0x00, 0xcd, 0x6d, 0xd6, 0xf2, 0x95, 0x52, 0xca, 0x54, 0x0a, 0xd6, 0xb8, 0xb6, 0x66, 0x6f,
+	0x36, 0x52, 0x16, 0xad, 0x45, 0xbd, 0x9b, 0xdd, 0x73, 0x27, 0x42, 0xfb, 0x4e, 0xdb, 0x9d, 0x93,
+	0xac, 0xe4, 0x52, 0xaf, 0x96, 0x4a, 0x7d, 0x13, 0x3c, 0x29, 0xcc, 0x8f, 0xe7, 0xbf, 0xf3, 0x5d,
+	0x01, 0xd5, 0x16, 0xf5, 0xd4, 0x10, 0xac, 0xdc, 0x12, 0x4f, 0xb5, 0x6e, 0x16, 0x7e, 0x7f, 0xcc,
+	0xe2, 0xaf, 0x8c, 0x66, 0x96, 0x75, 0xe7, 0xc8, 0x02, 0x31, 0x3b, 0x9b, 0xd3, 0x10, 0x0b, 0x74,
+	0x6f, 0x1a, 0x62, 0xd1, 0xc8, 0xab, 0x14, 0xac, 0xde, 0x6e, 0x5e, 0x75, 0x4a, 0x8c, 0x22, 0x69,
+	0xd0, 0xac, 0xd2, 0xfe, 0x02, 0x34, 0x00, 0xf7, 0xf3, 0xad, 0xa3, 0x3e, 0x9f, 0x42, 0xd4, 0xd8,
+	0xec, 0x68, 0xf5, 0x92, 0xde, 0x02, 0xee, 0x23, 0x58, 0x2b, 0x28, 0xb7, 0xda, 0x98, 0x1c, 0x65,
+	0x42, 0xeb, 0x6a, 0x3b, 0xb3, 0x1c, 0xe1, 0xe8, 0x7b, 0x76, 0xf7, 0x97, 0x2e, 0x7d, 0xe9, 0xe9,
+	0x52, 0xb7, 0xa7, 0xcb, 0x57, 0x3d, 0x5d, 0xfe, 0xd9, 0xd3, 0xe5, 0x4f, 0x7d, 0x5d, 0xba, 0xea,
+	0xeb, 0xd2, 0x75, 0x5f, 0x97, 0xde, 0xbe, 0xc8, 0x69, 0x5b, 0x12, 0xbf, 0x4e, 0x8e, 0x8f, 0x7d,
+	0xd7, 0x77, 0xda, 0xe2, 0xbf, 0x35, 0x7c, 0x10, 0xa5, 0x4a, 0x77, 0xb4, 0x98, 0xbe, 0x6f, 0x5e,
+	0xfe, 0x09, 0x00, 0x00, 0xff, 0xff, 0x77, 0x5d, 0x53, 0x3d, 0x2e, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -399,10 +558,11 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	MsgAddWhiteListedAsset(ctx context.Context, in *MsgAddWhiteListedAssetRequest, opts ...grpc.CallOption) (*MsgAddWhiteListedAssetResponse, error)
 	MsgCreateLocker(ctx context.Context, in *MsgCreateLockerRequest, opts ...grpc.CallOption) (*MsgCreateLockerResponse, error)
 	MsgDepositAsset(ctx context.Context, in *MsgDepositAssetRequest, opts ...grpc.CallOption) (*MsgDepositAssetResponse, error)
 	MsgWithdrawAsset(ctx context.Context, in *MsgWithdrawAssetRequest, opts ...grpc.CallOption) (*MsgWithdrawAssetResponse, error)
+	MsgCloseLocker(ctx context.Context, in *MsgCloseLockerRequest, opts ...grpc.CallOption) (*MsgCloseLockerResponse, error)
+	MsgLockerRewardCalc(ctx context.Context, in *MsgLockerRewardCalcRequest, opts ...grpc.CallOption) (*MsgLockerRewardCalcResponse, error)
 }
 
 type msgClient struct {
@@ -411,15 +571,6 @@ type msgClient struct {
 
 func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
-}
-
-func (c *msgClient) MsgAddWhiteListedAsset(ctx context.Context, in *MsgAddWhiteListedAssetRequest, opts ...grpc.CallOption) (*MsgAddWhiteListedAssetResponse, error) {
-	out := new(MsgAddWhiteListedAssetResponse)
-	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Msg/MsgAddWhiteListedAsset", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *msgClient) MsgCreateLocker(ctx context.Context, in *MsgCreateLockerRequest, opts ...grpc.CallOption) (*MsgCreateLockerResponse, error) {
@@ -449,21 +600,37 @@ func (c *msgClient) MsgWithdrawAsset(ctx context.Context, in *MsgWithdrawAssetRe
 	return out, nil
 }
 
+func (c *msgClient) MsgCloseLocker(ctx context.Context, in *MsgCloseLockerRequest, opts ...grpc.CallOption) (*MsgCloseLockerResponse, error) {
+	out := new(MsgCloseLockerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Msg/MsgCloseLocker", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) MsgLockerRewardCalc(ctx context.Context, in *MsgLockerRewardCalcRequest, opts ...grpc.CallOption) (*MsgLockerRewardCalcResponse, error) {
+	out := new(MsgLockerRewardCalcResponse)
+	err := c.cc.Invoke(ctx, "/comdex.locker.v1beta1.Msg/MsgLockerRewardCalc", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	MsgAddWhiteListedAsset(context.Context, *MsgAddWhiteListedAssetRequest) (*MsgAddWhiteListedAssetResponse, error)
 	MsgCreateLocker(context.Context, *MsgCreateLockerRequest) (*MsgCreateLockerResponse, error)
 	MsgDepositAsset(context.Context, *MsgDepositAssetRequest) (*MsgDepositAssetResponse, error)
 	MsgWithdrawAsset(context.Context, *MsgWithdrawAssetRequest) (*MsgWithdrawAssetResponse, error)
+	MsgCloseLocker(context.Context, *MsgCloseLockerRequest) (*MsgCloseLockerResponse, error)
+	MsgLockerRewardCalc(context.Context, *MsgLockerRewardCalcRequest) (*MsgLockerRewardCalcResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) MsgAddWhiteListedAsset(ctx context.Context, req *MsgAddWhiteListedAssetRequest) (*MsgAddWhiteListedAssetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgAddWhiteListedAsset not implemented")
-}
 func (*UnimplementedMsgServer) MsgCreateLocker(ctx context.Context, req *MsgCreateLockerRequest) (*MsgCreateLockerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgCreateLocker not implemented")
 }
@@ -473,27 +640,15 @@ func (*UnimplementedMsgServer) MsgDepositAsset(ctx context.Context, req *MsgDepo
 func (*UnimplementedMsgServer) MsgWithdrawAsset(ctx context.Context, req *MsgWithdrawAssetRequest) (*MsgWithdrawAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgWithdrawAsset not implemented")
 }
+func (*UnimplementedMsgServer) MsgCloseLocker(ctx context.Context, req *MsgCloseLockerRequest) (*MsgCloseLockerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgCloseLocker not implemented")
+}
+func (*UnimplementedMsgServer) MsgLockerRewardCalc(ctx context.Context, req *MsgLockerRewardCalcRequest) (*MsgLockerRewardCalcResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgLockerRewardCalc not implemented")
+}
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_MsgAddWhiteListedAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddWhiteListedAssetRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).MsgAddWhiteListedAsset(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/comdex.locker.v1beta1.Msg/MsgAddWhiteListedAsset",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).MsgAddWhiteListedAsset(ctx, req.(*MsgAddWhiteListedAssetRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_MsgCreateLocker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -550,14 +705,46 @@ func _Msg_MsgWithdrawAsset_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgCloseLocker_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCloseLockerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgCloseLocker(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.locker.v1beta1.Msg/MsgCloseLocker",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgCloseLocker(ctx, req.(*MsgCloseLockerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_MsgLockerRewardCalc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgLockerRewardCalcRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgLockerRewardCalc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.locker.v1beta1.Msg/MsgLockerRewardCalc",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgLockerRewardCalc(ctx, req.(*MsgLockerRewardCalcRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.locker.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "MsgAddWhiteListedAsset",
-			Handler:    _Msg_MsgAddWhiteListedAsset_Handler,
-		},
 		{
 			MethodName: "MsgCreateLocker",
 			Handler:    _Msg_MsgCreateLocker_Handler,
@@ -569,6 +756,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MsgWithdrawAsset",
 			Handler:    _Msg_MsgWithdrawAsset_Handler,
+		},
+		{
+			MethodName: "MsgCloseLocker",
+			Handler:    _Msg_MsgCloseLocker_Handler,
+		},
+		{
+			MethodName: "MsgLockerRewardCalc",
+			Handler:    _Msg_MsgLockerRewardCalc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -595,8 +790,8 @@ func (m *MsgCreateLockerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x20
 	}
@@ -673,8 +868,8 @@ func (m *MsgAddWhiteListedAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, 
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -731,8 +926,8 @@ func (m *MsgDepositAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x28
 	}
@@ -751,12 +946,10 @@ func (m *MsgDepositAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	}
 	i--
 	dAtA[i] = 0x1a
-	if len(m.LockerId) > 0 {
-		i -= len(m.LockerId)
-		copy(dAtA[i:], m.LockerId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.LockerId)))
+	if m.LockerId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.LockerId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Depositor) > 0 {
 		i -= len(m.Depositor)
@@ -811,8 +1004,8 @@ func (m *MsgWithdrawAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x28
 	}
@@ -831,12 +1024,10 @@ func (m *MsgWithdrawAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	}
 	i--
 	dAtA[i] = 0x1a
-	if len(m.LockerId) > 0 {
-		i -= len(m.LockerId)
-		copy(dAtA[i:], m.LockerId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.LockerId)))
+	if m.LockerId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.LockerId))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Depositor) > 0 {
 		i -= len(m.Depositor)
@@ -871,6 +1062,137 @@ func (m *MsgWithdrawAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgCloseLockerRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCloseLockerRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCloseLockerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.LockerId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.LockerId))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.AssetId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AssetId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Depositor) > 0 {
+		i -= len(m.Depositor)
+		copy(dAtA[i:], m.Depositor)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Depositor)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCloseLockerResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCloseLockerResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCloseLockerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgLockerRewardCalcRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgLockerRewardCalcRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgLockerRewardCalcRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.LockerId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.LockerId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgLockerRewardCalcResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgLockerRewardCalcResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgLockerRewardCalcResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -897,8 +1219,8 @@ func (m *MsgCreateLockerRequest) Size() (n int) {
 	if m.AssetId != 0 {
 		n += 1 + sovTx(uint64(m.AssetId))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	return n
 }
@@ -922,8 +1244,8 @@ func (m *MsgAddWhiteListedAssetRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.AssetId != 0 {
 		n += 1 + sovTx(uint64(m.AssetId))
@@ -950,17 +1272,16 @@ func (m *MsgDepositAssetRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.LockerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.LockerId != 0 {
+		n += 1 + sovTx(uint64(m.LockerId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
 	if m.AssetId != 0 {
 		n += 1 + sovTx(uint64(m.AssetId))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	return n
 }
@@ -984,22 +1305,80 @@ func (m *MsgWithdrawAssetRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.LockerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.LockerId != 0 {
+		n += 1 + sovTx(uint64(m.LockerId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
 	if m.AssetId != 0 {
 		n += 1 + sovTx(uint64(m.AssetId))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	return n
 }
 
 func (m *MsgWithdrawAssetResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgCloseLockerRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Depositor)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.AssetId != 0 {
+		n += 1 + sovTx(uint64(m.AssetId))
+	}
+	if m.LockerId != 0 {
+		n += 1 + sovTx(uint64(m.LockerId))
+	}
+	return n
+}
+
+func (m *MsgCloseLockerResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgLockerRewardCalcRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.LockerId != 0 {
+		n += 1 + sovTx(uint64(m.LockerId))
+	}
+	return n
+}
+
+func (m *MsgLockerRewardCalcResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1130,9 +1509,9 @@ func (m *MsgCreateLockerRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1142,7 +1521,7 @@ func (m *MsgCreateLockerRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1281,9 +1660,9 @@ func (m *MsgAddWhiteListedAssetRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1293,7 +1672,7 @@ func (m *MsgAddWhiteListedAssetRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1450,10 +1829,10 @@ func (m *MsgDepositAssetRequest) Unmarshal(dAtA []byte) error {
 			m.Depositor = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
 			}
-			var stringLen uint64
+			m.LockerId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1463,24 +1842,11 @@ func (m *MsgDepositAssetRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.LockerId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LockerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -1536,9 +1902,9 @@ func (m *MsgDepositAssetRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1548,7 +1914,7 @@ func (m *MsgDepositAssetRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1686,10 +2052,10 @@ func (m *MsgWithdrawAssetRequest) Unmarshal(dAtA []byte) error {
 			m.Depositor = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
 			}
-			var stringLen uint64
+			m.LockerId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1699,24 +2065,11 @@ func (m *MsgWithdrawAssetRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.LockerId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.LockerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -1772,9 +2125,9 @@ func (m *MsgWithdrawAssetRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -1784,7 +2137,7 @@ func (m *MsgWithdrawAssetRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1837,6 +2190,365 @@ func (m *MsgWithdrawAssetResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgWithdrawAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCloseLockerRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCloseLockerRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCloseLockerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Depositor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Depositor = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetId", wireType)
+			}
+			m.AssetId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AssetId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
+			}
+			m.LockerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LockerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCloseLockerResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCloseLockerResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCloseLockerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgLockerRewardCalcRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgLockerRewardCalcRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgLockerRewardCalcRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LockerId", wireType)
+			}
+			m.LockerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.LockerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgLockerRewardCalcResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgLockerRewardCalcResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgLockerRewardCalcResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

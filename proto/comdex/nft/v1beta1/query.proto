@@ -4,7 +4,6 @@ package comdex.nft.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "comdex/nft/v1beta1/params.proto";
 import "comdex/nft/v1beta1/denom.proto";
 // this line is used by starport scaffolding # 1
 

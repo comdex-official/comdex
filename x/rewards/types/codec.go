@@ -10,24 +10,20 @@ import (
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateGauge{}, "comdex/rewards/MsgCreateGauge", nil)
-	cdc.RegisterConcrete(&WhitelistAsset{}, "comdex/rewards/whitelistAsset", nil)
-	cdc.RegisterConcrete(&RemoveWhitelistAsset{}, "comdex/rewards/removeWhitelistAsset", nil)
-	cdc.RegisterConcrete(&WhitelistAppIdVault{}, "comdex/rewards/whitelistAppIdVault", nil)
-	cdc.RegisterConcrete(&RemoveWhitelistAppIdVault{}, "comdex/rewards/removeWhitelistAppIdVault", nil)
 	cdc.RegisterConcrete(&ActivateExternalRewardsLockers{}, "comdex/rewards/activateExternalRewardsLockers", nil)
 	cdc.RegisterConcrete(&ActivateExternalRewardsVault{}, "comdex/rewards/activateExternalRewardsVault", nil)
+	cdc.RegisterConcrete(&ActivateExternalRewardsLend{}, "comdex/rewards/activateExternalRewardsLend", nil)
+	cdc.RegisterConcrete(&ActivateExternalRewardsStableMint{}, "comdex/rewards/activateExternalRewardsStableMint", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgCreateGauge{},
-		&WhitelistAsset{},
-		&RemoveWhitelistAsset{},
-		&WhitelistAppIdVault{},
-		&RemoveWhitelistAppIdVault{},
 		&ActivateExternalRewardsLockers{},
 		&ActivateExternalRewardsVault{},
+		&ActivateExternalRewardsLend{},
+		&ActivateExternalRewardsStableMint{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

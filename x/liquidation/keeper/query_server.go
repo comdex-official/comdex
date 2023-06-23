@@ -3,46 +3,39 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
-var _ types.QueryServer = (*queryServer)(nil)
+var _ types.QueryServer = QueryServer{}
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
 func NewQueryServer(k Keeper) types.QueryServer {
-	return &queryServer{
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
+func (q QueryServer) QueryLiquidationParams(c context.Context, _ *types.QueryLiquidationParamsRequest) (*types.QueryLiquidationParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	return &types.QueryLiquidationParamsResponse{Params: q.GetParams(ctx)}, nil
 }
 
-func (q *queryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
+func (q QueryServer) QueryLockedVault(c context.Context, req *types.QueryLockedVaultRequest) (*types.QueryLockedVaultResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
-	item, found := q.GetLockedVault(ctx, req.Id)
+	ctx := sdk.UnwrapSDKContext(c)
+	item, found := q.GetLockedVault(ctx, req.AppId, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "locked-vault does not exist for id %d", req.Id)
 	}
@@ -52,7 +45,7 @@ func (q *queryServer) QueryLockedVault(c context.Context, req *types.QueryLocked
 	}, nil
 }
 
-func (q *queryServer) QueryLockedVaults(c context.Context, req *types.QueryLockedVaultsRequest) (*types.QueryLockedVaultsResponse, error) {
+func (q QueryServer) QueryLockedVaults(c context.Context, req *types.QueryLockedVaultsRequest) (*types.QueryLockedVaultsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -78,7 +71,6 @@ func (q *queryServer) QueryLockedVaults(c context.Context, req *types.QueryLocke
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -89,7 +81,7 @@ func (q *queryServer) QueryLockedVaults(c context.Context, req *types.QueryLocke
 	}, nil
 }
 
-func (q *queryServer) QueryLockedVaultsHistory(c context.Context, req *types.QueryLockedVaultsHistoryRequest) (*types.QueryLockedVaultsHistoryResponse, error) {
+func (q QueryServer) QueryLockedVaultsHistory(c context.Context, req *types.QueryLockedVaultsHistoryRequest) (*types.QueryLockedVaultsHistoryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -100,7 +92,7 @@ func (q *queryServer) QueryLockedVaultsHistory(c context.Context, req *types.Que
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.LockedVaultKeyHistory),
+		prefix.NewStore(q.Store(ctx), types.LockedVaultDataKeyHistory),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LockedVault
@@ -115,7 +107,6 @@ func (q *queryServer) QueryLockedVaultsHistory(c context.Context, req *types.Que
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -126,7 +117,7 @@ func (q *queryServer) QueryLockedVaultsHistory(c context.Context, req *types.Que
 	}, nil
 }
 
-func (q *queryServer) QueryUserLockedVaults(c context.Context, req *types.QueryUserLockedVaultsRequest) (*types.QueryUserLockedVaultsResponse, error) {
+func (q QueryServer) QueryUserLockedVaults(c context.Context, req *types.QueryUserLockedVaultsRequest) (*types.QueryUserLockedVaultsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -152,7 +143,6 @@ func (q *queryServer) QueryUserLockedVaults(c context.Context, req *types.QueryU
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -163,7 +153,7 @@ func (q *queryServer) QueryUserLockedVaults(c context.Context, req *types.QueryU
 	}, nil
 }
 
-func (q *queryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.QueryUserLockedVaultsHistoryRequest) (*types.QueryUserLockedVaultsHistoryResponse, error) {
+func (q QueryServer) QueryUserLockedVaultsHistory(c context.Context, req *types.QueryUserLockedVaultsHistoryRequest) (*types.QueryUserLockedVaultsHistoryResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -174,7 +164,7 @@ func (q *queryServer) QueryUserLockedVaultsHistory(c context.Context, req *types
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.LockedVaultKeyHistory),
+		prefix.NewStore(q.Store(ctx), types.LockedVaultDataKeyHistory),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LockedVault
@@ -189,7 +179,6 @@ func (q *queryServer) QueryUserLockedVaultsHistory(c context.Context, req *types
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -200,7 +189,7 @@ func (q *queryServer) QueryUserLockedVaultsHistory(c context.Context, req *types
 	}, nil
 }
 
-func (q *queryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLockedVaultsPairRequest) (*types.QueryLockedVaultsPairResponse, error) {
+func (q QueryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryLockedVaultsPairRequest) (*types.QueryLockedVaultsPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -226,7 +215,6 @@ func (q *queryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryL
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -237,12 +225,10 @@ func (q *queryServer) QueryLockedVaultsPair(c context.Context, req *types.QueryL
 	}, nil
 }
 
-func (q *queryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest) (*types.QueryAppIdsResponse, error) {
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+func (q QueryServer) QueryAppIds(c context.Context, _ *types.QueryAppIdsRequest) (*types.QueryAppIdsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
 
-	item := q.GetAppIds(ctx)
+	item := q.GetAppIdsForLiquidation(ctx)
 	return &types.QueryAppIdsResponse{
 		WhitelistedAppIds: item,
 	}, nil

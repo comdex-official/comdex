@@ -3,8 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 type msgServer struct {
@@ -27,6 +28,7 @@ func (k msgServer) MsgPlaceSurplusBid(goCtx context.Context, msg *types.MsgPlace
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.SurplusBidGas, "SurplusBidGas")
 	return &types.MsgPlaceSurplusBidResponse{}, nil
 }
 
@@ -40,6 +42,7 @@ func (k msgServer) MsgPlaceDebtBid(goCtx context.Context, msg *types.MsgPlaceDeb
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DebtBidGas, "DebtBidGas")
 	return &types.MsgPlaceDebtBidResponse{}, nil
 }
 
@@ -49,9 +52,24 @@ func (k msgServer) MsgPlaceDutchBid(goCtx context.Context, msg *types.MsgPlaceDu
 	if err != nil {
 		return nil, err
 	}
-	err = k.PlaceDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount, msg.Max)
+	err = k.PlaceDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
 	if err != nil {
 		return nil, err
 	}
+	ctx.GasMeter().ConsumeGas(types.DutchBidGas, "DutchBidGas")
 	return &types.MsgPlaceDutchBidResponse{}, nil
+}
+
+func (k msgServer) MsgPlaceDutchLendBid(goCtx context.Context, msg *types.MsgPlaceDutchLendBidRequest) (*types.MsgPlaceDutchLendBidResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	bidder, err := sdk.AccAddressFromBech32(msg.Bidder)
+	if err != nil {
+		return nil, err
+	}
+	err = k.PlaceLendDutchAuctionBid(ctx, msg.AppId, msg.AuctionMappingId, msg.AuctionId, bidder, msg.Amount)
+	if err != nil {
+		return nil, err
+	}
+	ctx.GasMeter().ConsumeGas(types.DutchLendBidGas, "DutchLendBidGas")
+	return &types.MsgPlaceDutchLendBidResponse{}, nil
 }

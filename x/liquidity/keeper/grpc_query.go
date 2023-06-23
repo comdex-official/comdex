@@ -7,12 +7,14 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+
+	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
@@ -108,26 +110,15 @@ func (k Querier) Pools(c context.Context, req *types.QueryPoolsRequest) (*types.
 			}
 		}
 
-		pair := pairGetter(pool.PairId)
-		rx, ry := k.getPoolBalances(ctx, pool, pair)
-		poolRes := types.PoolResponse{
-			Id:                    pool.Id,
-			PairId:                pool.PairId,
-			ReserveAddress:        pool.ReserveAddress,
-			PoolCoinDenom:         pool.PoolCoinDenom,
-			Balances:              sdk.NewCoins(rx, ry),
-			LastDepositRequestId:  pool.LastDepositRequestId,
-			LastWithdrawRequestId: pool.LastWithdrawRequestId,
-			AppId:                 req.AppId,
-		}
-
 		if accumulate {
-			poolsRes = append(poolsRes, poolRes)
+			pair := pairGetter(pool.PairId)
+			rx, ry := k.getPoolBalances(ctx, pool, pair)
+			ps := k.GetPoolCoinSupply(ctx, pool)
+			poolsRes = append(poolsRes, types.NewPoolResponse(pool, rx, ry, ps))
 		}
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -157,18 +148,9 @@ func (k Querier) Pool(c context.Context, req *types.QueryPoolRequest) (*types.Qu
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // PoolByReserveAddress queries the specific pool by the reserve account address.
@@ -198,18 +180,9 @@ func (k Querier) PoolByReserveAddress(c context.Context, req *types.QueryPoolByR
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // PoolByPoolCoinDenom queries the specific pool by the pool coin denomination.
@@ -243,18 +216,9 @@ func (k Querier) PoolByPoolCoinDenom(c context.Context, req *types.QueryPoolByPo
 	}
 
 	rx, ry := k.GetPoolBalances(ctx, pool)
-	poolRes := types.PoolResponse{
-		Id:                    pool.Id,
-		PairId:                pool.PairId,
-		ReserveAddress:        pool.ReserveAddress,
-		PoolCoinDenom:         pool.PoolCoinDenom,
-		Balances:              sdk.NewCoins(rx, ry),
-		LastDepositRequestId:  pool.LastDepositRequestId,
-		LastWithdrawRequestId: pool.LastWithdrawRequestId,
-		AppId:                 req.AppId,
-	}
+	ps := k.GetPoolCoinSupply(ctx, pool)
 
-	return &types.QueryPoolResponse{Pool: poolRes}, nil
+	return &types.QueryPoolResponse{Pool: types.NewPoolResponse(pool, rx, ry, ps)}, nil
 }
 
 // Pairs queries all pairs.
@@ -314,7 +278,6 @@ func (k Querier) Pairs(c context.Context, req *types.QueryPairsRequest) (*types.
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -381,7 +344,6 @@ func (k Querier) DepositRequests(c context.Context, req *types.QueryDepositReque
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -452,7 +414,6 @@ func (k Querier) WithdrawRequests(c context.Context, req *types.QueryWithdrawReq
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -523,7 +484,6 @@ func (k Querier) Orders(c context.Context, req *types.QueryOrdersRequest) (*type
 
 		return true, nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -601,8 +561,8 @@ func (k Querier) OrdersByOrderer(c context.Context, req *types.QueryOrdersByOrde
 	return &types.QueryOrdersResponse{Orders: orders, Pagination: pageRes}, nil
 }
 
-// SoftLock returns softlocks created by an depositor in specific pool.
-func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*types.QuerySoftLockResponse, error) {
+// Farmer returns farming status of pool-coins farmed by address.
+func (k Querier) Farmer(c context.Context, req *types.QueryFarmerRequest) (*types.QueryFarmerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -610,12 +570,15 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 	if req.AppId == 0 {
 		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
 	}
+	if req.PoolId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "pool id cannot be 0")
+	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	depositor, err := sdk.AccAddressFromBech32(req.Depositor)
+	farmer, err := sdk.AccAddressFromBech32(req.Farmer)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "orderer address %s is invalid", req.Depositor)
+		return nil, status.Errorf(codes.InvalidArgument, "farmer address %s is invalid", req.Farmer)
 	}
 
 	poolID := req.PoolId
@@ -625,43 +588,32 @@ func (k Querier) SoftLock(c context.Context, req *types.QuerySoftLockRequest) (*
 		return nil, types.ErrInvalidPoolID
 	}
 
-	lpData, found := k.GetPoolLiquidityProvidersData(ctx, req.AppId, poolID)
-	if !found {
-		return &types.QuerySoftLockResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
+	activeFarmer, afound := k.GetActiveFarmer(ctx, req.AppId, req.PoolId, farmer)
+	queuedFarmer, qfound := k.GetQueuedFarmer(ctx, req.AppId, req.PoolId, farmer)
+
+	if !afound && !qfound {
+		return &types.QueryFarmerResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
 	availableLiquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
 	minEpochDuration := k.GetMinimumEpochDurationFromPoolID(ctx, poolID, availableLiquidityGauges)
 
 	var queuedCoins []types.QueuedPoolCoin
-	for _, queuedRequest := range lpData.QueuedLiquidityProviders {
-		if queuedRequest.Address == depositor.String() {
-			poolCoin := sdk.Coin{}
-			for _, coin := range queuedRequest.SupplyProvided {
-				if coin.Denom == pool.PoolCoinDenom {
-					poolCoin = *coin
-					break
-				}
-			}
+	if qfound {
+		for _, queuedCoin := range queuedFarmer.QueudCoins {
 			queuedCoins = append(queuedCoins, types.QueuedPoolCoin{
-				PoolCoin: poolCoin,
-				DequeAt:  queuedRequest.CreatedAt.Add(minEpochDuration),
+				PoolCoin: queuedCoin.FarmedPoolCoin,
+				DequeAt:  queuedCoin.CreatedAt.Add(minEpochDuration),
 			})
 		}
 	}
 
 	activePoolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0))
-	activeCoins, found := lpData.LiquidityProviders[depositor.String()]
-	if found {
-		for _, coin := range activeCoins.Coins {
-			if coin.Denom == pool.PoolCoinDenom {
-				activePoolCoin = coin
-				break
-			}
-		}
+	if afound {
+		activePoolCoin.Amount = activePoolCoin.Amount.Add(activeFarmer.FarmedPoolCoin.Amount)
 	}
 
-	return &types.QuerySoftLockResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
+	return &types.QueryFarmerResponse{ActivePoolCoin: activePoolCoin, QueuedPoolCoin: queuedCoins}, nil
 }
 
 // DeserializePoolCoin splits poolcoin amount into actual assets provided by depositor.
@@ -669,26 +621,15 @@ func (k Querier) DeserializePoolCoin(c context.Context, req *types.QueryDeserial
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
-
 	if req.AppId == 0 {
 		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
 	}
-
 	ctx := sdk.UnwrapSDKContext(c)
-
-	pool, pair, ammPool, err := k.GetAMMPoolInterfaceObject(ctx, req.AppId, req.PoolId)
+	farmedCoins, err := k.DeserializePoolCoinHelper(ctx, req.AppId, req.PoolId, req.PoolCoinAmount)
 	if err != nil {
 		return nil, err
 	}
-	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(int64(req.PoolCoinAmount)))
-	x, y, err := k.CalculateXYFromPoolCoin(ctx, ammPool, poolCoin)
-	if err != nil {
-		return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{sdk.NewCoin(pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(pair.BaseCoinDenom, sdk.NewInt(0))}}, nil
-	}
-	quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
-	baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
-
-	return &types.QueryDeserializePoolCoinResponse{Coins: []sdk.Coin{quoteCoin, baseCoin}}, nil
+	return &types.QueryDeserializePoolCoinResponse{Coins: farmedCoins}, nil
 }
 
 // PoolIncentives provides insights about available pool incentives.
@@ -729,7 +670,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 		if len(gauge.GetLiquidityMetaData().ChildPoolIds) == 0 {
 			pools := k.GetAllPools(ctx, req.AppId)
 			for _, pool := range pools {
-				if pool.Id != gauge.GetLiquidityMetaData().PoolId {
+				if pool.Id != gauge.GetLiquidityMetaData().PoolId && !pool.Disabled {
 					childPoolIds = append(childPoolIds, pool.Id)
 				}
 			}
@@ -758,7 +699,7 @@ func (k Querier) PoolIncentives(c context.Context, req *types.QueryPoolsIncentiv
 	return &types.QueryPoolIncentivesResponse{PoolIncentives: poolIncentives}, nil
 }
 
-// FarmedPoolCoin returns the total pool coin in soft-lock.
+// FarmedPoolCoin returns the total farmed pool coin .
 func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoinRequest) (*types.QueryFarmedPoolCoinResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
@@ -774,7 +715,154 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
 	}
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-	softLockedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
+	farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 
-	return &types.QueryFarmedPoolCoinResponse{Coin: softLockedCoins}, nil
+	return &types.QueryFarmedPoolCoinResponse{Coin: farmedCoins}, nil
+}
+
+// TotalActiveAndQueuedPoolCoin returns the total number of active and queued farmed pool coins in each pool.
+func (k Querier) TotalActiveAndQueuedPoolCoin(c context.Context, req *types.QueryAllFarmedPoolCoinsRequest) (*types.QueryAllFarmedPoolCoinsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.AppId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var totalActiveAndQueuedPoolCoins []*types.TotalActiveAndQueuedPoolCoins
+
+	pools := k.GetAllPools(ctx, req.AppId)
+	for _, pool := range pools {
+		totalActiveCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		allActiveFarmers := k.GetAllActiveFarmers(ctx, req.AppId, pool.Id)
+		for _, afarmer := range allActiveFarmers {
+			totalActiveCoin = totalActiveCoin.Add(afarmer.FarmedPoolCoin)
+		}
+
+		totalQueuedCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		allQueuedFarmers := k.GetAllQueuedFarmers(ctx, req.AppId, pool.Id)
+		for _, qfarmer := range allQueuedFarmers {
+			for _, qCoin := range qfarmer.QueudCoins {
+				totalQueuedCoin = totalQueuedCoin.Add(qCoin.FarmedPoolCoin)
+			}
+		}
+
+		totalActiveAndQueuedPoolCoins = append(totalActiveAndQueuedPoolCoins,
+			&types.TotalActiveAndQueuedPoolCoins{
+				PoolId:              pool.Id,
+				TotalActivePoolCoin: totalActiveCoin,
+				TotalQueuedPoolCoin: totalQueuedCoin,
+			},
+		)
+	}
+	return &types.QueryAllFarmedPoolCoinsResponse{AppId: req.AppId, TotalActiveAndQueuedCoins: totalActiveAndQueuedPoolCoins}, nil
+}
+
+// OrderBooks queries virtual order books from user orders and pools.
+func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest) (*types.QueryOrderBooksResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.AppId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "app id cannot be 0")
+	}
+
+	if len(req.PairIds) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "pair ids must not be empty")
+	}
+
+	if len(req.PriceUnitPowers) == 0 {
+		req.PriceUnitPowers = []uint32{0, 1, 2}
+	}
+
+	if req.NumTicks == 0 {
+		return nil, status.Error(codes.InvalidArgument, "number of ticks must not be 0")
+	}
+
+	pairIDSet := map[uint64]struct{}{}
+	for _, pairID := range req.PairIds {
+		if _, ok := pairIDSet[pairID]; ok {
+			return nil, status.Errorf(codes.InvalidArgument, "duplicate pair id: %d", pairID)
+		}
+		pairIDSet[pairID] = struct{}{}
+	}
+
+	priceUnitPowerSet := map[uint32]struct{}{}
+	for _, p := range req.PriceUnitPowers {
+		if _, ok := priceUnitPowerSet[p]; ok {
+			return nil, status.Errorf(codes.InvalidArgument, "duplicate price unit power: %d", p)
+		}
+		priceUnitPowerSet[p] = struct{}{}
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	_, found := k.assetKeeper.GetApp(ctx, req.AppId)
+	if !found {
+		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", req.AppId)
+	}
+
+	params, err := k.GetGenericParams(ctx, req.AppId)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "params retreval failed")
+	}
+
+	tickPrec := params.TickPrecision
+
+	var pairs []types.OrderBookPairResponse
+	for _, pairID := range req.PairIds {
+		pair, found := k.GetPair(ctx, req.AppId, pairID)
+		if !found {
+			return nil, status.Errorf(codes.NotFound, "pair %d doesn't exist", pairID)
+		}
+
+		if pair.LastPrice == nil {
+			return nil, status.Errorf(codes.Unavailable, "pair %d does not have last price", pairID)
+		}
+
+		ob := amm.NewOrderBook()
+		_ = k.IterateOrdersByPair(ctx, req.AppId, pairID, func(order types.Order) (stop bool, err error) {
+			switch order.Status {
+			case types.OrderStatusNotExecuted,
+				types.OrderStatusNotMatched,
+				types.OrderStatusPartiallyMatched:
+				ob.AddOrder(types.NewUserOrder(order))
+			}
+			return false, nil
+		})
+
+		lowestPrice, highestPrice := k.PriceLimits(ctx, *pair.LastPrice, params)
+		_ = k.IteratePoolsByPair(ctx, req.AppId, pairID, func(pool types.Pool) (stop bool, err error) {
+			if pool.Disabled {
+				return false, nil
+			}
+			rx, ry := k.getPoolBalances(ctx, pool, pair)
+			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+			ob.AddOrder(amm.PoolOrders(ammPool, amm.DefaultOrderer, lowestPrice, highestPrice, int(tickPrec))...)
+			return false, nil
+		})
+
+		ov := ob.MakeView()
+		ov.Match()
+
+		var configs []types.OrderBookConfig
+		for _, p := range req.PriceUnitPowers {
+			configs = append(configs, types.OrderBookConfig{
+				PriceUnitPower: int(p),
+				MaxNumTicks:    int(req.NumTicks),
+			})
+		}
+
+		pairs = append(
+			pairs, types.MakeOrderBookPairResponse(
+				pair.Id, ov, lowestPrice, highestPrice, int(tickPrec), configs...))
+	}
+
+	return &types.QueryOrderBooksResponse{
+		Pairs: pairs,
+	}, nil
 }

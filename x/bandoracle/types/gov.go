@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
@@ -13,15 +14,13 @@ func init() {
 	govtypes.RegisterProposalTypeCodec(&FetchPriceProposal{}, "comdex/FetchPriceProposal")
 }
 
-var (
-	_ govtypes.Content = &FetchPriceProposal{}
-)
+var _ govtypes.Content = &FetchPriceProposal{}
 
-func NewFetchPriceProposal(title, description string, fetchprice MsgFetchPriceData) govtypes.Content {
+func NewFetchPriceProposal(title, description string, fetchPrice MsgFetchPriceData) govtypes.Content {
 	return &FetchPriceProposal{
 		Title:       title,
 		Description: description,
-		FetchPrice:  fetchprice,
+		FetchPrice:  fetchPrice,
 	}
 }
 
@@ -31,6 +30,9 @@ func (p *FetchPriceProposal) ProposalType() string { return ProposalFetchPrice }
 
 func (p *FetchPriceProposal) ValidateBasic() error {
 	err := govtypes.ValidateAbstract(p)
+	if p.FetchPrice.TwaBatchSize == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid batch size")
+	}
 	if err != nil {
 		return err
 	}

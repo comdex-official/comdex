@@ -24,6 +24,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCreatePool:
 			res, err := msgServer.CreatePool(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgCreateRangedPool:
+			res, err := msgServer.CreateRangedPool(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgDeposit:
 			res, err := msgServer.Deposit(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -36,17 +39,29 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgMarketOrder:
 			res, err := msgServer.MarketOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgMMOrder:
+			res, err := msgServer.MMOrder(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCancelOrder:
 			res, err := msgServer.CancelOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCancelAllOrders:
 			res, err := msgServer.CancelAllOrders(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgTokensSoftLock:
-			res, err := msgServer.TokensSoftLock(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCancelMMOrder:
+			res, err := msgServer.CancelMMOrder(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgTokensSoftUnlock:
-			res, err := msgServer.TokensSoftUnlock(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgFarm:
+			res, err := msgServer.Farm(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUnfarm:
+			res, err := msgServer.Unfarm(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDepositAndFarm:
+			res, err := msgServer.DepositAndFarm(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUnfarmAndWithdraw:
+			res, err := msgServer.UnfarmAndWithdraw(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
@@ -59,6 +74,8 @@ func NewLiquidityProposalHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.UpdateGenericParamsProposal:
 			return k.HandelUpdateGenericParamsProposal(ctx, c)
+		case *types.CreateNewLiquidityPairProposal:
+			return k.HandelCreateNewLiquidityPairProposal(ctx, c)
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}

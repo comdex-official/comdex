@@ -3,6 +3,7 @@ package comdex.liquidation.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidation/types";
 option (gogoproto.equal_all) = false;
@@ -13,31 +14,29 @@ message LockedVault {
     (gogoproto.customname) = "LockedVaultId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
-  uint64 app_mapping_id = 2 [
-    (gogoproto.customname) = "AppMappingId",
+  uint64 app_id = 2 [
+    (gogoproto.customname) = "AppId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
-  string app_vault_type_id = 3 ;
-
-  string original_vault_id = 4 [
+  uint64 original_vault_id = 3 [
     (gogoproto.customname) = "OriginalVaultId",
     (gogoproto.moretags) = "yaml:\"id\""];
 
-  uint64 extended_pair_vault_id = 5 [
+  uint64 extended_pair_vault_id = 4 [
     (gogoproto.customname) = "ExtendedPairId",
     (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
 
-  string owner = 6 [
+  string owner = 5 [
     (gogoproto.customname) = "Owner",
     (gogoproto.moretags) = "yaml:\"owner\""];
 
-  string amount_in = 7 [
+  string amount_in = 6 [
     (gogoproto.customname) = "AmountIn",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"amount_in\"",
     (gogoproto.nullable) = false];
 
-  string amount_out = 8 [
+  string amount_out = 7 [
     (gogoproto.customname) = "AmountOut",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"amount_out\"",
@@ -45,62 +44,72 @@ message LockedVault {
 
   //updated_amount_out = amount_out + interest_accumulated + opening_fee_accumulated
   // + closing_fee_accumulated
-  string updated_amount_out = 9 [
+  string updated_amount_out = 8 [
     (gogoproto.customname) = "UpdatedAmountOut",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.moretags) = "yaml:\"updated_amount_out\"",
     (gogoproto.nullable) = false];
 
-  string initiator = 10 [
+  string initiator = 9 [
     (gogoproto.customname) = "Initiator",
     (gogoproto.moretags) = "yaml:\"admin\""];
 
-  bool is_auction_complete = 11 [
+  bool is_auction_complete = 10 [
     (gogoproto.customname) = "IsAuctionComplete",
     (gogoproto.moretags) = "yaml:\"is_auction_complete\""];
 
-  bool is_auction_in_progress = 12 [
+  bool is_auction_in_progress = 11 [
     (gogoproto.customname) = "IsAuctionInProgress",
     (gogoproto.moretags) = "yaml:\"is_auction_in_progress\""];
 
-  string cr_at_liquidation = 13 [
+  string cr_at_liquidation = 12 [
     (gogoproto.customname) = "CrAtLiquidation",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"cr_at_liquidation\""];
 
-  string current_collateralisation_ratio = 14 [
+  string current_collateralisation_ratio = 13 [
     (gogoproto.customname) = "CurrentCollaterlisationRatio",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
 
-  string collateral_to_be_auctioned = 15 [
+  string collateral_to_be_auctioned = 14 [
     (gogoproto.nullable) = false,
     (gogoproto.customname) = "CollateralToBeAuctioned",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"collateral_to_be_auctioned\""];
 
-  google.protobuf.Timestamp liquidation_timestamp = 16 [
+  google.protobuf.Timestamp liquidation_timestamp = 15 [
     (gogoproto.customname) = "LiquidationTimestamp",
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true,
     (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
 
-  repeated string selloff_history = 17 [
+  repeated string selloff_history = 16 [
     (gogoproto.customname) = "SellOffHistory",
     (gogoproto.moretags) = "yaml:\"selloff_history\""];
+
+  string interest_accumulated = 17[
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
+    (gogoproto.nullable) = false];
+  oneof kind {
+    BorrowMetaData borrow_meta_data = 18;
+  }
 }
 
-message LockedVaultToAppMapping {
-  uint64 app_mapping_id = 1;
-  repeated LockedVault locked_vault = 2 [
-    (gogoproto.moretags) = "yaml:\"locked_vault_id\""
+message BorrowMetaData {
+  uint64 lending_id = 1;
+  bool is_stable_borrow = 2;
+  string stable_borrow_rate = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"stable_borrow_rate\""
   ];
-}
-
-message WhitelistedAppIds{
-  repeated uint64 whitelisted_app_mapping_ids = 1 [
-    (gogoproto.moretags) = "yaml:\"whitelisted_app_mapping_ids\""
+  cosmos.base.v1beta1.Coin bridged_asset_amount = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"bridged_asset_amount\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
 }

@@ -2,13 +2,13 @@ syntax = "proto3";
 package comdex.tokenmint.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "comdex/tokenmint/v1beta1/mint.proto";
 import "comdex/tokenmint/v1beta1/params.proto";
-// this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/comdex-official/comdex/x/tokenmint/types";
 
-// GenesisState defines the tokenmint module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
-  // this line is used by starport scaffolding # genesis/proto/state
+  repeated TokenMint tokenMint = 1
+  [(gogoproto.moretags) = "yaml:\"tokenMint\"", (gogoproto.nullable) = false];
+  Params params = 2 [(gogoproto.nullable) = false];
 }

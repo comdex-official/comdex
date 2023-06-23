@@ -1,49 +1,42 @@
 package keeper
 
 import (
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
+	"strconv"
 
+	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/market/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k *Keeper) SetMarket(ctx sdk.Context, market types.Market) {
+func (k Keeper) SetTwa(ctx sdk.Context, twa types.TimeWeightedAverage) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketKey(market.Symbol)
-		value = k.cdc.MustMarshal(&market)
+		key   = types.TwaKey(twa.AssetID)
+		value = k.cdc.MustMarshal(&twa)
 	)
+
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasMarket(ctx sdk.Context, symbol string) bool {
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.MarketKey(symbol)
-	)
-	return store.Has(key)
-}
-
-func (k *Keeper) GetMarket(ctx sdk.Context, symbol string) (market types.Market, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketKey(symbol)
+		key   = types.TwaKey(id)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return market, false
+		return twa, false
 	}
 
-	k.cdc.MustUnmarshal(value, &market)
-	return market, true
+	k.cdc.MustUnmarshal(value, &twa)
+	return twa, true
 }
 
-func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
+func (k Keeper) GetAllTwa(ctx sdk.Context) (twa []types.TimeWeightedAverage) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.MarketKeyPrefix)
+		iter  = sdk.KVStorePrefixIterator(store, types.TwaKeyPrefix)
 	)
 
 	defer func(iter sdk.Iterator) {
@@ -54,125 +47,124 @@ func (k *Keeper) GetMarkets(ctx sdk.Context) (markets []types.Market) {
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var market types.Market
-		k.cdc.MustUnmarshal(iter.Value(), &market)
-		markets = append(markets, market)
+		var data types.TimeWeightedAverage
+		k.cdc.MustUnmarshal(iter.Value(), &data)
+		twa = append(twa, data)
 	}
 
-	return markets
+	return twa
 }
 
-func (k *Keeper) GetPriceForMarket(ctx sdk.Context, symbol string) (uint64, bool) {
+func (k Keeper) DeleteTwaData(ctx sdk.Context, assetID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PriceForMarketKey(symbol)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return 0, false
-	}
-
-	var price protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &price)
-
-	return price.GetValue(), true
-}
-
-func (k *Keeper) GetRates(ctx sdk.Context, symbol string) (uint64, bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.PriceForMarketKey(symbol)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return 0, false
-	}
-
-	var price protobuftypes.UInt64Value
-	k.cdc.MustUnmarshal(value, &price)
-
-	return price.GetValue(), true
-}
-
-func (k *Keeper) SetRates(ctx sdk.Context, _ string) {
-	id := k.bandoraclekeeper.GetLastFetchPriceID(ctx)
-	data, _ := k.bandoraclekeeper.GetFetchPriceResult(ctx, bandoraclemoduletypes.OracleRequestID(id))
-
-	var sym []string
-	assets := k.GetAssetsForOracle(ctx)
-	rateSliceLength := len(data.Rates)
-	if rateSliceLength >= len(assets) {
-		for i, asset := range assets {
-			sym = append(sym, asset.Name)
-			store := k.Store(ctx)
-			key := types.PriceForMarketKey(sym[i])
-
-			if data.Rates[i] != 0 {
-				value, _ := k.cdc.Marshal(&protobuftypes.UInt64Value{
-					Value: data.Rates[i],
-				})
-				store.Set(key, value)
-			}
-		}
-	}
-}
-
-func (k *Keeper) SetMarketForAsset(ctx sdk.Context, id uint64, symbol string) {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
-		value = k.cdc.MustMarshal(
-			&protobuftypes.StringValue{
-				Value: symbol,
-			},
-		)
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) HasMarketForAsset(ctx sdk.Context, id uint64) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
-	)
-
-	return store.Has(key)
-}
-
-func (k *Keeper) GetMarketForAsset(ctx sdk.Context, id uint64) (market types.Market, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
-		value = store.Get(key)
-	)
-
-	if value == nil {
-		return market, false
-	}
-
-	var symbol protobuftypes.StringValue
-	k.cdc.MustUnmarshal(value, &symbol)
-
-	return k.GetMarket(ctx, symbol.GetValue())
-}
-
-func (k *Keeper) DeleteMarketForAsset(ctx sdk.Context, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.MarketForAssetKey(id)
+		key   = types.TwaKey(assetID)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool) {
-	market, found := k.GetMarketForAsset(ctx, id)
-	if !found {
-		return 0, false
+func (k Keeper) UpdatePriceList(ctx sdk.Context, id, scriptID, rate, twaBatch uint64, acceptedBlockDiff int64) {
+	twa, found := k.GetTwa(ctx, id)
+	if found {
+		if rate <= 0 && twa.DiscardedHeightDiff < 0 {
+			twa.DiscardedHeightDiff = ctx.BlockHeight()
+			twa.IsPriceActive = false
+			k.SetTwa(ctx, twa)
+			return
+		} else if rate > 0 && twa.DiscardedHeightDiff > 0 {
+			if ctx.BlockHeight()-twa.DiscardedHeightDiff < acceptedBlockDiff {
+				twa.DiscardedHeightDiff = -1
+			} else {
+				twa.PriceValue = twa.PriceValue[:0]
+				twa.DiscardedHeightDiff = -1
+				twa.IsPriceActive = false
+				twa.CurrentIndex = 0
+			}
+			k.SetTwa(ctx, twa)
+		}
 	}
+	twa, found = k.GetTwa(ctx, id)
+	if !found && rate > 0 {
+		twa.AssetID = id
+		twa.ScriptID = scriptID
+		twa.Twa = 0
+		twa.IsPriceActive = false
+		twa.PriceValue = append(twa.PriceValue, rate)
+		twa.CurrentIndex = 1
+		twa.DiscardedHeightDiff = -1
+		k.SetTwa(ctx, twa)
+	} else if found && rate > 0 {
+		if twa.IsPriceActive {
+			twa.PriceValue[twa.CurrentIndex] = rate
+			twa.CurrentIndex = twa.CurrentIndex + 1
+			twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+			if twa.CurrentIndex >= twaBatch {
+				twa.CurrentIndex = 0
+			}
+			k.SetTwa(ctx, twa)
+		} else {
+			if len(twa.PriceValue) >= int(twaBatch) {
+				twa.PriceValue[twa.CurrentIndex] = rate
+				twa.IsPriceActive = true
+				twa.CurrentIndex = twa.CurrentIndex + 1
+				if twa.CurrentIndex >= twaBatch {
+					twa.CurrentIndex = 0
+				}
+				twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+			} else {
+				twa.PriceValue = append(twa.PriceValue, rate)
+				twa.CurrentIndex = twa.CurrentIndex + 1
+				if twa.CurrentIndex >= twaBatch {
+					twa.IsPriceActive = true
+					twa.CurrentIndex = 0
+					twa.Twa = k.CalculateTwa(ctx, twa, twaBatch)
+				}
+			}
+			k.SetTwa(ctx, twa)
+		}
+	}
+}
 
-	return k.GetPriceForMarket(ctx, market.Symbol)
+func (k Keeper) CalculateTwa(ctx sdk.Context, twa types.TimeWeightedAverage, twaBatch uint64) uint64 {
+	var sum uint64
+	oldTwa := twa.Twa
+	for i := 0; i < int(twaBatch); i++ {
+		sum = sum + twa.PriceValue[i]
+	}
+	twa.Twa = sum / twaBatch
+
+	if oldTwa != twa.Twa {
+		ctx.EventManager().EmitEvents(sdk.Events{
+			sdk.NewEvent(
+				types.EventTypeTwaChange,
+				sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(twa.AssetID, 10)),
+				sdk.NewAttribute(types.AttributeKeyOldTwa, strconv.FormatUint(oldTwa, 10)),
+				sdk.NewAttribute(types.AttributeKeyNewTwa, strconv.FormatUint(twa.Twa, 10)),
+			),
+		})
+	}
+	return twa.Twa
+}
+
+func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err error) {
+	twa, found := k.GetTwa(ctx, id)
+	if found && twa.IsPriceActive {
+		return twa.PriceValue[twa.CurrentIndex], nil
+	}
+	return 0, types.ErrorPriceNotActive
+}
+
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+	asset, found := k.assetKeeper.GetAsset(ctx, id)
+	if !found {
+		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
+	}
+	twa, found := k.GetTwa(ctx, id)
+	if found && twa.IsPriceActive {
+		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
+		denominator := sdk.NewDecFromInt(asset.Decimals)
+		return numerator.Quo(denominator), nil
+	}
+	return sdk.ZeroDec(), types.ErrorPriceNotActive
 }

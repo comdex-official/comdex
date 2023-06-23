@@ -10,13 +10,13 @@ option go_package = "github.com/comdex-official/comdex/x/lend/types";
 message LendPairsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
+  Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
 }
 
-message UpdatePairProposal {
+message MultipleLendPairsProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  Extended_Pair pair = 3 [(gogoproto.nullable) = false];
+  repeated Extended_Pair pairs = 3 [(gogoproto.nullable) = false];
 }
 
 message AddPoolsProposal {
@@ -31,8 +31,32 @@ message AddAssetToPairProposal {
   AssetToPairMapping AssetToPairMapping = 3 [(gogoproto.nullable) = false];
 }
 
-message AddAssetRatesStats {
+message AddMultipleAssetToPairProposal {
   string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
-  repeated AssetRatesStats AssetRatesStats = 3 [(gogoproto.nullable) = false];
+  repeated AssetToPairSingleMapping AssetToPairSingleMapping = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetRatesParams {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AssetRatesParams AssetRatesParams = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAuctionParamsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AuctionParams AuctionParams = 3 [(gogoproto.nullable) = false];
+}
+
+message AddPoolPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  PoolPairs PoolPairs = 3 [(gogoproto.nullable) = false];
+}
+
+message AddAssetRatesPoolPairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  AssetRatesPoolPairs AssetRatesPoolPairs = 3 [(gogoproto.nullable) = false];
 }

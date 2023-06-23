@@ -8,30 +8,28 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 service Msg {
-  rpc WhitelistApp(WhitelistAppId) returns (MsgWhitelistAppIdResponse);
-  rpc RemoveWhitelistApp(RemoveWhitelistAppId) returns (MsgRemoveWhitelistAppIdResponse);
+  rpc MsgLiquidateVault(MsgLiquidateVaultRequest) returns (MsgLiquidateVaultResponse);
+
+  rpc MsgLiquidateBorrow(MsgLiquidateBorrowRequest) returns (MsgLiquidateBorrowResponse);
 }
 
-message WhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-
-  string from    = 2 [
-    (gogoproto.moretags) = "yaml:\"from\""
-  ];
-}
-
-message RemoveWhitelistAppId {
-  uint64 app_mapping_id   = 1 [
-    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
-  ];
-
-  string from    = 2 [
-    (gogoproto.moretags) = "yaml:\"from\""
-  ];
-}
-
-message MsgWhitelistAppIdResponse {}
-
-message MsgRemoveWhitelistAppIdResponse {}
+message MsgLiquidateVaultRequest {
+    string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+    uint64 app_id = 2 [
+      (gogoproto.customname) = "AppId",
+      (gogoproto.moretags) = "yaml:\"app_id\""];
+  
+    uint64 vault_id = 3 [
+      (gogoproto.customname) = "VaultId",
+      (gogoproto.moretags) = "yaml:\"vault_id\""];
+  }
+  message  MsgLiquidateVaultResponse{}
+  
+  message MsgLiquidateBorrowRequest {
+    string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  
+    uint64 borrow_id = 2 [
+      (gogoproto.customname) = "BorrowId",
+      (gogoproto.moretags) = "yaml:\"borrow_id\""];
+  }
+  message  MsgLiquidateBorrowResponse{}

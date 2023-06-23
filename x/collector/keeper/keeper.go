@@ -5,11 +5,12 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdex-official/comdex/x/collector/expected"
-	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/comdex-official/comdex/x/collector/expected"
+	"github.com/comdex-official/comdex/x/collector/types"
 )
 
 type (
@@ -19,6 +20,8 @@ type (
 		memKey     sdk.StoreKey
 		asset      expected.AssetKeeper
 		auction    expected.AuctionKeeper
+		locker     expected.LockerKeeper
+		rewards    expected.RewardsKeeper
 		paramStore paramtypes.Subspace
 		bank       expected.BankKeeper
 	}
@@ -30,22 +33,24 @@ func NewKeeper(
 	memKey sdk.StoreKey,
 	asset expected.AssetKeeper,
 	auction expected.AuctionKeeper,
+	locker expected.LockerKeeper,
+	rewards expected.RewardsKeeper,
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
-
-) *Keeper {
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
-
+	return Keeper{
 		cdc:        cdc,
 		storeKey:   storeKey,
 		memKey:     memKey,
 		asset:      asset,
 		auction:    auction,
+		locker:     locker,
+		rewards:    rewards,
 		paramStore: ps,
 		bank:       bank,
 	}

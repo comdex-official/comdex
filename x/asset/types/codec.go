@@ -10,40 +10,37 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(&MsgAddAsset{}, "comdex/asset/MsgAddAsset", nil)
 	cdc.RegisterConcrete(&AddAssetsProposal{}, "comdex/asset/AddAssetsProposal", nil)
+	cdc.RegisterConcrete(&AddMultipleAssetsProposal{}, "comdex/asset/AddMultipleAssetsProposal", nil)
 	cdc.RegisterConcrete(&UpdateAssetProposal{}, "comdex/asset/UpdateAssetProposal", nil)
 	cdc.RegisterConcrete(&AddPairsProposal{}, "comdex/asset/AddPairsProposal", nil)
-	cdc.RegisterConcrete(&AddWhitelistedAssetsProposal{}, "comdex/asset/AddWhitelistedAssetsProposal", nil)
-	cdc.RegisterConcrete(&UpdateWhitelistedAssetProposal{}, "comdex/asset/UpdateWhitelistedAssetProposal", nil)
-	cdc.RegisterConcrete(&AddWhitelistedPairsProposal{}, "comdex/asset/AddWhitelistedPairsProposal", nil)
-	cdc.RegisterConcrete(&UpdateWhitelistedPairProposal{}, "comdex/asset/UpdateWhitelistedPairProposal", nil)
-	cdc.RegisterConcrete(&AddAppMappingProposal{}, "comdex/asset/AddAppMappingProposal", nil)
-	cdc.RegisterConcrete(&AddAssetMappingProposal{}, "comdex/asset/AddAssetMappingProposal", nil)
-	cdc.RegisterConcrete(&AddExtendedPairsVaultProposal{}, "comdex/asset/AddExtendedPairsVaultProposal", nil)
-	cdc.RegisterConcrete(&UpdateGovTimeInAppMappingProposal{}, "comdex/asset/UpdateGovTimeInAppMappingProposal", nil)
+	cdc.RegisterConcrete(&AddMultiplePairsProposal{}, "comdex/asset/AddMultiplePairsProposal", nil)
+	cdc.RegisterConcrete(&UpdatePairProposal{}, "comdex/asset/UpdatePairProposal", nil)
+	cdc.RegisterConcrete(&AddAppProposal{}, "comdex/asset/AddAppProposal", nil)
+	cdc.RegisterConcrete(&AddAssetInAppProposal{}, "comdex/asset/AddAssetInAppProposal", nil)
+	cdc.RegisterConcrete(&UpdateGovTimeInAppProposal{}, "comdex/asset/UpdateGovTimeInAppProposal", nil)
+	cdc.RegisterConcrete(&AddMultipleAssetsPairsProposal{}, "comdex/asset/AddMultipleAssetsPairsProposal", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
 		&AddAssetsProposal{},
+		&AddMultipleAssetsProposal{},
 		&UpdateAssetProposal{},
 		&AddPairsProposal{},
-		&AddWhitelistedAssetsProposal{},
-		&UpdateWhitelistedAssetProposal{},
-		&AddWhitelistedPairsProposal{},
-		&UpdateWhitelistedPairProposal{},
-		&AddAppMappingProposal{},
-		&AddAssetMappingProposal{},
-		&AddExtendedPairsVaultProposal{},
-		&UpdateGovTimeInAppMappingProposal{},
+		&AddMultiplePairsProposal{},
+		&UpdatePairProposal{},
+		&AddAppProposal{},
+		&AddAssetInAppProposal{},
+		&UpdateGovTimeInAppProposal{},
+		&AddMultipleAssetsPairsProposal{},
 	)
 
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgAddAssetRequest{},
-		&MsgUpdateAssetRequest{},
-		&MsgAddPairRequest{},
+		&MsgAddAsset{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

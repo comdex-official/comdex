@@ -11,21 +11,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 
 	"github.com/comdex-official/comdex/x/rewards/types"
-	"github.com/cosmos/cosmos-sdk/client"
-)
-
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
 )
 
 // GetTxCmd returns the transaction commands for this module .
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		Use:                        "rewards",
+		Short:                      fmt.Sprintf("%s transactions subcommands", "rewards"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -33,12 +29,10 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewCreateGaugeCmd(),
-		txWhitelistAsset(),
-		txRemoveWhitelistAsset(),
-		txWhitelistAppIDVault(),
-		txRemoveWhitelistAppIDVault(),
 		txActivateExternalRewardsLockers(),
-		txActivateExternalVaultsLockers(),
+		txActivateExternalRewardsVaults(),
+		txActivateExternalRewardsLend(),
+		txActivateExternalRewardsStableVaults(),
 	)
 
 	return cmd
@@ -110,12 +104,15 @@ func NewCreateGaugeCmd() *cobra.Command {
 					return err
 				}
 				appID, err := cmd.Flags().GetUint64(FlagAppID)
-
 				if err != nil {
 					return err
 				}
 				msg.AppId = appID
 				msg.Kind = &gaugeExtraData
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
 			}
 
 			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
@@ -125,130 +122,6 @@ func NewCreateGaugeCmd() *cobra.Command {
 	cmd.Flags().AddFlagSet(FlagSetCreateGauge())
 	flags.AddTxFlagsToCmd(cmd)
 	_ = cmd.MarkFlagRequired(FlagStartTime)
-	return cmd
-}
-
-func txWhitelistAsset() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "whitelist-asset [appMappingID] [assetID]",
-		Short: "Add Whitelisted assetId for Locker savings rewards",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			assetID, err := ParseUint64SliceFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
-
-			var newAssetIDs []uint64
-			for i := range assetID {
-				newAssetIDs = append(newAssetIDs, assetID[i])
-			}
-
-			msg := types.NewMsgWhitelistAsset(appMappingID, ctx.GetFromAddress(), newAssetIDs)
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-func txRemoveWhitelistAsset() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "remove-whitelist-asset [appMappingID] [assetID]",
-		Short: "Remove Whitelisted assetId for Locker savings rewards",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			assetID, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRemoveWhitelistAsset(appMappingID, ctx.GetFromAddress(), assetID)
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-func txWhitelistAppIDVault() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "whitelist-app-id-vault-interest [appMappingID]",
-		Short: "whitelist app id vault interest",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgWhitelistAppIDVault(
-				appMappingID,
-				ctx.GetFromAddress(),
-			)
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
-}
-
-func txRemoveWhitelistAppIDVault() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "remove-whitelist-app-id-vault-interest [appMappingID] ",
-		Short: "remove whitelist app id vault interest",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRemoveWhitelistAppIDVault(
-				appMappingID,
-				ctx.GetFromAddress(),
-			)
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -305,7 +178,7 @@ func txActivateExternalRewardsLockers() *cobra.Command {
 	return cmd
 }
 
-func txActivateExternalVaultsLockers() *cobra.Command {
+func txActivateExternalRewardsVaults() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "activate-external-rewards-vault [appMappingID] [extendedPairID] [totalRewards] [durationDays] [minLockupTimeSeconds]",
 		Short: "activate external reward for vault extendedPairID",
@@ -341,7 +214,7 @@ func txActivateExternalVaultsLockers() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgActivateExternalVaultLockers(
+			msg := types.NewMsgActivateExternalRewardsVault(
 				appMappingID,
 				extendedPairID,
 				totalRewards,
@@ -405,4 +278,140 @@ func NewBuildLiquidityGaugeExtraData(cmd *cobra.Command) (types.MsgCreateGauge_L
 		},
 	}
 	return liquidityGaugeExtraData, nil
+}
+
+func txActivateExternalRewardsLend() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-lend [appMappingID] [cPoolID] [assetIDs] [cSwapAppID] [cSwapMinLockAmount] [totalRewards] [masterPoolID] [duration] [minLockupTimeSeconds]",
+		Short: "activate external reward for borrowers",
+		Args:  cobra.ExactArgs(9),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appMappingID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cPoolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			assetIDs, err := ParseUint64SliceFromString(args[2], ",")
+			if err != nil {
+				return err
+			}
+
+			cSwapAppID, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cSwapMinLockAmount, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			totalRewards, err := sdk.ParseCoinNormalized(args[5])
+			if err != nil {
+				return err
+			}
+
+			masterPoolID, err := strconv.ParseInt(args[6], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			durationDays, err := strconv.ParseInt(args[7], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			minLockupTimeSeconds, err := strconv.ParseInt(args[8], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalRewardsLend(
+				appMappingID,
+				cPoolID,
+				assetIDs,
+				cSwapAppID,
+				cSwapMinLockAmount,
+				totalRewards,
+				masterPoolID,
+				durationDays,
+				minLockupTimeSeconds,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txActivateExternalRewardsStableVaults() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate-external-rewards-stable-vault [appID] [cswapAppID] [commodoAppID] [totalRewards] [durationDays] [acceptedBlockHeight]",
+		Short: "activate external reward for stable vaults of an app",
+		Args:  cobra.ExactArgs(6),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			cswapAppID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			commodoAppID, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			totalRewards, err := sdk.ParseCoinNormalized(args[3])
+			if err != nil {
+				return err
+			}
+
+			durationDays, err := strconv.ParseInt(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			acceptedBlockHeight, err := strconv.ParseInt(args[5], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgActivateExternalRewardsStableVault(
+				appID,
+				cswapAppID,
+				commodoAppID,
+				totalRewards,
+				durationDays,
+				acceptedBlockHeight,
+				ctx.GetFromAddress(),
+			)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

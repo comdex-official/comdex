@@ -4,31 +4,28 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
-	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-type AddNewAssetsRequest struct {
-	BaseReq     rest.BaseReq  `json:"base_req" yaml:"base_req"`
-	Title       string        `json:"title" yaml:"title"`
-	Description string        `json:"description" yaml:"description"`
-	Deposit     sdk.Coins     `json:"deposit" yaml:"deposit"`
-	Asset       []types.Asset `json:"assets" yaml:"assets"`
-}
-
-type UpdateNewAssetRequest struct{}
-type AddNewPairsRequest struct{}
-type UpdateNewPairRequest struct{}
+type (
+	UpdateNewAssetRequest struct{}
+	AddNewPairsRequest    struct{}
+	UpdateNewPairRequest  struct{}
+	AddNewAssetsPairs     struct{}
+)
 
 func AddNewAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
 		SubRoute: "add-new-assets",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
+	}
+}
+
+func AddNewAssetsPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "add-new-assets-pairs",
+		Handler:  AddNewAssetsPairsRESTHandler(clientCtx),
 	}
 }
 
@@ -39,10 +36,17 @@ func UpdateNewAssetProposalRESTHandler(clientCtx client.Context) govrest.Proposa
 	}
 }
 
-func UpdateNewGovTimeInAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func UpdateNewPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "update-gov-time-app-mapping",
-		Handler:  UpdateGovTimeInAppMappingRESTHandler(clientCtx),
+		SubRoute: "update-new-pair",
+		Handler:  UpdateNewPairsRESTHandler(clientCtx),
+	}
+}
+
+func UpdateNewGovTimeInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+	return govrest.ProposalRESTHandler{
+		SubRoute: "update-gov-time-app",
+		Handler:  UpdateGovTimeInAppRESTHandler(clientCtx),
 	}
 }
 
@@ -53,65 +57,23 @@ func AddNewPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRE
 	}
 }
 
-func AddNewWhitelistedAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-whitelisted-assets",
-		Handler:  AddNewAssetsRESTHandler(clientCtx),
-	}
-}
-
-func UpdateNewWhitelistedAssetsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "update-whitelisted-assets",
-		Handler:  UpdateNewAssetRESTHandler(clientCtx),
-	}
-}
-
-func AddNewWhitelistedPairsProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-whitelisted-pairs",
-		Handler:  AddNewPairsRESTHandler(clientCtx),
-	}
-}
-
-func UpdateNewWhitelistedPairProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
-	return govrest.ProposalRESTHandler{
-		SubRoute: "update-new-whitelisted-pairs",
-		Handler:  UpdateNewPairsRESTHandler(clientCtx),
-	}
-}
-
 func AddNewAssetsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req AddNewAssetsRequest
+		var req UpdateNewAssetRequest
 
 		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return
 		}
+	}
+}
 
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
+func AddNewAssetsPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req AddNewAssetsPairs
+
+		if !rest.ReadRESTReq(w, r, clientCtx.LegacyAmino, &req) {
 			return
 		}
-
-		fromAddr, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if rest.CheckBadRequestError(w, err) {
-			return
-		}
-
-		content := types.NewAddAssetsProposal(
-			req.Title,
-			req.Description,
-			req.Asset)
-		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, fromAddr)
-		if rest.CheckBadRequestError(w, err) {
-			return
-		}
-		if rest.CheckBadRequestError(w, msg.ValidateBasic()) {
-			return
-		}
-
-		tx.WriteGeneratedTxResponse(clientCtx, w, req.BaseReq, msg)
 	}
 }
 
@@ -125,7 +87,7 @@ func UpdateNewAssetRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func UpdateGovTimeInAppMappingRESTHandler(clientCtx client.Context) http.HandlerFunc {
+func UpdateGovTimeInAppRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req UpdateNewAssetRequest
 
@@ -155,15 +117,16 @@ func UpdateNewPairsRESTHandler(clientCtx client.Context) http.HandlerFunc {
 	}
 }
 
-func AddNewAppMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+func AddNewAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-new-app-mapping",
+		SubRoute: "add-new-app",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }
-func AddNewAssetMappingProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
+
+func AddNewAssetInAppProposalRESTHandler(clientCtx client.Context) govrest.ProposalRESTHandler {
 	return govrest.ProposalRESTHandler{
-		SubRoute: "add-update-new-asset-mapping",
+		SubRoute: "add-update-new-asset-in-app",
 		Handler:  AddNewAssetsRESTHandler(clientCtx),
 	}
 }

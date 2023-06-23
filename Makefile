@@ -3,6 +3,7 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
 
+
 # don't override user values
 ifeq (,$(VERSION))
   VERSION := $(shell git describe --tags)
@@ -16,7 +17,13 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
 BUILDDIR ?= $(CURDIR)/build
+GOBIN = $(shell go env GOPATH)/bin
+GOARCH = $(shell go env GOARCH)
+GOOS = $(shell go env GOOS)
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 
 export GO111MODULE = on
 
@@ -86,16 +93,60 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
+check_version:
+ifneq ($(GO_MINOR_VERSION),19)
+	@echo "ERROR: Please upgrade Go version to 1.19+"
+	exit 1
+endif
 
 all: install
+	@echo "--> project root: go mod tidy"
+	@go mod tidy
 
-install: go.sum
+go-mod-cache: go.sum
+	@echo "--> Download go modules to local cache"
+	@go mod download
+
+go.sum: go.mod
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+clean:
+	rm -rf $(CURDIR)/artifacts/
+
+distclean: clean
+	rm -rf vendor/
+
+install: check_version go.sum
+	@echo "--> installing"
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/comdex
 
 build:
 	go build $(BUILD_FLAGS) -o bin/comdex ./cmd/comdex
+	mkdir build
+	cp -a bin/comdex ./build/
 
+release: install
+	mkdir -p release
+ifeq (${OS},Windows_NT)
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex.exe
+else
+	tar -czvf release/comdex-${GOOS}-${GOARCH}.tar.gz --directory=$(GOBIN) comdex
+endif
 
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
+
+lint:
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
+
+format:
+	@go install mvdan.cc/gofumpt@latest
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go" -not -path "./crypto/keys/secp256k1/*" | xargs gofumpt -w -l
+	golangci-lint run --fix
 
 ###############################################################################
 ###                           Tests & Simulation                            ###
@@ -134,6 +185,26 @@ else
 endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
+
+protoVer=v0.1
+containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
+
+proto-swagger-gen:
+	@echo
+	@echo "=========== Generating Docs ============"
+	@echo
+	./scripts/protoc_swagger_gen.sh
+
+	@if [ -n "$(git status --porcelain)" ]; then \
+        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+        exit 1;\
+    else \
+        echo "\033[92mSwagger docs are in sync\033[0m";\
+    fi
+	@echo
+	@echo "=========== Docs Generation Complete ============"
+	@echo
+.PHONY: docs
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."

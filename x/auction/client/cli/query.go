@@ -4,11 +4,12 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 func querySurplusAuction() *cobra.Command {
@@ -95,16 +96,20 @@ func querySurplusAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-surplus-auctions")
 	return cmd
 }
 
 func querySurplusBiddings() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "suplus-biddings [bidder] [app-id] [history]",
+		Use:   "surplus-biddings [bidder] [app-id] [history]",
 		Short: "Query surplus biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -125,9 +130,10 @@ func querySurplusBiddings() *cobra.Command {
 			res, err := queryClient.QuerySurplusBiddings(
 				context.Background(),
 				&types.QuerySurplusBiddingsRequest{
-					AppId:   appID,
-					History: history,
-					Bidder:  bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -137,6 +143,8 @@ func querySurplusBiddings() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "surplus-biddings")
+
 	return cmd
 }
 
@@ -224,7 +232,7 @@ func queryDebtAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-debt-auctions")
 	return cmd
 }
 
@@ -234,6 +242,10 @@ func queryDebtBidding() *cobra.Command {
 		Short: "Query surplus Debt by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -254,9 +266,10 @@ func queryDebtBidding() *cobra.Command {
 			res, err := queryClient.QueryDebtBiddings(
 				context.Background(),
 				&types.QueryDebtBiddingsRequest{
-					Bidder:  bidder.String(),
-					AppId:   appID,
-					History: history,
+					Bidder:     bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -266,6 +279,8 @@ func queryDebtBidding() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "debt-biddings")
+
 	return cmd
 }
 
@@ -353,7 +368,7 @@ func queryDutchAuctions() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "auctions")
+	flags.AddPaginationFlagsToCmd(cmd, "all-dutch-auctions")
 	return cmd
 }
 
@@ -390,7 +405,7 @@ func queryProtocolStats() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "stats")
+	flags.AddPaginationFlagsToCmd(cmd, "all-protocol-stats")
 	return cmd
 }
 
@@ -400,6 +415,10 @@ func queryDutchBiddings() *cobra.Command {
 		Short: "Query Dutch biddings by bidder address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
@@ -420,9 +439,10 @@ func queryDutchBiddings() *cobra.Command {
 			res, err := queryClient.QueryDutchBiddings(
 				context.Background(),
 				&types.QueryDutchBiddingsRequest{
-					AppId:   appID,
-					History: history,
-					Bidder:  bidder.String(),
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
 				},
 			)
 			if err != nil {
@@ -432,38 +452,12 @@ func queryDutchBiddings() *cobra.Command {
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	return cmd
-}
-
-func queryParams() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "params",
-		Short: "Query module parameters",
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-
-			res, err := queryClient.QueryParams(
-				context.Background(),
-				&types.QueryParamsRequest{},
-			)
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "dutch-biddings")
 
 	return cmd
 }
 
-func queryAuctionParams() *cobra.Command {
+func queryGenericAuctionParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auction-params [id]",
 		Short: "Query auction-params",
@@ -481,9 +475,9 @@ func queryAuctionParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryAuctionParams(
+			res, err := queryClient.QueryGenericAuctionParams(
 				context.Background(),
-				&types.QueryAuctionParamRequest{
+				&types.QueryGenericAuctionParamRequest{
 					AppId: id,
 				},
 			)
@@ -497,5 +491,188 @@ func queryAuctionParams() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 
+	return cmd
+}
+
+func queryDutchLendAuction() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "dutch-auction-lend [appid] [auction mapping id] [auction id] [history]",
+		Short: "Query Dutch auction",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionMappingID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			auctionID, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[3])
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryDutchLendAuction(
+				context.Background(),
+				&types.QueryDutchLendAuctionRequest{
+					AppId:            appID,
+					AuctionMappingId: auctionMappingID,
+					AuctionId:        auctionID,
+					History:          history,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func queryDutchLendAuctions() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "all-dutch-auctions-lend [appid] [history]",
+		Short: "Query Dutch auctions",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[1])
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryDutchLendAuctions(
+				context.Background(),
+				&types.QueryDutchLendAuctionsRequest{
+					AppId:      appID,
+					History:    history,
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "all-dutch-auctions-lend")
+	return cmd
+}
+
+func queryDutchLendBiddings() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "dutch-biddings-lend [bidder] [app-id] [history]",
+		Short: "Query Dutch biddings by bidder address",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			bidder, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[2])
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryDutchLendBiddings(
+				context.Background(),
+				&types.QueryDutchLendBiddingsRequest{
+					AppId:      appID,
+					History:    history,
+					Bidder:     bidder.String(),
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "dutch-biddings-lend")
+
+	return cmd
+}
+
+func queryFilterDutchAuctions() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "filter-dutch-auctions [appid] [denom] [history]",
+		Short: "Query Filtered Dutch auctions",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			denoms, err := ParseStringFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[2])
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.QueryFilterDutchAuctions(
+				context.Background(),
+				&types.QueryFilterDutchAuctionsRequest{
+					AppId:      appID,
+					Denom:      denoms,
+					History:    history,
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "filter-dutch-auctions")
 	return cmd
 }

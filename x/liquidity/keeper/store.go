@@ -78,7 +78,12 @@ func (k Keeper) SetPairLookupIndex(ctx sdk.Context, appID uint64, denomA string,
 func (k Keeper) IterateAllPairs(ctx sdk.Context, appID uint64, cb func(pair types.Pair) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllPairsKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		pair := types.MustUnmarshalPair(k.cdc, iter.Value())
 		stop, err := cb(pair)
@@ -172,7 +177,12 @@ func (k Keeper) SetPoolsByPairIndex(ctx sdk.Context, pool types.Pool) {
 func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		pool := types.MustUnmarshalPool(k.cdc, iter.Value())
 		stop, err := cb(pool)
@@ -191,7 +201,12 @@ func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool type
 func (k Keeper) IteratePoolsByPair(ctx sdk.Context, appID, pairID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(appID, pairID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		poolID := types.ParsePoolsByPairIndexKey(iter.Key())
 		pool, _ := k.GetPool(ctx, appID, poolID)
@@ -253,7 +268,12 @@ func (k Keeper) SetDepositRequestIndex(ctx sdk.Context, req types.DepositRequest
 func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, appID uint64, cb func(req types.DepositRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllDepositRequestKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		req := types.MustUnmarshalDepositRequest(k.cdc, iter.Value())
 		stop, err := cb(req)
@@ -272,13 +292,18 @@ func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, appID uint64, cb func
 func (k Keeper) IterateDepositRequestsByDepositor(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+
 	depositor sdk.AccAddress,
 	cb func(req types.DepositRequest) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetDepositRequestIndexKeyPrefix(appID, depositor))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, poolID, reqID := types.ParseDepositRequestIndexKey(iter.Key())
 		req, _ := k.GetDepositRequest(ctx, appID, poolID, reqID)
@@ -352,7 +377,12 @@ func (k Keeper) SetWithdrawRequestIndex(ctx sdk.Context, req types.WithdrawReque
 func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, appID uint64, cb func(req types.WithdrawRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllWithdrawRequestKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		req := types.MustUnmarshalWithdrawRequest(k.cdc, iter.Value())
 		stop, err := cb(req)
@@ -371,13 +401,18 @@ func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, appID uint64, cb fun
 func (k Keeper) IterateWithdrawRequestsByWithdrawer(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+
 	withdrawer sdk.AccAddress,
 	cb func(req types.WithdrawRequest) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetWithdrawRequestIndexKeyPrefix(appID, withdrawer))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, poolID, reqID := types.ParseWithdrawRequestIndexKey(iter.Key())
 		req, _ := k.GetWithdrawRequest(ctx, appID, poolID, reqID)
@@ -451,7 +486,12 @@ func (k Keeper) SetOrderIndex(ctx sdk.Context, appID uint64, order types.Order) 
 func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		order := types.MustUnmarshalOrder(k.cdc, iter.Value())
 		stop, err := cb(order)
@@ -470,7 +510,12 @@ func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order ty
 func (k Keeper) IterateOrdersByPair(ctx sdk.Context, appID, pairID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(appID, pairID))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		order := types.MustUnmarshalOrder(k.cdc, iter.Value())
 		stop, err := cb(order)
@@ -489,13 +534,18 @@ func (k Keeper) IterateOrdersByPair(ctx sdk.Context, appID, pairID uint64, cb fu
 func (k Keeper) IterateOrdersByOrderer(
 	ctx sdk.Context,
 	appID uint64,
-	//nolint
+
 	orderer sdk.AccAddress,
 	cb func(order types.Order) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
 	iter := sdk.KVStorePrefixIterator(store, types.GetOrderIndexKeyPrefix(appID, orderer))
-	defer iter.Close()
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
 	for ; iter.Valid(); iter.Next() {
 		_, pairID, orderID := types.ParseOrderIndexKey(iter.Key())
 		order, _ := k.GetOrder(ctx, appID, pairID, orderID)
@@ -550,22 +600,62 @@ func (k Keeper) DeleteOrderIndex(ctx sdk.Context, appID uint64, order types.Orde
 	store.Delete(types.GetOrderIndexKey(appID, order.GetOrderer(), order.PairId, order.Id))
 }
 
-// GetPoolLiquidityProvidersData returns the liquidity providers data by pool id.
-func (k Keeper) GetPoolLiquidityProvidersData(ctx sdk.Context, appID, poolID uint64) (liquidityProvidersData types.PoolLiquidityProvidersData, found bool) {
+// GetMMOrderIndex returns the market making order index.
+func (k Keeper) GetMMOrderIndex(ctx sdk.Context, orderer sdk.AccAddress, appID, pairID uint64) (index types.MMOrderIndex, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetPoolLiquidityProvidersDataKey(appID, poolID))
+	bz := store.Get(types.GetMMOrderIndexKey(orderer, appID, pairID))
 	if bz == nil {
 		return
 	}
-	liquidityProvidersData = types.MustUnmarshalPoolLiquidityProvidersData(k.cdc, bz)
-	return liquidityProvidersData, true
+	index = types.MustUnmarshalMMOrderIndex(k.cdc, bz)
+	return index, true
 }
 
-// SetPoolLiquidityProvidersData sets the liquidity providers data by pool id.
-func (k Keeper) SetPoolLiquidityProvidersData(ctx sdk.Context, liquidityProvidersData types.PoolLiquidityProvidersData) {
+// SetMMOrderIndex stores a market making order index.
+func (k Keeper) SetMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrderIndex) {
 	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshalPoolLiquidityProvidersData(k.cdc, liquidityProvidersData)
-	store.Set(types.GetPoolLiquidityProvidersDataKey(liquidityProvidersData.AppId, liquidityProvidersData.PoolId), bz)
+	bz := types.MustMarshaMMOrderIndex(k.cdc, index)
+	store.Set(types.GetMMOrderIndexKey(index.GetOrderer(), appID, index.PairId), bz)
+}
+
+// IterateAllMMOrderIndexes iterates through all market making order indexes
+// in the store and call cb for each order.
+func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, appID uint64, cb func(index types.MMOrderIndex) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllMMOrderIndexKey(appID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		index := types.MustUnmarshalMMOrderIndex(k.cdc, iter.Value())
+		stop, err := cb(index)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllMMOrderIndexes returns all market making order indexes in the store.
+func (k Keeper) GetAllMMOrderIndexes(ctx sdk.Context, appID uint64) (indexes []types.MMOrderIndex) {
+	indexes = []types.MMOrderIndex{}
+	_ = k.IterateAllMMOrderIndexes(ctx, appID, func(index types.MMOrderIndex) (stop bool, err error) {
+		indexes = append(indexes, index)
+		return false, nil
+	})
+	return
+}
+
+// DeleteMMOrderIndex deletes a market making order index.
+func (k Keeper) DeleteMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrderIndex) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetMMOrderIndexKey(index.GetOrderer(), appID, index.PairId))
 }
 
 // GetGenericLiquidityParams returns the generic liquidity params by app id.
@@ -584,4 +674,131 @@ func (k Keeper) SetGenericLiquidityParams(ctx sdk.Context, genericLiquidityParam
 	store := ctx.KVStore(k.storeKey)
 	bz := types.MustMarshalGenericLiquidityParams(k.cdc, genericLiquidityParams)
 	store.Set(types.GetGenericParamsKey(genericLiquidityParams.AppId), bz)
+}
+
+// SetActiveFarmer stores the active farmer.
+func (k Keeper) SetActiveFarmer(ctx sdk.Context, activeFarmer types.ActiveFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshalActiveFarmer(k.cdc, activeFarmer)
+	store.Set(types.GetActiveFarmerKey(activeFarmer.AppId, activeFarmer.PoolId, sdk.MustAccAddressFromBech32(activeFarmer.Farmer)), bz)
+}
+
+// DeleteActiveFarmer deletes a Active farmer from store.
+func (k Keeper) DeleteActiveFarmer(ctx sdk.Context, activeFarmer types.ActiveFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetActiveFarmerKey(activeFarmer.AppId, activeFarmer.PoolId, sdk.MustAccAddressFromBech32(activeFarmer.Farmer)))
+}
+
+// GetActiveFarmer returns active farmer object for the given app id, pool id and farmer.
+func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer types.ActiveFarmer, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetActiveFarmerKey(appID, poolID, farmer))
+	if bz == nil {
+		return
+	}
+	activeFarmer = types.MustUnmarshalActiveFarmer(k.cdc, bz)
+	return activeFarmer, true
+}
+
+// IterateAllActiveFarmers iterates over all the stored active farmers and performs a callback function.
+// Stops iteration when callback returns true.
+func (k Keeper) IterateAllActiveFarmers(ctx sdk.Context, appID, poolID uint64, cb func(activeFarmer types.ActiveFarmer) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllActiveFarmersKey(appID, poolID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		activeFarmer := types.MustUnmarshalActiveFarmer(k.cdc, iter.Value())
+		stop, err := cb(activeFarmer)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllActiveFarmers returns all active farmers in the store.
+func (k Keeper) GetAllActiveFarmers(ctx sdk.Context, appID, poolID uint64) (activeFarmers []types.ActiveFarmer) {
+	activeFarmers = []types.ActiveFarmer{}
+	_ = k.IterateAllActiveFarmers(ctx, appID, poolID, func(activeFarmer types.ActiveFarmer) (stop bool, err error) {
+		activeFarmers = append(activeFarmers, activeFarmer)
+		return false, nil
+	})
+	return activeFarmers
+}
+
+// SetQueuedFarmer stores the queued farmer.
+func (k Keeper) SetQueuedFarmer(ctx sdk.Context, queuedFarmer types.QueuedFarmer) {
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshalQueuedFarmer(k.cdc, queuedFarmer)
+	store.Set(types.GetQueuedFarmerKey(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer)), bz)
+}
+
+// GetQueuedFarmer returns queued farmer object for the given app id, pool id and farmer.
+func (k Keeper) GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer types.QueuedFarmer, found bool) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.GetQueuedFarmerKey(appID, poolID, farmer))
+	if bz == nil {
+		return
+	}
+	queuedFarmer = types.MustUnmarshalQueuedFarmer(k.cdc, bz)
+	return queuedFarmer, true
+}
+
+// IterateAllQueuedFarmers iterates over all the stored queued farmers and performs a callback function.
+// Stops iteration when callback returns true.
+func (k Keeper) IterateAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64, cb func(queuedFarmer types.QueuedFarmer) (stop bool, err error)) error {
+	store := ctx.KVStore(k.storeKey)
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllQueuedFarmersKey(appID, poolID))
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		queuedFarmer := types.MustUnmarshalQueuedFarmer(k.cdc, iter.Value())
+		stop, err := cb(queuedFarmer)
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+	return nil
+}
+
+// GetAllQueuedFarmers returns all queued farmers in the store.
+func (k Keeper) GetAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64) (queuedFarmers []types.QueuedFarmer) {
+	queuedFarmers = []types.QueuedFarmer{}
+	_ = k.IterateAllQueuedFarmers(ctx, appID, poolID, func(queuedFarmer types.QueuedFarmer) (stop bool, err error) {
+		queuedFarmers = append(queuedFarmers, queuedFarmer)
+		return false, nil
+	})
+	return queuedFarmers
+}
+
+// GetAllCMSTPools returns all pools in the store.
+func (k Keeper) GetAllCMSTPools(ctx sdk.Context, appID uint64) (pools []types.Pool) {
+	cmstPools := []types.Pool{}
+	allPools := k.GetAllPools(ctx, appID)
+	for _, pool := range allPools {
+		if !pool.Disabled {
+			pair, found := k.GetPair(ctx, appID, pool.PairId)
+			if found {
+				if pair.BaseCoinDenom == "ucmst" || pair.QuoteCoinDenom == "ucmst" {
+					cmstPools = append(cmstPools, pool)
+				}
+			}
+		}
+	}
+	return cmstPools
 }

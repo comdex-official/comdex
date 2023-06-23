@@ -1,16 +1,13 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) HandleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.LendPairsProposal) error {
-	return k.AddLendPairsRecords(ctx, p.Pairs...)
-}
-
-func (k Keeper) HandleUpdateWhitelistedPairRecords(ctx sdk.Context, p *types.UpdatePairProposal) error {
-	return k.UpdateLendPairRecords(ctx, p.Pair)
+	return k.AddLendPairsRecords(ctx, p.Pairs)
 }
 
 func (k Keeper) HandleAddPoolRecords(ctx sdk.Context, p *types.AddPoolsProposal) error {
@@ -21,6 +18,26 @@ func (k Keeper) HandleAddAssetToPairRecords(ctx sdk.Context, p *types.AddAssetTo
 	return k.AddAssetToPair(ctx, p.AssetToPairMapping)
 }
 
-func (k Keeper) HandleAddAssetRatesStatsRecords(ctx sdk.Context, p *types.AddAssetRatesStats) error {
-	return k.AddAssetRatesStats(ctx, p.AssetRatesStats...)
+func (k Keeper) HandleAddMultipleAssetToPairRecords(ctx sdk.Context, p *types.AddMultipleAssetToPairProposal) error {
+	return k.AddMultipleAssetToPair(ctx, p.AssetToPairSingleMapping)
+}
+
+func (k Keeper) HandleAddAssetRatesParamsRecords(ctx sdk.Context, p *types.AddAssetRatesParams) error {
+	return k.AddAssetRatesParams(ctx, p.AssetRatesParams)
+}
+
+func (k Keeper) HandleAddAuctionParamsRecords(ctx sdk.Context, p *types.AddAuctionParamsProposal) error {
+	return k.AddAuctionParamsData(ctx, p.AuctionParams)
+}
+
+func (k Keeper) HandleMultipleAddWhitelistedPairsRecords(ctx sdk.Context, p *types.MultipleLendPairsProposal) error {
+	return k.AddLendPairsRecords(ctx, p.Pairs...)
+}
+
+func (k Keeper) HandleAddPoolPairsRecords(ctx sdk.Context, p *types.AddPoolPairsProposal) error {
+	return k.AddPoolsPairsRecords(ctx, p.PoolPairs)
+}
+
+func (k Keeper) HandleAddAssetRatesPoolPairsRecords(ctx sdk.Context, p *types.AddAssetRatesPoolPairsProposal) error {
+	return k.AddAssetRatesPoolPairs(ctx, p.AssetRatesPoolPairs)
 }

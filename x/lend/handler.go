@@ -2,18 +2,19 @@ package lend
 
 import (
 	"fmt"
+
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/pkg/errors"
 
-	"github.com/comdex-official/comdex/x/lend/keeper"
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/lend/keeper"
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 // NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-
 	server := keeper.NewMsgServerImpl(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
@@ -56,8 +57,20 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.Repay(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.MsgBorrowAlternate:
+			res, err := server.BorrowAlternate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
 		case *types.MsgFundModuleAccounts:
 			res, err := server.FundModuleAccounts(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgCalculateInterestAndRewards:
+			res, err := server.CalculateInterestAndRewards(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgFundReserveAccounts:
+			res, err := server.FundReserveAccounts(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:
@@ -72,14 +85,22 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.LendPairsProposal:
 			return handleAddWhitelistedPairsProposal(ctx, k, c)
-		case *types.UpdatePairProposal:
-			return handleUpdateWhitelistedPairProposal(ctx, k, c)
+		case *types.MultipleLendPairsProposal:
+			return handleAddMultipleWhitelistedPairsProposal(ctx, k, c)
 		case *types.AddPoolsProposal:
 			return handleAddPoolProposal(ctx, k, c)
 		case *types.AddAssetToPairProposal:
 			return handleAddAssetToPairProposal(ctx, k, c)
-		case *types.AddAssetRatesStats:
-			return handleAddAssetRatesStatsProposal(ctx, k, c)
+		case *types.AddMultipleAssetToPairProposal:
+			return handleAddMultipleAssetToPairProposal(ctx, k, c)
+		case *types.AddAssetRatesParams:
+			return handleAddAssetRatesParamsProposal(ctx, k, c)
+		case *types.AddAuctionParamsProposal:
+			return HandleAddAuctionParamsProposal(ctx, k, c)
+		case *types.AddPoolPairsProposal:
+			return handleAddPoolPairsProposal(ctx, k, c)
+		case *types.AddAssetRatesPoolPairsProposal:
+			return handleAddAssetRatesPoolPairsProposal(ctx, k, c)
 
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -91,8 +112,8 @@ func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *type
 	return k.HandleAddWhitelistedPairsRecords(ctx, p)
 }
 
-func handleUpdateWhitelistedPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdatePairProposal) error {
-	return k.HandleUpdateWhitelistedPairRecords(ctx, p)
+func handleAddMultipleWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.MultipleLendPairsProposal) error {
+	return k.HandleMultipleAddWhitelistedPairsRecords(ctx, p)
 }
 
 func handleAddPoolProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolsProposal) error {
@@ -103,6 +124,22 @@ func handleAddAssetToPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.Add
 	return k.HandleAddAssetToPairRecords(ctx, p)
 }
 
-func handleAddAssetRatesStatsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesStats) error {
-	return k.HandleAddAssetRatesStatsRecords(ctx, p)
+func handleAddMultipleAssetToPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetToPairProposal) error {
+	return k.HandleAddMultipleAssetToPairRecords(ctx, p)
+}
+
+func handleAddAssetRatesParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesParams) error {
+	return k.HandleAddAssetRatesParamsRecords(ctx, p)
+}
+
+func HandleAddAuctionParamsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAuctionParamsProposal) error {
+	return k.HandleAddAuctionParamsRecords(ctx, p)
+}
+
+func handleAddPoolPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolPairsProposal) error {
+	return k.HandleAddPoolPairsRecords(ctx, p)
+}
+
+func handleAddAssetRatesPoolPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesPoolPairsProposal) error {
+	return k.HandleAddAssetRatesPoolPairsRecords(ctx, p)
 }

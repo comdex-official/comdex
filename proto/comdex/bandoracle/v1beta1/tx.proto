@@ -7,10 +7,6 @@ import "comdex/bandoracle/v1beta1/fetch_price.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 
-service Msg {
-      rpc FetchPriceData(MsgFetchPriceData) returns (MsgFetchPriceDataResponse);
-}
-
 message MsgFetchPriceData {
   string creator = 1;
   uint64 oracle_script_id = 2 [
@@ -29,6 +25,10 @@ message MsgFetchPriceData {
   uint64 prepare_gas = 9;
   uint64 execute_gas = 10;
   string client_id = 11 [(gogoproto.customname) = "ClientID"];
+  uint64 twa_batch_size = 12;
+  int64 accepted_height_diff = 13 [
+    (gogoproto.moretags)   = "yaml:\"accepted_height_diff\""
+  ];
 }
 
 message MsgFetchPriceDataResponse {

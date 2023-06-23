@@ -1,0 +1,61 @@
+"C:app-wiring":
+  - app/*.go
+  - app/apptesting/**/*
+  - app/keepers/**/*
+  - app/params/**/*
+  - app/upgrades/**/*
+  - x/**/module.go
+"C:simulator":
+  - simulation/**/*
+  - simulation/**/**/*
+  - tests/simulator/**
+  - x/**/simulation/*.go
+"C:wasm":
+  - app/wasm/**/*
+"C:x/asset":
+  - x/asset/**/*
+"C:x/auction":
+  - x/auction/**/*
+"C:x/bandoracle":
+  - x/bandoracle/**/*
+"C:x/collector":
+  - x/collector/**/*
+"C:x/esm":
+  - x/esm/**/*
+"C:x/lend":
+  - x/lend/**/*
+"C:x/liquidation":
+  - x/liquidation/**/*
+"C:x/liquidity":
+  - x/liquidity/**/*
+"C:x/locker":
+  - x/locker/**/*
+"C:x/market":
+  - x/market/**/*
+"C:x/rewards":
+  - x/rewards/**/*
+"C:x/tokenmint":
+  - x/tokenmint/**/*
+"C:x/vault":
+  - x/vault/**/*
+"T:build":
+  - Makefile
+  - Dockerfile
+  - scripts/*
+"T:CI":
+  - .github/**/*.yml
+  - .mergify.yml
+  - .golangci.yml
+"C:CLI":
+  - client/**/*
+  - x/*/client/**/*
+"C:docs":
+  - CHANGELOG.md
+  - bug.md
+  - issue.md
+  - proto-docs.md
+  - README.md
+  - x/**/*.md
+  - x/**/*/*.md
+  - tests/**/*.md
+

@@ -1,17 +1,22 @@
 package expected
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	ibcexported "github.com/cosmos/ibc-go/v3/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	marketttypes "github.com/comdex-official/comdex/x/market/types"
 )
 
-type MarketKeeper interface{}
+type MarketKeeper interface {
+	DeleteTwaData(ctx sdk.Context, assetID uint64)
+	GetAllTwa(ctx sdk.Context) (twa []marketttypes.TimeWeightedAverage)
+}
 
 type AssetKeeper interface {
-	GetAssetsForOracle(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetAssets(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
 }
 
 type ChannelKeeper interface {

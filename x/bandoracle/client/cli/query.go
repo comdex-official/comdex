@@ -4,13 +4,14 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
-// CmdFetchPriceResult queries request result by reqID
+// CmdFetchPriceResult queries request result by reqID.
 func CmdFetchPriceResult() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "fetch-price-result [request-id]",
@@ -40,7 +41,7 @@ func CmdFetchPriceResult() *cobra.Command {
 	return cmd
 }
 
-// CmdLastFetchPriceID queries latest request
+// CmdLastFetchPriceID queries latest request.
 func CmdLastFetchPriceID() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "last-fetch-price-id",
@@ -53,6 +54,58 @@ func CmdLastFetchPriceID() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 			r, err := queryClient.LastFetchPriceID(context.Background(), &types.QueryLastFetchPriceIdRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(r)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdFetchPriceData queries.
+func CmdFetchPriceData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fetch_price_data",
+		Short: "Query the FetchPriceData",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			r, err := queryClient.FetchPriceData(context.Background(), &types.QueryFetchPriceDataRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(r)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// CmdDiscardData queries.
+func CmdDiscardData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "discard_data",
+		Short: "Query the DiscardData",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			r, err := queryClient.DiscardData(context.Background(), &types.QueryDiscardDataRequest{})
 			if err != nil {
 				return err
 			}

@@ -3,15 +3,16 @@ package keeper
 import (
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/gogo/protobuf/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // EPOCHES
 
 // SetEpochInfoByDuration sets EpochInfo with epoch duration as a key.
-func (k *Keeper) SetEpochInfoByDuration(ctx sdk.Context, epochInfo types.EpochInfo) {
+func (k Keeper) SetEpochInfoByDuration(ctx sdk.Context, epochInfo types.EpochInfo) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetEpochInfoByDurationKey(epochInfo.Duration)
@@ -21,7 +22,7 @@ func (k *Keeper) SetEpochInfoByDuration(ctx sdk.Context, epochInfo types.EpochIn
 }
 
 // GetEpochInfoByDuration gets EpochInfo by epoch duration.
-func (k *Keeper) GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo types.EpochInfo, found bool) {
+func (k Keeper) GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo types.EpochInfo, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetEpochInfoByDurationKey(duration)
@@ -35,7 +36,7 @@ func (k *Keeper) GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration)
 }
 
 // DeleteEpochInfoByDuration deletes the EpochInfo using epoch duration.
-func (k *Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Duration) {
+func (k Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Duration) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetEpochInfoByDurationKey(duration)
@@ -44,7 +45,7 @@ func (k *Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Durati
 }
 
 // GetAllEpochInfos returns all the EpochInfo.
-func (k *Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo) {
+func (k Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.EpochInfoByDurationKeyPrefix)
@@ -66,7 +67,7 @@ func (k *Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo
 // GAUGES
 
 // GetGaugeID return gauge by id.
-func (k *Keeper) GetGaugeID(ctx sdk.Context) uint64 {
+func (k Keeper) GetGaugeID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
 		key   = types.GaugeIDKey
@@ -81,7 +82,7 @@ func (k *Keeper) GetGaugeID(ctx sdk.Context) uint64 {
 }
 
 // SetGaugeID sets id for the gauge.
-func (k *Keeper) SetGaugeID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetGaugeID(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GaugeIDKey
@@ -95,7 +96,7 @@ func (k *Keeper) SetGaugeID(ctx sdk.Context, id uint64) {
 }
 
 // SetGauge sets gauge with Id as a key.
-func (k *Keeper) SetGauge(ctx sdk.Context, gauge types.Gauge) {
+func (k Keeper) SetGauge(ctx sdk.Context, gauge types.Gauge) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeKey(gauge.Id)
@@ -105,7 +106,7 @@ func (k *Keeper) SetGauge(ctx sdk.Context, gauge types.Gauge) {
 }
 
 // DeleteGauge deletes the gauge.
-func (k *Keeper) DeleteGauge(ctx sdk.Context, id uint64) {
+func (k Keeper) DeleteGauge(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeKey(id)
@@ -114,7 +115,7 @@ func (k *Keeper) DeleteGauge(ctx sdk.Context, id uint64) {
 }
 
 // GetGaugeByID returns gauge by id.
-func (k *Keeper) GetGaugeByID(ctx sdk.Context, id uint64) (gauge types.Gauge, found bool) {
+func (k Keeper) GetGaugeByID(ctx sdk.Context, id uint64) (gauge types.Gauge, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeKey(id)
@@ -128,7 +129,7 @@ func (k *Keeper) GetGaugeByID(ctx sdk.Context, id uint64) (gauge types.Gauge, fo
 }
 
 // GetAllGauges returns all the gauges from store.
-func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
+func (k Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
@@ -148,7 +149,7 @@ func (k *Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 }
 
 // SetGaugeIdsByTriggerDuration sets a gauge ids by the trigger duration.
-func (k *Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDuration types.GaugeByTriggerDuration) {
+func (k Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDuration types.GaugeByTriggerDuration) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeIdsByTriggerDurationKey(gaugesByTriggerDuration.TriggerDuration)
@@ -158,7 +159,7 @@ func (k *Keeper) SetGaugeIdsByTriggerDuration(ctx sdk.Context, gaugesByTriggerDu
 }
 
 // GetGaugeIdsByTriggerDuration returns all the gauges for the given durtion.
-func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration) (gaugeIdsByTriggerDuration types.GaugeByTriggerDuration, found bool) {
+func (k Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration time.Duration) (gaugeIdsByTriggerDuration types.GaugeByTriggerDuration, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.GetGaugeIdsByTriggerDurationKey(triggerDuration)
@@ -171,8 +172,27 @@ func (k *Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration t
 	return gaugeIdsByTriggerDuration, true
 }
 
+func (k Keeper) GetAllGaugeIdsByTriggerDuration(ctx sdk.Context) (gaugeByTriggerDuration []types.GaugeByTriggerDuration) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GaugeIdsByTriggerDurationKeyPrefix)
+	)
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+	for ; iter.Valid(); iter.Next() {
+		var gauge types.GaugeByTriggerDuration
+		k.cdc.MustUnmarshal(iter.Value(), &gauge)
+		gaugeByTriggerDuration = append(gaugeByTriggerDuration, gauge)
+	}
+	return gaugeByTriggerDuration
+}
+
 // GetAllGaugesByGaugeTypeID returns all the gauges with given gaugeTypeId.
-func (k *Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []types.Gauge) {
+func (k Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)

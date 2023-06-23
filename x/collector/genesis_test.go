@@ -3,23 +3,23 @@ package collector_test
 import (
 	"testing"
 
-	keepertest "github.com/comdex-official/comdex/testutil/keeper"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	app "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/collector"
 	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
+	comdexApp := app.Setup(false)
+	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
-		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.CollectorKeeper(t)
-	collector.InitGenesis(ctx, *k, genesisState)
-	got := collector.ExportGenesis(ctx, *k)
+	k := comdexApp.CollectorKeeper
+	collector.InitGenesis(ctx, k, &genesisState)
+	got := collector.ExportGenesis(ctx, k)
 	require.NotNil(t, got)
-
-	// this line is used by starport scaffolding # genesis/test/assert
 }

@@ -7,9 +7,10 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/lend/v1beta1/lend.proto";
 import "comdex/lend/v1beta1/params.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/lend/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -23,7 +24,7 @@ message QueryParamsResponse {
 
 message QueryLendsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryLendsResponse {
@@ -32,7 +33,7 @@ message QueryLendsResponse {
     (gogoproto.moretags) = "yaml:\"lends\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryLendRequest {
@@ -41,24 +42,41 @@ message QueryLendRequest {
 
 message QueryLendResponse {
   LendAsset lend = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lend\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"lend\""];
 }
 
 message QueryAllLendByOwnerRequest {
-  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryAllLendByOwnerResponse {
   repeated LendAsset lends = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"lends\"" ];
+    (gogoproto.moretags) = "yaml:\"lend_ids\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllLendByOwnerAndPoolRequest {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllLendByOwnerAndPoolResponse {
+  repeated LendAsset lends = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lends\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryPairsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryPairsResponse {
@@ -67,7 +85,7 @@ message QueryPairsResponse {
     (gogoproto.moretags) = "yaml:\"extended_pairs\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryPairRequest {
@@ -76,35 +94,35 @@ message QueryPairRequest {
 
 message QueryPairResponse {
   Extended_Pair ExtendedPair = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"extended_pair\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"extended_pair\""];
 }
 
-message QueryAssetRatesStatsRequest {
+message QueryAssetRatesParamsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryAssetRatesStatsResponse {
-  repeated AssetRatesStats AssetRatesStats = 1 [
+message QueryAssetRatesParamsResponse {
+  repeated AssetRatesParams AssetRatesParams = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"asset_rates_stats\""
+    (gogoproto.moretags) = "yaml:\"asset_rates_params\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryAssetRatesStatRequest {
+message QueryAssetRatesParamRequest {
   uint64 id = 1;
 }
 
-message QueryAssetRatesStatResponse {
-  AssetRatesStats AssetRatesStat = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_rates_stat\"" ];
+message QueryAssetRatesParamResponse {
+  AssetRatesParams AssetRatesparams = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_rates_params\""];
 }
 
 message QueryPoolsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryPoolsResponse {
@@ -113,7 +131,7 @@ message QueryPoolsResponse {
     (gogoproto.moretags) = "yaml:\"pools\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryPoolRequest {
@@ -121,13 +139,13 @@ message QueryPoolRequest {
 }
 
 message QueryPoolResponse {
-  Pool Pool = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pool\"" ];
+  Pool pool = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"pool\""];
 }
 
 message QueryAssetToPairMappingsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryAssetToPairMappingsResponse {
@@ -136,21 +154,22 @@ message QueryAssetToPairMappingsResponse {
     (gogoproto.moretags) = "yaml:\"asset_to_pair_mappings\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryAssetToPairMappingRequest {
-  uint64 id = 1;
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
 }
 
 message QueryAssetToPairMappingResponse {
   AssetToPairMapping AssetToPairMapping = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_to_pair_mapping\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"asset_to_pair_mapping\""];
 }
 
 message QueryBorrowsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryBorrowsResponse {
@@ -159,7 +178,7 @@ message QueryBorrowsResponse {
     (gogoproto.moretags) = "yaml:\"borrows\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryBorrowRequest {
@@ -168,19 +187,134 @@ message QueryBorrowRequest {
 
 message QueryBorrowResponse {
   BorrowAsset borrow = 1
-  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"borrow\"" ];
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"borrow\""];
 }
 
 message QueryAllBorrowByOwnerRequest {
-  string owner = 1 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
-  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryAllBorrowByOwnerResponse {
   repeated BorrowAsset borrows = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"borrows\"" ];
+    (gogoproto.moretags) = "yaml:\"borrows\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllBorrowByOwnerAndPoolRequest {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllBorrowByOwnerAndPoolResponse {
+  repeated BorrowAsset borrows = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrows\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryPoolAssetLBMappingRequest {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+}
+
+message QueryPoolAssetLBMappingResponse {
+  PoolAssetLBMapping PoolAssetLBMapping = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_asset_lb_mapping\""];
+}
+
+message QueryReserveBuybackAssetDataRequest {
+  uint64 asset_id = 1;
+}
+
+message QueryReserveBuybackAssetDataResponse {
+  ReserveBuybackAssetData ReserveBuybackAssetData = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"reserve_buyback_asset_data\""];
+}
+
+message QueryAuctionParamRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAuctionParamResponse {
+  AuctionParams auctionParams = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction_params\""];
+}
+
+message QueryModuleBalanceRequest {
+  uint64 pool_id = 1 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+}
+
+message QueryModuleBalanceResponse {
+  ModuleBalance ModuleBalance = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"module_balance\""];
+}
+
+ message QueryFundModBalRequest {}
+
+ message QueryFundModBalResponse {
+   ModBal FundModBalance = 1 [
+     (gogoproto.nullable) = false,
+     (gogoproto.moretags) = "yaml:\"fund_mod_balance\""];
+ }
+
+message QueryFundReserveBalRequest {}
+
+message QueryFundReserveBalResponse {
+  ReserveBal FundReserveBalance = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"fund_reserve_balance\""];
+}
+
+message QueryAllReserveStatsRequest {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+
+}
+
+message QueryAllReserveStatsResponse {
+  AllReserveStats AllReserveStats = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"all_reserve_stats\""];
+}
+
+message QueryFundModBalByAssetPoolRequest {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  uint64 pool_id  = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+}
+
+message QueryFundModBalByAssetPoolResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+}
+
+message QueryLendInterestRequest {}
+
+message QueryLendInterestResponse {
+  repeated PoolInterest pool_interest = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_interest\""
+  ];
+}
+
+message QueryBorrowInterestRequest {}
+
+message QueryBorrowInterestResponse {
+  repeated PoolInterestB pool_interest = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"pool_interest\""
+  ];
 }
 
 service Query {
@@ -192,11 +326,15 @@ service Query {
   }
 
   rpc QueryAllLendByOwner(QueryAllLendByOwnerRequest) returns (QueryAllLendByOwnerResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/lends-by-owner/{owner}";
+    option (google.api.http).get = "/comdex/lend/v1beta1/lends_by_owner/{owner}";
+  };
+
+  rpc QueryAllLendByOwnerAndPool(QueryAllLendByOwnerAndPoolRequest) returns (QueryAllLendByOwnerAndPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/lends_by_owner_pool/{owner}/{pool_id}";
   };
 
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdexofficial/comdex/lend/params";
+    option (google.api.http).get = "/comdex/lend/v1beta1/params";
   }
 
   rpc QueryPairs(QueryPairsRequest) returns (QueryPairsResponse) {
@@ -206,11 +344,11 @@ service Query {
     option (google.api.http).get = "/comdex/lend/v1beta1/pairs/{id}";
   }
 
-  rpc QueryAssetRatesStats(QueryAssetRatesStatsRequest) returns (QueryAssetRatesStatsResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/asset_rates_stats";
+  rpc QueryAssetRatesParams(QueryAssetRatesParamsRequest) returns (QueryAssetRatesParamsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/asset_rates_params";
   }
-  rpc QueryAssetRatesStat(QueryAssetRatesStatRequest) returns (QueryAssetRatesStatResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/asset_rates_stats/{id}";
+  rpc QueryAssetRatesParam(QueryAssetRatesParamRequest) returns (QueryAssetRatesParamResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/asset_rates_param/{id}";
   }
 
   rpc QueryPools(QueryPoolsRequest) returns (QueryPoolsResponse) {
@@ -224,7 +362,7 @@ service Query {
     option (google.api.http).get = "/comdex/lend/v1beta1/asset_to_pair_mappings";
   }
   rpc QueryAssetToPairMapping(QueryAssetToPairMappingRequest) returns (QueryAssetToPairMappingResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/asset_to_pair_mappings/{id}";
+    option (google.api.http).get = "/comdex/lend/v1beta1/asset_to_pair_mappings/{asset_id}/{pool_id}";
   }
 
   rpc QueryBorrows(QueryBorrowsRequest) returns (QueryBorrowsResponse) {
@@ -235,7 +373,50 @@ service Query {
   }
 
   rpc QueryAllBorrowByOwner(QueryAllBorrowByOwnerRequest) returns (QueryAllBorrowByOwnerResponse) {
-    option (google.api.http).get = "/comdex/lend/v1beta1/borrows-by-owner/{owner}";
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrows_by_owner/{owner}";
+  }
+
+  rpc QueryAllBorrowByOwnerAndPool(QueryAllBorrowByOwnerAndPoolRequest) returns (QueryAllBorrowByOwnerAndPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrows_by_owner_pool/{owner}/{pool_id}";
+  }
+
+  rpc QueryPoolAssetLBMapping(QueryPoolAssetLBMappingRequest) returns (QueryPoolAssetLBMappingResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/pool_asset_lb_mapping/{asset_id}/{pool_id}";
+  };
+
+  rpc QueryReserveBuybackAssetData(QueryReserveBuybackAssetDataRequest) returns (QueryReserveBuybackAssetDataResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/reserve_buyback_asset_data/{asset_id}";
+  }
+
+  rpc QueryAuctionParams(QueryAuctionParamRequest) returns (QueryAuctionParamResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/auctionparams/{app_id}";
+  }
+  rpc QueryModuleBalance(QueryModuleBalanceRequest) returns (QueryModuleBalanceResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/module_balance/{pool_id}";
+  };
+
+  rpc QueryFundModBal(QueryFundModBalRequest) returns (QueryFundModBalResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/fund_mod_balance";
+  };
+
+  rpc QueryFundReserveBal(QueryFundReserveBalRequest) returns (QueryFundReserveBalResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/fund_reserve_balance";
+  };
+
+  rpc QueryAllReserveStats(QueryAllReserveStatsRequest) returns (QueryAllReserveStatsResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/all_reserve_stats/{asset_id}";
+  };
+
+  rpc QueryFundModBalByAssetPool(QueryFundModBalByAssetPoolRequest) returns (QueryFundModBalByAssetPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/fund_mod_bal_by_asset_pool/{asset_id}/{pool_id}";
+  };
+
+  rpc QueryLendInterest(QueryLendInterestRequest) returns (QueryLendInterestResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/lend_interest";
+  };
+
+  rpc QueryBorrowInterest(QueryBorrowInterestRequest) returns (QueryBorrowInterestResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrow_interest";
   };
 }
 

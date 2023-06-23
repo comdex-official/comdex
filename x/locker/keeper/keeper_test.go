@@ -1,11 +1,13 @@
 package keeper_test
 
 import (
-	"fmt"
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
+	"testing"
 	"time"
 
+	collectorKeeper "github.com/comdex-official/comdex/x/collector/keeper"
+
 	"github.com/stretchr/testify/suite"
-	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -19,12 +21,14 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app          *chain.App
-	ctx          sdk.Context
-	assetKeeper  assetKeeper.Keeper
-	lockerKeeper lockerKeeper.Keeper
-	querier      lockerKeeper.QueryServer
-	msgServer    lockerTypes.MsgServer
+	app           *chain.App
+	ctx           sdk.Context
+	assetKeeper   assetKeeper.Keeper
+	lockerKeeper  lockerKeeper.Keeper
+	querier       lockerKeeper.QueryServer
+	msgServer     lockerTypes.MsgServer
+	collector     collectorKeeper.Keeper
+	rewardsKeeper rewardsKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -37,7 +41,9 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.lockerKeeper = s.app.LockerKeeper
 	s.assetKeeper = s.app.AssetKeeper
 	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}
-	s.msgServer = lockerKeeper.NewMsgServiceServer(s.lockerKeeper)
+	s.msgServer = lockerKeeper.NewMsgServer(s.lockerKeeper)
+	s.collector = s.app.CollectorKeeper
+	s.rewardsKeeper = s.app.Rewardskeeper
 }
 
 //
@@ -79,7 +85,6 @@ func (s *KeeperTestSuite) fundAddr(addr string, amt sdk.Coin) {
 
 func (s *KeeperTestSuite) advanceseconds(dur int64) {
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime().Add(time.Second * time.Duration(dur)))
-	fmt.Println(s.ctx.BlockTime())
 }
 
 // ParseCoins parses and returns sdk.Coins.

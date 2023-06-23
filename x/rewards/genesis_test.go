@@ -3,23 +3,23 @@ package rewards_test
 import (
 	"testing"
 
-	keepertest "github.com/comdex-official/comdex/testutil/keeper"
+	"github.com/comdex-official/comdex/app"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	"github.com/comdex-official/comdex/x/rewards"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
+	comdexApp := app.Setup(false)
+	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
+
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
-		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, ctx := keepertest.RewardsKeeper(t)
-	rewards.InitGenesis(ctx, *k, genesisState)
-	got := rewards.ExportGenesis(ctx, *k)
+	rewards.InitGenesis(ctx, comdexApp.Rewardskeeper, &genesisState)
+	got := rewards.ExportGenesis(ctx, comdexApp.Rewardskeeper)
 	require.NotNil(t, got)
-
-	// this line is used by starport scaffolding # genesis/test/assert
 }

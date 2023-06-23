@@ -1,0 +1,38 @@
+syntax = "proto3";
+package comdex.asset.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/asset/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message AppData {
+  uint64 id = 1;
+  string name = 2 [(gogoproto.moretags) = "yaml:\"name\""];
+  string short_name = 3 [(gogoproto.moretags) = "yaml:\"short_name\""];
+  string min_gov_deposit = 4 [
+    (gogoproto.moretags) = "yaml:\"min_gov_deposit\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+  uint64 gov_time_in_seconds = 5 [(gogoproto.moretags) = "yaml:\"gov_time_in_seconds\""];
+  repeated MintGenesisToken genesis_token = 6 [(gogoproto.moretags) = "yaml:\"genesis_token\"",
+    (gogoproto.nullable) = false];
+}
+
+message MintGenesisToken {
+  uint64 asset_id = 1 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  string genesis_supply = 2[(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+  bool is_gov_token = 3 [(gogoproto.moretags) = "yaml:\"is_gov_token\""];
+  string recipient = 4 [(gogoproto.moretags) = "yaml:\"recipient\""];
+}
+
+message AppAndGovTime {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 gov_time_in_seconds = 2 [(gogoproto.moretags) = "yaml:\"gov_time_in_seconds\""];
+  string min_gov_deposit = 3 [
+    (gogoproto.moretags) = "yaml:\"min_gov_deposit\"",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false];
+}

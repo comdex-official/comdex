@@ -1,45 +1,61 @@
 package keeper
 
 import (
-	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-func (k Keeper) GetReserveFunds(ctx sdk.Context, denom string) sdk.Int {
-	store := ctx.KVStore(k.storeKey)
-	key := types.ReserveFundsKey(denom)
-	amount := sdk.ZeroInt()
+func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
+	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+	reserve, found := k.GetReserveBuybackAssetData(ctx, assetID)
+	if !found {
+		reserve.AssetID = assetID
+		reserve.BuybackAmount = sdk.ZeroInt()
+		reserve.ReserveAmount = sdk.ZeroInt()
+	}
 
-	if bz := store.Get(key); bz != nil {
-		err := amount.Unmarshal(bz)
-		if err != nil {
-			panic(err)
+	if inc {
+		reserve.BuybackAmount = reserve.BuybackAmount.Add(newAmount)
+		reserve.ReserveAmount = reserve.ReserveAmount.Add(newAmount)
+		if err := k.bank.SendCoinsFromModuleToModule(ctx, moduleName, types.ModuleName, sdk.NewCoins(payment)); err != nil {
+			return err
+		}
+	} else {
+		reserve.BuybackAmount = reserve.BuybackAmount.Sub(newAmount)
+		reserve.ReserveAmount = reserve.ReserveAmount.Sub(newAmount)
+		if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleName, sdk.NewCoins(payment)); err != nil {
+			return err
 		}
 	}
-
-	if amount.IsNegative() {
-		panic("negative reserve amount detected")
-	}
-
-	//return amount
-	return sdk.NewInt(100)
+	k.SetReserveBuybackAssetData(ctx, reserve)
+	return nil
 }
 
-// setReserveFunds sets the amount reserved of a specified token.
-func (k Keeper) setReserveFunds(ctx sdk.Context, coin sdk.Coin) error {
-	if err := coin.Validate(); err != nil {
-		return err
+func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount sdk.Int, inc bool) {
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, PoolID, AssetID)
+	if inc {
+		assetStats.TotalLend = assetStats.TotalLend.Add(amount)
+	} else {
+		assetStats.TotalLend = assetStats.TotalLend.Sub(amount)
 	}
+	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
+}
 
-	store := ctx.KVStore(k.storeKey)
-	reserveKey := types.ReserveFundsKey(coin.Denom)
-
-	// save the new reserve funds
-	bz, err := coin.Amount.Marshal()
-	if err != nil {
-		return err
+func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool) {
+	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
+	if inc {
+		if isStableBorrow {
+			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Add(amount)
+		} else {
+			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Add(amount)
+		}
+	} else {
+		if isStableBorrow {
+			assetStats.TotalStableBorrowed = assetStats.TotalStableBorrowed.Sub(amount)
+		} else {
+			assetStats.TotalBorrowed = assetStats.TotalBorrowed.Sub(amount)
+		}
 	}
-
-	store.Set(reserveKey, bz)
-	return nil
+	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 }

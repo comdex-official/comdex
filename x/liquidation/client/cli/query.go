@@ -4,23 +4,28 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/comdex-official/comdex/x/liquidation/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 func queryLockedVault() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "locked-vault [id]",
+		Use:   "locked-vault [app-id] [id]",
 		Short: "Query locked-vault",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -28,7 +33,8 @@ func queryLockedVault() *cobra.Command {
 			res, err := queryClient.QueryLockedVault(
 				context.Background(),
 				&types.QueryLockedVaultRequest{
-					Id: id,
+					AppId: appID,
+					Id:    id,
 				},
 			)
 			if err != nil {
@@ -76,7 +82,7 @@ func queryLockedVaults() *cobra.Command {
 
 func queryParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "params",
+		Use:   "liquidation-params",
 		Short: "Query module parameters",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -86,9 +92,9 @@ func queryParams() *cobra.Command {
 
 			queryClient := types.NewQueryClient(ctx)
 
-			res, err := queryClient.QueryParams(
+			res, err := queryClient.QueryLiquidationParams(
 				context.Background(),
-				&types.QueryParamsRequest{},
+				&types.QueryLiquidationParamsRequest{},
 			)
 			if err != nil {
 				return err
@@ -156,7 +162,6 @@ func queryUserLockedVaults() *cobra.Command {
 				UserAddress: args[0],
 				Pagination:  pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -165,6 +170,8 @@ func queryUserLockedVaults() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-by-user")
+
 	return cmd
 }
 
@@ -190,7 +197,6 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 				UserAddress: args[0],
 				Pagination:  pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -199,6 +205,8 @@ func queryUserLockedVaultsHistory() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-history-by-user")
+
 	return cmd
 }
 
@@ -213,7 +221,6 @@ func queryLockedVaultsPair() *cobra.Command {
 				return err
 			}
 			pairID, err := strconv.ParseUint(args[0], 10, 64)
-
 			if err != nil {
 				return err
 			}
@@ -229,7 +236,6 @@ func queryLockedVaultsPair() *cobra.Command {
 				PairId:     pairID,
 				Pagination: pagination,
 			})
-
 			if err != nil {
 				return err
 			}
@@ -238,6 +244,8 @@ func queryLockedVaultsPair() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "locked-vaults-pair")
+
 	return cmd
 }
 
@@ -254,7 +262,6 @@ func queryAppIds() *cobra.Command {
 			queryClient := types.NewQueryClient(ctx)
 
 			res, err := queryClient.QueryAppIds(cmd.Context(), &types.QueryAppIdsRequest{})
-
 			if err != nil {
 				return err
 			}

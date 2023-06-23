@@ -3,26 +3,32 @@ package wasm
 import (
 	"encoding/json"
 
+	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+
 	auctionkeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	tokenmintkeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper,
+) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
 			wrapped:           old,
@@ -33,6 +39,9 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			liquidationKeeper: liquidationKeeper,
 			auctionKeeper:     auctionKeeper,
 			tokenMintKeeper:   tokenMintKeeper,
+			esmKeeper:         esmKeeper,
+			vaultKeeper:       vaultKeeper,
+			liquiditykeeper:   liquiditykeeper,
 		}
 	}
 }
@@ -46,6 +55,9 @@ type CustomMessenger struct {
 	liquidationKeeper liquidationkeeper.Keeper
 	auctionKeeper     auctionkeeper.Keeper
 	tokenMintKeeper   tokenmintkeeper.Keeper
+	esmKeeper         esmkeeper.Keeper
+	vaultKeeper       vaultkeeper.Keeper
+	liquiditykeeper   liquidityKeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -100,28 +112,45 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		if comdexMsg.MsgBurnGovTokensForApp != nil {
 			return m.BurnGovTokensForApp(ctx, contractAddr, comdexMsg.MsgBurnGovTokensForApp)
 		}
+		if comdexMsg.MsgAddESMTriggerParams != nil {
+			return m.AddESMTriggerParams(ctx, contractAddr, comdexMsg.MsgAddESMTriggerParams)
+		}
+		if comdexMsg.MsgEmissionRewards != nil {
+			return m.ExecuteAddEmissionRewards(ctx, contractAddr, comdexMsg.MsgEmissionRewards)
+		}
+		if comdexMsg.MsgFoundationEmission != nil {
+			return m.ExecuteFoundationEmission(ctx, contractAddr, comdexMsg.MsgFoundationEmission)
+		}
+		if comdexMsg.MsgRebaseMint != nil {
+			return m.ExecuteMsgRebaseMint(ctx, contractAddr, comdexMsg.MsgRebaseMint)
+		}
+		if comdexMsg.MsgGetSurplusFund != nil {
+			return m.ExecuteMsgGetSurplusFund(ctx, contractAddr, comdexMsg.MsgGetSurplusFund)
+		}
+		if comdexMsg.MsgEmissionPoolRewards != nil {
+			return m.ExecuteAddEmissionPoolRewards(ctx, contractAddr, comdexMsg.MsgEmissionPoolRewards)
+		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
 }
 
 func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhiteListAssetLocker) ([]sdk.Event, [][]byte, error) {
-	err := WhiteListAsset(m.lockerKeeper, ctx, contractAddr, whiteListAsset)
+	err := WhiteListAsset(m.lockerKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list asset")
 	}
 	return nil, nil, nil
 }
 
-func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	whiteListAsset *bindings.MsgWhiteListAssetLocker) error {
+func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractAddr string,
+	whiteListAsset *bindings.MsgWhiteListAssetLocker,
+) error {
 	msg := lockertypes.MsgAddWhiteListedAssetRequest{
-		From:         contractAddr.String(),
-		AppMappingId: whiteListAsset.AppMappingID,
-		AssetId:      whiteListAsset.AssetID,
+		From:    contractAddr,
+		AppId:   whiteListAsset.AppID,
+		AssetId: whiteListAsset.AssetID,
 	}
-	msgServer := lockerkeeper.NewMsgServiceServer(lockerKeeper)
-	_, err := msgServer.MsgAddWhiteListedAsset(sdk.WrapSDKContext(ctx), &msg)
-
+	_, err := lockerKeeper.AddWhiteListedAsset(ctx, &msg)
 	if err != nil {
 		return err
 	}
@@ -130,23 +159,22 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 }
 
 func (m *CustomMessenger) whitelistAppIDLockerRewards(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhitelistAppIDLockerRewards) ([]sdk.Event, [][]byte, error) {
-	err := WhitelistAppIDLockerRewards(m.rewardsKeeper, ctx, contractAddr, whiteListAsset)
+	err := WhitelistAppIDLockerRewards(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list appId locker rewards")
 	}
 	return nil, nil, nil
 }
 
-func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	whiteListAsset *bindings.MsgWhitelistAppIDLockerRewards) error {
+func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr string,
+	whiteListAsset *bindings.MsgWhitelistAppIDLockerRewards,
+) error {
 	msg := rewardstypes.WhitelistAsset{
-		From:         contractAddr.String(),
-		AppMappingId: whiteListAsset.AppMappingID,
-		AssetId:      whiteListAsset.AssetIDs,
+		From:         contractAddr,
+		AppMappingId: whiteListAsset.AppID,
+		AssetId:      whiteListAsset.AssetID,
 	}
-	msgServer := rewardskeeper.NewMsgServerImpl(rewardsKeeper)
-	_, err := msgServer.Whitelist(sdk.WrapSDKContext(ctx), &msg)
-
+	_, err := rewardsKeeper.Whitelist(ctx, &msg)
 	if err != nil {
 		return err
 	}
@@ -155,33 +183,26 @@ func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 }
 
 func (m *CustomMessenger) whitelistAppIDVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhitelistAppIDVaultInterest) ([]sdk.Event, [][]byte, error) {
-	err := WhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr, whiteListAsset)
+	err := WhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list appId vault Interest")
 	}
 	return nil, nil, nil
 }
 
-func WhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	whiteListAsset *bindings.MsgWhitelistAppIDVaultInterest) error {
+func WhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr string,
+	whiteListAsset *bindings.MsgWhitelistAppIDVaultInterest,
+) error {
 	msg := rewardstypes.WhitelistAppIdVault{
-
-		From:         contractAddr.String(),
-		AppMappingId: whiteListAsset.AppMappingID,
+		From:         contractAddr,
+		AppMappingId: whiteListAsset.AppID,
 	}
-	msgServer := rewardskeeper.NewMsgServerImpl(rewardsKeeper)
-	_, err := msgServer.WhitelistAppVault(sdk.WrapSDKContext(ctx), &msg)
-
+	_, err := rewardsKeeper.WhitelistAppVault(ctx, &msg)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func GetState(addr, denom, blockHeight, target string) (sdk.Coin, error) {
-	state, _ := lockerkeeper.QueryState(addr, denom, blockHeight, target)
-	return *state, nil
 }
 
 func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddExtendedPairsVault) ([]sdk.Event, [][]byte, error) {
@@ -193,7 +214,8 @@ func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sd
 }
 
 func MsgAddExtendedPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	pairVaultBinding *bindings.MsgAddExtendedPairsVault) error {
+	pairVaultBinding *bindings.MsgAddExtendedPairsVault,
+) error {
 	err := assetKeeper.WasmAddExtendedPairsVaultRecords(ctx, pairVaultBinding)
 	if err != nil {
 		return err
@@ -210,7 +232,8 @@ func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	collectorBindings *bindings.MsgSetCollectorLookupTable) error {
+	collectorBindings *bindings.MsgSetCollectorLookupTable,
+) error {
 	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, collectorBindings)
 	if err != nil {
 		return err
@@ -227,7 +250,8 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 }
 
 func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	auctionMappingBinding *bindings.MsgSetAuctionMappingForApp) error {
+	auctionMappingBinding *bindings.MsgSetAuctionMappingForApp,
+) error {
 	err := collectorKeeper.WasmSetAuctionMappingForApp(ctx, auctionMappingBinding)
 	if err != nil {
 		return err
@@ -244,7 +268,8 @@ func (m *CustomMessenger) UpdatePairsVault(ctx sdk.Context, contractAddr sdk.Acc
 }
 
 func MsgUpdatePairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	updatePairVault *bindings.MsgUpdatePairsVault) error {
+	updatePairVault *bindings.MsgUpdatePairsVault,
+) error {
 	err := assetKeeper.WasmUpdatePairsVault(ctx, updatePairVault)
 	if err != nil {
 		return err
@@ -261,7 +286,8 @@ func (m *CustomMessenger) UpdateCollectorLookupTable(ctx sdk.Context, contractAd
 }
 
 func MsgUpdateCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	updateColBinding *bindings.MsgUpdateCollectorLookupTable) error {
+	updateColBinding *bindings.MsgUpdateCollectorLookupTable,
+) error {
 	err := collectorKeeper.WasmUpdateCollectorLookupTable(ctx, updateColBinding)
 	if err != nil {
 		return err
@@ -278,8 +304,9 @@ func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAd
 }
 
 func MsgRemoveWhitelistAssetLocker(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgRemoveWhitelistAssetLocker) error {
-	err := rewardsKeeper.WasmRemoveWhitelistAssetLocker(ctx, a.AppMappingID, a.AssetID)
+	a *bindings.MsgRemoveWhitelistAssetLocker,
+) error {
+	err := rewardsKeeper.WasmRemoveWhitelistAssetLocker(ctx, a.AppID, a.AssetID)
 	if err != nil {
 		return err
 	}
@@ -295,7 +322,8 @@ func (m *CustomMessenger) RemoveWhitelistAppIDVaultInterest(ctx sdk.Context, con
 }
 
 func MsgRemoveWhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgRemoveWhitelistAppIDVaultInterest) error {
+	a *bindings.MsgRemoveWhitelistAppIDVaultInterest,
+) error {
 	err := rewardsKeeper.WasmRemoveWhitelistAppIDVaultInterest(ctx, a.AppMappingID)
 	if err != nil {
 		return err
@@ -312,8 +340,9 @@ func (m *CustomMessenger) WhitelistAppIDLiquidation(ctx sdk.Context, contractAdd
 }
 
 func MsgWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgWhitelistAppIDLiquidation) error {
-	err := liquidationKeeper.WasmWhitelistAppIDLiquidation(ctx, a.AppMappingID)
+	a *bindings.MsgWhitelistAppIDLiquidation,
+) error {
+	err := liquidationKeeper.WasmWhitelistAppIDLiquidation(ctx, a.AppID)
 	if err != nil {
 		return err
 	}
@@ -329,8 +358,9 @@ func (m *CustomMessenger) RemoveWhitelistAppIDLiquidation(ctx sdk.Context, contr
 }
 
 func MsgRemoveWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgRemoveWhitelistAppIDLiquidation) error {
-	err := liquidationKeeper.WasmRemoveWhitelistAppIDLiquidation(ctx, a.AppMappingID)
+	a *bindings.MsgRemoveWhitelistAppIDLiquidation,
+) error {
+	err := liquidationKeeper.WasmRemoveWhitelistAppIDLiquidation(ctx, a.AppID)
 	if err != nil {
 		return err
 	}
@@ -346,7 +376,8 @@ func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.Acc
 }
 
 func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	auctionParamsBinding *bindings.MsgAddAuctionParams) error {
+	auctionParamsBinding *bindings.MsgAddAuctionParams,
+) error {
 	err := auctionKeeper.AddAuctionParams(ctx, auctionParamsBinding)
 	if err != nil {
 		return err
@@ -363,8 +394,117 @@ func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.
 }
 
 func MsgBurnGovTokensForApp(tokenMintKeeper tokenmintkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
-	a *bindings.MsgBurnGovTokensForApp) error {
-	err := tokenMintKeeper.BurnGovTokensForApp(ctx, a.AppMappingID, a.From, a.Amount)
+	a *bindings.MsgBurnGovTokensForApp,
+) error {
+	err := tokenMintKeeper.BurnGovTokensForApp(ctx, a.AppID, a.From, a.Amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddESMTriggerParams) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddESMTriggerParams(m.esmKeeper, ctx, contractAddr, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
+	}
+	return nil, nil, nil
+}
+
+func MsgAddESMTriggerParams(esmKeeper esmkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress,
+	a *bindings.MsgAddESMTriggerParams,
+) error {
+	err := esmKeeper.AddESMTriggerParamsForApp(ctx, a)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionRewards) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddEmissionRewards(m.vaultKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func (m *CustomMessenger) ExecuteAddEmissionPoolRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionPoolRewards) ([]sdk.Event, [][]byte, error) {
+	err := MsgAddEmissionPoolRewards(m.liquiditykeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Emission pool rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgAddEmissionRewards(vaultKeeper vaultkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgEmissionRewards,
+) error {
+	err := vaultKeeper.WasmMsgAddEmissionRewards(ctx, a.AppID, a.Amount, a.ExtendedPair, a.VotingRatio)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MsgAddEmissionPoolRewards(liquiditykeeper liquidityKeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgEmissionPoolRewards,
+) error {
+	err := liquiditykeeper.WasmMsgAddEmissionPoolRewards(ctx, a.AppID, a.CswapAppID, a.Amount, a.Pools, a.VotingRatio)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteFoundationEmission(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgFoundationEmission) ([]sdk.Event, [][]byte, error) {
+	err := MsgFoundationEmission(m.tokenMintKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgFoundationEmission(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgFoundationEmission,
+) error {
+	err := tokenmintKeeper.WasmMsgFoundationEmission(ctx, a.AppID, a.Amount, a.FoundationAddress)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteMsgRebaseMint(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRebaseMint) ([]sdk.Event, [][]byte, error) {
+	err := MsgRebaseMint(m.tokenMintKeeper, ctx, a)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgRebaseMint(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgRebaseMint,
+) error {
+	err := tokenmintKeeper.WasmMsgRebaseMint(ctx, a.AppID, a.Amount, a.ContractAddr)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CustomMessenger) ExecuteMsgGetSurplusFund(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgGetSurplusFund) ([]sdk.Event, [][]byte, error) {
+	err := MsgGetSurplusFund(m.collectorKeeper, ctx, a, contractAddr)
+	if err != nil {
+		return nil, nil, sdkerrors.Wrap(err, "Execute surplus fund rewards error")
+	}
+	return nil, nil, nil
+}
+
+func MsgGetSurplusFund(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context,
+	a *bindings.MsgGetSurplusFund, contractAddr sdk.AccAddress,
+) error {
+	err := collectorKeeper.WasmMsgGetSurplusFund(ctx, a.AppID, a.AssetID, contractAddr, a.Amount)
 	if err != nil {
 		return err
 	}

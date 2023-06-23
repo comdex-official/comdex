@@ -4,12 +4,10 @@ package comdex.locker.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/locker/v1beta1/locker.proto";
-import "comdex/locker/v1beta1/params.proto";
 import "comdex/asset/v1beta1/asset.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package            = "github.com/comdex-official/comdex/x/locker/types";
+option go_package = "github.com/comdex-official/comdex/x/locker/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -19,64 +17,60 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker_info/{id}";
   };
 
-  rpc QueryLockersByProductToAssetID(QueryLockersByProductToAssetIDRequest) returns (QueryLockersByProductToAssetIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/lockers_info_asset_id/{product_id}/{asset_id}";
+  rpc QueryLockersByAppToAssetID(QueryLockersByAppToAssetIDRequest) returns (QueryLockersByAppToAssetIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/lockers_info_asset_id/{app_id}/{asset_id}";
   };
 
-  rpc QueryLockerInfoByProductID(QueryLockerInfoByProductIDRequest) returns (QueryLockerInfoByProductIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/lockers_info_product_id/{product_id}";
+  rpc QueryLockerInfoByAppID(QueryLockerInfoByAppIDRequest) returns (QueryLockerInfoByAppIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/lockers_info_app_id/{app_id}";
   };
 
 
- rpc QueryTotalDepositByProductAssetID(QueryTotalDepositByProductAssetIDRequest) returns (QueryTotalDepositByProductAssetIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/total_deposit_product_asset_id/{product_id}/{asset_id}";
+  rpc QueryTotalDepositByAppAndAssetID(QueryTotalDepositByAppAndAssetIDRequest) returns (QueryTotalDepositByAppAndAssetIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/total_deposit_app_asset_id/{app_id}/{asset_id}";
   };
 
-  rpc QueryOwnerLockerByProductIDbyOwner(QueryOwnerLockerByProductIDbyOwnerRequest) returns (QueryOwnerLockerByProductIDbyOwnerResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_by_all_product_by_owner/{product_id}/{owner}";
+  rpc QueryOwnerLockerByAppIDbyOwner(QueryOwnerLockerByAppIDbyOwnerRequest) returns (QueryOwnerLockerByAppIDbyOwnerResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_by_all_app_by_owner/{app_id}/{owner}";
   };
 
-  rpc QueryOwnerLockerOfAllProductByOwner(QueryOwnerLockerOfAllProductByOwnerRequest) returns (QueryOwnerLockerOfAllProductByOwnerResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_by_all_product_owner/{owner}";
+  rpc QueryOwnerLockerOfAllAppsByOwner(QueryOwnerLockerOfAllAppsByOwnerRequest) returns (QueryOwnerLockerOfAllAppsByOwnerResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_by_all_apps_owner/{owner}";
   };
 
-  rpc QueryOwnerTxDetailsLockerOfProductByOwnerByAsset(QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest) returns (QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_tx-details_by_product/{product_id}/{owner}/{asset_id}";
+  rpc QueryOwnerTxDetailsLockerOfAppByOwnerByAsset(QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest) returns (QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_tx-details_by_app_asset/{app_id}/{owner}/{asset_id}";
   };
 
- rpc QueryOwnerLockerByProductToAssetIDbyOwner(QueryOwnerLockerByProductToAssetIDbyOwnerRequest) returns (QueryOwnerLockerByProductToAssetIDbyOwnerResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_product_asset_id_owner/{product_id}/{asset_id}/{owner}";
+  rpc QueryOwnerLockerByAppToAssetIDbyOwner(QueryOwnerLockerByAppToAssetIDbyOwnerRequest) returns (QueryOwnerLockerByAppToAssetIDbyOwnerResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/owner_locker_info_app_asset_id_owner/{app_id}/{asset_id}/{owner}";
   };
 
-  rpc QueryLockerByProductByOwner(QueryLockerByProductByOwnerRequest) returns (QueryLockerByProductByOwnerResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/locker_info_product_owner/{product_id}/{owner}";
+  rpc QueryLockerByAppByOwner(QueryLockerByAppByOwnerRequest) returns (QueryLockerByAppByOwnerResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/locker_info_app_owner/{app_id}/{owner}";
   };
 
- rpc QueryLockerCountByProductID(QueryLockerCountByProductIDRequest) returns (QueryLockerCountByProductIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/total_locker_product_id/{product_id}";
+  rpc QueryLockerCountByAppID(QueryLockerCountByAppIDRequest) returns (QueryLockerCountByAppIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/total_locker_app_id/{app_id}";
   };
 
-  rpc QueryLockerCountByProductToAssetID(QueryLockerCountByProductToAssetIDRequest) returns (QueryLockerCountByProductToAssetIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/total_locker_product_asset_id/{product_id}/{asset_id}";
+  rpc QueryLockerCountByAppToAssetID(QueryLockerCountByAppToAssetIDRequest) returns (QueryLockerCountByAppToAssetIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/total_locker_app_asset_id/{app_id}/{asset_id}";
   };
 
-  rpc QueryWhiteListedAssetIDsByProductID(QueryWhiteListedAssetIDsByProductIDRequest) returns (QueryWhiteListedAssetIDsByProductIDResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/whitelisted_asset_ids_by_product_id/{product_id}";
+  rpc QueryWhiteListedAssetIDsByAppID(QueryWhiteListedAssetIDsByAppIDRequest) returns (QueryWhiteListedAssetIDsByAppIDResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/whitelisted_asset_ids_by_app_id/{app_id}";
   };
 
-  rpc QueryWhiteListedAssetByAllProduct(QueryWhiteListedAssetByAllProductRequest) returns (QueryWhiteListedAssetByAllProductResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/whitelisted_asset_product_id";
-  };
-
-  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex/locker/v1beta1/params";
+  rpc QueryWhiteListedAssetByAllApps(QueryWhiteListedAssetByAllAppsRequest) returns (QueryWhiteListedAssetByAllAppsResponse) {
+    option (google.api.http).get = "/comdex/locker/v1beta1/whitelisted_asset_app_id";
   };
 
   rpc QueryLockerLookupTableByApp(QueryLockerLookupTableByAppRequest) returns (QueryLockerLookupTableByAppResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app/{app_id}";
   };
 
-  rpc QueryLockerLookupTableByAppAndAssetId(QueryLockerLookupTableByAppAndAssetIdRequest) returns (QueryLockerLookupTableByAppAndAssetIdResponse) {
+  rpc QueryLockerLookupTableByAppAndAssetID(QueryLockerLookupTableByAppAndAssetIDRequest) returns (QueryLockerLookupTableByAppAndAssetIDResponse) {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-lookup-by-app-and-assetId/{app_id}/{asset_id}";
   };
 
@@ -88,203 +82,218 @@ service Query {
     option (google.api.http).get = "/comdex/locker/v1beta1/locker-deposited-by-app/{app_id}";
   };
 
-  rpc QueryState(QueryStateRequest) returns (QueryStateResponse){};
 }
 
 message QueryLockerInfoRequest {
-  string id = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
 }
 
 message QueryLockerInfoResponse {
   Locker locker_info = 1[
-    (gogoproto.moretags)   = "yaml:\"locker_info\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message QueryLockersByProductToAssetIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-}
-
-message QueryLockersByProductToAssetIDResponse {
-  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
-}
-
-message QueryLockerInfoByProductIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-}
-
-message QueryLockerInfoByProductIDResponse {
-  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
-}
-
-message QueryTotalDepositByProductAssetIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-}
-
-message QueryTotalDepositByProductAssetIDResponse {
-  uint64 total_deposit = 1;
-}
-
-message QueryOwnerLockerByProductIDbyOwnerRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-}
-
-message QueryOwnerLockerByProductIDbyOwnerResponse {
-  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
-}
-
-message QueryOwnerLockerOfAllProductByOwnerRequest {
-  string owner = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-}
-
-message QueryOwnerLockerOfAllProductByOwnerResponse {
-  repeated string locker_ids = 1 [ (gogoproto.moretags) = "yaml:\"locker_ids\"" ];
-}
-
-message QueryOwnerTxDetailsLockerOfProductByOwnerByAssetRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-  uint64 asset_id = 3 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-  cosmos.base.query.v1beta1.PageRequest pagination = 4
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-}
-
-message QueryOwnerTxDetailsLockerOfProductByOwnerByAssetResponse {
-  repeated UserTxData user_tx_data = 1 [ (gogoproto.moretags) = "yaml:\"user_tx_data\""];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
-}
-
-message QueryOwnerLockerByProductToAssetIDbyOwnerRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-  string owner = 3 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-}
-
-message QueryOwnerLockerByProductToAssetIDbyOwnerResponse {
-  repeated Locker locker_info = 1[
-    (gogoproto.moretags)   = "yaml:\"locker_info\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message QueryLockerByProductByOwnerRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  string owner = 2 [ (gogoproto.moretags) = "yaml:\"owner\"" ];
-}
-
-message QueryLockerByProductByOwnerResponse {
-  repeated Locker locker_info = 1[
-    (gogoproto.moretags)   = "yaml:\"locker_info\"",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message QueryLockerCountByProductIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-}
-
-message QueryLockerCountByProductIDResponse {
-  uint64 total_count = 1;
-}
-
-message QueryLockerCountByProductToAssetIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
-}
-
-message QueryLockerCountByProductToAssetIDResponse {
-  uint64 total_count = 1;
-}
-
-message QueryWhiteListedAssetIDsByProductIDRequest {
-  uint64 product_id = 1 [ (gogoproto.moretags) = "yaml:\"product_id\"" ];
-}
-
-message QueryWhiteListedAssetIDsByProductIDResponse {
-  repeated uint64  asset_ids = 1;
-}
-
-message QueryWhiteListedAssetByAllProductRequest {
-}
-
-message QueryWhiteListedAssetByAllProductResponse {
-
-  repeated ProductToAllAsset product_to_all_asset = 1 [
-    (gogoproto.moretags) = "yaml:\"product_to_all_asset\"",
+    (gogoproto.moretags) = "yaml:\"locker_info\"",
     (gogoproto.nullable) = false
   ];
 }
 
-message ProductToAllAsset {
+message QueryLockersByAppToAssetIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
 
-  uint64  product_id = 1;
+message QueryLockersByAppToAssetIDResponse {
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLockerInfoByAppIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLockerInfoByAppIDResponse {
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryTotalDepositByAppAndAssetIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+}
+
+message QueryTotalDepositByAppAndAssetIDResponse {
+  uint64 total_deposit = 1;
+}
+
+message QueryOwnerLockerByAppIDbyOwnerRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  string owner = 2 [(gogoproto.moretags) = "yaml:\"owner\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerLockerByAppIDbyOwnerResponse {
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerLockerOfAllAppsByOwnerRequest {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerLockerOfAllAppsByOwnerResponse {
+  repeated uint64 locker_ids = 1 [(gogoproto.moretags) = "yaml:\"locker_ids\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerTxDetailsLockerOfAppByOwnerByAssetRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  string owner = 2 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 asset_id = 3 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerTxDetailsLockerOfAppByOwnerByAssetResponse {
+  repeated UserTxData user_tx_data = 1 [(gogoproto.moretags) = "yaml:\"user_tx_data\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryOwnerLockerByAppToAssetIDbyOwnerRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+  string owner = 3 [(gogoproto.moretags) = "yaml:\"owner\""];
+}
+
+message QueryOwnerLockerByAppToAssetIDbyOwnerResponse {
+  Locker locker_info = 1[
+    (gogoproto.moretags) = "yaml:\"locker_info\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLockerByAppByOwnerRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  string owner = 2 [(gogoproto.moretags) = "yaml:\"owner\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLockerByAppByOwnerResponse {
+  repeated Locker locker_info = 1[
+    (gogoproto.moretags) = "yaml:\"locker_info\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLockerCountByAppIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+}
+
+message QueryLockerCountByAppIDResponse {
+  uint64 total_count = 1;
+}
+
+message QueryLockerCountByAppToAssetIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
+}
+
+message QueryLockerCountByAppToAssetIDResponse {
+  uint64 total_count = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhiteListedAssetIDsByAppIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhiteListedAssetIDsByAppIDResponse {
+  repeated uint64  asset_ids = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhiteListedAssetByAllAppsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhiteListedAssetByAllAppsResponse {
+
+  repeated AppToAllAsset product_to_all_asset = 1 [
+    (gogoproto.moretags) = "yaml:\"product_to_all_asset\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message AppToAllAsset {
+
+  uint64  app_id = 1;
   repeated comdex.asset.v1beta1.Asset assets = 2 [
     (gogoproto.moretags) = "yaml:\"assets\"",
     (gogoproto.nullable) = false
   ];
 }
 
-message QueryParamsRequest {}
-
-message QueryParamsResponse {
-  Params params = 1 [
-    (gogoproto.moretags) = "yaml:\"params\"",
-    (gogoproto.nullable) = false
-  ];
-}
-
 message QueryLockerLookupTableByAppRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryLockerLookupTableByAppResponse {
-  repeated TokenToLockerMapping token_to_locker_mapping = 1 [ (gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"" ];
+  repeated LockerLookupTableData token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"", (gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryLockerLookupTableByAppAndAssetIdRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+message QueryLockerLookupTableByAppAndAssetIDRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 
-message QueryLockerLookupTableByAppAndAssetIdResponse {
-  TokenToLockerMapping token_to_locker_mapping = 1 [ (gogoproto.moretags) = "yaml:\"token_to_locker_mapping\"" ];
+message QueryLockerLookupTableByAppAndAssetIDResponse {
+  LockerLookupTableData token_to_locker_mapping = 1 [(gogoproto.moretags) = "yaml:\"token_to_locker_mapping\""];
 }
 
 message QueryLockerTotalDepositedByAppRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryLockerTotalDepositedByAppResponse {
- repeated LockedDepositedAmountDataMap locked_deposited_amount_data_map =1 [ (gogoproto.moretags) = "yaml:\"locked_deposited_amount_data_map\"",
- (gogoproto.nullable) = false ];
+  repeated LockedDepositedAmountDataMap locked_deposited_amount_data_map = 1 [(gogoproto.moretags) = "yaml:\"locked_deposited_amount_data_map\"",
+    (gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 message QueryLockerTotalRewardsByAssetAppWiseRequest {
-  uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
 }
 
 message QueryLockerTotalRewardsByAssetAppWiseResponse {
-  LockerTotalRewardsByAssetAppWise total_rewards =1 [ (gogoproto.moretags) = "yaml:\"total_rewards\"",
-  (gogoproto.nullable) = false ];
-}
-
-message QueryStateRequest{
-  string address = 1;
-  string denom = 2;
-  string height = 3;
-  string target = 4;
-}
-
-message QueryStateResponse{
-  cosmos.base.v1beta1.Coin amount = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "yaml:\"amount\"",
-    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-  ];
+  LockerTotalRewardsByAssetAppWise total_rewards = 1 [(gogoproto.moretags) = "yaml:\"total_rewards\"",
+    (gogoproto.nullable) = false];
 }

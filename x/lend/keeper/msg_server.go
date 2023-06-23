@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"context"
-	"fmt"
-	"github.com/comdex-official/comdex/x/lend/types"
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 type msgServer struct {
@@ -21,167 +23,123 @@ var _ types.MsgServer = msgServer{}
 
 func (m msgServer) Lend(goCtx context.Context, lend *types.MsgLend) (*types.MsgLendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.LendGas, "LendGas")
 
-	if err := m.keeper.LendAsset(ctx, lend.Lender, lend.AssetId, lend.Amount, lend.PoolId); err != nil {
+	if err := m.keeper.LendAsset(ctx, lend.Lender, lend.AssetId, lend.Amount, lend.PoolId, lend.AppId); err != nil {
 		return nil, err
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeLoanAsset,
-			sdk.NewAttribute(types.EventAttrLender, lend.Lender),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, lend.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lend.Lender),
+			types.EventTypeLend,
+			sdk.NewAttribute(types.AttributeKeyCreator, lend.Lender),
+			sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(lend.AssetId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, lend.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(lend.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(lend.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgLendResponse{}, nil
 }
 
 func (m msgServer) Withdraw(goCtx context.Context, withdraw *types.MsgWithdraw) (*types.MsgWithdrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.WithdrawGas, "WithdrawGas")
 
-	lenderAddr, err := sdk.AccAddressFromBech32(withdraw.Lender)
-	if err != nil {
+	lendID := withdraw.LendId
+
+	if err := m.keeper.WithdrawAsset(ctx, withdraw.Lender, lendID, withdraw.Amount); err != nil {
 		return nil, err
 	}
-
-	lendId := withdraw.LendId
-
-	if err := m.keeper.WithdrawAsset(ctx, withdraw.Lender, lendId, withdraw.Amount); err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeWithdrawLoanedAsset,
-			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, withdraw.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+			types.EventTypeWithdraw,
+			sdk.NewAttribute(types.AttributeKeyCreator, withdraw.Lender),
+			sdk.NewAttribute(types.AttributeKeyLendID, strconv.FormatUint(withdraw.LendId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, withdraw.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgWithdrawResponse{}, nil
 }
 
 func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*types.MsgDepositResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.DepositGas, "DepositGas")
 
-	lenderAddr, err := sdk.AccAddressFromBech32(deposit.Lender)
-	if err != nil {
+	lendID := deposit.LendId
+
+	if err := m.keeper.DepositAsset(ctx, deposit.Lender, lendID, deposit.Amount); err != nil {
 		return nil, err
 	}
-
-	lendId := deposit.LendId
-
-	if err := m.keeper.DepositAsset(ctx, deposit.Lender, lendId, deposit.Amount); err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeWithdrawLoanedAsset,
-			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, deposit.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+			types.EventTypeDeposit,
+			sdk.NewAttribute(types.AttributeKeyCreator, deposit.Lender),
+			sdk.NewAttribute(types.AttributeKeyLendID, strconv.FormatUint(deposit.LendId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, deposit.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgDepositResponse{}, nil
 }
 
 func (m msgServer) CloseLend(goCtx context.Context, lend *types.MsgCloseLend) (*types.MsgCloseLendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.CloseLendGas, "CloseLendGas")
 
-	lenderAddr, err := sdk.AccAddressFromBech32(lend.Lender)
-	if err != nil {
+	lendID := lend.LendId
+
+	if err := m.keeper.CloseLend(ctx, lend.Lender, lendID); err != nil {
 		return nil, err
 	}
-
-	lendId := lend.LendId
-
-	if err := m.keeper.CloseLend(ctx, lend.Lender, lendId); err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeWithdrawLoanedAsset,
-			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+			types.EventTypeClose,
+			sdk.NewAttribute(types.AttributeKeyCreator, lend.Lender),
+			sdk.NewAttribute(types.AttributeKeyLendID, strconv.FormatUint(lend.LendId, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgCloseLendResponse{}, nil
 }
 
 func (m msgServer) Borrow(goCtx context.Context, borrow *types.MsgBorrow) (*types.MsgBorrowResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	borrowerAddr, err := sdk.AccAddressFromBech32(borrow.Borrower)
-	if err != nil {
-		return nil, err
-	}
+	ctx.GasMeter().ConsumeGas(types.BorrowAssetGas, "BorrowAssetGas")
 
 	if err := m.keeper.BorrowAsset(ctx, borrow.Borrower, borrow.LendId, borrow.PairId, borrow.IsStableBorrow, borrow.AmountIn, borrow.AmountOut); err != nil {
 		return nil, err
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeBorrowAsset,
-			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, borrow.AmountIn.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, borrow.AmountOut.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+			types.EventTypeBorrow,
+			sdk.NewAttribute(types.AttributeKeyCreator, borrow.Borrower),
+			sdk.NewAttribute(types.AttributeKeyLendID, strconv.FormatUint(borrow.LendId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(borrow.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyIsStable, strconv.FormatBool(borrow.IsStableBorrow)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, borrow.AmountIn.String()),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, borrow.AmountOut.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgBorrowResponse{}, nil
 }
 
 func (m msgServer) Repay(goCtx context.Context, repay *types.MsgRepay) (*types.MsgRepayResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	borrowerAddr, err := sdk.AccAddressFromBech32(repay.Borrower)
-	if err != nil {
-		return nil, err
-	}
+	ctx.GasMeter().ConsumeGas(types.RepayAssetGas, "RepayAssetGas")
 
 	if err := m.keeper.RepayAsset(ctx, repay.BorrowId, repay.Borrower, repay.Amount); err != nil {
 		return nil, err
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeRepayBorrowedAsset,
-			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
-			sdk.NewAttribute(types.EventAttrAttempted, repay.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+			types.EventTypeRepay,
+			sdk.NewAttribute(types.AttributeKeyCreator, repay.Borrower),
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(repay.BorrowId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, repay.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
 
@@ -190,26 +148,18 @@ func (m msgServer) Repay(goCtx context.Context, repay *types.MsgRepay) (*types.M
 
 func (m msgServer) DepositBorrow(goCtx context.Context, borrow *types.MsgDepositBorrow) (*types.MsgDepositBorrowResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	borrowerAddr, err := sdk.AccAddressFromBech32(borrow.Borrower)
-	if err != nil {
-		return nil, err
-	}
+	ctx.GasMeter().ConsumeGas(types.DepositBorrowAssetGas, "DepositBorrowAssetGas")
 
 	if err := m.keeper.DepositBorrowAsset(ctx, borrow.BorrowId, borrow.Borrower, borrow.Amount); err != nil {
 		return nil, err
 	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeRepayBorrowedAsset,
-			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
-			sdk.NewAttribute(types.EventAttrAttempted, borrow.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+			types.EventTypeDepositBorrow,
+			sdk.NewAttribute(types.AttributeKeyCreator, borrow.Borrower),
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(borrow.BorrowId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, borrow.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
 
@@ -218,87 +168,114 @@ func (m msgServer) DepositBorrow(goCtx context.Context, borrow *types.MsgDeposit
 
 func (m msgServer) Draw(goCtx context.Context, draw *types.MsgDraw) (*types.MsgDrawResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.DrawAssetGas, "DrawAssetGas")
 
-	borrowerAddr, err := sdk.AccAddressFromBech32(draw.Borrower)
+	err := m.keeper.DrawAsset(ctx, draw.BorrowId, draw.Borrower, draw.Amount)
 	if err != nil {
 		return nil, err
 	}
-
-	err = m.keeper.DrawAsset(ctx, draw.BorrowId, draw.Borrower, draw.Amount)
-	if err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeRepayBorrowedAsset,
-			sdk.NewAttribute(types.EventAttrBorrower, borrowerAddr.String()),
-			sdk.NewAttribute(types.EventAttrAttempted, draw.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, borrowerAddr.String()),
+			types.EventTypeDraw,
+			sdk.NewAttribute(types.AttributeKeyCreator, draw.Borrower),
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(draw.BorrowId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, draw.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgDrawResponse{}, nil
 }
 
 func (m msgServer) CloseBorrow(goCtx context.Context, borrow *types.MsgCloseBorrow) (*types.MsgCloseBorrowResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.CloseBorrowAssetGas, "CloseBorrowAssetGas")
 
-	lenderAddr, err := sdk.AccAddressFromBech32(borrow.Borrower)
-	if err != nil {
+	borrowID := borrow.BorrowId
+
+	if err := m.keeper.CloseBorrow(ctx, borrow.Borrower, borrowID); err != nil {
 		return nil, err
 	}
-
-	BorrowId := borrow.BorrowId
-
-	if err := m.keeper.CloseBorrow(ctx, borrow.Borrower, BorrowId); err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeWithdrawLoanedAsset,
-			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+			types.EventTypeCloseBorrow,
+			sdk.NewAttribute(types.AttributeKeyCreator, borrow.Borrower),
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(borrow.BorrowId, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
-
 	return &types.MsgCloseBorrowResponse{}, nil
+}
+
+func (m msgServer) BorrowAlternate(goCtx context.Context, alternate *types.MsgBorrowAlternate) (*types.MsgBorrowAlternateResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.BorrowAssetAlternateGas, "BorrowAssetAlternateGas")
+
+	if err := m.keeper.BorrowAlternate(ctx, alternate.Lender, alternate.AssetId, alternate.PoolId, alternate.AmountIn, alternate.PairId, alternate.IsStableBorrow, alternate.AmountOut, alternate.AppId); err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeBorrowAlternate,
+			sdk.NewAttribute(types.AttributeKeyCreator, alternate.Lender),
+			sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(alternate.AssetId, 10)),
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(alternate.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, alternate.AmountIn.String()),
+			sdk.NewAttribute(types.AttributeKeyPairID, strconv.FormatUint(alternate.PairId, 10)),
+			sdk.NewAttribute(types.AttributeKeyIsStable, strconv.FormatBool(alternate.IsStableBorrow)),
+			sdk.NewAttribute(types.AttributeKeyAmountOut, alternate.AmountOut.String()),
+			sdk.NewAttribute(types.AttributeKeyAppID, strconv.FormatUint(alternate.AppId, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
+	return &types.MsgBorrowAlternateResponse{}, nil
 }
 
 func (m msgServer) FundModuleAccounts(goCtx context.Context, accounts *types.MsgFundModuleAccounts) (*types.MsgFundModuleAccountsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	lenderAddr, err := sdk.AccAddressFromBech32(accounts.Lender)
-	if err != nil {
+	if err := m.keeper.FundModAcc(ctx, accounts.PoolId, accounts.AssetId, accounts.Lender, accounts.Amount); err != nil {
 		return nil, err
 	}
-	fmt.Println("goose......")
-
-	if err := m.keeper.FundModAcc(ctx, accounts.ModuleName, accounts.AssetId, lenderAddr, accounts.Amount); err != nil {
-		return nil, err
-	}
-
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeLoanAsset,
-			sdk.NewAttribute(types.EventAttrLender, lenderAddr.String()),
-			sdk.NewAttribute(sdk.AttributeKeyAmount, accounts.Amount.String()),
-		),
-		sdk.NewEvent(
-			sdk.EventTypeMessage,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.EventAttrModule),
-			sdk.NewAttribute(sdk.AttributeKeySender, lenderAddr.String()),
+			types.EventTypeFundModuleAccn,
+			sdk.NewAttribute(types.AttributeKeyPoolID, strconv.FormatUint(accounts.PoolId, 10)),
+			sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(accounts.AssetId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, accounts.Lender),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, accounts.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
 		),
 	})
 
 	return &types.MsgFundModuleAccountsResponse{}, nil
+}
+
+func (m msgServer) CalculateInterestAndRewards(goCtx context.Context, rewards *types.MsgCalculateInterestAndRewards) (*types.MsgCalculateInterestAndRewardsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.CalculateInterestAndRewardGas, "CalculateInterestAndRewardGas")
+
+	if err := m.keeper.MsgCalculateInterestAndRewards(ctx, rewards.Borrower); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCalculateInterestAndRewardsResponse{}, nil
+}
+
+func (m msgServer) FundReserveAccounts(goCtx context.Context, accounts *types.MsgFundReserveAccounts) (*types.MsgFundReserveAccountsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.keeper.FundReserveAcc(ctx, accounts.AssetId, accounts.Lender, accounts.Amount); err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeFundModuleAccn,
+			sdk.NewAttribute(types.AttributeKeyAssetID, strconv.FormatUint(accounts.AssetId, 10)),
+			sdk.NewAttribute(types.AttributeKeyCreator, accounts.Lender),
+			sdk.NewAttribute(types.AttributeKeyAmountIn, accounts.Amount.String()),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
+
+	return &types.MsgFundReserveAccountsResponse{}, nil
 }

@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +17,6 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		queryParams(),
 		querySurplusAuction(),
 		querySurplusAuctions(),
 		querySurplusBiddings(),
@@ -26,7 +27,11 @@ func GetQueryCmd() *cobra.Command {
 		queryDutchAuctions(),
 		queryDutchBiddings(),
 		queryProtocolStats(),
-		queryAuctionParams(),
+		queryGenericAuctionParams(),
+		queryDutchLendAuction(),
+		queryDutchLendAuctions(),
+		queryDutchLendBiddings(),
+		queryFilterDutchAuctions(),
 	)
 
 	return cmd
@@ -45,7 +50,18 @@ func GetTxCmd() *cobra.Command {
 		txPlaceSurplusBid(),
 		txPlaceDebtBid(),
 		txPlaceDutchBid(),
+		txPlaceDutchLendBid(),
 	)
 
 	return cmd
+}
+
+func ParseStringFromString(s string, separator string) ([]string, error) {
+	var parsedStrings []string
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsedStrings = append(parsedStrings, s)
+	}
+	return parsedStrings, nil
 }

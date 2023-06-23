@@ -1,9 +1,13 @@
 package expected
 
 import (
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
 )
 
 type BankKeeper interface {
@@ -26,13 +30,27 @@ type AccountKeeper interface {
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
 }
 
-type BandoracleKeeper interface {
+type BandOracleKeeper interface {
 	GetOracleValidationResult(ctx sdk.Context) bool
 }
 
 type AssetKeeper interface {
 	GetAsset(ctx sdk.Context, id uint64) (assettypes.Asset, bool)
+	GetApp(ctx sdk.Context, id uint64) (assettypes.AppData, bool)
+	SetApp(ctx sdk.Context, app assettypes.AppData)
+	SetAppID(ctx sdk.Context, id uint64)
 }
+
+type EsmKeeper interface {
+	GetKillSwitchData(ctx sdk.Context, appID uint64) (esmtypes.KillSwitchParams, bool)
+}
+
+type LiquidationKeeper interface {
+	GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault)
+}
+
+type AuctionKeeper interface{}

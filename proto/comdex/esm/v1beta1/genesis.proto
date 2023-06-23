@@ -1,0 +1,24 @@
+syntax = "proto3";
+package comdex.esm.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/esm/v1beta1/params.proto";
+import "comdex/esm/v1beta1/esm.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/esm/types";
+
+message GenesisState {
+  repeated ESMTriggerParams eSMTriggerParams = 1
+  [ (gogoproto.moretags) = "yaml:\"eSMTriggerParams\"", (gogoproto.nullable) = false ];
+  repeated CurrentDepositStats currentDepositStats = 2
+  [ (gogoproto.moretags) = "yaml:\"currentDepositStats\"", (gogoproto.nullable) = false ];
+  repeated ESMStatus eSMStatus = 3
+  [ (gogoproto.moretags) = "yaml:\"eSMStatus\"", (gogoproto.nullable) = false ];
+  repeated KillSwitchParams killSwitchParams = 4
+  [ (gogoproto.moretags) = "yaml:\"killSwitchParams\"", (gogoproto.nullable) = false ];
+  repeated UsersDepositMapping usersDepositMapping = 5
+  [ (gogoproto.moretags) = "yaml:\"usersDepositMapping\"", (gogoproto.nullable) = false ];
+  repeated DataAfterCoolOff dataAfterCoolOff = 7
+  [ (gogoproto.moretags) = "yaml:\"dataAfterCoolOff\"", (gogoproto.nullable) = false ];
+  Params params = 10 [(gogoproto.nullable) = false];
+}

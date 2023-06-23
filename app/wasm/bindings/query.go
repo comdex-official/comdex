@@ -22,16 +22,24 @@ type ComdexQuery struct {
 	RemoveWhitelistAppIDVaultInterestQuery *RemoveWhitelistAppIDVaultInterestQuery `json:"remove_whitelist_app_id_vault_interest_query,omitempty"`
 	WhitelistAppIDLiquidationQuery         *WhitelistAppIDLiquidationQuery         `json:"whitelist_app_id_liquidation_query,omitempty"`
 	RemoveWhitelistAppIDLiquidationQuery   *RemoveWhitelistAppIDLiquidationQuery   `json:"remove_whitelist_app_id_liquidation_query,omitempty"`
+	AddESMTriggerParamsForAppQuery         *AddESMTriggerParamsForAppQuery         `json:"add_e_s_m_trigger_params_for_app_query,omitempty"`
+	ExtendedPairByApp                      *ExtendedPairByApp                      `json:"extended_pair_by_app,omitempty"`
+	CheckSurplusReward                     *CheckSurplusReward                     `json:"check_surplus_reward,omitempty"`
+	CheckWhitelistedAsset                  *CheckWhitelistedAsset                  `json:"check_whitelisted_asset,omitempty"`
+	CheckVaultCreated                      *CheckVaultCreated                      `json:"check_vault_created,omitempty"`
+	CheckBorrowed                          *CheckBorrowed                          `json:"check_borrowed,omitempty"`
+	CheckLiquidityProvided                 *CheckLiquidityProvided                 `json:"check_liquidity_provided,omitempty"`
+	GetPoolByApp                           *GetPoolByApp                           `json:"get_pool_by_app,omitempty"`
 }
 
 type AppData struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type AppDataResponse struct {
-	MinGovDeposit    int64  `json:"min_gov_deposit"`
+	MinGovDeposit    string `json:"min_gov_deposit"`
 	GovTimeInSeconds int64  `json:"gov_time_in_seconds"`
-	AssetID          uint64 `json:"gov_token_id"` //only when isGovToken true
+	AssetID          uint64 `json:"gov_token_id"` // only when isGovToken true
 }
 
 type AssetData struct {
@@ -54,8 +62,8 @@ type StateResponse struct {
 }
 
 type MintedToken struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type MintedTokenResponse struct {
@@ -63,8 +71,8 @@ type MintedTokenResponse struct {
 }
 
 type RemoveWhiteListAssetLocker struct {
-	AppMappingID uint64   `json:"app_mapping_id"`
-	AssetIDs     []uint64 `json:"asset_ids"`
+	AppID    uint64 `json:"app_id"`
+	AssetIDs uint64 `json:"asset_ids"`
 }
 
 type RemoveWhiteListAssetResponse struct {
@@ -73,7 +81,7 @@ type RemoveWhiteListAssetResponse struct {
 }
 
 type WhitelistAppIDVaultInterest struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type WhitelistAppIDVaultInterestResponse struct {
@@ -82,8 +90,8 @@ type WhitelistAppIDVaultInterestResponse struct {
 }
 
 type WhitelistAppIDLockerRewards struct {
-	AppMappingID uint64   `json:"app_mapping_id"`
-	AssetID      []uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type WhitelistAppIDLockerRewardsResponse struct {
@@ -92,8 +100,8 @@ type WhitelistAppIDLockerRewardsResponse struct {
 }
 
 type ExternalLockerRewards struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalLockerRewardsResponse struct {
@@ -102,8 +110,8 @@ type ExternalLockerRewardsResponse struct {
 }
 
 type ExternalVaultRewards struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type ExternalVaultRewardsResponse struct {
@@ -112,7 +120,7 @@ type ExternalVaultRewardsResponse struct {
 }
 
 type CollectorLookupTableQuery struct {
-	AppMappingID     uint64 `json:"app_mapping_id"`
+	AppID            uint64 `json:"app_id"`
 	CollectorAssetID uint64 `json:"collector_asset_id"`
 	SecondaryAssetID uint64 `json:"secondary_asset_id"`
 }
@@ -123,13 +131,13 @@ type CollectorLookupTableQueryResponse struct {
 }
 
 type ExtendedPairsVaultRecordsQuery struct {
-	AppMappingID uint64  `json:"app_mapping_id"`
+	AppID        uint64  `json:"app_id"`
 	PairID       uint64  `json:"pair_id"`
 	StabilityFee sdk.Dec `json:"stability_fee"`
 	ClosingFee   sdk.Dec `json:"closing_fee"`
 	DrawDownFee  sdk.Dec `json:"draw_down_fee"`
-	DebtCeiling  uint64  `json:"debt_ceiling"`
-	DebtFloor    uint64  `json:"debt_floor"`
+	DebtCeiling  sdk.Int `json:"debt_ceiling"`
+	DebtFloor    sdk.Int `json:"debt_floor"`
 	PairName     string  `json:"pair_name"`
 }
 
@@ -139,7 +147,7 @@ type ExtendedPairsVaultRecordsQueryResponse struct {
 }
 
 type AuctionMappingForAppQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type AuctionMappingForAppQueryResponse struct {
@@ -148,8 +156,8 @@ type AuctionMappingForAppQueryResponse struct {
 }
 
 type WhiteListedAssetQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type WhiteListedAssetQueryResponse struct {
@@ -158,8 +166,8 @@ type WhiteListedAssetQueryResponse struct {
 }
 
 type UpdatePairsVaultQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	ExtPairID    uint64 `json:"ext_pair_id"`
+	AppID     uint64 `json:"app_id"`
+	ExtPairID uint64 `json:"ext_pair_id"`
 }
 
 type UpdatePairsVaultQueryResponse struct {
@@ -168,8 +176,8 @@ type UpdatePairsVaultQueryResponse struct {
 }
 
 type UpdateCollectorLookupTableQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type UpdateCollectorLookupTableQueryResponse struct {
@@ -178,8 +186,8 @@ type UpdateCollectorLookupTableQueryResponse struct {
 }
 
 type RemoveWhitelistAssetLockerQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
-	AssetID      uint64 `json:"asset_id"`
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
 }
 
 type RemoveWhitelistAssetLockerQueryResponse struct {
@@ -188,7 +196,7 @@ type RemoveWhitelistAssetLockerQueryResponse struct {
 }
 
 type RemoveWhitelistAppIDVaultInterestQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type RemoveWhitelistAppIDVaultInterestQueryResponse struct {
@@ -197,7 +205,7 @@ type RemoveWhitelistAppIDVaultInterestQueryResponse struct {
 }
 
 type WhitelistAppIDLiquidationQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type WhitelistAppIDLiquidationQueryResponse struct {
@@ -206,10 +214,80 @@ type WhitelistAppIDLiquidationQueryResponse struct {
 }
 
 type RemoveWhitelistAppIDLiquidationQuery struct {
-	AppMappingID uint64 `json:"app_mapping_id"`
+	AppID uint64 `json:"app_id"`
 }
 
 type RemoveWhitelistAppIDLiquidationQueryResponse struct {
 	Found bool   `json:"found"`
 	Err   string `json:"err"`
+}
+
+type AddESMTriggerParamsForAppQuery struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type AddESMTriggerParamsForAppResponse struct {
+	Found bool   `json:"found"`
+	Err   string `json:"err"`
+}
+
+type ExtendedPairByApp struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type ExtendedPairByAppResponse struct {
+	ExtendedPair []uint64 `json:"ext_pair"`
+}
+
+type CheckSurplusReward struct {
+	AppID   uint64 `json:"app_id"`
+	AssetID uint64 `json:"asset_id"`
+}
+
+type CheckSurplusRewardResponse struct {
+	Amount sdk.Coin `json:"amount"`
+}
+
+type CheckWhitelistedAsset struct {
+	Denom string `json:"denom"`
+}
+
+type CheckWhitelistedAssetResponse struct {
+	Found bool `json:"found"`
+}
+
+type CheckVaultCreated struct {
+	Address string `json:"address"`
+	AppID   uint64 `json:"app_id"`
+}
+
+type VaultCreatedResponse struct {
+	IsCompleted bool `json:"is_completed"`
+}
+
+type CheckBorrowed struct {
+	AssetID uint64 `json:"asset_id"`
+	Address string `json:"address"`
+}
+
+type BorrowedResponse struct {
+	IsCompleted bool `json:"is_completed"`
+}
+
+type CheckLiquidityProvided struct {
+	AppID   uint64 `json:"app_id"`
+	PoolID  uint64 `json:"pool_id"`
+	Address string `json:"address"`
+}
+
+type LiquidityProvidedResponse struct {
+	IsCompleted bool `json:"is_completed"`
+}
+
+type GetPoolByApp struct {
+	AppID uint64 `json:"app_id"`
+}
+
+type GetPoolByAppResponse struct {
+	Pools []uint64 `json:"pools"`
 }

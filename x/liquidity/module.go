@@ -100,15 +100,18 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
+	assetKeeper   expected.AssetKeeper
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,
-	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper) AppModule {
+	accountKeeper expected.AccountKeeper, bankKeeper expected.BankKeeper, assetKeeper expected.AssetKeeper,
+) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		assetKeeper:    assetKeeper,
 	}
 }
 
@@ -137,6 +140,11 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), keeper.Querier{Keeper: am.keeper})
+
+	m := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(err)
+	}
 }
 
 // RegisterInvariants registers the capability module's invariants.
@@ -159,16 +167,16 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // ConsensusVersion implements ConsensusVersion.
-func (AppModule) ConsensusVersion() uint64 { return 1 }
+func (AppModule) ConsensusVersion() uint64 { return 2 }
 
 // BeginBlock executes all ABCI BeginBlock logic respective to the capability module.
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlocker(ctx, am.keeper)
+	BeginBlocker(ctx, am.keeper, am.assetKeeper)
 }
 
 // EndBlock executes all ABCI EndBlock logic respective to the capability module. It
 // returns no validator updates.
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	EndBlocker(ctx, am.keeper)
+	EndBlocker(ctx, am.keeper, am.assetKeeper)
 	return []abci.ValidatorUpdate{}
 }

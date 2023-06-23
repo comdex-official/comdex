@@ -1,29 +1,24 @@
 package tokenmint_test
 
-// import (
-// 	"testing"
+import (
+	"github.com/comdex-official/comdex/app"
+	"github.com/comdex-official/comdex/x/tokenmint"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"testing"
 
-// 	keepertest "github.com/comdex-official/comdex/testutil/keeper"
-// 	"github.com/comdex-official/comdex/testutil/nullify"
-// 	"github.com/comdex-official/comdex/x/tokenmint"
-// 	"github.com/comdex-official/comdex/x/tokenmint/types"
-// 	"github.com/stretchr/testify/require"
-// )
+	"github.com/comdex-official/comdex/x/tokenmint/types"
+	"github.com/stretchr/testify/require"
+)
 
-// func TestGenesis(t *testing.T) {
-// 	genesisState := types.GenesisState{
-// 		Params:	types.DefaultParams(),
+func TestGenesis(t *testing.T) {
+	comdexApp := app.Setup(false)
+	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 
-// 		// this line is used by starport scaffolding # genesis/test/state
-// 	}
+	genesisState := types.GenesisState{
+		Params: types.DefaultParams(),
+	}
 
-// 	k, ctx := keepertest.TokenmintKeeper(t)
-// 	tokenmint.InitGenesis(ctx, *k, genesisState)
-// 	got := tokenmint.ExportGenesis(ctx, *k)
-// 	require.NotNil(t, got)
-
-// 	nullify.Fill(&genesisState)
-// 	nullify.Fill(got)
-
-// 	// this line is used by starport scaffolding # genesis/test/assert
-// }
+	tokenmint.InitGenesis(ctx, comdexApp.TokenmintKeeper, &genesisState)
+	got := tokenmint.ExportGenesis(ctx, comdexApp.TokenmintKeeper)
+	require.NotNil(t, got)
+}

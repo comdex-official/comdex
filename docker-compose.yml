@@ -1,0 +1,17 @@
+---
+version: "3"
+services:
+  node:
+    build:
+      context: .
+      args:
+        - arch=${ARCH:-x86_64}
+    command: ./setup_and_run.sh comdex1pkkayn066msg6kn33wnl5srhdt3tnu2v9jjqu0
+    ports:
+      - 1317:1317 # rest
+      - 26656:26656 # p2p
+      - 26657:26657 # rpc
+    environment:
+      - GAS_LIMIT=${GAS_LIMIT:-10000000}
+      - STAKE_TOKEN=${STAKE_TOKEN:-ucmdx}
+      - TIMEOUT_COMMIT=${TIMEOUT_COMMIT:-5s}

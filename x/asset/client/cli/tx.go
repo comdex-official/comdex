@@ -2,116 +2,241 @@ package cli
 
 import (
 	"fmt"
-	flag "github.com/spf13/pflag"
 	"strconv"
-	"time"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
-func NewCmdSubmitAddAssetsProposal() *cobra.Command {
+func NewCmdSubmitAddMultipleAssetsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-assets [name] [Denom] [Decimals] [isOnChain] [assetOraclePrice]",
-		Args:  cobra.ExactArgs(5),
-		Short: "Submit assets",
+		Use:   "add-multiple-assets [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit multiple assets",
+		Long: `Must provide path to a add assets in JSON file (--add-assets) describing the asset in app to be created
+Sample json content
+{
+	"name" :"ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
+	"denom" :"uatom,ucmdx,ucmst,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
+	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
+	"is_on_chain" :"0,0,0,0,0,0,0,0,1",
+	"asset_oracle_price" :"1,1,0,1,0,0,0,0,0",
+	"title" :"Add assets for applications to be deployed on comdex testnet",
+	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR to be then used on harbor, commodo and cswap apps",
+	"deposit" :"1000000000ucmdx"
+}`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			names, err := ParseStringFromString(args[0], ",")
-			if err != nil {
-				return err
-			}
-			denoms, err := ParseStringFromString(args[1], ",")
-			if err != nil {
-				return err
-			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			decimals, err := ParseInt64SliceFromString(args[2], ",")
+			txf, msg, err := NewCreateMultipleAssets(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			isOnChain, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
-			}
-
-			assetOraclePrice, err := ParseStringFromString(args[4], ",")
-			if err != nil {
-				return err
-			}
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			from := clientCtx.GetFromAddress()
-
-			var assets []types.Asset
-			for i := range names {
-				newIsOnChain := ParseBoolFromString(isOnChain[i])
-				newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
-				assets = append(assets, types.Asset{
-					Name:             names[i],
-					Denom:            denoms[i],
-					Decimals:         decimals[i],
-					IsOnchain:        newIsOnChain,
-					AssetOraclePrice: newAssetOraclePrice,
-				})
-			}
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddAssetsProposal(title, description, assets)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
 		},
 	}
 
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+	cmd.Flags().AddFlagSet(FlagSetCreateAssetsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
 
 	return cmd
 }
 
+func NewCreateMultipleAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	assetsMapping, err := parseAssetsMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
+	}
+
+	names, err := ParseStringFromString(assetsMapping.Name, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	denoms, err := ParseStringFromString(assetsMapping.Denom, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	decimals, err := ParseStringFromString(assetsMapping.Decimals, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isOnChain, err := ParseStringFromString(assetsMapping.IsOnChain, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOraclePrice, err := ParseStringFromString(assetsMapping.AssetOraclePrice, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	isCdpMintable, err := ParseStringFromString(assetsMapping.IsCdpMintable, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	var assets []types.Asset
+	for i := range names {
+		newIsOnChain := ParseBoolFromString(isOnChain[i])
+		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
+		newIsCdpMintable := ParseBoolFromString(isCdpMintable[i])
+		newDecimals, ok := sdk.NewIntFromString(decimals[i])
+		if !ok {
+			return txf, nil, types.ErrorInvalidDecimals
+		}
+		assets = append(assets, types.Asset{
+			Name:                  names[i],
+			Denom:                 denoms[i],
+			Decimals:              newDecimals,
+			IsOnChain:             newIsOnChain,
+			IsOraclePriceRequired: newAssetOraclePrice,
+			IsCdpMintable:         newIsCdpMintable,
+		})
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddMultipleAssetsProposal(assetsMapping.Title, assetsMapping.Description, assets)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
+
+func NewCmdSubmitAddAssetsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-assets [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit assets",
+		Long: `Must provide path to a add assets in JSON file (--add-assets) describing the asset in app to be created
+Sample json content
+{
+	"name" :"ATOM",
+	"denom" :"uatom",
+	"decimals" :"1000000",
+	"is_on_chain" :"0",
+	"asset_oracle_price" :"1",
+	"title" :"Add assets for applications to be deployed on comdex testnet",
+	"description" :"This proposal it to add following assets ATOM to be then used on harbor, commodo and cswap apps",
+	"deposit" :"1000000000ucmdx"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateAssets(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetCreateAssetsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	assetsMapping, err := parseAssetsMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse assetsMapping: %w", err)
+	}
+
+	names := assetsMapping.Name
+
+	denoms := assetsMapping.Denom
+
+	decimals := assetsMapping.Decimals
+
+	isOnChain := ParseBoolFromString(assetsMapping.IsOnChain)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOraclePrice := ParseBoolFromString(assetsMapping.AssetOraclePrice)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	isCdpMintable := ParseBoolFromString(assetsMapping.IsCdpMintable)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	from := clientCtx.GetFromAddress()
+
+	newDecimals, ok := sdk.NewIntFromString(decimals)
+	if !ok {
+		return txf, nil, types.ErrorInvalidDecimals
+	}
+	assets := types.Asset{
+		Name:                  names,
+		Denom:                 denoms,
+		Decimals:              newDecimals,
+		IsOnChain:             isOnChain,
+		IsOraclePriceRequired: assetOraclePrice,
+		IsCdpMintable:         isCdpMintable,
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(assetsMapping.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	content := types.NewAddAssetsProposal(assetsMapping.Title, assetsMapping.Description, assets)
+
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	if err = msg.ValidateBasic(); err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
+
 func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-asset [id]",
-		Args:  cobra.ExactArgs(1),
+		Use:   "update-asset [id] [name] [denom] [decimal] [is-oracle-price-required]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Update an Asset",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -124,20 +249,17 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 				return err
 			}
 
-			name, err := cmd.Flags().GetString(flagName)
-			if err != nil {
-				return err
-			}
+			name := args[1]
 
-			denom, err := cmd.Flags().GetString(flagDenom)
-			if err != nil {
-				return err
-			}
+			denom := args[2]
 
-			decimals, err := cmd.Flags().GetInt64(flagDecimals)
-			if err != nil {
-				return err
+			decimals, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return types.ErrorInvalidDecimals
 			}
+			assetOraclePrice := args[4]
+
+			newAssetOraclePrice := ParseBoolFromString(assetOraclePrice)
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
@@ -152,10 +274,11 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 			from := clientCtx.GetFromAddress()
 
 			asset := types.Asset{
-				Id:       id,
-				Name:     name,
-				Denom:    denom,
-				Decimals: decimals,
+				Id:                    id,
+				Name:                  name,
+				Denom:                 denom,
+				Decimals:              decimals,
+				IsOraclePriceRequired: newAssetOraclePrice,
 			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
@@ -185,9 +308,6 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
 	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagName, "", "name")
-	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().Int64(flagDecimals, -1, "decimals")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 
@@ -205,22 +325,19 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 				return err
 			}
 
-			assetIn, err := ParseUint64SliceFromString(args[0], ",")
+			assetIn, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			assetOut, err := ParseUint64SliceFromString(args[1], ",")
+			assetOut, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			var pairs []types.Pair
-			for i := range assetIn {
-				pairs = append(pairs, types.Pair{
-					AssetIn:  assetIn[i],
-					AssetOut: assetOut[i],
-				})
+			pairs := types.Pair{
+				AssetIn:  assetIn,
+				AssetOut: assetOut,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -268,35 +385,36 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
+func NewCmdSubmitUpdatePairProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-lend-assets [asset_id] [Collateral_Weight] [Liquidation_Threshold] [Is_Bridged_Asset]",
-		Args:  cobra.ExactArgs(4),
-		Short: "Add lend assets",
+		Use:   "update-pair [id] [asset-in] [asset-out]",
+		Short: "Update a pair",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			assetIDs, err := ParseUint64SliceFromString(args[0], ",")
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			collateralWeight, err := ParseStringFromString(args[1], ",")
+			assetIn, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			liquidationThreshold, err := ParseStringFromString(args[2], ",")
+			assetOut, err := strconv.ParseUint(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			isBridgedAsset, err := ParseStringFromString(args[3], ",")
-			if err != nil {
-				return err
+			pair := types.Pair{
+				Id:       id,
+				AssetIn:  assetIn,
+				AssetOut: assetOut,
 			}
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
@@ -309,264 +427,71 @@ func NewCmdSubmitAddWhitelistedAssetsProposal() *cobra.Command {
 				return err
 			}
 
-			from := ctx.GetFromAddress()
+			from := clientCtx.GetFromAddress()
 
-			var assets []types.ExtendedAsset
-			for i := range assetIDs {
-				newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight[i])
-				if err != nil {
-					return err
-				}
-				newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold[i])
-				if err != nil {
-					return err
-				}
-				newIsBridgedAsset := ParseBoolFromString(isBridgedAsset[i])
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
 
-				assets = append(assets, types.ExtendedAsset{
-					AssetId:              assetIDs[i],
-					CollateralWeight:     newCollateralWeight,
-					LiquidationThreshold: newLiquidationThreshold,
-					IsBridgedAsset:       newIsBridgedAsset,
+			content := types.NewUpdatePairProposal(title, description, pair)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewCmdSubmitAddMultiplePairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-multiple-pairs [asset-in] [asset-out]",
+		Short: "Add multiple pair",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			assetIn, err := ParseUint64SliceFromString(args[0], ",")
+			if err != nil {
+				return err
+			}
+
+			assetOut, err := ParseUint64SliceFromString(args[1], ",")
+			if err != nil {
+				return err
+			}
+
+			var pairs []types.Pair
+			for i := range assetIn {
+				pairs = append(pairs, types.Pair{
+					AssetIn:  assetIn[i],
+					AssetOut: assetOut[i],
 				})
 			}
 
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewAddWhitelistedAssetsProposal(title, description, assets)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
-}
-
-func NewCmdUpdateWhitelistedAssetProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-lend-asset [asset_id]",
-		Args:  cobra.ExactArgs(1),
-		Short: "Update lend assets",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			collateralWeight, err := cmd.Flags().GetString(flagCollateralWeight)
-			if err != nil {
-				return err
-			}
-			newCollateralWeight, err := sdk.NewDecFromStr(collateralWeight)
-			if err != nil {
-				return err
-			}
-
-			liquidationThreshold, err := cmd.Flags().GetString(flagLiquidationThreshold)
-			if err != nil {
-				return err
-			}
-			newLiquidationThreshold, err := sdk.NewDecFromStr(liquidationThreshold)
-			if err != nil {
-				return err
-			}
-
-			title, err := cmd.Flags().GetString(cli.FlagTitle)
-			if err != nil {
-				return err
-			}
-
-			description, err := cmd.Flags().GetString(cli.FlagDescription)
-			if err != nil {
-				return err
-			}
-
-			isBridgedAsset, err := cmd.Flags().GetString(flagIsBridgedAsset)
-			if err != nil {
-				return err
-			}
-
-			newIsBridgedAsset := ParseBoolFromString(isBridgedAsset)
-
-			from := clientCtx.GetFromAddress()
-
-			asset := types.ExtendedAsset{
-				Id:                   id,
-				CollateralWeight:     newCollateralWeight,
-				LiquidationThreshold: newLiquidationThreshold,
-				IsBridgedAsset:       newIsBridgedAsset,
-			}
-
-			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
-			if err != nil {
-				return err
-			}
-			deposit, err := sdk.ParseCoinsNormalized(depositStr)
-			if err != nil {
-				return err
-			}
-
-			content := types.NewUpdateWhitelistedAssetProposal(title, description, asset)
-
-			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-
-	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
-	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
-	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagName, "", "name")
-	cmd.Flags().String(flagDenom, "", "denomination")
-	cmd.Flags().String(flagCollateralWeight, "", "collateralWeight")
-	cmd.Flags().String(flagLiquidationThreshold, "", "liquidationThreshold")
-	cmd.Flags().String(flagIsBridgedAsset, "", "isBridgedAsset")
-
-	_ = cmd.MarkFlagRequired(cli.FlagTitle)
-	_ = cmd.MarkFlagRequired(cli.FlagDescription)
-
-	return cmd
-}
-
-func NewCmdAddWhitelistedPairsProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-lend-asset-pairs [flags]",
-		Short: "Add lend asset pairs",
-		Long: `Must provide path to a add white listed pairs JSON file (--add-white-whitelisted-pairs-file) describing the white listed pairs to be created
-Sample json content
-{
-	"pair_id" :"",
-	"module-account" :"",
-	"base_borrow_rate_asset_1" :"",
-	"base_borrow_rate_asset_2" :"",
-	"base_lend_rate_asset_1" :"",
-	"base_lend_rate_asset_2" :"",
-	"title" :"",
-	"description" :"",
-	"deposit" :""
-}`,
-		Args: cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
-
-			txf, msg, err := NewCreateWhiteListedPairsMsg(clientCtx, txf, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(FlagSetCreateWhiteListedPairsMapping())
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
-
-	return cmd
-}
-
-func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-lend-asset-pair [len_pair_id]",
-		Short: "Update a lend asset pair",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-			moduleAcc, err := cmd.Flags().GetString(flagModuleAcc)
-			if err != nil {
-				return err
-			}
-			baseBorrowRateAsset1, err := cmd.Flags().GetString(flagBaseBorrowRateAsset1)
-			if err != nil {
-				return err
-			}
-			newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1)
-			if err != nil {
-				return err
-			}
-
-			baseBorrowRateAsset2, err := cmd.Flags().GetString(flagBaseBorrowRateAsset2)
-			if err != nil {
-				return err
-			}
-			newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2)
-			if err != nil {
-				return err
-			}
-
-			baseLendRateAsset1, err := cmd.Flags().GetString(flagBaseLendRateAsset1)
-			if err != nil {
-				return err
-			}
-			newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1)
-			if err != nil {
-				return err
-			}
-
-			baseLendRateAsset2, err := cmd.Flags().GetString(flagBaseLendRateAsset2)
-			if err != nil {
-				return err
-			}
-			newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2)
-			if err != nil {
-				return err
-			}
-
-			pair := types.ExtendedPairLend{
-				Id:                    id,
-				ModuleAcc:             moduleAcc,
-				BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
-				BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
-				BaseLendRateAsset_1:   newBaseLendRateAsset1,
-				BaseLendRateAsset_2:   newBaseLendRateAsset2,
-			}
-
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -588,7 +513,7 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 				return err
 			}
 
-			content := types.NewUpdateWhitelistedPairProposal(title, description, pair)
+			content := types.NewAddMultiplePairsProposal(title, description, pairs)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
@@ -606,23 +531,17 @@ func NewCmdUpdateWhitelistedPairProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
 	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	cmd.Flags().String(flagModuleAcc, "", "moduleAcc")
-	cmd.Flags().String(flagBaseBorrowRateAsset1, "", "base borrow rate asset1")
-	cmd.Flags().String(flagBaseBorrowRateAsset2, "", "base borrow rate asset2")
-	cmd.Flags().String(flagBaseLendRateAsset1, "", "base lend rate asset1")
-	cmd.Flags().String(flagBaseLendRateAsset2, "", "base lend rate asset2")
-
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
 
 	return cmd
 }
 
-func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
+func NewCmdSubmitAddAppProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-app-mapping [name] [short_name] [min_gov_deposit] [gov_time_in_seconds]",
+		Use:   "add-app [name] [short_name] [min_gov_deposit] [gov_time_in_seconds]",
 		Args:  cobra.ExactArgs(4),
-		Short: "Add app mapping",
+		Short: "Add app",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -635,7 +554,7 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 
 			minGovDeposit := args[2]
 
-			govTimeIn, err := time.ParseDuration(args[3] + "s")
+			govTimeIn, err := strconv.ParseUint(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -652,7 +571,7 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 
 			from := clientCtx.GetFromAddress()
 
-			var aMap []types.AppMapping
+			var aMap types.AppData
 			var bMap []types.MintGenesisToken
 			newMinGovDeposit, ok := sdk.NewIntFromString(minGovDeposit)
 
@@ -662,13 +581,13 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 			if !ok {
 				return types.ErrorInvalidMinGovSupply
 			}
-			aMap = append(aMap, types.AppMapping{
+			aMap = types.AppData{
 				Name:             name,
 				ShortName:        shortName,
 				MinGovDeposit:    newMinGovDeposit,
-				GovTimeInSeconds: govTimeIn.Seconds(),
+				GovTimeInSeconds: govTimeIn,
 				GenesisToken:     bMap,
-			})
+			}
 
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
 			if err != nil {
@@ -679,7 +598,7 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 				return err
 			}
 
-			content := types.NewAddAppMapingProposa(title, description, aMap)
+			content := types.NewAddAppProposal(title, description, aMap)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
@@ -703,11 +622,11 @@ func NewCmdSubmitAddAppMappingProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
+func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-gov-time-app-mapping [app_id] [gov_time_in_seconds]",
-		Args:  cobra.ExactArgs(2),
-		Short: "Update gov time in app mapping",
+		Use:   "update-gov-time-app [app_id] [gov_time_in_seconds] [min_gov_deposit]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Update gov time in app",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -719,11 +638,15 @@ func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
 				return err
 			}
 
-			govTimeIn, err := time.ParseDuration(args[1] + "s")
+			govTimeIn, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
+			minGovDeposit, ok := sdk.NewIntFromString(args[2])
+			if !ok {
+				return types.ErrorInvalidMinGovSupply
+			}
 			title, err := cmd.Flags().GetString(cli.FlagTitle)
 			if err != nil {
 				return err
@@ -747,10 +670,11 @@ func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
 
 			aTime := types.AppAndGovTime{
 				AppId:            appID,
-				GovTimeInSeconds: govTimeIn.Seconds(),
+				GovTimeInSeconds: govTimeIn,
+				MinGovDeposit:    minGovDeposit,
 			}
 
-			content := types.NewUpdateGovTimeInAppMappingProposal(title, description, aTime)
+			content := types.NewUpdateGovTimeInAppProposal(title, description, aTime)
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
@@ -774,12 +698,12 @@ func NewCmdSubmitUpdateGovTimeInAppMappingProposal() *cobra.Command {
 	return cmd
 }
 
-func NewCmdSubmitAddAssetMappingProposal() *cobra.Command {
+func NewCmdSubmitAddAssetInAppProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-asset-mapping [flags]",
+		Use:   "add-asset-in-app [flags]",
 		Args:  cobra.ExactArgs(0),
-		Short: "Add asset mapping",
-		Long: `Must provide path to a add asset mapping JSON file (--add-asset-mapping-file) describing the asset mapping to be created
+		Short: "Add asset in app",
+		Long: `Must provide path to a add asset in app JSON file (--add-asset-in-app-file) describing the asset in app to be created
 Sample json content
 {
 	"app_id" :"",
@@ -799,7 +723,7 @@ Sample json content
 
 			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
-			txf, msg, err := NewCreateAssetMappingMsg(clientCtx, txf, cmd.Flags())
+			txf, msg, err := NewCreateAssetInAppMsg(clientCtx, txf, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -814,234 +738,7 @@ Sample json content
 	return cmd
 }
 
-func NewCmdSubmitAddExtendedPairsVaultProposal() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-pairs-vault [flags]",
-		Args:  cobra.ExactArgs(0),
-		Short: "Add pairs vault ",
-		Long: `Must provide path to a extended pair vault JSON file (--extended-pair-vault-file) describing the extended pair to be created
-Sample json content
-{
-	"app_mapping_id" : "",
-	"pair_id" : "",
-	"liquidation_ratio" : "",
-	"stability_fee" : "",
-	"closing_fee" : "",
-	"liquidation_penalty" : "",
-	"draw_down_fee" : "",
-	"is_vault_active" : "",
-	"debt_ceiling" : "",
-	"debt_floor" : "",
-	"is_psm_pair" : "",
-	"min_cr" : "",
-	"pair_name" : "",
-	"asset_out_oracle_price" : "",
-	"asset_out_price" : "",
-	"min_usd_value_left" : "",
-	"title" :"",
-	"description" :"",
-	"deposit":""
-	
-	
-}`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
-
-			txf, msg, err := NewCreateExtendedPairVaultMsg(clientCtx, txf, cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(FlagSetCreateExtendedPairVault())
-	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
-
-	return cmd
-}
-
-func NewCreateExtendedPairVaultMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
-	extPairVault, err := parseExtendPairVaultFlags(fs)
-	if err != nil {
-		return txf, nil, fmt.Errorf("failed to parse extPairVault: %w", err)
-	}
-
-	appMappingID, err := strconv.ParseUint(extPairVault.AppMappingID, 10, 64)
-	if err != nil {
-		return txf, nil, err
-	}
-
-	pairID, err := ParseUint64SliceFromString(extPairVault.PairID, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	liquidationRatio, err := ParseStringFromString(extPairVault.LiquidationRatio, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	stabilityFee, err := ParseStringFromString(extPairVault.StabilityFee, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	closingFee, err := ParseStringFromString(extPairVault.ClosingFee, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	liquidationPenalty, err := ParseStringFromString(extPairVault.LiquidationPenalty, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	drawDownFee, err := ParseStringFromString(extPairVault.DrawDownFee, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	isVaultActive, err := ParseStringFromString(extPairVault.IsVaultActive, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	debtCeiling, err := ParseStringFromString(extPairVault.DebtCeiling, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	debtFloor, err := ParseStringFromString(extPairVault.DebtFloor, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	isPsmPair, err := ParseStringFromString(extPairVault.IsPsmPair, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	minCr, err := ParseStringFromString(extPairVault.MinCr, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	pairName, err := ParseStringFromString(extPairVault.PairName, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	assetOutOraclePrice, err := ParseStringFromString(extPairVault.AssetOutOraclePrice, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	assetOutPrice, err := ParseUint64SliceFromString(extPairVault.AssetOutPrice, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	minUsdValueLeft, err := ParseUint64SliceFromString(extPairVault.MinUsdValueLeft, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-
-	if extPairVault.Title == "" {
-		return txf, nil, types.ErrorProposalTitleMissing
-	}
-
-	if extPairVault.Description == "" {
-		return txf, nil, types.ErrorProposalDescriptionMissing
-	}
-
-	from := clientCtx.GetFromAddress()
-
-	var pairs []types.ExtendedPairVault
-	for i := range pairID {
-		newLiquidationRatio, err := sdk.NewDecFromStr(liquidationRatio[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newStabilityFee, err := sdk.NewDecFromStr(stabilityFee[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newClosingFee, err := sdk.NewDecFromStr(closingFee[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newLiquidationPenalty, err := sdk.NewDecFromStr(liquidationPenalty[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newDrawDownFee, err := sdk.NewDecFromStr(drawDownFee[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newMinCr, err := sdk.NewDecFromStr(minCr[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newIsVaultActive := ParseBoolFromString(isVaultActive[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		debtCeiling, ok := sdk.NewIntFromString(debtCeiling[i])
-		if !ok {
-			return txf, nil, types.ErrorInvalidDebtCeiling
-		}
-		newDebtFloor, ok := sdk.NewIntFromString(debtFloor[i])
-		if !ok {
-			return txf, nil, types.ErrorInvalidDebtFloor
-		}
-		newIsPsmPair := ParseBoolFromString(isPsmPair[i])
-		newAssetOutOraclePrice := ParseBoolFromString(assetOutOraclePrice[i])
-		pairs = append(pairs, types.ExtendedPairVault{
-			AppMappingId:        appMappingID,
-			PairId:              pairID[i],
-			LiquidationRatio:    newLiquidationRatio,
-			StabilityFee:        newStabilityFee,
-			ClosingFee:          newClosingFee,
-			LiquidationPenalty:  newLiquidationPenalty,
-			DrawDownFee:         newDrawDownFee,
-			IsVaultActive:       newIsVaultActive,
-			DebtCeiling:         debtCeiling,
-			DebtFloor:           newDebtFloor,
-			IsPsmPair:           newIsPsmPair,
-			MinCr:               newMinCr,
-			PairName:            pairName[i],
-			AssetOutOraclePrice: newAssetOutOraclePrice,
-			AssetOutPrice:       assetOutPrice[i],
-			MinUsdValueLeft:     minUsdValueLeft[i],
-		})
-	}
-
-	deposit, err := sdk.ParseCoinsNormalized(extPairVault.Deposit)
-	if err != nil {
-		return txf, nil, err
-	}
-
-	content := types.NewAddExtendedPairsVaultProposa(extPairVault.Title, extPairVault.Description, pairs)
-
-	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
-	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
-	return txf, msg, nil
-}
-
-func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	assetMapping, err := parseAssetMappingFlags(fs)
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse assetMapping: %w", err)
@@ -1052,19 +749,18 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, err
 	}
 
-	assetIDs, err := ParseUint64SliceFromString(assetMapping.AssetID, ",")
+	assetIDs, err := strconv.ParseUint(assetMapping.AssetID, 10, 64)
 	if err != nil {
 		return txf, nil, err
 	}
-	genesisSupply, err := ParseStringFromString(assetMapping.GenesisSupply, ",")
+
+	genesisSupply := assetMapping.GenesisSupply
+
+	isGovToken := ParseBoolFromString(assetMapping.IsGovToken)
 	if err != nil {
 		return txf, nil, err
 	}
-	isGovToken, err := ParseStringFromString(assetMapping.IsGovToken, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	recipient, err := ParseStringFromString(assetMapping.Recipient, ",")
+	recipient := assetMapping.Recipient
 	if err != nil {
 		return txf, nil, err
 	}
@@ -1077,38 +773,35 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 		return txf, nil, types.ErrorProposalDescriptionMissing
 	}
 
-	var aMap []types.AppMapping
 	var bMap []types.MintGenesisToken
-	for i := range assetIDs {
-		newIsGovToken := ParseBoolFromString(isGovToken[i])
-		newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply[i])
-		address, err := sdk.AccAddressFromBech32(recipient[i])
-		if err != nil {
-			panic(err)
-		}
-		if !ok {
-			return txf, nil, types.ErrorInvalidGenesisSupply
-		}
-		var cmap types.MintGenesisToken
-
-		cmap.AssetId = assetIDs[i]
-		cmap.GenesisSupply = &newGenesisSupply
-		cmap.IsgovToken = newIsGovToken
-		cmap.Recipient = address.String()
-
-		bMap = append(bMap, cmap)
+	newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply)
+	if !ok {
+		return txf, nil, types.ErrorInvalidGenesisSupply
 	}
-	aMap = append(aMap, types.AppMapping{
+	address, err := sdk.AccAddressFromBech32(recipient)
+	if err != nil {
+		panic(err)
+	}
+	var cmap types.MintGenesisToken
+
+	cmap.AssetId = assetIDs
+	cmap.GenesisSupply = newGenesisSupply
+	cmap.IsGovToken = isGovToken
+	cmap.Recipient = address.String()
+
+	bMap = append(bMap, cmap)
+
+	aMap := types.AppData{
 		Id:           appID,
 		GenesisToken: bMap,
-	})
+	}
 
 	deposit, err := sdk.ParseCoinsNormalized(assetMapping.Deposit)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	content := types.NewAddAssetMapingProposa(assetMapping.Title, assetMapping.Description, aMap)
+	content := types.NewAddAssetInAppProposal(assetMapping.Title, assetMapping.Description, aMap)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 	if err != nil {
@@ -1121,75 +814,117 @@ func NewCreateAssetMappingMsg(clientCtx client.Context, txf tx.Factory, fs *flag
 	return txf, msg, nil
 }
 
-func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
-	whiteListedPairs, err := parseWhiteListedPairsFlags(fs)
-	if err != nil {
-		return txf, nil, fmt.Errorf("failed to parse whiteListedPairs: %w", err)
+func NewCmdSubmitAddMultipleAssetsPairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-multiple-assets-pairs [flags]",
+		Args:  cobra.ExactArgs(0),
+		Short: "Submit multiple assets and pairs",
+		Long: `Must provide path to a add assets and pairs in JSON file (--add-assets-pairs-file) describing the assets and pairs to be created
+Sample json content
+{
+	"name" :"ATOM,CMDX,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR",
+	"denom" :"uatom,ucmdx,uosmo,ucatom,uccmdx,uccmst,ucosmo,uharbor",
+	"decimals" :"1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000",
+	"is_on_chain" :"0,0,0,0,0,0,0,1",
+	"asset_oracle_price" :"1,1,1,0,0,0,0,0",
+    "is_cdp_mintable" :"1,1,1,0,0,0,0,0",
+    "asset_out" :"3,3,3,3,3,3,3,3",
+	"title" :"Add assets and pairs for applications to be deployed on comdex testnet",
+	"description" :"This proposal it to add following assets ATOM,CMDX,CMST,OSMO,cATOM,cCMDX,cCMST,cOSMO,HARBOR with pairs to be then used on harbor, commodo and cswap apps",
+	"deposit" :"1000000000ucmdx"
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewCreateMultipleAssetsPairs(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
 	}
 
-	pairID, err := ParseUint64SliceFromString(whiteListedPairs.PairID, ",")
+	cmd.Flags().AddFlagSet(FlagSetCreateAssetsPairsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+
+	return cmd
+}
+
+func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	assetsPairsMapping, err := parseAssetsPairsMappingFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse assetsPairs: %w", err)
+	}
+
+	names, err := ParseStringFromString(assetsPairsMapping.Name, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	denoms, err := ParseStringFromString(assetsPairsMapping.Denom, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
-	moduleAccount, err := ParseStringFromString(whiteListedPairs.ModuleAccount, ",")
+	decimals, err := ParseStringFromString(assetsPairsMapping.Decimals, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
-	baseBorrowRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseBorrowRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseBorrowRateAsset2, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseLendRateAsset1, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset1, ",")
-	if err != nil {
-		return txf, nil, err
-	}
-	baseLendRateAsset2, err := ParseStringFromString(whiteListedPairs.BaseLendRateAsset2, ",")
+	isOnChain, err := ParseStringFromString(assetsPairsMapping.IsOnChain, ",")
 	if err != nil {
 		return txf, nil, err
 	}
 
-	var pairs []types.ExtendedPairLend
-	for i := range pairID {
-		newBaseBorrowRateAsset1, err := sdk.NewDecFromStr(baseBorrowRateAsset1[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseBorrowRateAsset2, err := sdk.NewDecFromStr(baseBorrowRateAsset2[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseLendRateAsset1, err := sdk.NewDecFromStr(baseLendRateAsset1[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		newBaseLendRateAsset2, err := sdk.NewDecFromStr(baseLendRateAsset2[i])
-		if err != nil {
-			return txf, nil, err
-		}
-		pairs = append(pairs, types.ExtendedPairLend{
-			PairId:                pairID[i],
-			ModuleAcc:             moduleAccount[i],
-			BaseBorrowRateAsset_1: newBaseBorrowRateAsset1,
-			BaseBorrowRateAsset_2: newBaseBorrowRateAsset2,
-			BaseLendRateAsset_1:   newBaseLendRateAsset1,
-			BaseLendRateAsset_2:   newBaseLendRateAsset2,
-		})
+	assetOraclePrice, err := ParseStringFromString(assetsPairsMapping.AssetOraclePrice, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+	isCdpMintable, err := ParseStringFromString(assetsPairsMapping.IsCdpMintable, ",")
+	if err != nil {
+		return txf, nil, err
+	}
+
+	assetOut, err := ParseStringFromString(assetsPairsMapping.AssetOut, ",")
+	if err != nil {
+		return txf, nil, err
 	}
 
 	from := clientCtx.GetFromAddress()
 
-	deposit, err := sdk.ParseCoinsNormalized(whiteListedPairs.Deposit)
+	var assets []types.AssetPair
+	for i := range names {
+		newIsOnChain := ParseBoolFromString(isOnChain[i])
+		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
+		newIsCdpMintable := ParseBoolFromString(isCdpMintable[i])
+		newDecimals, ok := sdk.NewIntFromString(decimals[i])
+		if !ok {
+			return txf, nil, types.ErrorInvalidDecimals
+		}
+		newAssetOut, _ := sdk.NewIntFromString(assetOut[i])
+
+		assets = append(assets, types.AssetPair{
+			Name:                  names[i],
+			Denom:                 denoms[i],
+			Decimals:              newDecimals,
+			IsOnChain:             newIsOnChain,
+			IsOraclePriceRequired: newAssetOraclePrice,
+			IsCdpMintable:         newIsCdpMintable,
+			AssetOut:              newAssetOut.Uint64(),
+		})
+	}
+
+	deposit, err := sdk.ParseCoinsNormalized(assetsPairsMapping.Deposit)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	content := types.NewAddWhitelistedPairsProposal(whiteListedPairs.Title, whiteListedPairs.Description, pairs)
+	content := types.NewAddMultipleAssetsPairsProposal(assetsPairsMapping.Title, assetsPairsMapping.Description, assets)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
@@ -1199,5 +934,62 @@ func NewCreateWhiteListedPairsMsg(clientCtx client.Context, txf tx.Factory, fs *
 	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
+
 	return txf, msg, nil
+}
+
+func NewAddAssetCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-asset [name] [denom] [decimals] [is-on-chain] [is-oracle-price-required] [is-cdp-mintable]",
+		Args:  cobra.ExactArgs(6),
+		Short: "Register/Whitelist a new asset in asset module ",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(` Add / Register / Whitelist new asset in asset module
+Example:
+$ %s tx %s add-asset CMDX ucmdx 1000000 true true true --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			name := args[0]
+			denom := args[1]
+
+			decimals, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse decimals: %w", err)
+			}
+
+			isOnChain, err := strconv.ParseBool(args[3])
+			if err != nil {
+				return fmt.Errorf("parse is-on-chain: %w", err)
+			}
+
+			isOraclePriceRequired, err := strconv.ParseBool(args[4])
+			if err != nil {
+				return fmt.Errorf("parse is-oracle-price-required: %w", err)
+			}
+
+			isCdpMintable, err := strconv.ParseBool(args[5])
+			if err != nil {
+				return fmt.Errorf("parse is-cdp-mintable: %w", err)
+			}
+
+			msg := types.NewMsgAddAsset(clientCtx.GetFromAddress(), name, denom, decimals, isOnChain, isOraclePriceRequired, isCdpMintable)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }

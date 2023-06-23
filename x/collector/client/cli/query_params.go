@@ -3,13 +3,14 @@ package cli
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/comdex-official/comdex/x/collector/types"
 )
 
-// CmdQueryParams Return params for the collector store
+// CmdQueryParams Return params for the collector store.
 func CmdQueryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",

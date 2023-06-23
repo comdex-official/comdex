@@ -1,24 +1,57 @@
 package auction
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/comdex-official/comdex/x/auction/keeper"
 	"github.com/comdex-official/comdex/x/auction/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
-	k.SetParams(ctx, genState.Params)
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
+	k.SetParams(ctx, state.Params)
+	var auctionID uint64
+	var lendAuctionID uint64
+
+	for _, item := range state.SurplusAuction {
+		k.SetGenSurplusAuction(ctx, item)
+	}
+
+	for _, item := range state.DebtAuction {
+		k.SetGenDebtAuction(ctx, item)
+	}
+
+	for _, item := range state.DutchAuction {
+		k.SetGenDutchAuction(ctx, item)
+		auctionID = item.AuctionId
+	}
+
+	k.SetAuctionID(ctx, auctionID)
+	k.SetUserBiddingID(ctx, state.UserBiddingID)
+
+	for _, item := range state.ProtocolStatistics {
+		k.SetGenProtocolStatistics(ctx, item.AppId, item.AssetId, item.Loss)
+	}
+
+	for _, item := range state.AuctionParams {
+		k.SetAuctionParams(ctx, item)
+	}
+
+	for _, item := range state.DutchAuction {
+		k.SetGenLendDutchLendAuction(ctx, item)
+		lendAuctionID = item.AuctionId
+	}
+	k.SetLendAuctionID(ctx, lendAuctionID)
 }
 
-// ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
-
-	// this line is used by starport scaffolding # genesis/module/export
-
-	return genesis
+	return types.NewGenesisState(
+		k.GetAllSurplusAuctions(ctx),
+		k.GetAllDebtAuctions(ctx),
+		k.GetAllDutchAuctions(ctx),
+		k.GetAllProtocolStat(ctx),
+		k.GetAllAuctionParams(ctx),
+		k.GetDutchLendAuctions(ctx, 3),
+		k.GetParams(ctx),
+		k.GetUserBiddingID(ctx),
+	)
 }

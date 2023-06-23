@@ -1,31 +1,50 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
+)
 
-func NewMsgWhitelistAppID(appMappingId uint64, from sdk.AccAddress) *WhitelistAppId {
-	return &WhitelistAppId{
-		AppMappingId: appMappingId,
-		From:         from.String(),
+var (
+	_ sdk.Msg = (*MsgLiquidateVaultRequest)(nil)
+	_ sdk.Msg = (*MsgLiquidateBorrowRequest)(nil)
+)
+
+func NewMsgLiquidateRequest(
+	from sdk.AccAddress,
+	appID, vaultID uint64,
+) *MsgLiquidateVaultRequest {
+	return &MsgLiquidateVaultRequest{
+		From:    from.String(),
+		AppId:   appID,
+		VaultId: vaultID,
 	}
 }
 
-func (m *WhitelistAppId) Route() string {
+func (m *MsgLiquidateVaultRequest) Route() string {
 	return RouterKey
 }
 
-func (m *WhitelistAppId) Type() string {
-	return ModuleName
+func (m *MsgLiquidateVaultRequest) Type() string {
+	return TypeMsgLiquidateRequest
 }
 
-func (m *WhitelistAppId) ValidateBasic() error {
+func (m *MsgLiquidateVaultRequest) ValidateBasic() error {
+	if m.AppId == 0 {
+		return errors.Wrap(ErrAppIDInvalid, "app_id cannot be zero")
+	}
+	if m.VaultId == 0 {
+		return errors.Wrap(ErrVaultIDInvalid, "vault_id cannot be nil")
+	}
+
 	return nil
 }
 
-func (m *WhitelistAppId) GetSignBytes() []byte {
+func (m *MsgLiquidateVaultRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
-func (m *WhitelistAppId) GetSigners() []sdk.AccAddress {
+func (m *MsgLiquidateVaultRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -34,30 +53,37 @@ func (m *WhitelistAppId) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgRemoveWhitelistAsset(appMappingID uint64, from sdk.AccAddress) *RemoveWhitelistAppId {
-	return &RemoveWhitelistAppId{
-		AppMappingId: appMappingID,
-		From:         from.String(),
+func NewMsgLiquidateBorrowRequest(
+	from sdk.AccAddress,
+	borrowID uint64,
+) *MsgLiquidateBorrowRequest {
+	return &MsgLiquidateBorrowRequest{
+		From:     from.String(),
+		BorrowId: borrowID,
 	}
 }
 
-func (m *RemoveWhitelistAppId) Route() string {
+func (m *MsgLiquidateBorrowRequest) Route() string {
 	return RouterKey
 }
 
-func (m *RemoveWhitelistAppId) Type() string {
-	return ModuleName
+func (m *MsgLiquidateBorrowRequest) Type() string {
+	return TypeMsgLiquidateBorrowRequest
 }
 
-func (m *RemoveWhitelistAppId) ValidateBasic() error {
+func (m *MsgLiquidateBorrowRequest) ValidateBasic() error {
+	if m.BorrowId == 0 {
+		return errors.Wrap(ErrVaultIDInvalid, "borrow_id cannot be zero")
+	}
+
 	return nil
 }
 
-func (m *RemoveWhitelistAppId) GetSignBytes() []byte {
+func (m *MsgLiquidateBorrowRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
-func (m *RemoveWhitelistAppId) GetSigners() []sdk.AccAddress {
+func (m *MsgLiquidateBorrowRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

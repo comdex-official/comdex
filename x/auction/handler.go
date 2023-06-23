@@ -1,10 +1,11 @@
 package auction
 
 import (
-	"github.com/comdex-official/comdex/x/auction/keeper"
-	"github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/auction/keeper"
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
@@ -24,6 +25,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 
 		case *types.MsgPlaceDutchBidRequest:
 			res, err := server.MsgPlaceDutchBid(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+
+		case *types.MsgPlaceDutchLendBidRequest:
+			res, err := server.MsgPlaceDutchLendBid(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		default:

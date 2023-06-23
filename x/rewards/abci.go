@@ -1,45 +1,44 @@
 package rewards
 
 import (
-	"time"
-
-	"github.com/comdex-official/comdex/x/rewards/keeper"
-	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	utils "github.com/comdex-official/comdex/types"
+	"github.com/comdex-official/comdex/x/rewards/keeper"
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
-func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-	k.TriggerAndUpdateEpochInfos(ctx)
+func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
-	err := k.IterateLocker(ctx)
-	if err != nil {
-		return
-	}
+	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
+		k.TriggerAndUpdateEpochInfos(ctx)
 
-	appIDsVault := k.GetAppIDs(ctx).WhitelistedAppMappingIdsVaults
-	for i := range appIDsVault {
-		err := k.IterateVaults(ctx, appIDsVault[i])
+		err := k.DistributeExtRewardLocker(ctx)
 		if err != nil {
-			return
+			ctx.Logger().Error("error in DistributeExtRewardLocker")
 		}
-	}
+		err = k.DistributeExtRewardVault(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardVault")
+		}
+		err = k.DistributeExtRewardLend(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardLend")
+		}
+		err = k.CombinePSMUserPositions(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in CombinePSMUserPositions")
+		}
+		err = k.DistributeExtRewardStableVault(ctx)
+		if err != nil {
+			ctx.Logger().Error("error in DistributeExtRewardStableMint")
+		}
 
-	err = k.DistributeExtRewardLocker(ctx)
-	if err != nil {
-		return
-	}
-	err = k.DistributeExtRewardVault(ctx)
-	if err != nil {
-		return
-	}
-
-	err = k.SetLastInterestTime(ctx, ctx.BlockTime().Unix())
-	if err != nil {
-		return
-	}
+		return nil
+	})
 }
 
 // EndBlocker for incentives module.

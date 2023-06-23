@@ -116,7 +116,7 @@ message QueryDepositRequestsResponse {
 // QueryDepositRequestRequest is request type for the Query/DepositRequest RPC method.
 message QueryDepositRequestRequest {
   uint64 pool_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -143,7 +143,7 @@ message QueryWithdrawRequestsResponse {
 // QueryWithdrawRequestRequest is request type for the Query/WithdrawRequest RPC method.
 message QueryWithdrawRequestRequest {
   uint64 pool_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -170,7 +170,7 @@ message QueryOrdersResponse {
 // QueryOrderRequest is request type for the Query/Order RPC method.
 message QueryOrderRequest {
   uint64 pair_id = 1;
-  uint64 id      = 2;
+  uint64 id = 2;
   uint64 app_id = 3;
 }
 
@@ -181,8 +181,8 @@ message QueryOrderResponse {
 
 // QueryOrdersByOrdererRequest is request type for the Query/OrdersByOrderer RPC method.
 message QueryOrdersByOrdererRequest {
-  string                                orderer    = 1;
-  uint64                                pair_id    = 2;
+  string                                orderer = 1;
+  uint64                                pair_id = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
   uint64 app_id = 4;
 }
@@ -201,26 +201,47 @@ message PoolResponse {
 
   string pool_coin_denom = 4;
 
-  repeated cosmos.base.v1beta1.Coin balances = 5
-      [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+  PoolBalances balances = 5 [(gogoproto.nullable) = false];
 
   uint64 last_deposit_request_id = 6;
 
   uint64 last_withdraw_request_id = 7;
 
   uint64 app_id = 8;
+
+  PoolType type = 9;
+
+  string creator = 10;
+
+  string pool_coin_supply = 11
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+
+  string min_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string max_price = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  string price = 14 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+
+  bool disabled = 15;
+
 }
 
-// QuerySoftLockRequest is request type for the Query/SoftLock RPC method.
-message QuerySoftLockRequest {
-  uint64 pool_id = 1;
-  string depositor = 2;
-  uint64 app_id = 3;
+message PoolBalances {
+  cosmos.base.v1beta1.Coin base_coin = 1 [(gogoproto.nullable) = false];
+
+  cosmos.base.v1beta1.Coin quote_coin = 2 [(gogoproto.nullable) = false];
+}
+
+// QueryFarmerRequest is request type for the Query/Farmer RPC method.
+message QueryFarmerRequest {
+  uint64 app_id = 1;
+  uint64 pool_id = 2;
+  string farmer = 3;
 }
 
 message QueuedPoolCoin {
   cosmos.base.v1beta1.Coin pool_coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   google.protobuf.Timestamp deque_at = 2 [
@@ -228,19 +249,18 @@ message QueuedPoolCoin {
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"deque_at\""
   ];
-  
+
 }
 
-// QuerySoftLockResponse is response type for the Query/SoftLock RPC method.
-message QuerySoftLockResponse {
+// QueryFarmerResponse is response type for the Query/Farmer RPC method.
+message QueryFarmerResponse {
   cosmos.base.v1beta1.Coin active_pool_coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   repeated QueuedPoolCoin queued_pool_coin = 2 [
     (gogoproto.nullable) = false
   ];
-  
 }
 
 // QueryDeserializePoolCoinRequest is request type for the Query/DeserializePoolCoin RPC method.
@@ -253,7 +273,7 @@ message QueryDeserializePoolCoinRequest {
 // QueryDeserializePoolCoinResponse is response type for the Query/DeserializePoolCoin RPC method.
 message QueryDeserializePoolCoinResponse {
   repeated cosmos.base.v1beta1.Coin coins = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
     (gogoproto.nullable) = false
   ];
 }
@@ -268,21 +288,21 @@ message PoolIncentive {
   bool master_pool = 2;
   repeated uint64 child_pool_ids = 3;
   cosmos.base.v1beta1.Coin total_rewards = 4 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   cosmos.base.v1beta1.Coin distributed_rewards = 5 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
   uint64 total_epochs = 6;
   uint64 filled_epochs = 7;
   google.protobuf.Duration epoch_duration = 8 [
-      (gogoproto.nullable) = false,
-      (gogoproto.stdduration) = true,
-      (gogoproto.jsontag) = "epoch_duration,omitempty",
-      (gogoproto.moretags) = "yaml:\"epoch_duration\""
-    ];
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.jsontag) = "epoch_duration,omitempty",
+    (gogoproto.moretags) = "yaml:\"epoch_duration\""
+  ];
   google.protobuf.Timestamp next_distribution = 9 [
     (gogoproto.stdtime) = true,
     (gogoproto.nullable) = false,
@@ -304,10 +324,68 @@ message QueryFarmedPoolCoinRequest {
 
 message QueryFarmedPoolCoinResponse {
   cosmos.base.v1beta1.Coin coin = 1 [
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin", 
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
     (gogoproto.nullable) = false
   ];
 }
+
+// QueryOrderBooksRequest is request type for the Query/OrderBooks RPC method.
+message QueryOrderBooksRequest {
+  uint64 app_id = 1;
+  repeated uint64 pair_ids = 2;
+  repeated uint32 price_unit_powers = 3;
+  uint32 num_ticks = 4;
+}
+
+// QueryOrderBooksResponse is response type for Query/OrderBooks RPC method.
+message QueryOrderBooksResponse {
+  repeated OrderBookPairResponse pairs = 2 [(gogoproto.nullable) = false];
+}
+
+message OrderBookPairResponse {
+  uint64 pair_id    = 1;
+  string base_price = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookResponse order_books = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookResponse {
+  string price_unit = 1
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  repeated OrderBookTickResponse sells = 2 [(gogoproto.nullable) = false];
+  repeated OrderBookTickResponse buys  = 3 [(gogoproto.nullable) = false];
+}
+
+message OrderBookTickResponse {
+  string price = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string user_order_amount = 2
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string pool_order_amount = 3
+      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+}
+
+message TotalActiveAndQueuedPoolCoins {
+  uint64 pool_id = 1;
+  cosmos.base.v1beta1.Coin total_active_pool_coin = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.v1beta1.Coin total_queued_pool_coin = 3 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryAllFarmedPoolCoinsRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAllFarmedPoolCoinsResponse {
+  uint64 app_id = 1;
+  repeated TotalActiveAndQueuedPoolCoins total_active_and_queued_coins = 2;
+}
+
+
 
 // Query defines the gRPC querier service.
 service Query {
@@ -373,12 +451,12 @@ service Query {
 
   // Orders returns all orders within the pair.
   rpc Orders(QueryOrdersRequest) returns (QueryOrdersResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}";
   }
 
   // Order returns the specific order.
   rpc Order(QueryOrderRequest) returns (QueryOrderResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/pairs/{app_id}/{pair_id}/orders/{id}";
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{pair_id}/{id}";
   }
 
   // OrdersByOrderer returns orders made by an orderer.
@@ -386,9 +464,9 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/orders/{app_id}/{orderer}";
   }
 
-  // SoftLock returns deposited poolcoin for farming .
-  rpc SoftLock(QuerySoftLockRequest) returns (QuerySoftLockResponse) {
-    option (google.api.http).get = "/comdex/liquidity/v1beta1/softlock/{app_id}/{pool_id}/{depositor}";
+  // Farmer returns deposited poolcoin for farming .
+  rpc Farmer(QueryFarmerRequest) returns (QueryFarmerResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/farmer/{app_id}/{pool_id}/{farmer}";
   }
 
   // DeserializePoolCoin splits poolcoin into the actual provided pool assets .
@@ -401,8 +479,17 @@ service Query {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/pool_incentives/{app_id}";
   }
 
-  // FarmedPoolCoin returns the total coin in the soft-lock.
+  // FarmedPoolCoin returns the total farmed pool coins.
   rpc FarmedPoolCoin(QueryFarmedPoolCoinRequest) returns (QueryFarmedPoolCoinResponse) {
     option (google.api.http).get = "/comdex/liquidity/v1beta1/farmed_coin/{app_id}/{pool_id}";
+  }
+
+  // TotalActiveAndQueuedPoolCoin returns the total number of active and queued farmed pool coins in each pool.
+  rpc TotalActiveAndQueuedPoolCoin(QueryAllFarmedPoolCoinsRequest) returns (QueryAllFarmedPoolCoinsResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/all_farmed_coin/{app_id}";
+  }
+
+  rpc OrderBooks(QueryOrderBooksRequest) returns (QueryOrderBooksResponse) {
+    option (google.api.http).get = "/comdex/liquidity/v1beta1/order_books/{app_id}";
   }
 }

@@ -1,10 +1,11 @@
 package bandoracle
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/market/expected"
-	// this line is used by starport scaffolding # 1
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -12,15 +13,16 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/comdex-official/comdex/x/bandoracle/client/cli"
-	"github.com/comdex-official/comdex/x/bandoracle/keeper"
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+
+	"github.com/comdex-official/comdex/x/bandoracle/client/cli"
+	"github.com/comdex-official/comdex/x/bandoracle/keeper"
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 var (
@@ -42,7 +44,7 @@ type IBCModule struct {
 	keeper keeper.Keeper
 }
 
-// NewIBCModule creates a new IBCModule given the keeper
+// NewIBCModule creates a new IBCModule given the keeper.
 func NewIBCModule(k keeper.Keeper) porttypes.IBCModule {
 	return IBCModule{
 		keeper: k,
@@ -66,7 +68,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
@@ -91,7 +93,7 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	// this line is used by starport scaffolding # 2
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
 // GetTxCmd returns the capability module's root tx command.

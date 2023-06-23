@@ -28,23 +28,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type WhitelistAppId struct {
-	AppMappingId uint64 `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
-	From         string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+type MsgLiquidateVaultRequest struct {
+	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId   uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	VaultId uint64 `protobuf:"varint,3,opt,name=vault_id,json=vaultId,proto3" json:"vault_id,omitempty" yaml:"vault_id"`
 }
 
-func (m *WhitelistAppId) Reset()         { *m = WhitelistAppId{} }
-func (m *WhitelistAppId) String() string { return proto.CompactTextString(m) }
-func (*WhitelistAppId) ProtoMessage()    {}
-func (*WhitelistAppId) Descriptor() ([]byte, []int) {
+func (m *MsgLiquidateVaultRequest) Reset()         { *m = MsgLiquidateVaultRequest{} }
+func (m *MsgLiquidateVaultRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgLiquidateVaultRequest) ProtoMessage()    {}
+func (*MsgLiquidateVaultRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_46d2beddde56424c, []int{0}
 }
-func (m *WhitelistAppId) XXX_Unmarshal(b []byte) error {
+func (m *MsgLiquidateVaultRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *WhitelistAppId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLiquidateVaultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_WhitelistAppId.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLiquidateVaultRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -54,35 +55,33 @@ func (m *WhitelistAppId) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *WhitelistAppId) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_WhitelistAppId.Merge(m, src)
+func (m *MsgLiquidateVaultRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLiquidateVaultRequest.Merge(m, src)
 }
-func (m *WhitelistAppId) XXX_Size() int {
+func (m *MsgLiquidateVaultRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *WhitelistAppId) XXX_DiscardUnknown() {
-	xxx_messageInfo_WhitelistAppId.DiscardUnknown(m)
+func (m *MsgLiquidateVaultRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLiquidateVaultRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_WhitelistAppId proto.InternalMessageInfo
+var xxx_messageInfo_MsgLiquidateVaultRequest proto.InternalMessageInfo
 
-type RemoveWhitelistAppId struct {
-	AppMappingId uint64 `protobuf:"varint,1,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
-	From         string `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+type MsgLiquidateVaultResponse struct {
 }
 
-func (m *RemoveWhitelistAppId) Reset()         { *m = RemoveWhitelistAppId{} }
-func (m *RemoveWhitelistAppId) String() string { return proto.CompactTextString(m) }
-func (*RemoveWhitelistAppId) ProtoMessage()    {}
-func (*RemoveWhitelistAppId) Descriptor() ([]byte, []int) {
+func (m *MsgLiquidateVaultResponse) Reset()         { *m = MsgLiquidateVaultResponse{} }
+func (m *MsgLiquidateVaultResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgLiquidateVaultResponse) ProtoMessage()    {}
+func (*MsgLiquidateVaultResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_46d2beddde56424c, []int{1}
 }
-func (m *RemoveWhitelistAppId) XXX_Unmarshal(b []byte) error {
+func (m *MsgLiquidateVaultResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RemoveWhitelistAppId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLiquidateVaultResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RemoveWhitelistAppId.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLiquidateVaultResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -92,33 +91,35 @@ func (m *RemoveWhitelistAppId) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *RemoveWhitelistAppId) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RemoveWhitelistAppId.Merge(m, src)
+func (m *MsgLiquidateVaultResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLiquidateVaultResponse.Merge(m, src)
 }
-func (m *RemoveWhitelistAppId) XXX_Size() int {
+func (m *MsgLiquidateVaultResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *RemoveWhitelistAppId) XXX_DiscardUnknown() {
-	xxx_messageInfo_RemoveWhitelistAppId.DiscardUnknown(m)
+func (m *MsgLiquidateVaultResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLiquidateVaultResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RemoveWhitelistAppId proto.InternalMessageInfo
+var xxx_messageInfo_MsgLiquidateVaultResponse proto.InternalMessageInfo
 
-type MsgWhitelistAppIdResponse struct {
+type MsgLiquidateBorrowRequest struct {
+	From     string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	BorrowId uint64 `protobuf:"varint,2,opt,name=borrow_id,json=borrowId,proto3" json:"borrow_id,omitempty" yaml:"borrow_id"`
 }
 
-func (m *MsgWhitelistAppIdResponse) Reset()         { *m = MsgWhitelistAppIdResponse{} }
-func (m *MsgWhitelistAppIdResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgWhitelistAppIdResponse) ProtoMessage()    {}
-func (*MsgWhitelistAppIdResponse) Descriptor() ([]byte, []int) {
+func (m *MsgLiquidateBorrowRequest) Reset()         { *m = MsgLiquidateBorrowRequest{} }
+func (m *MsgLiquidateBorrowRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgLiquidateBorrowRequest) ProtoMessage()    {}
+func (*MsgLiquidateBorrowRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_46d2beddde56424c, []int{2}
 }
-func (m *MsgWhitelistAppIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgLiquidateBorrowRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgWhitelistAppIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLiquidateBorrowRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgWhitelistAppIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLiquidateBorrowRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -128,33 +129,33 @@ func (m *MsgWhitelistAppIdResponse) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *MsgWhitelistAppIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgWhitelistAppIdResponse.Merge(m, src)
+func (m *MsgLiquidateBorrowRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLiquidateBorrowRequest.Merge(m, src)
 }
-func (m *MsgWhitelistAppIdResponse) XXX_Size() int {
+func (m *MsgLiquidateBorrowRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgWhitelistAppIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgWhitelistAppIdResponse.DiscardUnknown(m)
+func (m *MsgLiquidateBorrowRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLiquidateBorrowRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgWhitelistAppIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgLiquidateBorrowRequest proto.InternalMessageInfo
 
-type MsgRemoveWhitelistAppIdResponse struct {
+type MsgLiquidateBorrowResponse struct {
 }
 
-func (m *MsgRemoveWhitelistAppIdResponse) Reset()         { *m = MsgRemoveWhitelistAppIdResponse{} }
-func (m *MsgRemoveWhitelistAppIdResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveWhitelistAppIdResponse) ProtoMessage()    {}
-func (*MsgRemoveWhitelistAppIdResponse) Descriptor() ([]byte, []int) {
+func (m *MsgLiquidateBorrowResponse) Reset()         { *m = MsgLiquidateBorrowResponse{} }
+func (m *MsgLiquidateBorrowResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgLiquidateBorrowResponse) ProtoMessage()    {}
+func (*MsgLiquidateBorrowResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_46d2beddde56424c, []int{3}
 }
-func (m *MsgRemoveWhitelistAppIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgLiquidateBorrowResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveWhitelistAppIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLiquidateBorrowResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveWhitelistAppIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLiquidateBorrowResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -164,23 +165,23 @@ func (m *MsgRemoveWhitelistAppIdResponse) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveWhitelistAppIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveWhitelistAppIdResponse.Merge(m, src)
+func (m *MsgLiquidateBorrowResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLiquidateBorrowResponse.Merge(m, src)
 }
-func (m *MsgRemoveWhitelistAppIdResponse) XXX_Size() int {
+func (m *MsgLiquidateBorrowResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveWhitelistAppIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveWhitelistAppIdResponse.DiscardUnknown(m)
+func (m *MsgLiquidateBorrowResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLiquidateBorrowResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveWhitelistAppIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgLiquidateBorrowResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*WhitelistAppId)(nil), "comdex.liquidation.v1beta1.WhitelistAppId")
-	proto.RegisterType((*RemoveWhitelistAppId)(nil), "comdex.liquidation.v1beta1.RemoveWhitelistAppId")
-	proto.RegisterType((*MsgWhitelistAppIdResponse)(nil), "comdex.liquidation.v1beta1.MsgWhitelistAppIdResponse")
-	proto.RegisterType((*MsgRemoveWhitelistAppIdResponse)(nil), "comdex.liquidation.v1beta1.MsgRemoveWhitelistAppIdResponse")
+	proto.RegisterType((*MsgLiquidateVaultRequest)(nil), "comdex.liquidation.v1beta1.MsgLiquidateVaultRequest")
+	proto.RegisterType((*MsgLiquidateVaultResponse)(nil), "comdex.liquidation.v1beta1.MsgLiquidateVaultResponse")
+	proto.RegisterType((*MsgLiquidateBorrowRequest)(nil), "comdex.liquidation.v1beta1.MsgLiquidateBorrowRequest")
+	proto.RegisterType((*MsgLiquidateBorrowResponse)(nil), "comdex.liquidation.v1beta1.MsgLiquidateBorrowResponse")
 }
 
 func init() {
@@ -188,29 +189,33 @@ func init() {
 }
 
 var fileDescriptor_46d2beddde56424c = []byte{
-	// 345 bytes of a gzipped FileDescriptorProto
+	// 402 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4e, 0xce, 0xcf, 0x4d,
 	0x49, 0xad, 0xd0, 0xcf, 0xc9, 0x2c, 0x2c, 0xcd, 0x4c, 0x49, 0x2c, 0xc9, 0xcc, 0xcf, 0xd3, 0x2f,
 	0x33, 0x4c, 0x4a, 0x2d, 0x49, 0x34, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17,
 	0x92, 0x82, 0x28, 0xd2, 0x43, 0x52, 0xa4, 0x07, 0x55, 0x24, 0x25, 0x92, 0x9e, 0x9f, 0x9e, 0x0f,
-	0x56, 0xa6, 0x0f, 0x62, 0x41, 0x74, 0x28, 0x95, 0x71, 0xf1, 0x85, 0x67, 0x64, 0x96, 0xa4, 0xe6,
-	0x64, 0x16, 0x97, 0x38, 0x16, 0x14, 0x78, 0xa6, 0x08, 0xd9, 0x73, 0xf1, 0x25, 0x16, 0x14, 0xc4,
-	0xe7, 0x26, 0x16, 0x14, 0x64, 0xe6, 0xa5, 0xc7, 0x67, 0xa6, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0xb0,
-	0x38, 0x49, 0x7e, 0xba, 0x27, 0x2f, 0x5a, 0x99, 0x98, 0x9b, 0x63, 0xa5, 0x84, 0x2a, 0xaf, 0x14,
-	0xc4, 0x93, 0x58, 0x50, 0xe0, 0x0b, 0xe1, 0x7b, 0xa6, 0x08, 0x29, 0x73, 0xb1, 0xa4, 0x15, 0xe5,
-	0xe7, 0x4a, 0x30, 0x29, 0x30, 0x6a, 0x70, 0x3a, 0xf1, 0x7f, 0xba, 0x27, 0xcf, 0x0d, 0xd1, 0x06,
-	0x12, 0x55, 0x0a, 0x02, 0x4b, 0x2a, 0xd5, 0x70, 0x89, 0x04, 0xa5, 0xe6, 0xe6, 0x97, 0xa5, 0x0e,
-	0x88, 0xed, 0xd2, 0x5c, 0x92, 0xbe, 0xc5, 0xe9, 0xa8, 0x56, 0x07, 0xa5, 0x16, 0x17, 0xe4, 0xe7,
-	0x15, 0xa7, 0x2a, 0x29, 0x72, 0xc9, 0xfb, 0x16, 0xa7, 0x63, 0x73, 0x1d, 0x4c, 0x89, 0xd1, 0x3f,
-	0x46, 0x2e, 0x66, 0xdf, 0xe2, 0x74, 0xa1, 0x42, 0x2e, 0x1e, 0x64, 0x15, 0x42, 0x5a, 0x7a, 0xb8,
-	0x23, 0x40, 0x0f, 0xd5, 0x2c, 0x29, 0x53, 0x7c, 0x6a, 0x71, 0xba, 0x4e, 0xa8, 0x99, 0x91, 0x4b,
-	0x08, 0xd3, 0x6d, 0x42, 0x06, 0xf8, 0x4c, 0xc3, 0xe6, 0x17, 0x29, 0x6b, 0x02, 0xf6, 0xe3, 0x0b,
-	0x00, 0xa7, 0xf0, 0x13, 0x0f, 0xe5, 0x18, 0x56, 0x3c, 0x92, 0x63, 0x38, 0xf1, 0x48, 0x8e, 0xf1,
-	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e,
-	0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xd3, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0x90, 0x25, 0xfa,
-	0x10, 0x8b, 0x74, 0xf3, 0xd3, 0xd2, 0x32, 0x93, 0x33, 0x13, 0x73, 0xa0, 0x7c, 0x7d, 0xd4, 0xc4,
-	0x5c, 0x52, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x4e, 0x96, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xb7, 0x4f, 0x6e, 0xa6, 0xef, 0x02, 0x00, 0x00,
+	0x56, 0xa6, 0x0f, 0x62, 0x41, 0x74, 0x28, 0xad, 0x65, 0xe4, 0x92, 0xf0, 0x2d, 0x4e, 0xf7, 0x81,
+	0x6a, 0x48, 0x0d, 0x4b, 0x2c, 0xcd, 0x29, 0x09, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x52,
+	0xe6, 0x62, 0x49, 0x2b, 0xca, 0xcf, 0x95, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x74, 0xe2, 0xff, 0x74,
+	0x4f, 0x9e, 0xbb, 0x32, 0x31, 0x37, 0xc7, 0x4a, 0x09, 0x24, 0xaa, 0x14, 0x04, 0x96, 0x14, 0x32,
+	0xe4, 0x62, 0x4b, 0x2c, 0x28, 0x88, 0xcf, 0x4c, 0x91, 0x60, 0x52, 0x60, 0xd4, 0x60, 0x71, 0x92,
+	0x7a, 0x74, 0x4f, 0x9e, 0xd5, 0xb1, 0xa0, 0xc0, 0x33, 0xe5, 0xd3, 0x3d, 0x79, 0x5e, 0x88, 0x7a,
+	0x88, 0x02, 0xa5, 0x20, 0xd6, 0x44, 0x90, 0xb8, 0x90, 0x25, 0x17, 0x47, 0x19, 0xc8, 0x1e, 0x90,
+	0x26, 0x66, 0xb0, 0x26, 0xb9, 0x47, 0xf7, 0xe4, 0xd9, 0xc1, 0x76, 0x83, 0xb5, 0xf1, 0x43, 0xb4,
+	0xc1, 0x14, 0x29, 0x05, 0xb1, 0x97, 0x41, 0xe4, 0x94, 0xa4, 0xb9, 0x24, 0xb1, 0x38, 0xb7, 0xb8,
+	0x20, 0x3f, 0xaf, 0x38, 0x55, 0xa9, 0x1e, 0x55, 0xd2, 0x29, 0xbf, 0xa8, 0x28, 0xbf, 0x9c, 0x24,
+	0xcf, 0xd8, 0x72, 0x71, 0x26, 0x81, 0x75, 0x21, 0xfc, 0xa3, 0xf0, 0xe8, 0x9e, 0x3c, 0x07, 0xc4,
+	0x28, 0xb0, 0xdb, 0x04, 0x20, 0xba, 0xe0, 0xca, 0x94, 0x82, 0x38, 0x92, 0xa0, 0xb2, 0x4a, 0x32,
+	0x5c, 0x52, 0xd8, 0x1c, 0x00, 0x71, 0x9e, 0x51, 0x1f, 0x13, 0x17, 0xb3, 0x6f, 0x71, 0xba, 0x50,
+	0x03, 0x23, 0x97, 0x20, 0x86, 0x27, 0x84, 0x4c, 0xf4, 0x70, 0x47, 0x9e, 0x1e, 0xae, 0x28, 0x92,
+	0x32, 0x25, 0x51, 0x17, 0xc4, 0x29, 0x42, 0xcd, 0x8c, 0x5c, 0x42, 0x98, 0x2e, 0x15, 0x22, 0xda,
+	0x34, 0x94, 0xa0, 0x95, 0x32, 0x23, 0x55, 0x1b, 0xc4, 0x15, 0x4e, 0xe1, 0x27, 0x1e, 0xca, 0x31,
+	0xac, 0x78, 0x24, 0xc7, 0x70, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9,
+	0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0xa6,
+	0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x20, 0xf3, 0xf5, 0x21, 0x76, 0xe8, 0xe6, 0xa7, 0xa5, 0x65,
+	0x26, 0x67, 0x26, 0xe6, 0x40, 0xf9, 0xfa, 0xa8, 0x59, 0xa2, 0xa4, 0xb2, 0x20, 0xb5, 0x38, 0x89,
+	0x0d, 0x9c, 0xb8, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc9, 0xd6, 0x24, 0xc3, 0x35, 0x03,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -225,8 +230,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	WhitelistApp(ctx context.Context, in *WhitelistAppId, opts ...grpc.CallOption) (*MsgWhitelistAppIdResponse, error)
-	RemoveWhitelistApp(ctx context.Context, in *RemoveWhitelistAppId, opts ...grpc.CallOption) (*MsgRemoveWhitelistAppIdResponse, error)
+	MsgLiquidateVault(ctx context.Context, in *MsgLiquidateVaultRequest, opts ...grpc.CallOption) (*MsgLiquidateVaultResponse, error)
+	MsgLiquidateBorrow(ctx context.Context, in *MsgLiquidateBorrowRequest, opts ...grpc.CallOption) (*MsgLiquidateBorrowResponse, error)
 }
 
 type msgClient struct {
@@ -237,18 +242,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) WhitelistApp(ctx context.Context, in *WhitelistAppId, opts ...grpc.CallOption) (*MsgWhitelistAppIdResponse, error) {
-	out := new(MsgWhitelistAppIdResponse)
-	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.Msg/WhitelistApp", in, out, opts...)
+func (c *msgClient) MsgLiquidateVault(ctx context.Context, in *MsgLiquidateVaultRequest, opts ...grpc.CallOption) (*MsgLiquidateVaultResponse, error) {
+	out := new(MsgLiquidateVaultResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.Msg/MsgLiquidateVault", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) RemoveWhitelistApp(ctx context.Context, in *RemoveWhitelistAppId, opts ...grpc.CallOption) (*MsgRemoveWhitelistAppIdResponse, error) {
-	out := new(MsgRemoveWhitelistAppIdResponse)
-	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.Msg/RemoveWhitelistApp", in, out, opts...)
+func (c *msgClient) MsgLiquidateBorrow(ctx context.Context, in *MsgLiquidateBorrowRequest, opts ...grpc.CallOption) (*MsgLiquidateBorrowResponse, error) {
+	out := new(MsgLiquidateBorrowResponse)
+	err := c.cc.Invoke(ctx, "/comdex.liquidation.v1beta1.Msg/MsgLiquidateBorrow", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -257,57 +262,57 @@ func (c *msgClient) RemoveWhitelistApp(ctx context.Context, in *RemoveWhitelistA
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	WhitelistApp(context.Context, *WhitelistAppId) (*MsgWhitelistAppIdResponse, error)
-	RemoveWhitelistApp(context.Context, *RemoveWhitelistAppId) (*MsgRemoveWhitelistAppIdResponse, error)
+	MsgLiquidateVault(context.Context, *MsgLiquidateVaultRequest) (*MsgLiquidateVaultResponse, error)
+	MsgLiquidateBorrow(context.Context, *MsgLiquidateBorrowRequest) (*MsgLiquidateBorrowResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) WhitelistApp(ctx context.Context, req *WhitelistAppId) (*MsgWhitelistAppIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method WhitelistApp not implemented")
+func (*UnimplementedMsgServer) MsgLiquidateVault(ctx context.Context, req *MsgLiquidateVaultRequest) (*MsgLiquidateVaultResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgLiquidateVault not implemented")
 }
-func (*UnimplementedMsgServer) RemoveWhitelistApp(ctx context.Context, req *RemoveWhitelistAppId) (*MsgRemoveWhitelistAppIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveWhitelistApp not implemented")
+func (*UnimplementedMsgServer) MsgLiquidateBorrow(ctx context.Context, req *MsgLiquidateBorrowRequest) (*MsgLiquidateBorrowResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgLiquidateBorrow not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_WhitelistApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WhitelistAppId)
+func _Msg_MsgLiquidateVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgLiquidateVaultRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).WhitelistApp(ctx, in)
+		return srv.(MsgServer).MsgLiquidateVault(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.liquidation.v1beta1.Msg/WhitelistApp",
+		FullMethod: "/comdex.liquidation.v1beta1.Msg/MsgLiquidateVault",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).WhitelistApp(ctx, req.(*WhitelistAppId))
+		return srv.(MsgServer).MsgLiquidateVault(ctx, req.(*MsgLiquidateVaultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_RemoveWhitelistApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveWhitelistAppId)
+func _Msg_MsgLiquidateBorrow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgLiquidateBorrowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RemoveWhitelistApp(ctx, in)
+		return srv.(MsgServer).MsgLiquidateBorrow(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.liquidation.v1beta1.Msg/RemoveWhitelistApp",
+		FullMethod: "/comdex.liquidation.v1beta1.Msg/MsgLiquidateBorrow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RemoveWhitelistApp(ctx, req.(*RemoveWhitelistAppId))
+		return srv.(MsgServer).MsgLiquidateBorrow(ctx, req.(*MsgLiquidateBorrowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -317,19 +322,19 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "WhitelistApp",
-			Handler:    _Msg_WhitelistApp_Handler,
+			MethodName: "MsgLiquidateVault",
+			Handler:    _Msg_MsgLiquidateVault_Handler,
 		},
 		{
-			MethodName: "RemoveWhitelistApp",
-			Handler:    _Msg_RemoveWhitelistApp_Handler,
+			MethodName: "MsgLiquidateBorrow",
+			Handler:    _Msg_MsgLiquidateBorrow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "comdex/liquidation/v1beta1/tx.proto",
 }
 
-func (m *WhitelistAppId) Marshal() (dAtA []byte, err error) {
+func (m *MsgLiquidateVaultRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -339,32 +344,37 @@ func (m *WhitelistAppId) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *WhitelistAppId) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgLiquidateVaultRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *WhitelistAppId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgLiquidateVaultRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.VaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.VaultId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
 	if len(m.From) > 0 {
 		i -= len(m.From)
 		copy(dAtA[i:], m.From)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *RemoveWhitelistAppId) Marshal() (dAtA []byte, err error) {
+func (m *MsgLiquidateVaultResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -374,32 +384,55 @@ func (m *RemoveWhitelistAppId) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RemoveWhitelistAppId) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgLiquidateVaultResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RemoveWhitelistAppId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgLiquidateVaultResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgLiquidateBorrowRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgLiquidateBorrowRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgLiquidateBorrowRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.BorrowId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.BorrowId))
+		i--
+		dAtA[i] = 0x10
+	}
 	if len(m.From) > 0 {
 		i -= len(m.From)
 		copy(dAtA[i:], m.From)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgWhitelistAppIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgLiquidateBorrowResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -409,35 +442,12 @@ func (m *MsgWhitelistAppIdResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgWhitelistAppIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgLiquidateBorrowResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgWhitelistAppIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgRemoveWhitelistAppIdResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgRemoveWhitelistAppIdResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgRemoveWhitelistAppIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgLiquidateBorrowResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -456,48 +466,51 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *WhitelistAppId) Size() (n int) {
+func (m *MsgLiquidateVaultRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
-	}
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.VaultId != 0 {
+		n += 1 + sovTx(uint64(m.VaultId))
+	}
 	return n
 }
 
-func (m *RemoveWhitelistAppId) Size() (n int) {
+func (m *MsgLiquidateVaultResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	return n
+}
+
+func (m *MsgLiquidateBorrowRequest) Size() (n int) {
+	if m == nil {
+		return 0
 	}
+	var l int
+	_ = l
 	l = len(m.From)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	return n
-}
-
-func (m *MsgWhitelistAppIdResponse) Size() (n int) {
-	if m == nil {
-		return 0
+	if m.BorrowId != 0 {
+		n += 1 + sovTx(uint64(m.BorrowId))
 	}
-	var l int
-	_ = l
 	return n
 }
 
-func (m *MsgRemoveWhitelistAppIdResponse) Size() (n int) {
+func (m *MsgLiquidateBorrowResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -512,7 +525,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *WhitelistAppId) Unmarshal(dAtA []byte) error {
+func (m *MsgLiquidateVaultRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -535,32 +548,13 @@ func (m *WhitelistAppId) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: WhitelistAppId: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgLiquidateVaultRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: WhitelistAppId: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgLiquidateVaultRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
-			}
-			m.AppMappingId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -592,6 +586,44 @@ func (m *WhitelistAppId) Unmarshal(dAtA []byte) error {
 			}
 			m.From = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field VaultId", wireType)
+			}
+			m.VaultId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.VaultId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -613,7 +645,7 @@ func (m *WhitelistAppId) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RemoveWhitelistAppId) Unmarshal(dAtA []byte) error {
+func (m *MsgLiquidateVaultResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -636,32 +668,63 @@ func (m *RemoveWhitelistAppId) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RemoveWhitelistAppId: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgLiquidateVaultResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RemoveWhitelistAppId: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgLiquidateVaultResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgLiquidateBorrowRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgLiquidateBorrowRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgLiquidateBorrowRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
-			}
-			m.AppMappingId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
 			}
@@ -693,6 +756,25 @@ func (m *RemoveWhitelistAppId) Unmarshal(dAtA []byte) error {
 			}
 			m.From = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BorrowId", wireType)
+			}
+			m.BorrowId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BorrowId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -714,7 +796,7 @@ func (m *RemoveWhitelistAppId) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgWhitelistAppIdResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgLiquidateBorrowResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -737,60 +819,10 @@ func (m *MsgWhitelistAppIdResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgWhitelistAppIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgLiquidateBorrowResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgWhitelistAppIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgRemoveWhitelistAppIdResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveWhitelistAppIdResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveWhitelistAppIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgLiquidateBorrowResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

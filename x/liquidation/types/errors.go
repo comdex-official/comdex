@@ -7,7 +7,12 @@ import (
 )
 
 var (
-	LockedVaultDoesNotExist = sdkerrors.Register(ModuleName, 201, "locked vault does not exist with given id")
-	ErrAppIDExists          = sdkerrors.Register(ModuleName, 1101, "Asset Id does not exist in locker for App_Mapping")
-	ErrAppIDDoesNotExists   = sdkerrors.Register(ModuleName, 1102, "Asset Id does not exist in locker for App_Mapping")
+	LockedVaultDoesNotExist    = sdkerrors.Register(ModuleName, 701, "locked vault does not exist with given id")
+	BorrowDoesNotExist         = sdkerrors.Register(ModuleName, 702, "borrow position does not exist with given id")
+	BorrowPosAlreadyLiquidated = sdkerrors.Register(ModuleName, 703, "borrow position already liquidated")
+	ErrAppIDExists             = sdkerrors.Register(ModuleName, 704, "App Id exists")
+	ErrAppIDDoesNotExists      = sdkerrors.Register(ModuleName, 705, "App Id does not exist")
+	ErrAppIDInvalid            = sdkerrors.Register(ModuleName, 706, "App Id invalid")
+	ErrVaultIDInvalid          = sdkerrors.Register(ModuleName, 707, "Vault Id invalid")
+	ErrorUnknownMsgType        = sdkerrors.Register(ModuleName, 708, "Unknown msg type")
 )

@@ -10,14 +10,15 @@ var (
 	_ sdk.Msg = (*MsgDepositAssetRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawAssetRequest)(nil)
 	_ sdk.Msg = (*MsgAddWhiteListedAssetRequest)(nil)
+	_ sdk.Msg = (*MsgLockerRewardCalcRequest)(nil)
 )
 
-func NewMsgCreateLockerRequest(from sdk.AccAddress, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
+func NewMsgCreateLockerRequest(from string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
 	return &MsgCreateLockerRequest{
-		Depositor:    from.String(),
-		AppMappingId: appMappingID,
-		AssetId:      assetID,
-		Amount:       amount,
+		Depositor: from,
+		AppId:     appMappingID,
+		AssetId:   assetID,
+		Amount:    amount,
 	}
 }
 
@@ -37,12 +38,6 @@ func (m *MsgCreateLockerRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
-		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
-	}
-	if m.AssetId < 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "asset_id cannot be negative")
-	}
 	if m.Amount.IsNil() {
 		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
 	}
@@ -69,13 +64,13 @@ func (m *MsgCreateLockerRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositAssetRequest(from sdk.AccAddress, lockerID string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgDepositAssetRequest {
+func NewMsgDepositAssetRequest(from string, lockerID uint64, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgDepositAssetRequest {
 	return &MsgDepositAssetRequest{
-		Depositor:    from.String(),
-		LockerId:     lockerID,
-		Amount:       amount,
-		AssetId:      assetID,
-		AppMappingId: appMappingID,
+		Depositor: from,
+		LockerId:  lockerID,
+		Amount:    amount,
+		AssetId:   assetID,
+		AppId:     appMappingID,
 	}
 }
 
@@ -95,13 +90,7 @@ func (m *MsgDepositAssetRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
-		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
-	}
-	if m.AssetId < 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "asset_id cannot be negative")
-	}
-	if len(m.LockerId) <= 0 {
+	if m.LockerId <= 0 {
 		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 	if m.Amount.IsNil() {
@@ -130,13 +119,13 @@ func (m *MsgDepositAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawAssetRequest(from sdk.AccAddress, lockerID string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgWithdrawAssetRequest {
+func NewMsgWithdrawAssetRequest(from string, lockerID uint64, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgWithdrawAssetRequest {
 	return &MsgWithdrawAssetRequest{
-		Depositor:    from.String(),
-		LockerId:     lockerID,
-		Amount:       amount,
-		AssetId:      assetID,
-		AppMappingId: appMappingID,
+		Depositor: from,
+		LockerId:  lockerID,
+		Amount:    amount,
+		AssetId:   assetID,
+		AppId:     appMappingID,
 	}
 }
 
@@ -156,13 +145,7 @@ func (m *MsgWithdrawAssetRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
-	if m.AppMappingId < 0 {
-		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
-	}
-	if m.AssetId < 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "asset_id cannot be negative")
-	}
-	if len(m.LockerId) <= 0 {
+	if m.LockerId <= 0 {
 		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 	if m.Amount.IsNil() {
@@ -191,11 +174,11 @@ func (m *MsgWithdrawAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgAddWhiteListedAssetRequest(from sdk.AccAddress, appMappingID uint64, assetID uint64) *MsgAddWhiteListedAssetRequest {
+func NewMsgAddWhiteListedAssetRequest(from string, appMappingID uint64, assetID uint64) *MsgAddWhiteListedAssetRequest {
 	return &MsgAddWhiteListedAssetRequest{
-		From:         from.String(),
-		AppMappingId: appMappingID,
-		AssetId:      assetID,
+		From:    from,
+		AppId:   appMappingID,
+		AssetId: assetID,
 	}
 }
 
@@ -208,13 +191,6 @@ func (m *MsgAddWhiteListedAssetRequest) Type() string {
 }
 
 func (m *MsgAddWhiteListedAssetRequest) ValidateBasic() error {
-	if m.AppMappingId < 0 {
-		return errors.Wrap(ErrorInvalidAppMappingID, "app_mapping_id  cannot be negative")
-	}
-	if m.AssetId < 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "asset_id cannot be negative")
-	}
-
 	return nil
 }
 
@@ -223,6 +199,95 @@ func (m *MsgAddWhiteListedAssetRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgAddWhiteListedAssetRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgCloseLockerRequest(from string, appID uint64, assetID uint64, lockerID uint64) *MsgCloseLockerRequest {
+	return &MsgCloseLockerRequest{
+		Depositor: from,
+		AppId:     appID,
+		AssetId:   assetID,
+		LockerId:  lockerID,
+	}
+}
+
+func (m *MsgCloseLockerRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgCloseLockerRequest) Type() string {
+	return TypeMsgWithdrawAssetRequest
+}
+
+func (m *MsgCloseLockerRequest) ValidateBasic() error {
+	if m.Depositor == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	if m.LockerId <= 0 {
+		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+	}
+
+	return nil
+}
+
+func (m *MsgCloseLockerRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgCloseLockerRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgLockerRewardCalcRequest(from string, appID uint64, lockerID uint64) *MsgLockerRewardCalcRequest {
+	return &MsgLockerRewardCalcRequest{
+		From:     from,
+		AppId:    appID,
+		LockerId: lockerID,
+	}
+}
+
+func (m *MsgLockerRewardCalcRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgLockerRewardCalcRequest) Type() string {
+	return TypeMsgLockerRewardCalcRequest
+}
+
+func (m *MsgLockerRewardCalcRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	if m.LockerId <= 0 {
+		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+	}
+
+	return nil
+}
+
+func (m *MsgLockerRewardCalcRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgLockerRewardCalcRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

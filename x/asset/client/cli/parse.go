@@ -4,42 +4,33 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/spf13/pflag"
-	"io/ioutil"
 )
 
-type XCreateExtPairVaultInputs createExtPairVaultInputs
-type XCreateAddAssetMappingInputs createAddAssetMappingInputs
-type XCreateAddWhiteListedPairInputs createAddWhiteListedPairsInputs
-
-type XCreateExtPairVaultInputsExceptions struct {
-	XCreateExtPairVaultInputs
-	Other *string // Other won't raise an error
-}
+type (
+	XCreateAddAssetMappingInputs       createAddAssetMappingInputs
+	XCreateAddAssetsMappingInputs      createAddAssetsMappingInputs
+	XCreateAddAssetsPairsMappingInputs createAddAssetsPairsMappingInputs
+)
 
 type XCreateAddAssetMappingInputsExceptions struct {
 	XCreateAddAssetMappingInputs
 	Other *string // Other won't raise an error
 }
 
-type XCreateAddWhiteListedPairInputsExceptions struct {
-	XCreateAddWhiteListedPairInputs
+type XCreateAddAssetsMappingInputsExceptions struct {
+	XCreateAddAssetsMappingInputs
+	Other *string // Other won't raise an error
+}
+
+type XCreateAddAssetsPairsMappingInputsExceptions struct {
+	XCreateAddAssetsPairsMappingInputs
 	Other *string // Other won't raise an error
 }
 
 // UnmarshalJSON should error if there are fields unexpected.
-func (release *createExtPairVaultInputs) UnmarshalJSON(data []byte) error {
-	var createExtendedPairVaultE XCreateExtPairVaultInputsExceptions
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields() // Force
-
-	if err := dec.Decode(&createExtendedPairVaultE); err != nil {
-		return err
-	}
-
-	*release = createExtPairVaultInputs(createExtendedPairVaultE.XCreateExtPairVaultInputs)
-	return nil
-}
 
 func (release *createAddAssetMappingInputs) UnmarshalJSON(data []byte) error {
 	var createAddAssetMappingInputsE XCreateAddAssetMappingInputsExceptions
@@ -54,39 +45,17 @@ func (release *createAddAssetMappingInputs) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (release *createAddWhiteListedPairsInputs) UnmarshalJSON(data []byte) error {
-	var createAddWhiteListedPairInputsE XCreateAddWhiteListedPairInputsExceptions
+func (release *createAddAssetsMappingInputs) UnmarshalJSON(data []byte) error {
+	var createAddAssetsMappingInputsE XCreateAddAssetsMappingInputsExceptions
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields() // Force
 
-	if err := dec.Decode(&createAddWhiteListedPairInputsE); err != nil {
+	if err := dec.Decode(&createAddAssetsMappingInputsE); err != nil {
 		return err
 	}
 
-	*release = createAddWhiteListedPairsInputs(createAddWhiteListedPairInputsE.XCreateAddWhiteListedPairInputs)
+	*release = createAddAssetsMappingInputs(createAddAssetsMappingInputsE.XCreateAddAssetsMappingInputs)
 	return nil
-}
-
-func parseExtendPairVaultFlags(fs *pflag.FlagSet) (*createExtPairVaultInputs, error) {
-	extPairVault := &createExtPairVaultInputs{}
-	extPairVaultFile, _ := fs.GetString(FlagExtendedPairVaultFile)
-
-	if extPairVaultFile == "" {
-		return nil, fmt.Errorf("must pass in a Extended Pair Vault json using the --%s flag", FlagExtendedPairVaultFile)
-	}
-
-	contents, err := ioutil.ReadFile(extPairVaultFile)
-	if err != nil {
-		return nil, err
-	}
-
-	// make exception if unknown field exists
-	err = extPairVault.UnmarshalJSON(contents)
-	if err != nil {
-		return nil, err
-	}
-
-	return extPairVault, nil
 }
 
 func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, error) {
@@ -97,7 +66,7 @@ func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, er
 		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(addAssetMappingFile)
+	contents, err := os.ReadFile(addAssetMappingFile)
 	if err != nil {
 		return nil, err
 	}
@@ -111,24 +80,59 @@ func parseAssetMappingFlags(fs *pflag.FlagSet) (*createAddAssetMappingInputs, er
 	return assetMapping, nil
 }
 
-func parseWhiteListedPairsFlags(fs *pflag.FlagSet) (*createAddWhiteListedPairsInputs, error) {
-	whiteListedAssetPairs := &createAddWhiteListedPairsInputs{}
-	whiteListedAssetPairsFile, _ := fs.GetString(FlagAddWhiteListedPairsFile)
+func parseAssetsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsMappingInputs, error) {
+	assetsMapping := &createAddAssetsMappingInputs{}
+	addAssetsMappingFile, _ := fs.GetString(FlagAddAssetsMappingFile)
 
-	if whiteListedAssetPairsFile == "" {
-		return nil, fmt.Errorf("must pass in add white listed pairs json using the --%s flag", FlagAddWhiteListedPairsFile)
+	if addAssetsMappingFile == "" {
+		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", FlagAddAssetMappingFile)
 	}
 
-	contents, err := ioutil.ReadFile(whiteListedAssetPairsFile)
+	contents, err := os.ReadFile(addAssetsMappingFile)
 	if err != nil {
 		return nil, err
 	}
 
 	// make exception if unknown field exists
-	err = whiteListedAssetPairs.UnmarshalJSON(contents)
+	err = assetsMapping.UnmarshalJSON(contents)
 	if err != nil {
 		return nil, err
 	}
 
-	return whiteListedAssetPairs, nil
+	return assetsMapping, nil
+}
+
+func (release *createAddAssetsPairsMappingInputs) UnmarshalJSON(data []byte) error {
+	var createAddAssetsMappingInputsE XCreateAddAssetsPairsMappingInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&createAddAssetsMappingInputsE); err != nil {
+		return err
+	}
+
+	*release = createAddAssetsPairsMappingInputs(createAddAssetsMappingInputsE.XCreateAddAssetsPairsMappingInputs)
+	return nil
+}
+
+func parseAssetsPairsMappingFlags(fs *pflag.FlagSet) (*createAddAssetsPairsMappingInputs, error) {
+	assetsPairsMapping := &createAddAssetsPairsMappingInputs{}
+	addAssetsPairsMappingFile, _ := fs.GetString(FlagAddAssetsPairsMappingFile)
+
+	if addAssetsPairsMappingFile == "" {
+		return nil, fmt.Errorf("must pass in add asset pairs mapping json using the --%s flag", FlagAddAssetsPairsMappingFile)
+	}
+
+	contents, err := os.ReadFile(addAssetsPairsMappingFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = assetsPairsMapping.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return assetsPairsMapping, nil
 }

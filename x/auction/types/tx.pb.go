@@ -6,7 +6,6 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
@@ -186,12 +185,11 @@ func (m *MsgPlaceDebtBidResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgPlaceDebtBidResponse proto.InternalMessageInfo
 
 type MsgPlaceDutchBidRequest struct {
-	AuctionId        uint64                                 `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
-	Bidder           string                                 `protobuf:"bytes,2,opt,name=bidder,proto3" json:"bidder,omitempty"`
-	Amount           types.Coin                             `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
-	Max              github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=max,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max" yaml:"max"`
-	AppId            uint64                                 `protobuf:"varint,5,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
-	AuctionMappingId uint64                                 `protobuf:"varint,6,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty"`
+	AuctionId        uint64     `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
+	Bidder           string     `protobuf:"bytes,2,opt,name=bidder,proto3" json:"bidder,omitempty"`
+	Amount           types.Coin `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
+	AppId            uint64     `protobuf:"varint,4,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	AuctionMappingId uint64     `protobuf:"varint,5,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty"`
 }
 
 func (m *MsgPlaceDutchBidRequest) Reset()         { *m = MsgPlaceDutchBidRequest{} }
@@ -263,6 +261,83 @@ func (m *MsgPlaceDutchBidResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgPlaceDutchBidResponse proto.InternalMessageInfo
 
+type MsgPlaceDutchLendBidRequest struct {
+	AuctionId        uint64     `protobuf:"varint,1,opt,name=auction_id,json=auctionId,proto3" json:"auction_id,omitempty"`
+	Bidder           string     `protobuf:"bytes,2,opt,name=bidder,proto3" json:"bidder,omitempty"`
+	Amount           types.Coin `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount"`
+	AppId            uint64     `protobuf:"varint,4,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	AuctionMappingId uint64     `protobuf:"varint,5,opt,name=auction_mapping_id,json=auctionMappingId,proto3" json:"auction_mapping_id,omitempty"`
+}
+
+func (m *MsgPlaceDutchLendBidRequest) Reset()         { *m = MsgPlaceDutchLendBidRequest{} }
+func (m *MsgPlaceDutchLendBidRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgPlaceDutchLendBidRequest) ProtoMessage()    {}
+func (*MsgPlaceDutchLendBidRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a8457d7b1ca5de6a, []int{6}
+}
+func (m *MsgPlaceDutchLendBidRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlaceDutchLendBidRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlaceDutchLendBidRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlaceDutchLendBidRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlaceDutchLendBidRequest.Merge(m, src)
+}
+func (m *MsgPlaceDutchLendBidRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlaceDutchLendBidRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlaceDutchLendBidRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlaceDutchLendBidRequest proto.InternalMessageInfo
+
+type MsgPlaceDutchLendBidResponse struct {
+}
+
+func (m *MsgPlaceDutchLendBidResponse) Reset()         { *m = MsgPlaceDutchLendBidResponse{} }
+func (m *MsgPlaceDutchLendBidResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgPlaceDutchLendBidResponse) ProtoMessage()    {}
+func (*MsgPlaceDutchLendBidResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a8457d7b1ca5de6a, []int{7}
+}
+func (m *MsgPlaceDutchLendBidResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlaceDutchLendBidResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlaceDutchLendBidResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlaceDutchLendBidResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlaceDutchLendBidResponse.Merge(m, src)
+}
+func (m *MsgPlaceDutchLendBidResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlaceDutchLendBidResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlaceDutchLendBidResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlaceDutchLendBidResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgPlaceSurplusBidRequest)(nil), "comdex.auction.v1beta1.MsgPlaceSurplusBidRequest")
 	proto.RegisterType((*MsgPlaceSurplusBidResponse)(nil), "comdex.auction.v1beta1.MsgPlaceSurplusBidResponse")
@@ -270,46 +345,47 @@ func init() {
 	proto.RegisterType((*MsgPlaceDebtBidResponse)(nil), "comdex.auction.v1beta1.MsgPlaceDebtBidResponse")
 	proto.RegisterType((*MsgPlaceDutchBidRequest)(nil), "comdex.auction.v1beta1.MsgPlaceDutchBidRequest")
 	proto.RegisterType((*MsgPlaceDutchBidResponse)(nil), "comdex.auction.v1beta1.MsgPlaceDutchBidResponse")
+	proto.RegisterType((*MsgPlaceDutchLendBidRequest)(nil), "comdex.auction.v1beta1.MsgPlaceDutchLendBidRequest")
+	proto.RegisterType((*MsgPlaceDutchLendBidResponse)(nil), "comdex.auction.v1beta1.MsgPlaceDutchLendBidResponse")
 }
 
 func init() { proto.RegisterFile("comdex/auction/v1beta1/tx.proto", fileDescriptor_a8457d7b1ca5de6a) }
 
 var fileDescriptor_a8457d7b1ca5de6a = []byte{
-	// 536 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x31, 0x8f, 0xd3, 0x30,
-	0x18, 0x4d, 0xda, 0x6b, 0xa5, 0x7e, 0x0c, 0x1c, 0x16, 0x94, 0x36, 0x82, 0xb4, 0xea, 0x80, 0x3a,
-	0x70, 0x0e, 0x2d, 0x03, 0x12, 0x62, 0x2a, 0xb7, 0x74, 0x28, 0x42, 0x3d, 0x58, 0x58, 0x90, 0x13,
-	0xfb, 0x72, 0xd6, 0x35, 0xb1, 0xa9, 0x1d, 0xd4, 0x13, 0x7f, 0x82, 0x89, 0x91, 0x99, 0x9f, 0xd2,
-	0xb1, 0x23, 0x62, 0xa8, 0xa0, 0x9d, 0x59, 0xf8, 0x05, 0x28, 0x89, 0x0b, 0xd7, 0xeb, 0x9d, 0x5a,
-	0x04, 0x12, 0x53, 0xe2, 0xbc, 0xe7, 0xf7, 0x7d, 0xdf, 0xcb, 0xb3, 0xa1, 0x11, 0x88, 0x88, 0xb2,
-	0x89, 0x47, 0x92, 0x40, 0x73, 0x11, 0x7b, 0x6f, 0x3b, 0x3e, 0xd3, 0xa4, 0xe3, 0xe9, 0x09, 0x96,
-	0x63, 0xa1, 0x05, 0xaa, 0xe6, 0x04, 0x6c, 0x08, 0xd8, 0x10, 0x9c, 0x9b, 0xa1, 0x08, 0x45, 0x46,
-	0xf1, 0xd2, 0xb7, 0x9c, 0xed, 0xb8, 0x81, 0x50, 0x91, 0x50, 0x9e, 0x4f, 0x14, 0xfb, 0xa5, 0x15,
-	0x08, 0x1e, 0xe7, 0x78, 0x6b, 0x66, 0x43, 0x7d, 0xa0, 0xc2, 0xe7, 0x23, 0x12, 0xb0, 0xa3, 0x64,
-	0x2c, 0x47, 0x89, 0xea, 0x71, 0x3a, 0x64, 0x6f, 0x12, 0xa6, 0x34, 0xba, 0x0b, 0x60, 0xca, 0xbc,
-	0xe6, 0xb4, 0x66, 0x37, 0xed, 0xf6, 0xde, 0xb0, 0x62, 0xbe, 0xf4, 0x29, 0xaa, 0x42, 0xd9, 0xe7,
-	0x94, 0xb2, 0x71, 0xad, 0xd0, 0xb4, 0xdb, 0x95, 0xa1, 0x59, 0xa1, 0x47, 0x50, 0x26, 0x91, 0x48,
-	0x62, 0x5d, 0x2b, 0x36, 0xed, 0xf6, 0xb5, 0x6e, 0x1d, 0xe7, 0x5d, 0xe0, 0xb4, 0x8b, 0x55, 0xc3,
-	0xf8, 0xa9, 0xe0, 0x71, 0x6f, 0x6f, 0x3a, 0x6f, 0x58, 0x43, 0x43, 0x47, 0xb7, 0xa0, 0x4c, 0xa4,
-	0x4c, 0x6b, 0xed, 0x65, 0xb5, 0x4a, 0x44, 0xca, 0x3e, 0x45, 0xf7, 0x01, 0xad, 0xda, 0x88, 0x88,
-	0x94, 0x3c, 0x0e, 0x53, 0x4a, 0x29, 0xa3, 0xec, 0x1b, 0x64, 0x90, 0x03, 0x7d, 0xda, 0xba, 0x03,
-	0xce, 0x65, 0x13, 0x29, 0x29, 0x62, 0xc5, 0x5a, 0x1f, 0x0a, 0x50, 0x5d, 0xc1, 0x87, 0xcc, 0xd7,
-	0x7f, 0x3f, 0x6d, 0x07, 0x8a, 0x3e, 0xa7, 0xbb, 0x8e, 0x9a, 0x72, 0xd1, 0x00, 0x6e, 0xb0, 0x89,
-	0x64, 0x81, 0x66, 0xf4, 0xa5, 0x62, 0xe3, 0x17, 0xe2, 0x94, 0xc5, 0xd9, 0xc8, 0x3b, 0x08, 0x6c,
-	0xee, 0x3c, 0x67, 0x5b, 0x69, 0xbb, 0x6d, 0xe5, 0x2b, 0x6c, 0xab, 0xc3, 0xed, 0x0d, 0x5f, 0x8c,
-	0x67, 0x1f, 0x0b, 0xe7, 0xb0, 0x44, 0x07, 0x27, 0xff, 0x31, 0x22, 0xcf, 0xa0, 0x18, 0x91, 0x49,
-	0x66, 0x56, 0xa5, 0xf7, 0x24, 0x85, 0xbe, 0xcc, 0x1b, 0xf7, 0x42, 0xae, 0x4f, 0x12, 0x1f, 0x07,
-	0x22, 0xf2, 0x4c, 0xe0, 0xf3, 0xc7, 0x81, 0xa2, 0xa7, 0x9e, 0x3e, 0x93, 0x4c, 0xe1, 0x43, 0x16,
-	0xfc, 0x98, 0x37, 0xe0, 0x8c, 0x44, 0xa3, 0xc7, 0xad, 0x88, 0x4c, 0x5a, 0xc3, 0x54, 0xe8, 0xdf,
-	0x78, 0xe7, 0x40, 0x6d, 0xd3, 0x9f, 0xdc, 0xbc, 0xee, 0xf7, 0x02, 0x14, 0x07, 0x2a, 0x44, 0xef,
-	0x00, 0x6d, 0xc6, 0x12, 0x75, 0xf0, 0xe5, 0xc7, 0x19, 0x5f, 0x79, 0x28, 0x9d, 0xee, 0x9f, 0x6c,
-	0xc9, 0x9b, 0x40, 0x63, 0xb8, 0x7e, 0xe1, 0xe7, 0x22, 0xbc, 0x4d, 0x66, 0xfd, 0x74, 0x38, 0xde,
-	0xce, 0x7c, 0x53, 0x33, 0x81, 0xfd, 0x8b, 0xa6, 0xa0, 0xed, 0x22, 0xeb, 0xf1, 0x72, 0x1e, 0xec,
-	0xbe, 0x21, 0x2f, 0xdb, 0x3b, 0x9a, 0x7e, 0x73, 0xad, 0x4f, 0x0b, 0xd7, 0x9a, 0x2e, 0x5c, 0x7b,
-	0xb6, 0x70, 0xed, 0xaf, 0x0b, 0xd7, 0x7e, 0xbf, 0x74, 0xad, 0xd9, 0xd2, 0xb5, 0x3e, 0x2f, 0x5d,
-	0xeb, 0x55, 0x67, 0x2d, 0x2d, 0xa9, 0xfa, 0x81, 0x38, 0x3e, 0xe6, 0x01, 0x27, 0x23, 0xb3, 0xf6,
-	0x7e, 0xdf, 0xbf, 0x59, 0x78, 0xfc, 0x72, 0x76, 0x5b, 0x3e, 0xfc, 0x19, 0x00, 0x00, 0xff, 0xff,
-	0x25, 0xa9, 0x30, 0x36, 0x9e, 0x05, 0x00, 0x00,
+	// 523 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x55, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0xf5, 0x36, 0x4d, 0xa4, 0x0e, 0x07, 0xca, 0xaa, 0x84, 0xc4, 0x94, 0x6d, 0x94, 0x53, 0x0e,
+	0x60, 0xe3, 0x14, 0x89, 0x7b, 0xe0, 0x12, 0x89, 0x48, 0x28, 0x85, 0x0b, 0x17, 0x64, 0x7b, 0xb7,
+	0xee, 0x8a, 0xc4, 0xbb, 0x78, 0xd7, 0x28, 0x88, 0x13, 0x7f, 0xc0, 0x89, 0x6f, 0xe0, 0x53, 0x72,
+	0x42, 0x11, 0x27, 0x4e, 0x08, 0x92, 0x2f, 0xe0, 0x0f, 0x90, 0xed, 0x0d, 0x34, 0x4d, 0xaa, 0xb8,
+	0xe2, 0xd4, 0x5b, 0x36, 0xf3, 0x66, 0xde, 0x7b, 0xe3, 0x99, 0x5d, 0x38, 0x0a, 0xc5, 0x98, 0xb2,
+	0x89, 0xeb, 0xa7, 0xa1, 0xe6, 0x22, 0x76, 0xdf, 0x79, 0x01, 0xd3, 0xbe, 0xe7, 0xea, 0x89, 0x23,
+	0x13, 0xa1, 0x05, 0xae, 0x17, 0x00, 0xc7, 0x00, 0x1c, 0x03, 0xb0, 0x0f, 0x22, 0x11, 0x89, 0x1c,
+	0xe2, 0x66, 0xbf, 0x0a, 0xb4, 0x4d, 0x42, 0xa1, 0xc6, 0x42, 0xb9, 0x81, 0xaf, 0xd8, 0xdf, 0x5a,
+	0xa1, 0xe0, 0x71, 0x11, 0x6f, 0xcf, 0x10, 0x34, 0x07, 0x2a, 0x7a, 0x3e, 0xf2, 0x43, 0x76, 0x92,
+	0x26, 0x72, 0x94, 0xaa, 0x1e, 0xa7, 0x43, 0xf6, 0x36, 0x65, 0x4a, 0xe3, 0x7b, 0x00, 0x86, 0xe6,
+	0x35, 0xa7, 0x0d, 0xd4, 0x42, 0x9d, 0xdd, 0xe1, 0x9e, 0xf9, 0xa7, 0x4f, 0x71, 0x1d, 0x6a, 0x01,
+	0xa7, 0x94, 0x25, 0x8d, 0x9d, 0x16, 0xea, 0xec, 0x0d, 0xcd, 0x09, 0x3f, 0x86, 0x9a, 0x3f, 0x16,
+	0x69, 0xac, 0x1b, 0x95, 0x16, 0xea, 0xdc, 0xe8, 0x36, 0x9d, 0x42, 0x85, 0x93, 0xa9, 0x58, 0x0a,
+	0x76, 0x9e, 0x08, 0x1e, 0xf7, 0x76, 0xa7, 0x3f, 0x8e, 0xac, 0xa1, 0x81, 0xe3, 0xdb, 0x50, 0xf3,
+	0xa5, 0xcc, 0xb8, 0x76, 0x73, 0xae, 0xaa, 0x2f, 0x65, 0x9f, 0xe2, 0xfb, 0x80, 0x97, 0x32, 0xc6,
+	0xbe, 0x94, 0x3c, 0x8e, 0x32, 0x48, 0x35, 0x87, 0xec, 0x9b, 0xc8, 0xa0, 0x08, 0xf4, 0x69, 0xfb,
+	0x10, 0xec, 0x4d, 0x8e, 0x94, 0x14, 0xb1, 0x62, 0xed, 0xcf, 0x3b, 0x50, 0x5f, 0x86, 0x9f, 0xb2,
+	0x40, 0xff, 0xbf, 0x5b, 0x0f, 0x2a, 0x01, 0xa7, 0x65, 0xad, 0x66, 0x58, 0x3c, 0x80, 0x5b, 0x6c,
+	0x22, 0x59, 0xa8, 0x19, 0x7d, 0xa9, 0x58, 0xf2, 0x42, 0xbc, 0x61, 0x71, 0x6e, 0xb9, 0x44, 0x81,
+	0xf5, 0xcc, 0x73, 0x6d, 0xab, 0x6e, 0x6f, 0x5b, 0xed, 0x92, 0xb6, 0x35, 0xe1, 0xce, 0x5a, 0x5f,
+	0x4c, 0xcf, 0xbe, 0xa2, 0x73, 0xb1, 0x54, 0x87, 0x67, 0xd7, 0x7d, 0x44, 0x6c, 0x68, 0xac, 0xfb,
+	0x31, 0x66, 0xbf, 0x21, 0xb8, 0xbb, 0x12, 0x7c, 0xc6, 0x62, 0x7a, 0xdd, 0x0d, 0x13, 0x38, 0xdc,
+	0xec, 0xa9, 0x30, 0xdd, 0xfd, 0x5d, 0x81, 0xca, 0x40, 0x45, 0xf8, 0x03, 0xe0, 0xf5, 0xdd, 0xc1,
+	0x9e, 0xb3, 0xf9, 0xce, 0x71, 0x2e, 0xbd, 0x39, 0xec, 0xee, 0x55, 0x52, 0x0a, 0x11, 0x38, 0x81,
+	0x9b, 0x17, 0x26, 0x10, 0x3b, 0xdb, 0xca, 0xac, 0xae, 0xb0, 0xed, 0x96, 0xc6, 0x1b, 0xce, 0x14,
+	0xf6, 0x2f, 0x4e, 0x02, 0xde, 0x5e, 0x64, 0x75, 0x07, 0xec, 0x87, 0xe5, 0x13, 0x0c, 0xed, 0x47,
+	0x04, 0x07, 0x9b, 0x3e, 0x08, 0x3e, 0x2e, 0x55, 0x6a, 0x75, 0x24, 0xed, 0x47, 0x57, 0x4b, 0x2a,
+	0x34, 0xf4, 0x4e, 0xa6, 0xbf, 0x88, 0xf5, 0x65, 0x4e, 0xac, 0xe9, 0x9c, 0xa0, 0xd9, 0x9c, 0xa0,
+	0x9f, 0x73, 0x82, 0x3e, 0x2d, 0x88, 0x35, 0x5b, 0x10, 0xeb, 0xfb, 0x82, 0x58, 0xaf, 0xbc, 0x88,
+	0xeb, 0xb3, 0x34, 0xc8, 0xaa, 0xbb, 0x05, 0xc3, 0x03, 0x71, 0x7a, 0xca, 0x43, 0xee, 0x8f, 0xcc,
+	0xd9, 0xfd, 0xf7, 0x50, 0xe9, 0xf7, 0x92, 0xa9, 0xa0, 0x96, 0x3f, 0x2b, 0xc7, 0x7f, 0x02, 0x00,
+	0x00, 0xff, 0xff, 0x7f, 0x4f, 0x7a, 0x59, 0xc7, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -327,6 +403,7 @@ type MsgClient interface {
 	MsgPlaceSurplusBid(ctx context.Context, in *MsgPlaceSurplusBidRequest, opts ...grpc.CallOption) (*MsgPlaceSurplusBidResponse, error)
 	MsgPlaceDebtBid(ctx context.Context, in *MsgPlaceDebtBidRequest, opts ...grpc.CallOption) (*MsgPlaceDebtBidResponse, error)
 	MsgPlaceDutchBid(ctx context.Context, in *MsgPlaceDutchBidRequest, opts ...grpc.CallOption) (*MsgPlaceDutchBidResponse, error)
+	MsgPlaceDutchLendBid(ctx context.Context, in *MsgPlaceDutchLendBidRequest, opts ...grpc.CallOption) (*MsgPlaceDutchLendBidResponse, error)
 }
 
 type msgClient struct {
@@ -364,11 +441,21 @@ func (c *msgClient) MsgPlaceDutchBid(ctx context.Context, in *MsgPlaceDutchBidRe
 	return out, nil
 }
 
+func (c *msgClient) MsgPlaceDutchLendBid(ctx context.Context, in *MsgPlaceDutchLendBidRequest, opts ...grpc.CallOption) (*MsgPlaceDutchLendBidResponse, error) {
+	out := new(MsgPlaceDutchLendBidResponse)
+	err := c.cc.Invoke(ctx, "/comdex.auction.v1beta1.Msg/MsgPlaceDutchLendBid", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	MsgPlaceSurplusBid(context.Context, *MsgPlaceSurplusBidRequest) (*MsgPlaceSurplusBidResponse, error)
 	MsgPlaceDebtBid(context.Context, *MsgPlaceDebtBidRequest) (*MsgPlaceDebtBidResponse, error)
 	MsgPlaceDutchBid(context.Context, *MsgPlaceDutchBidRequest) (*MsgPlaceDutchBidResponse, error)
+	MsgPlaceDutchLendBid(context.Context, *MsgPlaceDutchLendBidRequest) (*MsgPlaceDutchLendBidResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -383,6 +470,9 @@ func (*UnimplementedMsgServer) MsgPlaceDebtBid(ctx context.Context, req *MsgPlac
 }
 func (*UnimplementedMsgServer) MsgPlaceDutchBid(ctx context.Context, req *MsgPlaceDutchBidRequest) (*MsgPlaceDutchBidResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgPlaceDutchBid not implemented")
+}
+func (*UnimplementedMsgServer) MsgPlaceDutchLendBid(ctx context.Context, req *MsgPlaceDutchLendBidRequest) (*MsgPlaceDutchLendBidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgPlaceDutchLendBid not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -443,6 +533,24 @@ func _Msg_MsgPlaceDutchBid_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgPlaceDutchLendBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlaceDutchLendBidRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgPlaceDutchLendBid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.auction.v1beta1.Msg/MsgPlaceDutchLendBid",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgPlaceDutchLendBid(ctx, req.(*MsgPlaceDutchLendBidRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.auction.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -458,6 +566,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MsgPlaceDutchBid",
 			Handler:    _Msg_MsgPlaceDutchBid_Handler,
+		},
+		{
+			MethodName: "MsgPlaceDutchLendBid",
+			Handler:    _Msg_MsgPlaceDutchLendBid_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -653,23 +765,13 @@ func (m *MsgPlaceDutchBidRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	if m.AuctionMappingId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.AuctionMappingId))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 	}
 	if m.AppId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x20
 	}
-	{
-		size := m.Max.Size()
-		i -= size
-		if _, err := m.Max.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintTx(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x22
 	{
 		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -711,6 +813,84 @@ func (m *MsgPlaceDutchBidResponse) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *MsgPlaceDutchBidResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPlaceDutchLendBidRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPlaceDutchLendBidRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPlaceDutchLendBidRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AuctionMappingId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AuctionMappingId))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x20
+	}
+	{
+		size, err := m.Amount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.Bidder) > 0 {
+		i -= len(m.Bidder)
+		copy(dAtA[i:], m.Bidder)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Bidder)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.AuctionId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AuctionId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPlaceDutchLendBidResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPlaceDutchLendBidResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPlaceDutchLendBidResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -812,8 +992,6 @@ func (m *MsgPlaceDutchBidRequest) Size() (n int) {
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = m.Max.Size()
-	n += 1 + l + sovTx(uint64(l))
 	if m.AppId != 0 {
 		n += 1 + sovTx(uint64(m.AppId))
 	}
@@ -824,6 +1002,39 @@ func (m *MsgPlaceDutchBidRequest) Size() (n int) {
 }
 
 func (m *MsgPlaceDutchBidResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgPlaceDutchLendBidRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AuctionId != 0 {
+		n += 1 + sovTx(uint64(m.AuctionId))
+	}
+	l = len(m.Bidder)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.Amount.Size()
+	n += 1 + l + sovTx(uint64(l))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.AuctionMappingId != 0 {
+		n += 1 + sovTx(uint64(m.AuctionMappingId))
+	}
+	return n
+}
+
+func (m *MsgPlaceDutchLendBidResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1429,40 +1640,6 @@ func (m *MsgPlaceDutchBidRequest) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Max", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Max.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
@@ -1481,7 +1658,7 @@ func (m *MsgPlaceDutchBidRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
 			}
@@ -1548,6 +1725,228 @@ func (m *MsgPlaceDutchBidResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgPlaceDutchBidResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPlaceDutchLendBidRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPlaceDutchLendBidRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPlaceDutchLendBidRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionId", wireType)
+			}
+			m.AuctionId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Bidder", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Bidder = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuctionMappingId", wireType)
+			}
+			m.AuctionMappingId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AuctionMappingId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPlaceDutchLendBidResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPlaceDutchLendBidResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPlaceDutchLendBidResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

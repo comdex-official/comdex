@@ -23,3 +23,10 @@ message Market {
     (gogoproto.moretags)   = "yaml:\"script_id\""
   ];
 }
+
+message DiscardData {
+  int64 block_height = 1 [
+    (gogoproto.moretags)   = "yaml:\"block_height\""
+  ];
+  bool discard_bool = 2 [(gogoproto.moretags) = "yaml:\"discard_bool\""];
+}

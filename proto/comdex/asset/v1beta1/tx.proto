@@ -2,41 +2,21 @@ syntax = "proto3";
 package comdex.asset.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "comdex/asset/v1beta1/asset.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/asset/types";
-option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message MsgAddAssetRequest {
-  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  string name    = 2 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-  string denom   = 3 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-  int64 decimals = 4 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
+// Msg defines the Msg service.
+service Msg {
+  // AddAsset defines a method for adding new asset in asset module
+  rpc AddAsset(MsgAddAsset) returns (MsgAddAssetResponse);
+}
+
+// MsgAddAsset defines an SDK message for adding new asset in asset module.
+message MsgAddAsset {
+  string creator = 1;
+  Asset asset = 2 [(gogoproto.nullable) = false];
 }
 
 message MsgAddAssetResponse {}
-
-message MsgUpdateAssetRequest {
-  string from = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 id   = 2;
-  string name    = 3 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-  string denom   = 4 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
-  int64 decimals = 5 [ (gogoproto.moretags) = "yaml:\"decimals\"" ];
-}
-
-message MsgUpdateAssetResponse {}
-
-message MsgAddPairRequest {
-  string from              = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
-  uint64 asset_in          = 2 [ (gogoproto.moretags) = "yaml:\"asset_in\"" ];
-  uint64 asset_out         = 3 [ (gogoproto.moretags) = "yaml:\"asset_out\"" ];
-}
-
-message MsgAddPairResponse {}
-
-
-service Msg {
-  rpc MsgAddAsset(MsgAddAssetRequest) returns (MsgAddAssetResponse);
-  rpc MsgUpdateAsset(MsgUpdateAssetRequest) returns (MsgUpdateAssetResponse);
-  rpc MsgAddPair(MsgAddPairRequest) returns (MsgAddPairResponse);
-}

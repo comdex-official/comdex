@@ -9,15 +9,15 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&WhitelistAppId{}, "comdex/liquidation/WhitelistAppId", nil)
-	cdc.RegisterConcrete(&RemoveWhitelistAppId{}, "comdex/liquidation/RemoveWhitelistAppId", nil)
+	cdc.RegisterConcrete(&MsgLiquidateVaultRequest{}, "comdex/liquidation/MsgLiquidateVaultRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateBorrowRequest{}, "comdex/liquidation/MsgLiquidateBorrowRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&WhitelistAppId{},
-		&RemoveWhitelistAppId{},
+		&MsgLiquidateVaultRequest{},
+		&MsgLiquidateBorrowRequest{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

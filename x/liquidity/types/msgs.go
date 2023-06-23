@@ -12,30 +12,44 @@ import (
 var (
 	_ sdk.Msg = (*MsgCreatePair)(nil)
 	_ sdk.Msg = (*MsgCreatePool)(nil)
+	_ sdk.Msg = (*MsgCreateRangedPool)(nil)
 	_ sdk.Msg = (*MsgDeposit)(nil)
 	_ sdk.Msg = (*MsgWithdraw)(nil)
 	_ sdk.Msg = (*MsgLimitOrder)(nil)
 	_ sdk.Msg = (*MsgMarketOrder)(nil)
+	_ sdk.Msg = (*MsgMMOrder)(nil)
 	_ sdk.Msg = (*MsgCancelOrder)(nil)
 	_ sdk.Msg = (*MsgCancelAllOrders)(nil)
+	_ sdk.Msg = (*MsgCancelMMOrder)(nil)
+	_ sdk.Msg = (*MsgFarm)(nil)
+	_ sdk.Msg = (*MsgUnfarm)(nil)
+	_ sdk.Msg = (*MsgDepositAndFarm)(nil)
+	_ sdk.Msg = (*MsgUnfarmAndWithdraw)(nil)
 )
 
 // Message types for the liquidity module.
 const (
-	TypeMsgCreatePair      = "create_pair"
-	TypeMsgCreatePool      = "create_pool"
-	TypeMsgDeposit         = "deposit"
-	TypeMsgWithdraw        = "withdraw"
-	TypeMsgLimitOrder      = "limit_order"
-	TypeMsgMarketOrder     = "market_order"
-	TypeMsgCancelOrder     = "cancel_order"
-	TypeMsgCancelAllOrders = "cancel_all_orders"
+	TypeMsgCreatePair        = "create_pair"
+	TypeMsgCreatePool        = "create_pool"
+	TypeMsgCreateRangedPool  = "create_ranged_pool"
+	TypeMsgDeposit           = "deposit"
+	TypeMsgWithdraw          = "withdraw"
+	TypeMsgLimitOrder        = "limit_order"
+	TypeMsgMarketOrder       = "market_order"
+	TypeMsgMMOrder           = "mm_order"
+	TypeMsgCancelOrder       = "cancel_order"
+	TypeMsgCancelAllOrders   = "cancel_all_orders"
+	TypeMsgCancelMMOrder     = "cancel_mm_order"
+	TypeMsgFarm              = "farm"
+	TypeMsgUnfarm            = "unfarm"
+	TypeMsgDepositAndFarm    = "deposit_and_farm"
+	TypeMsgUnfarmAndWithdraw = "unfarm_and_withdraw"
 )
 
 // NewMsgCreatePair returns a new MsgCreatePair.
 func NewMsgCreatePair(
 	appID uint64,
-	//nolint
+
 	creator sdk.AccAddress,
 	baseCoinDenom, quoteCoinDenom string,
 ) *MsgCreatePair {
@@ -60,6 +74,9 @@ func (msg MsgCreatePair) ValidateBasic() error {
 	}
 	if err := sdk.ValidateDenom(msg.QuoteCoinDenom); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
+	if msg.BaseCoinDenom == msg.QuoteCoinDenom {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "cannot use same denom for both base coin and quote coin")
 	}
 	return nil
 }
@@ -87,7 +104,7 @@ func (msg MsgCreatePair) GetCreator() sdk.AccAddress {
 // NewMsgCreatePool creates a new MsgCreatePool.
 func NewMsgCreatePool(
 	appID uint64,
-	//nolint
+
 	creator sdk.AccAddress,
 	pairID uint64,
 	depositCoins sdk.Coins,
@@ -145,10 +162,79 @@ func (msg MsgCreatePool) GetCreator() sdk.AccAddress {
 	return addr
 }
 
+// NewMsgCreateRangedPool creates a new MsgCreateRangedPool.
+func NewMsgCreateRangedPool(
+	appID uint64,
+	creator sdk.AccAddress,
+	pairID uint64,
+	depositCoins sdk.Coins,
+	minPrice sdk.Dec,
+	maxPrice sdk.Dec,
+	initialPrice sdk.Dec,
+) *MsgCreateRangedPool {
+	return &MsgCreateRangedPool{
+		AppId:        appID,
+		Creator:      creator.String(),
+		PairId:       pairID,
+		DepositCoins: depositCoins,
+		MinPrice:     minPrice,
+		MaxPrice:     maxPrice,
+		InitialPrice: initialPrice,
+	}
+}
+
+func (msg MsgCreateRangedPool) Route() string { return RouterKey }
+
+func (msg MsgCreateRangedPool) Type() string { return TypeMsgCreateRangedPool }
+
+func (msg MsgCreateRangedPool) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	if err := msg.DepositCoins.Validate(); err != nil {
+		return err
+	}
+	if len(msg.DepositCoins) == 0 || len(msg.DepositCoins) > 2 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "wrong number of deposit coins: %d", len(msg.DepositCoins))
+	}
+	for _, coin := range msg.DepositCoins {
+		if coin.Amount.GT(amm.MaxCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "deposit coin %s is bigger than the max amount %s", coin, amm.MaxCoinAmount)
+		}
+	}
+	if err := amm.ValidateRangedPoolParams(msg.MinPrice, msg.MaxPrice, msg.InitialPrice); err != nil {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
+	return nil
+}
+
+func (msg MsgCreateRangedPool) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgCreateRangedPool) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgCreateRangedPool) GetCreator() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 // NewMsgDeposit creates a new MsgDeposit.
 func NewMsgDeposit(
 	appID uint64,
-	//nolint
+
 	depositor sdk.AccAddress,
 	poolID uint64,
 	depositCoins sdk.Coins,
@@ -175,7 +261,7 @@ func (msg MsgDeposit) ValidateBasic() error {
 	if err := msg.DepositCoins.Validate(); err != nil {
 		return err
 	}
-	if len(msg.DepositCoins) != 2 {
+	if len(msg.DepositCoins) == 0 || len(msg.DepositCoins) > 2 {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "wrong number of deposit coins: %d", len(msg.DepositCoins))
 	}
 	return nil
@@ -204,7 +290,7 @@ func (msg MsgDeposit) GetDepositor() sdk.AccAddress {
 // NewMsgWithdraw creates a new MsgWithdraw.
 func NewMsgWithdraw(
 	appID uint64,
-	//nolint
+
 	withdrawer sdk.AccAddress,
 	poolID uint64,
 	poolCoin sdk.Coin,
@@ -260,7 +346,7 @@ func (msg MsgWithdraw) GetWithdrawer() sdk.AccAddress {
 // NewMsgLimitOrder creates a new MsgLimitOrder.
 func NewMsgLimitOrder(
 	appID uint64,
-	//nolint
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	dir OrderDirection,
@@ -360,7 +446,7 @@ func (msg MsgLimitOrder) GetOrderer() sdk.AccAddress {
 // NewMsgMarketOrder creates a new MsgMarketOrder.
 func NewMsgMarketOrder(
 	appID uint64,
-	//nolint
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	dir OrderDirection,
@@ -442,10 +528,101 @@ func (msg MsgMarketOrder) GetOrderer() sdk.AccAddress {
 	return addr
 }
 
+// NewMsgMMOrder creates a new MsgMMOrder.
+func NewMsgMMOrder(
+	appID uint64,
+	orderer sdk.AccAddress,
+	pairID uint64,
+	maxSellPrice, minSellPrice sdk.Dec, sellAmt sdk.Int,
+	maxBuyPrice, minBuyPrice sdk.Dec, buyAmt sdk.Int,
+	orderLifespan time.Duration,
+) *MsgMMOrder {
+	return &MsgMMOrder{
+		AppId:         appID,
+		Orderer:       orderer.String(),
+		PairId:        pairID,
+		MaxSellPrice:  maxSellPrice,
+		MinSellPrice:  minSellPrice,
+		SellAmount:    sellAmt,
+		MaxBuyPrice:   maxBuyPrice,
+		MinBuyPrice:   minBuyPrice,
+		BuyAmount:     buyAmt,
+		OrderLifespan: orderLifespan,
+	}
+}
+
+func (msg MsgMMOrder) Route() string { return RouterKey }
+
+func (msg MsgMMOrder) Type() string { return TypeMsgMMOrder }
+
+func (msg MsgMMOrder) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Orderer); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid orderer address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	if msg.SellAmount.IsZero() && msg.BuyAmount.IsZero() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "sell amount and buy amount must not be zero at the same time")
+	}
+	if !msg.SellAmount.IsZero() {
+		if msg.SellAmount.LT(amm.MinCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "sell amount %s is smaller than the min amount %s", msg.SellAmount, amm.MinCoinAmount)
+		}
+		if !msg.MaxSellPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "max sell price must be positive: %s", msg.MaxSellPrice)
+		}
+		if !msg.MinSellPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "min sell price must be positive: %s", msg.MinSellPrice)
+		}
+		if msg.MinSellPrice.GT(msg.MaxSellPrice) {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max sell price must not be lower than min sell price")
+		}
+	}
+	if !msg.BuyAmount.IsZero() {
+		if msg.BuyAmount.LT(amm.MinCoinAmount) {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "buy amount %s is smaller than the min amount %s", msg.BuyAmount, amm.MinCoinAmount)
+		}
+		if !msg.MinBuyPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "min buy price must be positive: %s", msg.MinBuyPrice)
+		}
+		if !msg.MaxBuyPrice.IsPositive() {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "max buy price must be positive: %s", msg.MaxBuyPrice)
+		}
+		if msg.MinBuyPrice.GT(msg.MaxBuyPrice) {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max buy price must not be lower than min buy price")
+		}
+	}
+	if msg.OrderLifespan < 0 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "order lifespan must not be negative: %s", msg.OrderLifespan)
+	}
+	return nil
+}
+
+func (msg MsgMMOrder) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgMMOrder) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgMMOrder) GetOrderer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 // NewMsgCancelOrder creates a new MsgCancelOrder.
 func NewMsgCancelOrder(
 	appID uint64,
-	//nolint
+
 	orderer sdk.AccAddress,
 	pairID uint64,
 	orderID uint64,
@@ -498,7 +675,7 @@ func (msg MsgCancelOrder) GetOrderer() sdk.AccAddress {
 // NewMsgCancelAllOrders creates a new MsgCancelAllOrders.
 func NewMsgCancelAllOrders(
 	appID uint64,
-	//nolint
+
 	orderer sdk.AccAddress,
 	pairIDs []uint64,
 ) *MsgCancelAllOrders {
@@ -550,47 +727,211 @@ func (msg MsgCancelAllOrders) GetOrderer() sdk.AccAddress {
 	return addr
 }
 
-// NewMsgSoftLock creates a new MsgTokensSoftLock.
-func NewMsgSoftLock(
+// NewMsgCancelMMOrder creates a new MsgCancelMMOrder.
+func NewMsgCancelMMOrder(
 	appID uint64,
-	//nolint
-	depositor sdk.AccAddress,
-	poolID uint64,
-	softLockCoin sdk.Coin,
-) *MsgTokensSoftLock {
-	return &MsgTokensSoftLock{
-		AppId:        appID,
-		Depositor:    depositor.String(),
-		PoolId:       poolID,
-		SoftLockCoin: softLockCoin,
+	orderer sdk.AccAddress,
+	pairID uint64,
+) *MsgCancelMMOrder {
+	return &MsgCancelMMOrder{
+		AppId:   appID,
+		Orderer: orderer.String(),
+		PairId:  pairID,
 	}
 }
 
-func (msg MsgTokensSoftLock) Route() string { return RouterKey }
+func (msg MsgCancelMMOrder) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftLock) Type() string { return TypeMsgWithdraw }
+func (msg MsgCancelMMOrder) Type() string { return TypeMsgCancelMMOrder }
 
-func (msg MsgTokensSoftLock) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+func (msg MsgCancelMMOrder) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Orderer); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid orderer address: %v", err)
+	}
+	if msg.PairId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pair id must not be 0")
+	}
+	return nil
+}
+
+func (msg MsgCancelMMOrder) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgCancelMMOrder) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgCancelMMOrder) GetOrderer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Orderer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgFarm creates a new MsgFarm.
+func NewMsgFarm(
+	appID uint64,
+	poolID uint64,
+
+	farmer sdk.AccAddress,
+	poolCoin sdk.Coin,
+) *MsgFarm {
+	return &MsgFarm{
+		AppId:           appID,
+		PoolId:          poolID,
+		Farmer:          farmer.String(),
+		FarmingPoolCoin: poolCoin,
+	}
+}
+
+func (msg MsgFarm) Route() string { return RouterKey }
+
+func (msg MsgFarm) Type() string { return TypeMsgFarm }
+
+func (msg MsgFarm) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Farmer); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
 	}
 	if msg.PoolId == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
 	}
-	if err := msg.SoftLockCoin.Validate(); err != nil {
+	if msg.AppId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "app id must not be 0")
+	}
+	if err := msg.FarmingPoolCoin.Validate(); err != nil {
 		return err
 	}
-	if !msg.SoftLockCoin.IsPositive() {
+	if !msg.FarmingPoolCoin.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
 	}
 	return nil
 }
 
-func (msg MsgTokensSoftLock) GetSignBytes() []byte {
+func (msg MsgFarm) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgTokensSoftLock) GetSigners() []sdk.AccAddress {
+func (msg MsgFarm) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgFarm) GetFarmer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgUnfarm creates a new MsgUnfarm.
+func NewMsgUnfarm(
+	appID uint64,
+	poolID uint64,
+
+	farmer sdk.AccAddress,
+	poolCoin sdk.Coin,
+) *MsgUnfarm {
+	return &MsgUnfarm{
+		AppId:             appID,
+		PoolId:            poolID,
+		Farmer:            farmer.String(),
+		UnfarmingPoolCoin: poolCoin,
+	}
+}
+
+func (msg MsgUnfarm) Route() string { return RouterKey }
+
+func (msg MsgUnfarm) Type() string { return TypeMsgUnfarm }
+
+func (msg MsgUnfarm) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Farmer); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
+	}
+	if msg.PoolId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
+	}
+	if msg.AppId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "app id must not be 0")
+	}
+	if err := msg.UnfarmingPoolCoin.Validate(); err != nil {
+		return err
+	}
+	if !msg.UnfarmingPoolCoin.IsPositive() {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
+	}
+	return nil
+}
+
+func (msg MsgUnfarm) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgUnfarm) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+func (msg MsgUnfarm) GetFarmer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
+// NewMsgDeposit creates a new MsgDepositAndFarm.
+func NewMsgDepositAndFarm(
+	appID uint64,
+	depositor sdk.AccAddress,
+	poolID uint64,
+	depositCoins sdk.Coins,
+) *MsgDepositAndFarm {
+	return &MsgDepositAndFarm{
+		AppId:        appID,
+		Depositor:    depositor.String(),
+		PoolId:       poolID,
+		DepositCoins: depositCoins,
+	}
+}
+
+func (msg MsgDepositAndFarm) Route() string { return RouterKey }
+
+func (msg MsgDepositAndFarm) Type() string { return TypeMsgDeposit }
+
+func (msg MsgDepositAndFarm) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid depositor address: %v", err)
+	}
+	if msg.PoolId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
+	}
+	if err := msg.DepositCoins.Validate(); err != nil {
+		return err
+	}
+	if len(msg.DepositCoins) == 0 || len(msg.DepositCoins) > 2 {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "wrong number of deposit coins: %d", len(msg.DepositCoins))
+	}
+	return nil
+}
+
+func (msg MsgDepositAndFarm) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgDepositAndFarm) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		panic(err)
@@ -598,7 +939,7 @@ func (msg MsgTokensSoftLock) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
+func (msg MsgDepositAndFarm) GetDepositor() sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
 	if err != nil {
 		panic(err)
@@ -606,56 +947,58 @@ func (msg MsgTokensSoftLock) GetWithdrawer() sdk.AccAddress {
 	return addr
 }
 
-// NewMsgSoftUnlock creates a new MsgTokensSoftUnlock.
-func NewMsgSoftUnlock(
+// NewMsgUnfarmAndWithdraw creates a new MsgUnfarmAndWithdraw.
+func NewMsgUnfarmAndWithdraw(
 	appID uint64,
-	//nolint
-	depositor sdk.AccAddress,
 	poolID uint64,
-	softUnlockCoin sdk.Coin,
-) *MsgTokensSoftUnlock {
-	return &MsgTokensSoftUnlock{
-		AppId:          appID,
-		Depositor:      depositor.String(),
-		PoolId:         poolID,
-		SoftUnlockCoin: softUnlockCoin,
+	farmer sdk.AccAddress,
+	poolCoin sdk.Coin,
+) *MsgUnfarmAndWithdraw {
+	return &MsgUnfarmAndWithdraw{
+		AppId:             appID,
+		PoolId:            poolID,
+		Farmer:            farmer.String(),
+		UnfarmingPoolCoin: poolCoin,
 	}
 }
 
-func (msg MsgTokensSoftUnlock) Route() string { return RouterKey }
+func (msg MsgUnfarmAndWithdraw) Route() string { return RouterKey }
 
-func (msg MsgTokensSoftUnlock) Type() string { return TypeMsgWithdraw }
+func (msg MsgUnfarmAndWithdraw) Type() string { return TypeMsgUnfarm }
 
-func (msg MsgTokensSoftUnlock) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Depositor); err != nil {
+func (msg MsgUnfarmAndWithdraw) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Farmer); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid withdrawer address: %v", err)
 	}
 	if msg.PoolId == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "pool id must not be 0")
 	}
-	if err := msg.SoftUnlockCoin.Validate(); err != nil {
+	if msg.AppId == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "app id must not be 0")
+	}
+	if err := msg.UnfarmingPoolCoin.Validate(); err != nil {
 		return err
 	}
-	if !msg.SoftUnlockCoin.IsPositive() {
+	if !msg.UnfarmingPoolCoin.IsPositive() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "coin must be positive")
 	}
 	return nil
 }
 
-func (msg MsgTokensSoftUnlock) GetSignBytes() []byte {
+func (msg MsgUnfarmAndWithdraw) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgTokensSoftUnlock) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgUnfarmAndWithdraw) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}
 	return []sdk.AccAddress{addr}
 }
 
-func (msg MsgTokensSoftUnlock) GetWithdrawer() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Depositor)
+func (msg MsgUnfarmAndWithdraw) GetFarmer() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Farmer)
 	if err != nil {
 		panic(err)
 	}

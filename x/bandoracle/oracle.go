@@ -3,10 +3,11 @@ package bandoracle
 import (
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
-	"github.com/comdex-official/comdex/x/bandoracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func (im IBCModule) handleOraclePacket(
@@ -15,6 +16,11 @@ func (im IBCModule) handleOraclePacket(
 ) (channeltypes.Acknowledgement, error) {
 	var ack channeltypes.Acknowledgement
 	var modulePacketData packet.OracleResponsePacketData
+	fetchPriceMsg := im.keeper.GetFetchPriceMsg(ctx)
+	if modulePacket.DestinationChannel != fetchPriceMsg.SourceChannel {
+		return channeltypes.Acknowledgement{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
+			"Module packet destination channel and source channel mismatch")
+	}
 	if err := types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &modulePacketData); err != nil {
 		return ack, nil
 	}
@@ -23,17 +29,17 @@ func (im IBCModule) handleOraclePacket(
 	case types.FetchPriceClientIDKey:
 		var fetchPriceResult types.FetchPriceResult
 		if err := obi.Decode(modulePacketData.Result, &fetchPriceResult); err != nil {
-			ack = channeltypes.NewErrorAcknowledgement(err.Error())
+			ack = channeltypes.NewErrorAcknowledgement(err)
 			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
 		im.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
-		// TODO: FetchPrice market data reception logic
+		// TODO: FetchPrice market data reception logic //nolint:godox
 
 	default:
 		err := sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
 			"market received packet not found: %s", modulePacketData.GetClientID())
-		ack = channeltypes.NewErrorAcknowledgement(err.Error())
+		ack = channeltypes.NewErrorAcknowledgement(err)
 		return ack, err
 	}
 	ack = channeltypes.NewResultAcknowledgement(

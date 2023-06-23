@@ -149,7 +149,7 @@ func (m *Denom) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Denom proto.InternalMessageInfo
 
-//ASSET or NFT
+// ASSET or NFT
 type NFT struct {
 	Id           string                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Metadata     Metadata                               `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata"`

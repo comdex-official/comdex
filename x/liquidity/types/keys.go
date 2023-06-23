@@ -9,7 +9,7 @@ import (
 
 const (
 	// ModuleName defines the module name.
-	ModuleName = "liquidityv1"
+	ModuleName = "liquidityV1"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
@@ -39,9 +39,12 @@ var (
 	WithdrawRequestIndexKeyPrefix = []byte{0xb1}
 	OrderKeyPrefix                = []byte{0xb2}
 	OrderIndexKeyPrefix           = []byte{0xb3}
+	MMOrderIndexKeyPrefix         = []byte{0xb7}
 
-	PoolLiquidityProvidersDataKeyPrefix = []byte{0xb4}
-	GenericParamsKey                    = []byte{0xb5}
+	ActiveFarmerKeyPrefix = []byte{0xb4}
+	QueuedFarmerKeyPrefix = []byte{0xb5}
+
+	GenericParamsKey = []byte{0xb6}
 )
 
 // GetLastPairIDKey returns the store key to retrieve the last pair id.
@@ -122,7 +125,6 @@ func GetDepositRequestKey(appID, poolID, id uint64) []byte {
 // GetDepositRequestIndexKey returns the index key to map deposit requests
 // with a depositor.
 func GetDepositRequestIndexKey(
-	//nolint
 	appID uint64,
 	depositor sdk.AccAddress,
 	poolID, reqID uint64,
@@ -150,7 +152,6 @@ func GetWithdrawRequestKey(appID, poolID, id uint64) []byte {
 // GetWithdrawRequestIndexKey returns the index key to map withdraw requests
 // with a withdrawer.
 func GetWithdrawRequestIndexKey(
-	//nolint
 	appID uint64,
 	withdrawer sdk.AccAddress,
 	poolID, reqID uint64,
@@ -196,9 +197,15 @@ func GetOrderIndexKeyPrefix(appID uint64, orderer sdk.AccAddress) []byte {
 	return append(append(OrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...)
 }
 
-// GetPoolLiquidityProvidersDataKey returns the store key to retrieve liquidity providers data from the pool id.
-func GetPoolLiquidityProvidersDataKey(appID, poolID uint64) []byte {
-	return append(append(PoolLiquidityProvidersDataKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
+// GetMMOrderIndexKey returns the store key to retrieve MMOrderIndex object by
+// orderer and pair id.
+func GetMMOrderIndexKey(orderer sdk.AccAddress, appID, pairID uint64) []byte {
+	return append(append(append(MMOrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...), address.MustLengthPrefix(orderer)...), sdk.Uint64ToBigEndian(pairID)...)
+}
+
+// GetAllOrdersKey returns the store key to retrieve all orders.
+func GetAllMMOrderIndexKey(appID uint64) []byte {
+	return append(MMOrderIndexKeyPrefix, sdk.Uint64ToBigEndian(appID)...)
 }
 
 // GetGenericParamsKey returns the store key to retrieve params object.
@@ -278,4 +285,24 @@ func LengthPrefixString(s string) []byte {
 		return bz
 	}
 	return append([]byte{byte(bzLen)}, bz...)
+}
+
+// GetActiveFarmerKey returns the store key to retrieve active farmer object from the app id, pool id and farmer address.
+func GetActiveFarmerKey(appID, poolID uint64, farmer sdk.AccAddress) []byte {
+	return append(append(append(ActiveFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), address.MustLengthPrefix(farmer)...)
+}
+
+// GetAllActiveFarmerKey returns the store key to retrieve all active farmers.
+func GetAllActiveFarmersKey(appID, poolID uint64) []byte {
+	return append(append(ActiveFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
+}
+
+// GetQueuedFarmerKey returns the store key to retrieve queued farmer object from the app id, pool id and farmer address.
+func GetQueuedFarmerKey(appID, poolID uint64, farmer sdk.AccAddress) []byte {
+	return append(append(append(QueuedFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...), address.MustLengthPrefix(farmer)...)
+}
+
+// GetAllQueuedFarmerKey returns the store key to retrieve all queued farmers.
+func GetAllQueuedFarmersKey(appID, poolID uint64) []byte {
+	return append(append(QueuedFarmerKeyPrefix, sdk.Uint64ToBigEndian(appID)...), sdk.Uint64ToBigEndian(poolID)...)
 }

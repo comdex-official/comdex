@@ -21,8 +21,8 @@ import (
 // GetTxCmd returns the transaction commands for the module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
+		Use:                        "liquidity",
+		Short:                      fmt.Sprintf("%s transactions subcommands", "liquidity"),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -31,14 +31,19 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		NewCreatePairCmd(),
 		NewCreatePoolCmd(),
+		NewCreateRangedPoolCmd(),
 		NewDepositCmd(),
 		NewWithdrawCmd(),
 		NewLimitOrderCmd(),
 		NewMarketOrderCmd(),
+		NewMMOrderCmd(),
 		NewCancelOrderCmd(),
 		NewCancelAllOrdersCmd(),
-		NewSoftLockTokensCmd(),
-		NewSoftUnlockTokensCmd(),
+		NewCancelMMOrderCmd(),
+		NewFarmCmd(),
+		NewUnfarmCmd(),
+		NewDepositAndFarmCmd(),
+		NewUnfarmAndWithdrawCmd(),
 	)
 
 	return cmd
@@ -71,6 +76,9 @@ $ %s tx %s create-pair 1 uatom stake --from mykey
 			quoteCoinDenom := args[2]
 
 			msg := types.NewMsgCreatePair(appID, clientCtx.GetFromAddress(), baseCoinDenom, quoteCoinDenom)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -116,6 +124,82 @@ $ %s tx %s create-pool 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgCreatePool(appID, clientCtx.GetFromAddress(), pairID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewCreateRangedPoolCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-ranged-pool [app-id] [pair-id] [deposit-coins] [min-price] [max-price] [initial-price]",
+		Args:  cobra.ExactArgs(6),
+		Short: "Create a ranged liquidity pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Create a ranged liquidity pool with coins.
+
+Example:
+$ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 0.001 100 1.0 --from mykey
+$ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 0.9 10000 1.0 --from mykey
+$ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 1.3 2.5 1.5 --from mykey
+`,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse pair id: %w", err)
+			}
+
+			depositCoins, err := sdk.ParseCoinsNormalized(args[2])
+			if err != nil {
+				return fmt.Errorf("invalid deposit coins: %w", err)
+			}
+
+			minPrice, err := sdk.NewDecFromStr(args[3])
+			if err != nil {
+				return fmt.Errorf("invalid min price: %w", err)
+			}
+
+			maxPrice, err := sdk.NewDecFromStr(args[4])
+			if err != nil {
+				return fmt.Errorf("invalid max price: %w", err)
+			}
+
+			initialPrice, err := sdk.NewDecFromStr(args[5])
+			if err != nil {
+				return fmt.Errorf("invalid initial price: %w", err)
+			}
+
+			msg := types.NewMsgCreateRangedPool(
+				appID,
+				clientCtx.GetFromAddress(),
+				pairID,
+				depositCoins,
+				minPrice,
+				maxPrice,
+				initialPrice,
+			)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -161,6 +245,9 @@ $ %s tx %s deposit 1 1 1000000000uatom,50000000000stake --from mykey
 			}
 
 			msg := types.NewMsgDeposit(appID, clientCtx.GetFromAddress(), poolID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -211,6 +298,9 @@ $ %s tx %s withdraw 1 1 10000pool1 --from mykey
 				poolID,
 				poolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -301,6 +391,9 @@ $ %s tx %s limit-order 1 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --f
 				amt,
 				orderLifespan,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -387,6 +480,106 @@ $ %s tx %s market-order 1 1 s 10000uatom stake 10000 --order-lifespan=10m --from
 				orderLifespan,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(flagSetOrder())
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewMMOrderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "mm-order [app-id] [pair-id] [max-sell-price] [min-sell-price] [sell-amount] [max-buy-price] [min-buy-price] [buy-amount]",
+		Args:  cobra.ExactArgs(8),
+		Short: "Make a market making order",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Make a market making order.
+A market making order is a set of limit orders for each buy/sell side.
+You can leave one side(but not both) empty by passing 0 as its arguments.
+
+Example:
+$ %s tx %s mm-order 1 1 102 101 10000 100 99 10000 --from mykey
+$ %s tx %s mm-order 1 1 0 0 0 100 99 10000 --from mykey
+$ %s tx %s mm-order 1 1 102 101 10000 0 0 0 --from mykey
+
+[app-id]: application id on which transaction to be made
+[pair-id]: pair id to make order
+[max-sell-price]: maximum price of sell orders
+[min-sell-price]]: minimum price of sell orders
+[sell-amount]: total amount of sell orders
+[max-buy-price]: maximum price of buy orders
+[min-buy-price]: minimum price of buy orders
+[buy-amount]: the total amount of buy orders
+`,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse pair id: %w", err)
+			}
+
+			maxSellPrice, err := sdk.NewDecFromStr(args[2])
+			if err != nil {
+				return fmt.Errorf("invalid max sell price: %w", err)
+			}
+
+			minSellPrice, err := sdk.NewDecFromStr(args[3])
+			if err != nil {
+				return fmt.Errorf("invalid min sell price: %w", err)
+			}
+
+			sellAmt, ok := sdk.NewIntFromString(args[4])
+			if !ok {
+				return fmt.Errorf("invalid sell amount: %s", args[4])
+			}
+
+			maxBuyPrice, err := sdk.NewDecFromStr(args[5])
+			if err != nil {
+				return fmt.Errorf("invalid max buy price: %w", err)
+			}
+
+			minBuyPrice, err := sdk.NewDecFromStr(args[6])
+			if err != nil {
+				return fmt.Errorf("invalid min buy price: %w", err)
+			}
+
+			buyAmt, ok := sdk.NewIntFromString(args[7])
+			if !ok {
+				return fmt.Errorf("invalid buy amount: %s", args[7])
+			}
+
+			orderLifespan, _ := cmd.Flags().GetDuration(FlagOrderLifespan)
+
+			msg := types.NewMsgMMOrder(
+				appID,
+				clientCtx.GetFromAddress(),
+				pairID,
+				maxSellPrice, minSellPrice, sellAmt,
+				maxBuyPrice, minBuyPrice, buyAmt,
+				orderLifespan,
+			)
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -438,6 +631,10 @@ $ %s tx %s cancel-order 1 1 1 --from mykey
 				orderID,
 			)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -484,6 +681,10 @@ $ %s tx %s cancel-all-orders 1 1,3 --from mykey
 
 			msg := types.NewMsgCancelAllOrders(appID, clientCtx.GetFromAddress(), pairIDs)
 
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -493,15 +694,57 @@ $ %s tx %s cancel-all-orders 1 1,3 --from mykey
 	return cmd
 }
 
-func NewSoftLockTokensCmd() *cobra.Command {
+func NewCancelMMOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-lock [app-id] [pool-id] [pool-coin]",
-		Args:  cobra.ExactArgs(3),
-		Short: "soft-lock coins from the specified liquidity pool, to start earning rewards",
+		Use:   "cancel-mm-order [app-id] [pair-id]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Cancel the mm order in a pair",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`soft-lock coins from the specified liquidity pool,  to start earning rewards
+			fmt.Sprintf(`Cancel the mm order in a pair.
+This will cancel all limit orders in the pair made by the mm order.
+
 Example:
-$ %s tx %s soft-lock 1 1 10000pool1 --from mykey
+$ %s tx %s cancel-mm-order 1 1 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			pairID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgCancelMMOrder(appID, clientCtx.GetFromAddress(), pairID)
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewFarmCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "farm [app-id] [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(3),
+		Short: "farm pool coin",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`farm pool coins to be eligible for incentivizations 
+Example:
+$ %s tx %s farm 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -522,17 +765,20 @@ $ %s tx %s soft-lock 1 1 10000pool1 --from mykey
 				return err
 			}
 
-			softLockCoin, err := sdk.ParseCoinNormalized(args[2])
+			farmedPoolCoin, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSoftLock(
+			msg := types.NewMsgFarm(
 				appID,
-				clientCtx.GetFromAddress(),
 				poolID,
-				softLockCoin,
+				clientCtx.GetFromAddress(),
+				farmedPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -543,15 +789,15 @@ $ %s tx %s soft-lock 1 1 10000pool1 --from mykey
 	return cmd
 }
 
-func NewSoftUnlockTokensCmd() *cobra.Command {
+func NewUnfarmCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "soft-unlock [app-id] [pool-id] [pool-coin]",
+		Use:   "unfarm [app-id] [pool-id] [pool-coin]",
 		Args:  cobra.ExactArgs(3),
-		Short: "soft-unlock coins from the specified liquidity pool, to stop receiving rewards",
+		Short: "unfarm pool coin",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`soft-unlock coins from the specified liquidity pool,  to stop receiving rewards
+			fmt.Sprintf(`unfarm pool coin
 Example:
-$ %s tx %s soft-unlock 1 1 10000pool1 --from mykey
+$ %s tx %s unfarm 1 1 10000pool1 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -572,17 +818,20 @@ $ %s tx %s soft-unlock 1 1 10000pool1 --from mykey
 				return err
 			}
 
-			softUnlockCoin, err := sdk.ParseCoinNormalized(args[2])
+			unfarmingPoolCoin, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSoftUnlock(
+			msg := types.NewMsgUnfarm(
 				appID,
-				clientCtx.GetFromAddress(),
 				poolID,
-				softUnlockCoin,
+				clientCtx.GetFromAddress(),
+				unfarmingPoolCoin,
 			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -666,6 +915,178 @@ func NewCmdUpdateGenericParamsProposal() *cobra.Command {
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
 	_ = cmd.MarkFlagRequired(cli.FlagTitle)
 	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewCmdCreateNewLiquidityPairProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-liquidity-pair [app-id] [base-coin-denom] [quote-coin-denom]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Create new liquidity pair in given app",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			baseCoinDenom := args[1]
+			quoteCoinDenom := args[2]
+
+			title, err := cmd.Flags().GetString(cli.FlagTitle)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(cli.FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			from := clientCtx.GetFromAddress()
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+
+			content := types.NewCreateLiquidityPairProposal(
+				title,
+				description,
+				from,
+				appID,
+				baseCoinDenom,
+				quoteCoinDenom,
+			)
+
+			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+			if err != nil {
+				return err
+			}
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	cmd.Flags().String(cli.FlagTitle, "", "title of proposal")
+	cmd.Flags().String(cli.FlagDescription, "", "description of proposal")
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	_ = cmd.MarkFlagRequired(cli.FlagTitle)
+	_ = cmd.MarkFlagRequired(cli.FlagDescription)
+
+	return cmd
+}
+
+func NewDepositAndFarmCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deposit-and-farm [app-id] [pool-id] [deposit-coins]",
+		Args:  cobra.ExactArgs(3),
+		Short: "Deposit coins to a liquidity pool  and farm pool tokens",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Deposit coins to a liquidity pool and farm pool tokens.
+Example:
+$ %s tx %s deposit-and-farm 1 1 1000000000uatom,50000000000stake --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid pool id: %w", err)
+			}
+
+			depositCoins, err := sdk.ParseCoinsNormalized(args[2])
+			if err != nil {
+				return fmt.Errorf("invalid deposit coins: %w", err)
+			}
+
+			msg := types.NewMsgDepositAndFarm(appID, clientCtx.GetFromAddress(), poolID, depositCoins)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewUnfarmAndWithdrawCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "unfarm-and-withdraw [app-id] [pool-id] [pool-coin]",
+		Args:  cobra.ExactArgs(3),
+		Short: "unfarm pool coin and withdraw liquidity from pool",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`unfarm pool coin and withdraw liquidity from pool
+Example:
+$ %s tx %s unfarm-and-withdraw 1 1 10000pool1 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse app id: %w", err)
+			}
+
+			poolID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			unfarmingPoolCoin, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUnfarmAndWithdraw(
+				appID,
+				poolID,
+				clientCtx.GetFromAddress(),
+				unfarmingPoolCoin,
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

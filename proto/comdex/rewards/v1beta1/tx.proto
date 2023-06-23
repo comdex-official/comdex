@@ -11,12 +11,10 @@ option go_package = "github.com/comdex-official/comdex/x/rewards/types";
 
 service Msg {
   rpc CreateGauge(MsgCreateGauge) returns (MsgCreateGaugeResponse);
-  rpc Whitelist(WhitelistAsset) returns (MsgWhitelistAssetResponse);
-  rpc RemoveWhitelist(RemoveWhitelistAsset) returns (MsgRemoveWhitelistAssetResponse);
-  rpc WhitelistAppVault(WhitelistAppIdVault) returns (MsgWhitelistAppIdVaultResponse);
-  rpc RemoveWhitelistAppVault(RemoveWhitelistAppIdVault) returns (MsgRemoveWhitelistAppIdVaultResponse);
   rpc ExternalRewardsLockers(ActivateExternalRewardsLockers) returns (ActivateExternalRewardsLockersResponse);
   rpc ExternalRewardsVault(ActivateExternalRewardsVault) returns (ActivateExternalRewardsVaultResponse);
+  rpc ExternalRewardsLend(ActivateExternalRewardsLend) returns (ActivateExternalRewardsLendResponse);
+  rpc ExternalRewardsStableMint(ActivateExternalRewardsStableMint) returns (ActivateExternalRewardsStableMintResponse);
 }
 
 message MsgCreateGauge {
@@ -58,7 +56,7 @@ message WhitelistAsset {
     (gogoproto.moretags) = "yaml:\"from\""
   ];
 
-  repeated uint64 asset_id = 3 [
+  uint64 asset_id = 3 [
     (gogoproto.moretags) = "yaml:\"asset_id\""
   ];
 }
@@ -134,8 +132,8 @@ message ActivateExternalRewardsVault {
   uint64 app_mapping_id = 1 [
     (gogoproto.moretags) = "yaml:\"app_mapping_id\""
   ];
-  uint64 extended_Pair_Id = 2 [
-    (gogoproto.moretags) = "yaml:\"asset_id\""
+  uint64 extended_pair_id = 2 [
+    (gogoproto.moretags) = "yaml:\"extended_Pair_id\""
   ];
   cosmos.base.v1beta1.Coin total_rewards = 3 [
     (gogoproto.nullable) = false,
@@ -154,3 +152,68 @@ message ActivateExternalRewardsVault {
 }
 
 message ActivateExternalRewardsVaultResponse {}
+
+message ActivateExternalRewardsLend {
+  uint64 app_mapping_id = 1 [
+    (gogoproto.moretags) = "yaml:\"app_mapping_id\""
+  ];
+  uint64 c_pool_id = 2 [
+    (gogoproto.moretags) = "yaml:\"c_pool_id\""
+  ];
+  repeated uint64 asset_id= 3 [
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  uint64 c_swap_app_id = 4 [
+    (gogoproto.moretags) = "yaml:\"c_swap_app_id\""
+  ];
+  uint64 c_swap_min_lock_amount = 5 [
+    (gogoproto.moretags) = "yaml:\"c_swap_app_id\""
+  ];
+  cosmos.base.v1beta1.Coin total_rewards = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_rewards\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  int64 master_pool_id = 7 [
+    (gogoproto.moretags) = "yaml:\"master_pool_id\""
+  ];
+  int64 duration_days = 8 [
+    (gogoproto.moretags) = "yaml:\"duration_days\""
+  ];
+  int64 min_lockup_time_seconds = 9 [
+    (gogoproto.moretags) = "yaml:\"min_lockup_time_seconds\""
+  ];
+  string depositor = 10 [
+    (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+}
+
+message ActivateExternalRewardsLendResponse {}
+
+message ActivateExternalRewardsStableMint {
+  uint64 app_id = 1 [
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 cswap_app_id = 2 [
+    (gogoproto.moretags) = "yaml:\"cswap_app_id\""
+  ];
+  uint64 commodo_app_id = 3 [
+    (gogoproto.moretags) = "yaml:\"commodo_app_id\""
+  ];
+  cosmos.base.v1beta1.Coin total_rewards = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"total_rewards\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  int64 duration_days = 5 [
+    (gogoproto.moretags) = "yaml:\"duration_days\""
+  ];
+  string depositor = 6 [
+    (gogoproto.moretags) = "yaml:\"depositor\""
+  ];
+  int64 accepted_block_height = 7 [
+    (gogoproto.moretags) = "yaml:\"accepted_block_height\""
+  ];
+}
+
+message ActivateExternalRewardsStableMintResponse {}

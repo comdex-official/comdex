@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // NewEpochInfo return new EpochInfo object.
@@ -37,16 +38,8 @@ func (k Keeper) TriggerAndUpdateEpochInfos(ctx sdk.Context) {
 
 		// In case of chain halt/stop
 		if epoch.CurrentEpochStartTime.Add(epoch.Duration * 2).Before(ctx.BlockTime()) {
-			missedEpochs := 2
-			for {
-				if epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs)).Before(ctx.BlockTime()) {
-					missedEpochs++
-				} else {
-					epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration * time.Duration(missedEpochs-1))
-					break
-				}
-			}
-
+			missedEpochs := (ctx.BlockTime().Sub(epoch.CurrentEpochStartTime)) / epoch.Duration
+			epoch.CurrentEpochStartTime = epoch.CurrentEpochStartTime.Add(epoch.Duration * missedEpochs)
 			k.SetEpochInfoByDuration(ctx, epoch)
 			continue
 		}

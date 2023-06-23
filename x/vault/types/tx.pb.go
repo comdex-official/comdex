@@ -31,7 +31,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgCreateRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
 	AmountIn            github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount_in,json=amountIn,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_in" yaml:"amount_in"`
 	AmountOut           github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount_out,json=amountOut,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_out" yaml:"amount_out"`
@@ -108,9 +108,9 @@ var xxx_messageInfo_MsgCreateResponse proto.InternalMessageInfo
 
 type MsgDepositRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
-	UserVaultId         string                                 `protobuf:"bytes,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	UserVaultId         uint64                                 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
@@ -185,9 +185,9 @@ var xxx_messageInfo_MsgDepositResponse proto.InternalMessageInfo
 
 type MsgWithdrawRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
-	UserVaultId         string                                 `protobuf:"bytes,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	UserVaultId         uint64                                 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
@@ -262,9 +262,9 @@ var xxx_messageInfo_MsgWithdrawResponse proto.InternalMessageInfo
 
 type MsgDrawRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
-	UserVaultId         string                                 `protobuf:"bytes,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	UserVaultId         uint64                                 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
@@ -339,9 +339,9 @@ var xxx_messageInfo_MsgDrawResponse proto.InternalMessageInfo
 
 type MsgRepayRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
-	UserVaultId         string                                 `protobuf:"bytes,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	UserVaultId         uint64                                 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
 }
 
@@ -416,9 +416,9 @@ var xxx_messageInfo_MsgRepayResponse proto.InternalMessageInfo
 
 type MsgCloseRequest struct {
 	From                string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
-	UserVaultId         string `protobuf:"bytes,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	UserVaultId         uint64 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
 }
 
 func (m *MsgCloseRequest) Reset()         { *m = MsgCloseRequest{} }
@@ -490,9 +490,86 @@ func (m *MsgCloseResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCloseResponse proto.InternalMessageInfo
 
+type MsgDepositAndDrawRequest struct {
+	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
+	UserVaultId         uint64                                 `protobuf:"varint,4,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
+}
+
+func (m *MsgDepositAndDrawRequest) Reset()         { *m = MsgDepositAndDrawRequest{} }
+func (m *MsgDepositAndDrawRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositAndDrawRequest) ProtoMessage()    {}
+func (*MsgDepositAndDrawRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{12}
+}
+func (m *MsgDepositAndDrawRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDepositAndDrawRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDepositAndDrawRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDepositAndDrawRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositAndDrawRequest.Merge(m, src)
+}
+func (m *MsgDepositAndDrawRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDepositAndDrawRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositAndDrawRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDepositAndDrawRequest proto.InternalMessageInfo
+
+type MsgDepositAndDrawResponse struct {
+}
+
+func (m *MsgDepositAndDrawResponse) Reset()         { *m = MsgDepositAndDrawResponse{} }
+func (m *MsgDepositAndDrawResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgDepositAndDrawResponse) ProtoMessage()    {}
+func (*MsgDepositAndDrawResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{13}
+}
+func (m *MsgDepositAndDrawResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgDepositAndDrawResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgDepositAndDrawResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgDepositAndDrawResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgDepositAndDrawResponse.Merge(m, src)
+}
+func (m *MsgDepositAndDrawResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgDepositAndDrawResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgDepositAndDrawResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgDepositAndDrawResponse proto.InternalMessageInfo
+
 type MsgCreateStableMintRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"Amount"`
 }
@@ -501,7 +578,7 @@ func (m *MsgCreateStableMintRequest) Reset()         { *m = MsgCreateStableMintR
 func (m *MsgCreateStableMintRequest) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateStableMintRequest) ProtoMessage()    {}
 func (*MsgCreateStableMintRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{12}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{14}
 }
 func (m *MsgCreateStableMintRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -537,7 +614,7 @@ func (m *MsgCreateStableMintResponse) Reset()         { *m = MsgCreateStableMint
 func (m *MsgCreateStableMintResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCreateStableMintResponse) ProtoMessage()    {}
 func (*MsgCreateStableMintResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{13}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{15}
 }
 func (m *MsgCreateStableMintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -568,17 +645,17 @@ var xxx_messageInfo_MsgCreateStableMintResponse proto.InternalMessageInfo
 
 type MsgDepositStableMintRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
-	StableVaultId       string                                 `protobuf:"bytes,5,opt,name=stable_vault_id,json=stableVaultId,proto3" json:"stable_vault_id,omitempty" yaml:"stable_vault_id"`
+	StableVaultId       uint64                                 `protobuf:"varint,5,opt,name=stable_vault_id,json=stableVaultId,proto3" json:"stable_vault_id,omitempty" yaml:"stable_vault_id"`
 }
 
 func (m *MsgDepositStableMintRequest) Reset()         { *m = MsgDepositStableMintRequest{} }
 func (m *MsgDepositStableMintRequest) String() string { return proto.CompactTextString(m) }
 func (*MsgDepositStableMintRequest) ProtoMessage()    {}
 func (*MsgDepositStableMintRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{14}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{16}
 }
 func (m *MsgDepositStableMintRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -614,7 +691,7 @@ func (m *MsgDepositStableMintResponse) Reset()         { *m = MsgDepositStableMi
 func (m *MsgDepositStableMintResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgDepositStableMintResponse) ProtoMessage()    {}
 func (*MsgDepositStableMintResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{15}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{17}
 }
 func (m *MsgDepositStableMintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -645,17 +722,17 @@ var xxx_messageInfo_MsgDepositStableMintResponse proto.InternalMessageInfo
 
 type MsgWithdrawStableMintRequest struct {
 	From                string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
-	AppMappingId        uint64                                 `protobuf:"varint,2,opt,name=app_mapping_id,json=appMappingId,proto3" json:"app_mapping_id,omitempty" yaml:"app_mapping_id"`
+	AppId               uint64                                 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	ExtendedPairVaultId uint64                                 `protobuf:"varint,3,opt,name=extended_pair_vault_id,json=extendedPairVaultId,proto3" json:"extended_pair_vault_id,omitempty" yaml:"extended_pair_vault_id"`
 	Amount              github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount" yaml:"amount"`
-	StableVaultId       string                                 `protobuf:"bytes,5,opt,name=stable_vault_id,json=stableVaultId,proto3" json:"stable_vault_id,omitempty" yaml:"stable_vault_id"`
+	StableVaultId       uint64                                 `protobuf:"varint,5,opt,name=stable_vault_id,json=stableVaultId,proto3" json:"stable_vault_id,omitempty" yaml:"stable_vault_id"`
 }
 
 func (m *MsgWithdrawStableMintRequest) Reset()         { *m = MsgWithdrawStableMintRequest{} }
 func (m *MsgWithdrawStableMintRequest) String() string { return proto.CompactTextString(m) }
 func (*MsgWithdrawStableMintRequest) ProtoMessage()    {}
 func (*MsgWithdrawStableMintRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{16}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{18}
 }
 func (m *MsgWithdrawStableMintRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -691,7 +768,7 @@ func (m *MsgWithdrawStableMintResponse) Reset()         { *m = MsgWithdrawStable
 func (m *MsgWithdrawStableMintResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgWithdrawStableMintResponse) ProtoMessage()    {}
 func (*MsgWithdrawStableMintResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4b7a3c3b9b1a607e, []int{17}
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{19}
 }
 func (m *MsgWithdrawStableMintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -720,6 +797,81 @@ func (m *MsgWithdrawStableMintResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgWithdrawStableMintResponse proto.InternalMessageInfo
 
+type MsgVaultInterestCalcRequest struct {
+	From        string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId       uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	UserVaultId uint64 `protobuf:"varint,3,opt,name=user_vault_id,json=userVaultId,proto3" json:"user_vault_id,omitempty" yaml:"user_vault_id"`
+}
+
+func (m *MsgVaultInterestCalcRequest) Reset()         { *m = MsgVaultInterestCalcRequest{} }
+func (m *MsgVaultInterestCalcRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgVaultInterestCalcRequest) ProtoMessage()    {}
+func (*MsgVaultInterestCalcRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{20}
+}
+func (m *MsgVaultInterestCalcRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgVaultInterestCalcRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgVaultInterestCalcRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgVaultInterestCalcRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgVaultInterestCalcRequest.Merge(m, src)
+}
+func (m *MsgVaultInterestCalcRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgVaultInterestCalcRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgVaultInterestCalcRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgVaultInterestCalcRequest proto.InternalMessageInfo
+
+type MsgVaultInterestCalcResponse struct {
+}
+
+func (m *MsgVaultInterestCalcResponse) Reset()         { *m = MsgVaultInterestCalcResponse{} }
+func (m *MsgVaultInterestCalcResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgVaultInterestCalcResponse) ProtoMessage()    {}
+func (*MsgVaultInterestCalcResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4b7a3c3b9b1a607e, []int{21}
+}
+func (m *MsgVaultInterestCalcResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgVaultInterestCalcResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgVaultInterestCalcResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgVaultInterestCalcResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgVaultInterestCalcResponse.Merge(m, src)
+}
+func (m *MsgVaultInterestCalcResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgVaultInterestCalcResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgVaultInterestCalcResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgVaultInterestCalcResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreateRequest)(nil), "comdex.vault.v1beta1.MsgCreateRequest")
 	proto.RegisterType((*MsgCreateResponse)(nil), "comdex.vault.v1beta1.MsgCreateResponse")
@@ -733,70 +885,78 @@ func init() {
 	proto.RegisterType((*MsgRepayResponse)(nil), "comdex.vault.v1beta1.MsgRepayResponse")
 	proto.RegisterType((*MsgCloseRequest)(nil), "comdex.vault.v1beta1.MsgCloseRequest")
 	proto.RegisterType((*MsgCloseResponse)(nil), "comdex.vault.v1beta1.MsgCloseResponse")
+	proto.RegisterType((*MsgDepositAndDrawRequest)(nil), "comdex.vault.v1beta1.MsgDepositAndDrawRequest")
+	proto.RegisterType((*MsgDepositAndDrawResponse)(nil), "comdex.vault.v1beta1.MsgDepositAndDrawResponse")
 	proto.RegisterType((*MsgCreateStableMintRequest)(nil), "comdex.vault.v1beta1.MsgCreateStableMintRequest")
 	proto.RegisterType((*MsgCreateStableMintResponse)(nil), "comdex.vault.v1beta1.MsgCreateStableMintResponse")
 	proto.RegisterType((*MsgDepositStableMintRequest)(nil), "comdex.vault.v1beta1.MsgDepositStableMintRequest")
 	proto.RegisterType((*MsgDepositStableMintResponse)(nil), "comdex.vault.v1beta1.MsgDepositStableMintResponse")
 	proto.RegisterType((*MsgWithdrawStableMintRequest)(nil), "comdex.vault.v1beta1.MsgWithdrawStableMintRequest")
 	proto.RegisterType((*MsgWithdrawStableMintResponse)(nil), "comdex.vault.v1beta1.MsgWithdrawStableMintResponse")
+	proto.RegisterType((*MsgVaultInterestCalcRequest)(nil), "comdex.vault.v1beta1.MsgVaultInterestCalcRequest")
+	proto.RegisterType((*MsgVaultInterestCalcResponse)(nil), "comdex.vault.v1beta1.MsgVaultInterestCalcResponse")
 }
 
 func init() { proto.RegisterFile("comdex/vault/v1beta1/tx.proto", fileDescriptor_4b7a3c3b9b1a607e) }
 
 var fileDescriptor_4b7a3c3b9b1a607e = []byte{
-	// 819 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x58, 0x4d, 0x6f, 0xd3, 0x48,
-	0x18, 0x4e, 0xdc, 0x6c, 0x3f, 0xde, 0x6e, 0xbf, 0xa6, 0x69, 0x95, 0xf5, 0x6e, 0xec, 0xae, 0x77,
-	0xb7, 0xdb, 0x3d, 0x34, 0xde, 0xb4, 0x37, 0x84, 0x54, 0x91, 0x72, 0xc9, 0x21, 0x02, 0x8c, 0xd4,
-	0x0a, 0x84, 0x14, 0x39, 0xf1, 0x34, 0xb5, 0x48, 0x3c, 0x26, 0x1e, 0x97, 0x16, 0x09, 0x89, 0x3f,
-	0x80, 0xc4, 0x85, 0xff, 0xc0, 0x1d, 0x7e, 0x44, 0x8f, 0x3d, 0x22, 0x0e, 0x16, 0xa4, 0x02, 0xc1,
-	0x35, 0x27, 0xb8, 0xa1, 0xcc, 0x4c, 0x5a, 0x3b, 0x4d, 0x9a, 0x46, 0xa8, 0x1c, 0xaa, 0x9c, 0x12,
-	0xbf, 0xdf, 0x7e, 0x9e, 0x77, 0xe6, 0x9d, 0x31, 0xa4, 0xcb, 0xa4, 0x66, 0xe1, 0x7d, 0x7d, 0xcf,
-	0xf4, 0xab, 0x54, 0xdf, 0xcb, 0x96, 0x30, 0x35, 0xb3, 0x3a, 0xdd, 0xcf, 0xb8, 0x75, 0x42, 0x09,
-	0x4a, 0x72, 0x75, 0x86, 0xa9, 0x33, 0x42, 0x2d, 0x27, 0x2b, 0xa4, 0x42, 0x98, 0x81, 0xde, 0xfa,
-	0xc7, 0x6d, 0xb5, 0x97, 0x23, 0x30, 0x5b, 0xf0, 0x2a, 0x9b, 0x75, 0x6c, 0x52, 0x6c, 0xe0, 0x47,
-	0x3e, 0xf6, 0x28, 0xfa, 0x0b, 0x12, 0x3b, 0x75, 0x52, 0x4b, 0xc5, 0x97, 0xe2, 0x2b, 0x13, 0xb9,
-	0x99, 0x66, 0xa0, 0x4e, 0x1e, 0x98, 0xb5, 0xea, 0x35, 0xad, 0x25, 0xd5, 0x0c, 0xa6, 0x44, 0x1b,
-	0x30, 0x6d, 0xba, 0x6e, 0xb1, 0x66, 0xba, 0xae, 0xed, 0x54, 0x8a, 0xb6, 0x95, 0x92, 0x96, 0xe2,
-	0x2b, 0x89, 0xdc, 0x6f, 0xcd, 0x40, 0x5d, 0xe0, 0xe6, 0x51, 0xbd, 0x66, 0xfc, 0x6a, 0xba, 0x6e,
-	0x81, 0x3f, 0xe7, 0x2d, 0xb4, 0x05, 0x8b, 0x78, 0x9f, 0x62, 0xc7, 0xc2, 0x56, 0xd1, 0x35, 0xed,
-	0x7a, 0x91, 0xd5, 0xdb, 0x0a, 0x34, 0xc2, 0x02, 0xfd, 0xd9, 0x0c, 0xd4, 0x34, 0x0f, 0xd4, 0xdd,
-	0x4e, 0x33, 0xe6, 0xdb, 0x8a, 0xdb, 0xa6, 0x5d, 0xdf, 0x6a, 0x89, 0xf3, 0x16, 0x2a, 0xc2, 0x84,
-	0x59, 0x23, 0xbe, 0x43, 0x8b, 0xb6, 0x93, 0x4a, 0xb0, 0x57, 0xc8, 0x1d, 0x06, 0x6a, 0xec, 0x5d,
-	0xa0, 0x2e, 0x57, 0x6c, 0xba, 0xeb, 0x97, 0x32, 0x65, 0x52, 0xd3, 0xcb, 0xc4, 0xab, 0x11, 0x4f,
-	0xfc, 0xac, 0x7a, 0xd6, 0x43, 0x9d, 0x1e, 0xb8, 0xd8, 0xcb, 0xe4, 0x1d, 0xda, 0x0c, 0xd4, 0x59,
-	0xf1, 0x06, 0xed, 0x40, 0x9a, 0x31, 0xce, 0xff, 0xe7, 0x1d, 0x54, 0x02, 0x10, 0x72, 0xe2, 0xd3,
-	0xd4, 0x2f, 0x2c, 0xc3, 0xe6, 0xc0, 0x19, 0xe6, 0x22, 0x19, 0x88, 0x4f, 0x35, 0x43, 0xd4, 0x7d,
-	0xcb, 0xa7, 0xda, 0x3c, 0xcc, 0x85, 0x68, 0xf1, 0x5c, 0xe2, 0x78, 0x58, 0xfb, 0x2c, 0x31, 0xe9,
-	0x4d, 0xec, 0x12, 0xcf, 0xa6, 0x57, 0x83, 0xad, 0xeb, 0x30, 0xe5, 0x7b, 0x38, 0x14, 0x8e, 0x33,
-	0x96, 0x6a, 0x06, 0x6a, 0x92, 0x87, 0x8b, 0xa8, 0x35, 0x63, 0xb2, 0xf5, 0xdc, 0xf6, 0xde, 0x86,
-	0x51, 0x8e, 0x99, 0xa0, 0x61, 0x63, 0x60, 0x1a, 0xa6, 0xc2, 0x34, 0x68, 0x86, 0x08, 0xa7, 0x25,
-	0x01, 0x85, 0x91, 0x16, 0x04, 0x7c, 0x91, 0x98, 0x78, 0xdb, 0xa6, 0xbb, 0x56, 0xdd, 0x7c, 0x3c,
-	0x64, 0xe0, 0x12, 0x19, 0x58, 0x80, 0xf9, 0x08, 0xd4, 0x82, 0x82, 0x8f, 0x12, 0x4c, 0xb7, 0x98,
-	0x19, 0xc2, 0x7f, 0xb9, 0xf0, 0xcf, 0xc1, 0xcc, 0x09, 0xcc, 0x02, 0xfa, 0x4f, 0x12, 0x93, 0x19,
-	0xd8, 0x35, 0x0f, 0x86, 0xd8, 0x5f, 0x22, 0xf6, 0x88, 0xcd, 0x64, 0x81, 0xb3, 0x00, 0xff, 0x39,
-	0x07, 0x7f, 0xb3, 0x4a, 0x3c, 0x3c, 0x04, 0xdf, 0x12, 0x18, 0x09, 0x38, 0x04, 0x46, 0xaf, 0x25,
-	0x90, 0x4f, 0xa6, 0xe6, 0x5d, 0x6a, 0x96, 0xaa, 0xb8, 0x60, 0x3b, 0x57, 0x64, 0x50, 0x9e, 0x76,
-	0x5b, 0xe2, 0xc7, 0xba, 0xed, 0x46, 0x47, 0xb7, 0xa5, 0xe1, 0xf7, 0xae, 0xa0, 0x09, 0x50, 0xbf,
-	0x4a, 0x4c, 0x2f, 0x46, 0xe1, 0x10, 0xd5, 0x8b, 0xad, 0x61, 0x94, 0x83, 0x19, 0x8f, 0x61, 0x75,
-	0x5a, 0x29, 0xdf, 0x25, 0xe4, 0x66, 0xa0, 0x2e, 0x72, 0x9f, 0x0e, 0x03, 0xcd, 0x98, 0xe2, 0x92,
-	0x76, 0x8f, 0x2b, 0xf0, 0x47, 0x77, 0xe4, 0x05, 0x35, 0xdf, 0x24, 0x66, 0xd0, 0x9e, 0x91, 0x43,
-	0x6e, 0x7e, 0x22, 0x37, 0x2a, 0xa4, 0x7b, 0x40, 0xcf, 0xc9, 0x59, 0x7b, 0x33, 0x06, 0x23, 0x05,
-	0xaf, 0x82, 0x1e, 0xc0, 0xc4, 0xc9, 0xf2, 0x42, 0xcb, 0x99, 0x6e, 0x77, 0xb3, 0x4c, 0xe7, 0x0d,
-	0x4c, 0xfe, 0xb7, 0xaf, 0x1d, 0xcf, 0x82, 0x8a, 0x00, 0xa7, 0x2d, 0x82, 0x7a, 0xbb, 0x45, 0xef,
-	0x0c, 0xf2, 0x4a, 0x7f, 0x43, 0x91, 0xa0, 0x04, 0x93, 0xa1, 0xf7, 0x44, 0xbd, 0x1d, 0x3b, 0x0e,
-	0xc5, 0xf2, 0x7f, 0x17, 0xb0, 0x14, 0x39, 0xb6, 0x60, 0x4c, 0x9c, 0x35, 0xd0, 0xdf, 0xbd, 0x0b,
-	0x0b, 0xc5, 0xfe, 0xa7, 0x8f, 0x95, 0x88, 0x7b, 0x0f, 0xc6, 0xdb, 0x73, 0x14, 0xf5, 0x76, 0x09,
-	0x9f, 0x67, 0xe4, 0xe5, 0x7e, 0x66, 0x91, 0xd0, 0x6c, 0xfc, 0x9c, 0x13, 0x3a, 0x3c, 0xad, 0xcf,
-	0x09, 0x1d, 0x99, 0x62, 0xe8, 0x09, 0x3b, 0xf8, 0x76, 0xee, 0xc7, 0xe8, 0xff, 0x3e, 0x2d, 0x71,
-	0x66, 0xf5, 0xcb, 0xd9, 0x01, 0x3c, 0x44, 0xee, 0xa7, 0x90, 0xec, 0xb6, 0xe3, 0xa0, 0x6c, 0xbf,
-	0x7e, 0x39, 0x9b, 0x7d, 0x6d, 0x10, 0x17, 0x91, 0xfe, 0x59, 0x1c, 0x16, 0xba, 0xae, 0x2a, 0xb4,
-	0xd6, 0xb7, 0x9b, 0xce, 0x56, 0xb0, 0x3e, 0x90, 0x0f, 0x2f, 0x21, 0x77, 0xe7, 0xf0, 0x83, 0x12,
-	0x7b, 0xd5, 0x50, 0x62, 0x87, 0x0d, 0x25, 0x7e, 0xd4, 0x50, 0xe2, 0xef, 0x1b, 0x4a, 0xfc, 0xc5,
-	0xb1, 0x12, 0x3b, 0x3a, 0x56, 0x62, 0x6f, 0x8f, 0x95, 0xd8, 0x7d, 0x3d, 0xb2, 0xfd, 0xb4, 0x12,
-	0xac, 0x92, 0x9d, 0x1d, 0xbb, 0x6c, 0x9b, 0x55, 0xf1, 0xac, 0xb7, 0x3f, 0xcd, 0xb0, 0xbd, 0xa8,
-	0x34, 0xca, 0x3e, 0xb5, 0xac, 0x7f, 0x0f, 0x00, 0x00, 0xff, 0xff, 0xe5, 0x4e, 0x5f, 0x52, 0xb7,
-	0x11, 0x00, 0x00,
+	// 891 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x98, 0xcf, 0x6e, 0xe2, 0x46,
+	0x18, 0xc0, 0xb1, 0x43, 0xd2, 0x30, 0x11, 0x4d, 0x98, 0x90, 0x88, 0x3a, 0xc5, 0x4e, 0xdd, 0x36,
+	0xa5, 0x87, 0xd8, 0x25, 0xb9, 0x55, 0x95, 0xaa, 0x40, 0x2f, 0x1c, 0xa2, 0xb6, 0xae, 0x94, 0xa8,
+	0x55, 0x25, 0x64, 0xf0, 0x84, 0x58, 0x05, 0x8f, 0x8b, 0xc7, 0x69, 0x52, 0xa9, 0x52, 0x1f, 0xa1,
+	0x0f, 0xd0, 0x07, 0x68, 0xf7, 0x49, 0x72, 0xda, 0xcd, 0xee, 0x29, 0xda, 0x83, 0xb5, 0x21, 0x6f,
+	0xc0, 0x61, 0x8f, 0xab, 0x15, 0xe3, 0x21, 0xd8, 0x60, 0x70, 0xd0, 0x92, 0x43, 0xb4, 0x9c, 0x80,
+	0x6f, 0xbe, 0x7f, 0xfe, 0x7d, 0xe3, 0x6f, 0xbe, 0x01, 0xe4, 0xeb, 0xb8, 0x65, 0xa0, 0x73, 0xf5,
+	0x4c, 0x77, 0x9b, 0x44, 0x3d, 0x2b, 0xd6, 0x10, 0xd1, 0x8b, 0x2a, 0x39, 0x57, 0xec, 0x36, 0x26,
+	0x18, 0x66, 0xfd, 0x65, 0x85, 0x2e, 0x2b, 0x6c, 0x59, 0xc8, 0x36, 0x70, 0x03, 0x53, 0x05, 0xb5,
+	0xf7, 0xcd, 0xd7, 0x95, 0xdf, 0xf0, 0x60, 0xed, 0xd0, 0x69, 0x94, 0xdb, 0x48, 0x27, 0x48, 0x43,
+	0xbf, 0xbb, 0xc8, 0x21, 0xf0, 0x53, 0x90, 0x3c, 0x69, 0xe3, 0x56, 0x8e, 0xdb, 0xe6, 0x0a, 0xa9,
+	0xd2, 0x6a, 0xd7, 0x93, 0x56, 0x2e, 0xf4, 0x56, 0xf3, 0x6b, 0xb9, 0x27, 0x95, 0x35, 0xba, 0x08,
+	0x0b, 0x60, 0x49, 0xb7, 0xed, 0xaa, 0x69, 0xe4, 0xf8, 0x6d, 0xae, 0x90, 0x2c, 0x65, 0xba, 0x9e,
+	0x94, 0xf6, 0xd5, 0x7c, 0xb9, 0xac, 0x2d, 0xea, 0xb6, 0x5d, 0x31, 0xe0, 0x11, 0xd8, 0x44, 0xe7,
+	0x04, 0x59, 0x06, 0x32, 0xaa, 0xb6, 0x6e, 0xb6, 0xab, 0x34, 0xb1, 0x9e, 0xe5, 0x02, 0xb5, 0xfc,
+	0xa4, 0xeb, 0x49, 0x79, 0xdf, 0x32, 0x5a, 0x4f, 0xd6, 0xd6, 0xfb, 0x0b, 0x3f, 0xe8, 0x66, 0xfb,
+	0xa8, 0x27, 0xae, 0x18, 0xb0, 0x0a, 0x52, 0x7a, 0x0b, 0xbb, 0x16, 0xa9, 0x9a, 0x56, 0x2e, 0x49,
+	0x73, 0x2d, 0x5d, 0x7a, 0x52, 0xe2, 0xa5, 0x27, 0xed, 0x34, 0x4c, 0x72, 0xea, 0xd6, 0x94, 0x3a,
+	0x6e, 0xa9, 0x75, 0xec, 0xb4, 0xb0, 0xc3, 0x3e, 0x76, 0x1d, 0xe3, 0x37, 0x95, 0x5c, 0xd8, 0xc8,
+	0x51, 0x2a, 0x16, 0xe9, 0x7a, 0xd2, 0x1a, 0x4b, 0xb9, 0xef, 0x48, 0xd6, 0x96, 0xfd, 0xef, 0x15,
+	0x0b, 0xd6, 0x00, 0x60, 0x72, 0xec, 0x92, 0xdc, 0x22, 0x8d, 0x50, 0x9e, 0x3a, 0x42, 0x26, 0x14,
+	0x01, 0xbb, 0x44, 0xd6, 0x58, 0xde, 0xdf, 0xbb, 0x44, 0x5e, 0x07, 0x99, 0x00, 0x7f, 0xc7, 0xc6,
+	0x96, 0x83, 0xe4, 0xe7, 0x3c, 0x95, 0x7e, 0x87, 0x6c, 0xec, 0x98, 0xe4, 0x91, 0x95, 0xe5, 0x1b,
+	0x90, 0x76, 0x1d, 0x14, 0x70, 0x97, 0xa4, 0xee, 0x72, 0x5d, 0x4f, 0xca, 0xfa, 0xee, 0x42, 0xcb,
+	0xb2, 0xb6, 0xd2, 0xfb, 0xdd, 0xb7, 0x3e, 0x06, 0x4b, 0x3e, 0x1c, 0xc6, 0xfb, 0xdb, 0xa9, 0x79,
+	0xa7, 0x83, 0xbc, 0x65, 0x8d, 0xb9, 0x93, 0xb3, 0x00, 0x06, 0x91, 0x32, 0xd2, 0x2f, 0x78, 0x2a,
+	0x3e, 0x36, 0xc9, 0xa9, 0xd1, 0xd6, 0xff, 0x98, 0xa3, 0x9e, 0x05, 0xea, 0x0d, 0xb0, 0x1e, 0x62,
+	0xca, 0x58, 0x3f, 0xe5, 0xc1, 0x87, 0xbd, 0x12, 0xcc, 0x39, 0xcf, 0x88, 0x73, 0x06, 0xac, 0xde,
+	0xf1, 0x64, 0x8c, 0x9f, 0xf1, 0x54, 0xa6, 0x21, 0x5b, 0xbf, 0x98, 0x43, 0x9e, 0x05, 0x64, 0x48,
+	0x0f, 0x48, 0x06, 0x94, 0x51, 0x7e, 0xcd, 0x51, 0xca, 0xe5, 0x26, 0x76, 0xd0, 0xfb, 0x44, 0x99,
+	0xc1, 0x60, 0xcf, 0xcd, 0x60, 0x5c, 0xf3, 0x20, 0x37, 0xe8, 0xac, 0x07, 0x96, 0x31, 0x7f, 0xc1,
+	0x67, 0xb5, 0xf7, 0xb6, 0xc0, 0x47, 0x11, 0x64, 0x19, 0xf7, 0x7f, 0x79, 0x20, 0xdc, 0x8d, 0x0e,
+	0x3f, 0x11, 0xbd, 0xd6, 0x44, 0x87, 0xa6, 0xf5, 0xd8, 0xa6, 0x85, 0x01, 0xbb, 0xe4, 0xbb, 0xb1,
+	0x3b, 0x18, 0x62, 0x97, 0x07, 0x5b, 0x91, 0x74, 0x18, 0xbd, 0x1b, 0x9e, 0xae, 0x33, 0xb6, 0x73,
+	0x7c, 0x43, 0x5b, 0x0f, 0x96, 0xc0, 0xaa, 0x43, 0xa1, 0x0c, 0x32, 0x5d, 0xa4, 0x99, 0x0a, 0x5d,
+	0x4f, 0xda, 0xf4, 0x6d, 0x86, 0x14, 0x64, 0x2d, 0xed, 0x4b, 0xfa, 0xdd, 0x42, 0x04, 0x1f, 0x47,
+	0x23, 0x66, 0x35, 0xe8, 0xf0, 0x54, 0xa1, 0x3f, 0x28, 0xcc, 0x8b, 0xf0, 0x10, 0x45, 0x90, 0x40,
+	0x7e, 0x0c, 0x63, 0x56, 0x85, 0x27, 0x1c, 0x7d, 0x13, 0x7c, 0x7d, 0x8b, 0xa0, 0x36, 0x72, 0x48,
+	0x59, 0x6f, 0xd6, 0x1f, 0xa8, 0x08, 0x23, 0xad, 0x76, 0x61, 0x9a, 0x03, 0xc8, 0xdf, 0x52, 0x11,
+	0xb9, 0xfa, 0x0f, 0xb3, 0xf7, 0x7f, 0x0a, 0x2c, 0x1c, 0x3a, 0x0d, 0xf8, 0x2b, 0x48, 0xdd, 0xbd,
+	0xfd, 0x70, 0x47, 0x89, 0xba, 0x11, 0x2b, 0xc3, 0xf7, 0x5e, 0xe1, 0x8b, 0x58, 0x3d, 0x3f, 0x0a,
+	0xac, 0x02, 0x30, 0xd8, 0xd8, 0x70, 0xbc, 0x59, 0xf8, 0x02, 0x27, 0x14, 0xe2, 0x15, 0x59, 0x80,
+	0x1a, 0x58, 0x09, 0x14, 0x0d, 0x8e, 0x37, 0x1c, 0xba, 0xb8, 0x08, 0x5f, 0xde, 0x43, 0x93, 0xc5,
+	0x38, 0x02, 0x1f, 0xb0, 0xe9, 0x11, 0x7e, 0x36, 0x3e, 0xb1, 0x80, 0xef, 0xcf, 0x63, 0xb4, 0x98,
+	0xdf, 0x9f, 0xc1, 0x72, 0x7f, 0x60, 0x82, 0xe3, 0x4d, 0x82, 0x13, 0xaa, 0xb0, 0x13, 0xa7, 0x16,
+	0x72, 0x4d, 0xc7, 0x8f, 0x09, 0xae, 0x83, 0x63, 0xd9, 0x04, 0xd7, 0xa1, 0x29, 0x06, 0x92, 0xe0,
+	0x8d, 0x9b, 0x1d, 0xb5, 0x50, 0x89, 0x2b, 0x58, 0x78, 0xda, 0x11, 0xd4, 0x7b, 0xeb, 0xb3, 0xa8,
+	0x7f, 0xd2, 0x9b, 0xd2, 0xf0, 0x21, 0x05, 0xbf, 0x8a, 0xd9, 0x88, 0x23, 0x9d, 0x52, 0x28, 0x4e,
+	0x61, 0xc1, 0x62, 0xff, 0x05, 0xb2, 0x51, 0xdd, 0x19, 0x16, 0xe3, 0x1e, 0x62, 0x34, 0xfa, 0xde,
+	0x34, 0x26, 0x2c, 0xfc, 0xdf, 0x1c, 0xd8, 0x88, 0x6c, 0x4c, 0x70, 0x2f, 0x76, 0x0f, 0x8f, 0x66,
+	0xb0, 0x3f, 0x95, 0x4d, 0x88, 0xc0, 0x48, 0x33, 0x99, 0x40, 0x60, 0x5c, 0x93, 0x9c, 0x40, 0x60,
+	0x6c, 0xaf, 0x2a, 0xfd, 0x78, 0x79, 0x23, 0x26, 0xfe, 0xeb, 0x88, 0x89, 0xcb, 0x8e, 0xc8, 0x5d,
+	0x75, 0x44, 0xee, 0x55, 0x47, 0xe4, 0xfe, 0xb9, 0x15, 0x13, 0x57, 0xb7, 0x62, 0xe2, 0xfa, 0x56,
+	0x4c, 0xfc, 0xa2, 0x86, 0x0e, 0x90, 0x9e, 0xff, 0x5d, 0x7c, 0x72, 0x62, 0xd6, 0x4d, 0xbd, 0xc9,
+	0x7e, 0xab, 0xfd, 0x7f, 0x01, 0xe9, 0x69, 0x52, 0x5b, 0xa2, 0xff, 0xea, 0xed, 0xbf, 0x0d, 0x00,
+	0x00, 0xff, 0xff, 0x50, 0x76, 0xdc, 0x27, 0x22, 0x14, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -817,9 +977,11 @@ type MsgClient interface {
 	MsgDraw(ctx context.Context, in *MsgDrawRequest, opts ...grpc.CallOption) (*MsgDrawResponse, error)
 	MsgRepay(ctx context.Context, in *MsgRepayRequest, opts ...grpc.CallOption) (*MsgRepayResponse, error)
 	MsgClose(ctx context.Context, in *MsgCloseRequest, opts ...grpc.CallOption) (*MsgCloseResponse, error)
+	MsgDepositAndDraw(ctx context.Context, in *MsgDepositAndDrawRequest, opts ...grpc.CallOption) (*MsgDepositAndDrawResponse, error)
 	MsgCreateStableMint(ctx context.Context, in *MsgCreateStableMintRequest, opts ...grpc.CallOption) (*MsgCreateStableMintResponse, error)
 	MsgDepositStableMint(ctx context.Context, in *MsgDepositStableMintRequest, opts ...grpc.CallOption) (*MsgDepositStableMintResponse, error)
 	MsgWithdrawStableMint(ctx context.Context, in *MsgWithdrawStableMintRequest, opts ...grpc.CallOption) (*MsgWithdrawStableMintResponse, error)
+	MsgVaultInterestCalc(ctx context.Context, in *MsgVaultInterestCalcRequest, opts ...grpc.CallOption) (*MsgVaultInterestCalcResponse, error)
 }
 
 type msgClient struct {
@@ -884,6 +1046,15 @@ func (c *msgClient) MsgClose(ctx context.Context, in *MsgCloseRequest, opts ...g
 	return out, nil
 }
 
+func (c *msgClient) MsgDepositAndDraw(ctx context.Context, in *MsgDepositAndDrawRequest, opts ...grpc.CallOption) (*MsgDepositAndDrawResponse, error) {
+	out := new(MsgDepositAndDrawResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Msg/MsgDepositAndDraw", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) MsgCreateStableMint(ctx context.Context, in *MsgCreateStableMintRequest, opts ...grpc.CallOption) (*MsgCreateStableMintResponse, error) {
 	out := new(MsgCreateStableMintResponse)
 	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Msg/MsgCreateStableMint", in, out, opts...)
@@ -911,6 +1082,15 @@ func (c *msgClient) MsgWithdrawStableMint(ctx context.Context, in *MsgWithdrawSt
 	return out, nil
 }
 
+func (c *msgClient) MsgVaultInterestCalc(ctx context.Context, in *MsgVaultInterestCalcRequest, opts ...grpc.CallOption) (*MsgVaultInterestCalcResponse, error) {
+	out := new(MsgVaultInterestCalcResponse)
+	err := c.cc.Invoke(ctx, "/comdex.vault.v1beta1.Msg/MsgVaultInterestCalc", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	MsgCreate(context.Context, *MsgCreateRequest) (*MsgCreateResponse, error)
@@ -919,9 +1099,11 @@ type MsgServer interface {
 	MsgDraw(context.Context, *MsgDrawRequest) (*MsgDrawResponse, error)
 	MsgRepay(context.Context, *MsgRepayRequest) (*MsgRepayResponse, error)
 	MsgClose(context.Context, *MsgCloseRequest) (*MsgCloseResponse, error)
+	MsgDepositAndDraw(context.Context, *MsgDepositAndDrawRequest) (*MsgDepositAndDrawResponse, error)
 	MsgCreateStableMint(context.Context, *MsgCreateStableMintRequest) (*MsgCreateStableMintResponse, error)
 	MsgDepositStableMint(context.Context, *MsgDepositStableMintRequest) (*MsgDepositStableMintResponse, error)
 	MsgWithdrawStableMint(context.Context, *MsgWithdrawStableMintRequest) (*MsgWithdrawStableMintResponse, error)
+	MsgVaultInterestCalc(context.Context, *MsgVaultInterestCalcRequest) (*MsgVaultInterestCalcResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -946,6 +1128,9 @@ func (*UnimplementedMsgServer) MsgRepay(ctx context.Context, req *MsgRepayReques
 func (*UnimplementedMsgServer) MsgClose(ctx context.Context, req *MsgCloseRequest) (*MsgCloseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgClose not implemented")
 }
+func (*UnimplementedMsgServer) MsgDepositAndDraw(ctx context.Context, req *MsgDepositAndDrawRequest) (*MsgDepositAndDrawResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgDepositAndDraw not implemented")
+}
 func (*UnimplementedMsgServer) MsgCreateStableMint(ctx context.Context, req *MsgCreateStableMintRequest) (*MsgCreateStableMintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgCreateStableMint not implemented")
 }
@@ -954,6 +1139,9 @@ func (*UnimplementedMsgServer) MsgDepositStableMint(ctx context.Context, req *Ms
 }
 func (*UnimplementedMsgServer) MsgWithdrawStableMint(ctx context.Context, req *MsgWithdrawStableMintRequest) (*MsgWithdrawStableMintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgWithdrawStableMint not implemented")
+}
+func (*UnimplementedMsgServer) MsgVaultInterestCalc(ctx context.Context, req *MsgVaultInterestCalcRequest) (*MsgVaultInterestCalcResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgVaultInterestCalc not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -1068,6 +1256,24 @@ func _Msg_MsgClose_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgDepositAndDraw_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDepositAndDrawRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgDepositAndDraw(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.Msg/MsgDepositAndDraw",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgDepositAndDraw(ctx, req.(*MsgDepositAndDrawRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_MsgCreateStableMint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgCreateStableMintRequest)
 	if err := dec(in); err != nil {
@@ -1122,6 +1328,24 @@ func _Msg_MsgWithdrawStableMint_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgVaultInterestCalc_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgVaultInterestCalcRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgVaultInterestCalc(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.vault.v1beta1.Msg/MsgVaultInterestCalc",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgVaultInterestCalc(ctx, req.(*MsgVaultInterestCalcRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.vault.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -1151,6 +1375,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_MsgClose_Handler,
 		},
 		{
+			MethodName: "MsgDepositAndDraw",
+			Handler:    _Msg_MsgDepositAndDraw_Handler,
+		},
+		{
 			MethodName: "MsgCreateStableMint",
 			Handler:    _Msg_MsgCreateStableMint_Handler,
 		},
@@ -1161,6 +1389,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MsgWithdrawStableMint",
 			Handler:    _Msg_MsgWithdrawStableMint_Handler,
+		},
+		{
+			MethodName: "MsgVaultInterestCalc",
+			Handler:    _Msg_MsgVaultInterestCalc_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1212,8 +1444,8 @@ func (m *MsgCreateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1280,20 +1512,18 @@ func (m *MsgDepositRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	if len(m.UserVaultId) > 0 {
-		i -= len(m.UserVaultId)
-		copy(dAtA[i:], m.UserVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.UserVaultId)))
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if m.ExtendedPairVaultId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1360,20 +1590,18 @@ func (m *MsgWithdrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	if len(m.UserVaultId) > 0 {
-		i -= len(m.UserVaultId)
-		copy(dAtA[i:], m.UserVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.UserVaultId)))
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if m.ExtendedPairVaultId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1440,20 +1668,18 @@ func (m *MsgDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	if len(m.UserVaultId) > 0 {
-		i -= len(m.UserVaultId)
-		copy(dAtA[i:], m.UserVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.UserVaultId)))
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if m.ExtendedPairVaultId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1520,20 +1746,18 @@ func (m *MsgRepayRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x2a
-	if len(m.UserVaultId) > 0 {
-		i -= len(m.UserVaultId)
-		copy(dAtA[i:], m.UserVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.UserVaultId)))
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if m.ExtendedPairVaultId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1590,20 +1814,18 @@ func (m *MsgCloseRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.UserVaultId) > 0 {
-		i -= len(m.UserVaultId)
-		copy(dAtA[i:], m.UserVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.UserVaultId)))
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x20
 	}
 	if m.ExtendedPairVaultId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1633,6 +1855,84 @@ func (m *MsgCloseResponse) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *MsgCloseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDepositAndDrawRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDepositAndDrawRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDepositAndDrawRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.Amount.Size()
+		i -= size
+		if _, err := m.Amount.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x2a
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.ExtendedPairVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.ExtendedPairVaultId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgDepositAndDrawResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgDepositAndDrawResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgDepositAndDrawResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1675,8 +1975,8 @@ func (m *MsgCreateStableMintRequest) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1733,12 +2033,10 @@ func (m *MsgDepositStableMintRequest) MarshalToSizedBuffer(dAtA []byte) (int, er
 	_ = i
 	var l int
 	_ = l
-	if len(m.StableVaultId) > 0 {
-		i -= len(m.StableVaultId)
-		copy(dAtA[i:], m.StableVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.StableVaultId)))
+	if m.StableVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.StableVaultId))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	{
 		size := m.Amount.Size()
@@ -1755,8 +2053,8 @@ func (m *MsgDepositStableMintRequest) MarshalToSizedBuffer(dAtA []byte) (int, er
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1813,12 +2111,10 @@ func (m *MsgWithdrawStableMintRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	_ = i
 	var l int
 	_ = l
-	if len(m.StableVaultId) > 0 {
-		i -= len(m.StableVaultId)
-		copy(dAtA[i:], m.StableVaultId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.StableVaultId)))
+	if m.StableVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.StableVaultId))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x28
 	}
 	{
 		size := m.Amount.Size()
@@ -1835,8 +2131,8 @@ func (m *MsgWithdrawStableMintRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.AppMappingId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -1873,6 +2169,69 @@ func (m *MsgWithdrawStableMintResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgVaultInterestCalcRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgVaultInterestCalcRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgVaultInterestCalcRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.UserVaultId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.UserVaultId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgVaultInterestCalcResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgVaultInterestCalcResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgVaultInterestCalcResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1894,8 +2253,8 @@ func (m *MsgCreateRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
@@ -1926,15 +2285,14 @@ func (m *MsgDepositRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
-	l = len(m.UserVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
@@ -1960,15 +2318,14 @@ func (m *MsgWithdrawRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
-	l = len(m.UserVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
@@ -1994,15 +2351,14 @@ func (m *MsgDrawRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
-	l = len(m.UserVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
@@ -2028,15 +2384,14 @@ func (m *MsgRepayRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
-	l = len(m.UserVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
@@ -2062,20 +2417,52 @@ func (m *MsgCloseRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
-	l = len(m.UserVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
 	}
 	return n
 }
 
 func (m *MsgCloseResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgDepositAndDrawRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.ExtendedPairVaultId != 0 {
+		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
+	}
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
+	}
+	l = m.Amount.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgDepositAndDrawResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2094,8 +2481,8 @@ func (m *MsgCreateStableMintRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
@@ -2124,17 +2511,16 @@ func (m *MsgDepositStableMintRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = len(m.StableVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.StableVaultId != 0 {
+		n += 1 + sovTx(uint64(m.StableVaultId))
 	}
 	return n
 }
@@ -2158,22 +2544,49 @@ func (m *MsgWithdrawStableMintRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.AppMappingId != 0 {
-		n += 1 + sovTx(uint64(m.AppMappingId))
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
 	}
 	if m.ExtendedPairVaultId != 0 {
 		n += 1 + sovTx(uint64(m.ExtendedPairVaultId))
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = len(m.StableVaultId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.StableVaultId != 0 {
+		n += 1 + sovTx(uint64(m.StableVaultId))
 	}
 	return n
 }
 
 func (m *MsgWithdrawStableMintResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgVaultInterestCalcRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	if m.UserVaultId != 0 {
+		n += 1 + sovTx(uint64(m.UserVaultId))
+	}
+	return n
+}
+
+func (m *MsgVaultInterestCalcResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2251,9 +2664,9 @@ func (m *MsgCreateRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2263,7 +2676,7 @@ func (m *MsgCreateRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2489,9 +2902,9 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2501,7 +2914,7 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2526,10 +2939,10 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
 			}
-			var stringLen uint64
+			m.UserVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2539,24 +2952,11 @@ func (m *MsgDepositRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -2725,9 +3125,9 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2737,7 +3137,7 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2762,10 +3162,10 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
 			}
-			var stringLen uint64
+			m.UserVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2775,24 +3175,11 @@ func (m *MsgWithdrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -2961,9 +3348,9 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2973,7 +3360,7 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2998,10 +3385,10 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
 			}
-			var stringLen uint64
+			m.UserVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3011,24 +3398,11 @@ func (m *MsgDrawRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -3197,9 +3571,9 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3209,7 +3583,7 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3234,10 +3608,10 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
 			}
-			var stringLen uint64
+			m.UserVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3247,24 +3621,11 @@ func (m *MsgRepayRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
@@ -3433,9 +3794,9 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3445,7 +3806,7 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3470,10 +3831,10 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
 			}
-			var stringLen uint64
+			m.UserVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3483,24 +3844,11 @@ func (m *MsgCloseRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.UserVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UserVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -3549,6 +3897,229 @@ func (m *MsgCloseResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgCloseResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDepositAndDrawRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDepositAndDrawRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDepositAndDrawRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ExtendedPairVaultId", wireType)
+			}
+			m.ExtendedPairVaultId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ExtendedPairVaultId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
+			}
+			m.UserVaultId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UserVaultId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Amount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgDepositAndDrawResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgDepositAndDrawResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgDepositAndDrawResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -3635,9 +4206,9 @@ func (m *MsgCreateStableMintRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3647,7 +4218,7 @@ func (m *MsgCreateStableMintRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3839,9 +4410,9 @@ func (m *MsgDepositStableMintRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3851,7 +4422,7 @@ func (m *MsgDepositStableMintRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3910,10 +4481,10 @@ func (m *MsgDepositStableMintRequest) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StableVaultId", wireType)
 			}
-			var stringLen uint64
+			m.StableVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3923,24 +4494,11 @@ func (m *MsgDepositStableMintRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.StableVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StableVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -4075,9 +4633,9 @@ func (m *MsgWithdrawStableMintRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AppMappingId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
 			}
-			m.AppMappingId = 0
+			m.AppId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4087,7 +4645,7 @@ func (m *MsgWithdrawStableMintRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AppMappingId |= uint64(b&0x7F) << shift
+				m.AppId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -4146,10 +4704,10 @@ func (m *MsgWithdrawStableMintRequest) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StableVaultId", wireType)
 			}
-			var stringLen uint64
+			m.StableVaultId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4159,24 +4717,11 @@ func (m *MsgWithdrawStableMintRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.StableVaultId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StableVaultId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -4225,6 +4770,176 @@ func (m *MsgWithdrawStableMintResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgWithdrawStableMintResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgVaultInterestCalcRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgVaultInterestCalcRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgVaultInterestCalcRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserVaultId", wireType)
+			}
+			m.UserVaultId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UserVaultId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgVaultInterestCalcResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgVaultInterestCalcResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgVaultInterestCalcResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

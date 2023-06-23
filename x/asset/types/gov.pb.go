@@ -24,9 +24,9 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type AddAssetsProposal struct {
-	Title       string  `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string  `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Assets      []Asset `protobuf:"bytes,3,rep,name=assets,proto3" json:"assets"`
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	Assets      Asset  `protobuf:"bytes,3,opt,name=assets,proto3" json:"assets"`
 }
 
 func (m *AddAssetsProposal) Reset()         { *m = AddAssetsProposal{} }
@@ -62,6 +62,84 @@ func (m *AddAssetsProposal) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AddAssetsProposal proto.InternalMessageInfo
 
+type AddMultipleAssetsProposal struct {
+	Title       string  `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string  `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	Assets      []Asset `protobuf:"bytes,3,rep,name=assets,proto3" json:"assets"`
+}
+
+func (m *AddMultipleAssetsProposal) Reset()         { *m = AddMultipleAssetsProposal{} }
+func (m *AddMultipleAssetsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddMultipleAssetsProposal) ProtoMessage()    {}
+func (*AddMultipleAssetsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_31c5aab0360b917f, []int{1}
+}
+func (m *AddMultipleAssetsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddMultipleAssetsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddMultipleAssetsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddMultipleAssetsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddMultipleAssetsProposal.Merge(m, src)
+}
+func (m *AddMultipleAssetsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddMultipleAssetsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddMultipleAssetsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddMultipleAssetsProposal proto.InternalMessageInfo
+
+type AddMultiplePairsProposal struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	Pairs       []Pair `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs"`
+}
+
+func (m *AddMultiplePairsProposal) Reset()         { *m = AddMultiplePairsProposal{} }
+func (m *AddMultiplePairsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddMultiplePairsProposal) ProtoMessage()    {}
+func (*AddMultiplePairsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_31c5aab0360b917f, []int{2}
+}
+func (m *AddMultiplePairsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddMultiplePairsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddMultiplePairsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddMultiplePairsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddMultiplePairsProposal.Merge(m, src)
+}
+func (m *AddMultiplePairsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddMultiplePairsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddMultiplePairsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddMultiplePairsProposal proto.InternalMessageInfo
+
 type UpdateAssetProposal struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
@@ -72,7 +150,7 @@ func (m *UpdateAssetProposal) Reset()         { *m = UpdateAssetProposal{} }
 func (m *UpdateAssetProposal) String() string { return proto.CompactTextString(m) }
 func (*UpdateAssetProposal) ProtoMessage()    {}
 func (*UpdateAssetProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{1}
+	return fileDescriptor_31c5aab0360b917f, []int{3}
 }
 func (m *UpdateAssetProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -104,14 +182,14 @@ var xxx_messageInfo_UpdateAssetProposal proto.InternalMessageInfo
 type AddPairsProposal struct {
 	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Pairs       []Pair `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs"`
+	Pairs       Pair   `protobuf:"bytes,3,opt,name=pairs,proto3" json:"pairs"`
 }
 
 func (m *AddPairsProposal) Reset()         { *m = AddPairsProposal{} }
 func (m *AddPairsProposal) String() string { return proto.CompactTextString(m) }
 func (*AddPairsProposal) ProtoMessage()    {}
 func (*AddPairsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{2}
+	return fileDescriptor_31c5aab0360b917f, []int{4}
 }
 func (m *AddPairsProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -140,102 +218,24 @@ func (m *AddPairsProposal) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AddPairsProposal proto.InternalMessageInfo
 
-type AddWhitelistedAssetsProposal struct {
-	Title       string          `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string          `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Assets      []ExtendedAsset `protobuf:"bytes,3,rep,name=assets,proto3" json:"assets"`
+type UpdatePairProposal struct {
+	Title       string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	Pairs       Pair   `protobuf:"bytes,3,opt,name=pairs,proto3" json:"pairs"`
 }
 
-func (m *AddWhitelistedAssetsProposal) Reset()         { *m = AddWhitelistedAssetsProposal{} }
-func (m *AddWhitelistedAssetsProposal) String() string { return proto.CompactTextString(m) }
-func (*AddWhitelistedAssetsProposal) ProtoMessage()    {}
-func (*AddWhitelistedAssetsProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{3}
-}
-func (m *AddWhitelistedAssetsProposal) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AddWhitelistedAssetsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AddWhitelistedAssetsProposal.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AddWhitelistedAssetsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddWhitelistedAssetsProposal.Merge(m, src)
-}
-func (m *AddWhitelistedAssetsProposal) XXX_Size() int {
-	return m.Size()
-}
-func (m *AddWhitelistedAssetsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddWhitelistedAssetsProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AddWhitelistedAssetsProposal proto.InternalMessageInfo
-
-type UpdateWhitelistedAssetProposal struct {
-	Title       string        `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string        `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Asset       ExtendedAsset `protobuf:"bytes,3,opt,name=asset,proto3" json:"asset"`
-}
-
-func (m *UpdateWhitelistedAssetProposal) Reset()         { *m = UpdateWhitelistedAssetProposal{} }
-func (m *UpdateWhitelistedAssetProposal) String() string { return proto.CompactTextString(m) }
-func (*UpdateWhitelistedAssetProposal) ProtoMessage()    {}
-func (*UpdateWhitelistedAssetProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{4}
-}
-func (m *UpdateWhitelistedAssetProposal) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *UpdateWhitelistedAssetProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_UpdateWhitelistedAssetProposal.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *UpdateWhitelistedAssetProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateWhitelistedAssetProposal.Merge(m, src)
-}
-func (m *UpdateWhitelistedAssetProposal) XXX_Size() int {
-	return m.Size()
-}
-func (m *UpdateWhitelistedAssetProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateWhitelistedAssetProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateWhitelistedAssetProposal proto.InternalMessageInfo
-
-type AddWhitelistedPairsProposal struct {
-	Title       string             `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string             `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Pairs       []ExtendedPairLend `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs"`
-}
-
-func (m *AddWhitelistedPairsProposal) Reset()         { *m = AddWhitelistedPairsProposal{} }
-func (m *AddWhitelistedPairsProposal) String() string { return proto.CompactTextString(m) }
-func (*AddWhitelistedPairsProposal) ProtoMessage()    {}
-func (*AddWhitelistedPairsProposal) Descriptor() ([]byte, []int) {
+func (m *UpdatePairProposal) Reset()         { *m = UpdatePairProposal{} }
+func (m *UpdatePairProposal) String() string { return proto.CompactTextString(m) }
+func (*UpdatePairProposal) ProtoMessage()    {}
+func (*UpdatePairProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_31c5aab0360b917f, []int{5}
 }
-func (m *AddWhitelistedPairsProposal) XXX_Unmarshal(b []byte) error {
+func (m *UpdatePairProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddWhitelistedPairsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdatePairProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddWhitelistedPairsProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UpdatePairProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -245,36 +245,36 @@ func (m *AddWhitelistedPairsProposal) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *AddWhitelistedPairsProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddWhitelistedPairsProposal.Merge(m, src)
+func (m *UpdatePairProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdatePairProposal.Merge(m, src)
 }
-func (m *AddWhitelistedPairsProposal) XXX_Size() int {
+func (m *UpdatePairProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddWhitelistedPairsProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddWhitelistedPairsProposal.DiscardUnknown(m)
+func (m *UpdatePairProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdatePairProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddWhitelistedPairsProposal proto.InternalMessageInfo
+var xxx_messageInfo_UpdatePairProposal proto.InternalMessageInfo
 
-type UpdateWhitelistedPairProposal struct {
-	Title       string           `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string           `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Pair        ExtendedPairLend `protobuf:"bytes,3,opt,name=pair,proto3" json:"pair"`
+type AddAppProposal struct {
+	Title       string  `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string  `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	App         AppData `protobuf:"bytes,3,opt,name=app,proto3" json:"app"`
 }
 
-func (m *UpdateWhitelistedPairProposal) Reset()         { *m = UpdateWhitelistedPairProposal{} }
-func (m *UpdateWhitelistedPairProposal) String() string { return proto.CompactTextString(m) }
-func (*UpdateWhitelistedPairProposal) ProtoMessage()    {}
-func (*UpdateWhitelistedPairProposal) Descriptor() ([]byte, []int) {
+func (m *AddAppProposal) Reset()         { *m = AddAppProposal{} }
+func (m *AddAppProposal) String() string { return proto.CompactTextString(m) }
+func (*AddAppProposal) ProtoMessage()    {}
+func (*AddAppProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_31c5aab0360b917f, []int{6}
 }
-func (m *UpdateWhitelistedPairProposal) XXX_Unmarshal(b []byte) error {
+func (m *AddAppProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UpdateWhitelistedPairProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddAppProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UpdateWhitelistedPairProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddAppProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -284,153 +284,36 @@ func (m *UpdateWhitelistedPairProposal) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *UpdateWhitelistedPairProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateWhitelistedPairProposal.Merge(m, src)
+func (m *AddAppProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddAppProposal.Merge(m, src)
 }
-func (m *UpdateWhitelistedPairProposal) XXX_Size() int {
+func (m *AddAppProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *UpdateWhitelistedPairProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateWhitelistedPairProposal.DiscardUnknown(m)
+func (m *AddAppProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddAppProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateWhitelistedPairProposal proto.InternalMessageInfo
+var xxx_messageInfo_AddAppProposal proto.InternalMessageInfo
 
-type AddExtendedPairsVaultProposal struct {
-	Title       string              `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string              `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Pairs       []ExtendedPairVault `protobuf:"bytes,3,rep,name=pairs,proto3" json:"pairs"`
-}
-
-func (m *AddExtendedPairsVaultProposal) Reset()         { *m = AddExtendedPairsVaultProposal{} }
-func (m *AddExtendedPairsVaultProposal) String() string { return proto.CompactTextString(m) }
-func (*AddExtendedPairsVaultProposal) ProtoMessage()    {}
-func (*AddExtendedPairsVaultProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{7}
-}
-func (m *AddExtendedPairsVaultProposal) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AddExtendedPairsVaultProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AddExtendedPairsVaultProposal.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AddExtendedPairsVaultProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddExtendedPairsVaultProposal.Merge(m, src)
-}
-func (m *AddExtendedPairsVaultProposal) XXX_Size() int {
-	return m.Size()
-}
-func (m *AddExtendedPairsVaultProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddExtendedPairsVaultProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AddExtendedPairsVaultProposal proto.InternalMessageInfo
-
-type UpdateExtendedPairVaultProposal struct {
-	Title       string            `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string            `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	Pair        ExtendedPairVault `protobuf:"bytes,3,opt,name=pair,proto3" json:"pair"`
-}
-
-func (m *UpdateExtendedPairVaultProposal) Reset()         { *m = UpdateExtendedPairVaultProposal{} }
-func (m *UpdateExtendedPairVaultProposal) String() string { return proto.CompactTextString(m) }
-func (*UpdateExtendedPairVaultProposal) ProtoMessage()    {}
-func (*UpdateExtendedPairVaultProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{8}
-}
-func (m *UpdateExtendedPairVaultProposal) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *UpdateExtendedPairVaultProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_UpdateExtendedPairVaultProposal.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *UpdateExtendedPairVaultProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateExtendedPairVaultProposal.Merge(m, src)
-}
-func (m *UpdateExtendedPairVaultProposal) XXX_Size() int {
-	return m.Size()
-}
-func (m *UpdateExtendedPairVaultProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateExtendedPairVaultProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_UpdateExtendedPairVaultProposal proto.InternalMessageInfo
-
-type AddAppMappingProposal struct {
-	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	App         []AppMapping `protobuf:"bytes,3,rep,name=app,proto3" json:"app"`
-}
-
-func (m *AddAppMappingProposal) Reset()         { *m = AddAppMappingProposal{} }
-func (m *AddAppMappingProposal) String() string { return proto.CompactTextString(m) }
-func (*AddAppMappingProposal) ProtoMessage()    {}
-func (*AddAppMappingProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{9}
-}
-func (m *AddAppMappingProposal) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AddAppMappingProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AddAppMappingProposal.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AddAppMappingProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddAppMappingProposal.Merge(m, src)
-}
-func (m *AddAppMappingProposal) XXX_Size() int {
-	return m.Size()
-}
-func (m *AddAppMappingProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddAppMappingProposal.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AddAppMappingProposal proto.InternalMessageInfo
-
-type UpdateGovTimeInAppMappingProposal struct {
+type UpdateGovTimeInAppProposal struct {
 	Title       string        `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
 	Description string        `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
 	GovTime     AppAndGovTime `protobuf:"bytes,3,opt,name=govTime,proto3" json:"govTime"`
 }
 
-func (m *UpdateGovTimeInAppMappingProposal) Reset()         { *m = UpdateGovTimeInAppMappingProposal{} }
-func (m *UpdateGovTimeInAppMappingProposal) String() string { return proto.CompactTextString(m) }
-func (*UpdateGovTimeInAppMappingProposal) ProtoMessage()    {}
-func (*UpdateGovTimeInAppMappingProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{10}
+func (m *UpdateGovTimeInAppProposal) Reset()         { *m = UpdateGovTimeInAppProposal{} }
+func (m *UpdateGovTimeInAppProposal) String() string { return proto.CompactTextString(m) }
+func (*UpdateGovTimeInAppProposal) ProtoMessage()    {}
+func (*UpdateGovTimeInAppProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_31c5aab0360b917f, []int{7}
 }
-func (m *UpdateGovTimeInAppMappingProposal) XXX_Unmarshal(b []byte) error {
+func (m *UpdateGovTimeInAppProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UpdateGovTimeInAppMappingProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateGovTimeInAppProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UpdateGovTimeInAppMappingProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UpdateGovTimeInAppProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -440,36 +323,36 @@ func (m *UpdateGovTimeInAppMappingProposal) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *UpdateGovTimeInAppMappingProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateGovTimeInAppMappingProposal.Merge(m, src)
+func (m *UpdateGovTimeInAppProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateGovTimeInAppProposal.Merge(m, src)
 }
-func (m *UpdateGovTimeInAppMappingProposal) XXX_Size() int {
+func (m *UpdateGovTimeInAppProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *UpdateGovTimeInAppMappingProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateGovTimeInAppMappingProposal.DiscardUnknown(m)
+func (m *UpdateGovTimeInAppProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateGovTimeInAppProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateGovTimeInAppMappingProposal proto.InternalMessageInfo
+var xxx_messageInfo_UpdateGovTimeInAppProposal proto.InternalMessageInfo
 
-type AddAssetMappingProposal struct {
-	Title       string       `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
-	Description string       `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
-	App         []AppMapping `protobuf:"bytes,3,rep,name=app,proto3" json:"app"`
+type AddAssetInAppProposal struct {
+	Title       string  `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string  `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	App         AppData `protobuf:"bytes,3,opt,name=app,proto3" json:"app"`
 }
 
-func (m *AddAssetMappingProposal) Reset()         { *m = AddAssetMappingProposal{} }
-func (m *AddAssetMappingProposal) String() string { return proto.CompactTextString(m) }
-func (*AddAssetMappingProposal) ProtoMessage()    {}
-func (*AddAssetMappingProposal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_31c5aab0360b917f, []int{11}
+func (m *AddAssetInAppProposal) Reset()         { *m = AddAssetInAppProposal{} }
+func (m *AddAssetInAppProposal) String() string { return proto.CompactTextString(m) }
+func (*AddAssetInAppProposal) ProtoMessage()    {}
+func (*AddAssetInAppProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_31c5aab0360b917f, []int{8}
 }
-func (m *AddAssetMappingProposal) XXX_Unmarshal(b []byte) error {
+func (m *AddAssetInAppProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddAssetMappingProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AddAssetInAppProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddAssetMappingProposal.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AddAssetInAppProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -479,75 +362,106 @@ func (m *AddAssetMappingProposal) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *AddAssetMappingProposal) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddAssetMappingProposal.Merge(m, src)
+func (m *AddAssetInAppProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddAssetInAppProposal.Merge(m, src)
 }
-func (m *AddAssetMappingProposal) XXX_Size() int {
+func (m *AddAssetInAppProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddAssetMappingProposal) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddAssetMappingProposal.DiscardUnknown(m)
+func (m *AddAssetInAppProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddAssetInAppProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddAssetMappingProposal proto.InternalMessageInfo
+var xxx_messageInfo_AddAssetInAppProposal proto.InternalMessageInfo
+
+type AddMultipleAssetsPairsProposal struct {
+	Title       string      `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty" yaml:"title"`
+	Description string      `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty" yaml:"description"`
+	AssetsPair  []AssetPair `protobuf:"bytes,3,rep,name=assetsPair,proto3" json:"assetsPair"`
+}
+
+func (m *AddMultipleAssetsPairsProposal) Reset()         { *m = AddMultipleAssetsPairsProposal{} }
+func (m *AddMultipleAssetsPairsProposal) String() string { return proto.CompactTextString(m) }
+func (*AddMultipleAssetsPairsProposal) ProtoMessage()    {}
+func (*AddMultipleAssetsPairsProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_31c5aab0360b917f, []int{9}
+}
+func (m *AddMultipleAssetsPairsProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AddMultipleAssetsPairsProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AddMultipleAssetsPairsProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AddMultipleAssetsPairsProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AddMultipleAssetsPairsProposal.Merge(m, src)
+}
+func (m *AddMultipleAssetsPairsProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AddMultipleAssetsPairsProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AddMultipleAssetsPairsProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AddMultipleAssetsPairsProposal proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*AddAssetsProposal)(nil), "comdex.asset.v1beta1.AddAssetsProposal")
+	proto.RegisterType((*AddMultipleAssetsProposal)(nil), "comdex.asset.v1beta1.AddMultipleAssetsProposal")
+	proto.RegisterType((*AddMultiplePairsProposal)(nil), "comdex.asset.v1beta1.AddMultiplePairsProposal")
 	proto.RegisterType((*UpdateAssetProposal)(nil), "comdex.asset.v1beta1.UpdateAssetProposal")
 	proto.RegisterType((*AddPairsProposal)(nil), "comdex.asset.v1beta1.AddPairsProposal")
-	proto.RegisterType((*AddWhitelistedAssetsProposal)(nil), "comdex.asset.v1beta1.AddWhitelistedAssetsProposal")
-	proto.RegisterType((*UpdateWhitelistedAssetProposal)(nil), "comdex.asset.v1beta1.UpdateWhitelistedAssetProposal")
-	proto.RegisterType((*AddWhitelistedPairsProposal)(nil), "comdex.asset.v1beta1.AddWhitelistedPairsProposal")
-	proto.RegisterType((*UpdateWhitelistedPairProposal)(nil), "comdex.asset.v1beta1.UpdateWhitelistedPairProposal")
-	proto.RegisterType((*AddExtendedPairsVaultProposal)(nil), "comdex.asset.v1beta1.AddExtendedPairsVaultProposal")
-	proto.RegisterType((*UpdateExtendedPairVaultProposal)(nil), "comdex.asset.v1beta1.UpdateExtendedPairVaultProposal")
-	proto.RegisterType((*AddAppMappingProposal)(nil), "comdex.asset.v1beta1.AddAppMappingProposal")
-	proto.RegisterType((*UpdateGovTimeInAppMappingProposal)(nil), "comdex.asset.v1beta1.UpdateGovTimeInAppMappingProposal")
-	proto.RegisterType((*AddAssetMappingProposal)(nil), "comdex.asset.v1beta1.AddAssetMappingProposal")
+	proto.RegisterType((*UpdatePairProposal)(nil), "comdex.asset.v1beta1.UpdatePairProposal")
+	proto.RegisterType((*AddAppProposal)(nil), "comdex.asset.v1beta1.AddAppProposal")
+	proto.RegisterType((*UpdateGovTimeInAppProposal)(nil), "comdex.asset.v1beta1.UpdateGovTimeInAppProposal")
+	proto.RegisterType((*AddAssetInAppProposal)(nil), "comdex.asset.v1beta1.AddAssetInAppProposal")
+	proto.RegisterType((*AddMultipleAssetsPairsProposal)(nil), "comdex.asset.v1beta1.AddMultipleAssetsPairsProposal")
 }
 
 func init() { proto.RegisterFile("comdex/asset/v1beta1/gov.proto", fileDescriptor_31c5aab0360b917f) }
 
 var fileDescriptor_31c5aab0360b917f = []byte{
-	// 606 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x56, 0x4d, 0x6b, 0x13, 0x41,
-	0x18, 0xde, 0x31, 0x6d, 0xc5, 0xa9, 0x87, 0x1a, 0xab, 0x86, 0xd4, 0x6e, 0xe2, 0x8a, 0x6d, 0x0e,
-	0x9a, 0xa5, 0x0a, 0x5a, 0xbd, 0xe8, 0xa6, 0x88, 0x08, 0x0a, 0x35, 0xf8, 0x01, 0xde, 0x26, 0x99,
-	0xe9, 0x76, 0x60, 0xb3, 0x33, 0x64, 0xa7, 0xa1, 0xfd, 0x17, 0xfe, 0x0c, 0x0f, 0x1e, 0x04, 0xf1,
-	0x17, 0x04, 0x4a, 0xf0, 0xd4, 0xa3, 0xa7, 0xa0, 0xc9, 0x3f, 0xe8, 0x2f, 0x90, 0xf9, 0xd8, 0xb2,
-	0x9b, 0xac, 0xd1, 0x5c, 0x56, 0xbc, 0x25, 0xfb, 0x3e, 0xef, 0xcb, 0xf3, 0xcc, 0xf3, 0xcc, 0x07,
-	0xb4, 0xdb, 0xac, 0x83, 0xc9, 0xa1, 0x8b, 0xa2, 0x88, 0x08, 0xb7, 0xb7, 0xd5, 0x22, 0x02, 0x6d,
-	0xb9, 0x3e, 0xeb, 0xd5, 0x79, 0x97, 0x09, 0x56, 0x5c, 0xd5, 0xf5, 0xba, 0xaa, 0xd7, 0x4d, 0xbd,
-	0xbc, 0xea, 0x33, 0x9f, 0x29, 0x80, 0x2b, 0x7f, 0x69, 0x6c, 0xb9, 0x9a, 0x39, 0x4b, 0x77, 0x6a,
-	0x44, 0x25, 0x13, 0xc1, 0x11, 0xed, 0x1a, 0x40, 0x2d, 0x13, 0x40, 0x0e, 0x05, 0x09, 0x31, 0xc1,
-	0x5e, 0x62, 0xd4, 0xe6, 0x4c, 0xe4, 0x0b, 0x12, 0x62, 0x03, 0xbc, 0x3d, 0x13, 0xb8, 0x8b, 0x68,
-	0xf7, 0x2d, 0x3a, 0x08, 0xe2, 0xb1, 0xb7, 0xb2, 0x35, 0x70, 0xfe, 0x12, 0x71, 0x4e, 0x43, 0x5f,
-	0xc3, 0x9c, 0xcf, 0x00, 0x5e, 0xf2, 0xb0, 0x26, 0x14, 0xed, 0x76, 0x19, 0x67, 0x11, 0x0a, 0x8a,
-	0x1b, 0x70, 0x51, 0x50, 0x11, 0x90, 0x12, 0xa8, 0x82, 0xda, 0x85, 0xc6, 0xca, 0xe9, 0xb0, 0x72,
-	0xf1, 0x08, 0x75, 0x82, 0x47, 0x8e, 0xfa, 0xec, 0x34, 0x75, 0xb9, 0xb8, 0x0d, 0x97, 0x31, 0x89,
-	0xda, 0x5d, 0xca, 0x05, 0x65, 0x61, 0xe9, 0x9c, 0x42, 0x5f, 0x3d, 0x1d, 0x56, 0x8a, 0x1a, 0x9d,
-	0x28, 0x3a, 0xcd, 0x24, 0xb4, 0xf8, 0x10, 0x2e, 0x29, 0x66, 0x51, 0xa9, 0x50, 0x2d, 0xd4, 0x96,
-	0xef, 0xae, 0xd5, 0xb3, 0xfc, 0xa9, 0x2b, 0x5e, 0x8d, 0x85, 0xc1, 0xb0, 0x62, 0x35, 0x4d, 0x83,
-	0xa4, 0x7c, 0xf9, 0x0d, 0xc7, 0x48, 0x10, 0x55, 0xcd, 0x91, 0xf4, 0x03, 0xb8, 0xa8, 0x38, 0x94,
-	0x0a, 0x55, 0xf0, 0x77, 0x9c, 0x35, 0xde, 0xf9, 0x04, 0xe0, 0x8a, 0x87, 0x95, 0x47, 0x79, 0x2e,
-	0xf2, 0x7d, 0xb8, 0x28, 0x23, 0x19, 0xaf, 0x71, 0x39, 0x9b, 0xaf, 0x64, 0x15, 0xd3, 0x55, 0x70,
-	0xa7, 0x0f, 0xe0, 0x75, 0x0f, 0xe3, 0x77, 0xfb, 0x54, 0x90, 0x80, 0x46, 0x82, 0xe4, 0x9f, 0x0f,
-	0x6f, 0x22, 0x1f, 0x37, 0xb3, 0xb9, 0x3f, 0x4d, 0x6e, 0xa8, 0x89, 0x9c, 0xf4, 0x01, 0xb4, 0x75,
-	0x4e, 0x26, 0x85, 0xe4, 0xa8, 0xe3, 0x71, 0x3a, 0x32, 0x73, 0xc8, 0x30, 0xd1, 0xe9, 0x03, 0xb8,
-	0x96, 0xf6, 0x22, 0xef, 0x14, 0x35, 0xd2, 0x29, 0xda, 0x98, 0x2d, 0x41, 0xb2, 0x93, 0x87, 0xd6,
-	0x54, 0xa2, 0xd6, 0xa7, 0xbc, 0x90, 0xd0, 0x1c, 0x75, 0x3c, 0x81, 0x0b, 0x92, 0x8c, 0x71, 0x62,
-	0x3e, 0x19, 0xaa, 0xd3, 0x39, 0x06, 0x70, 0xdd, 0xc3, 0x38, 0x89, 0x89, 0xd4, 0x99, 0x9b, 0xa3,
-	0x8a, 0x9d, 0xb4, 0x1b, 0x9b, 0x7f, 0x96, 0xa1, 0x18, 0xa6, 0xed, 0x38, 0x06, 0xb0, 0xa2, 0xed,
-	0x98, 0x02, 0xe6, 0xba, 0xc7, 0x93, 0x86, 0xcc, 0xa9, 0x44, 0x3b, 0xf2, 0x05, 0xc0, 0x2b, 0xf2,
-	0xfa, 0x3a, 0xbb, 0xd6, 0x72, 0xa4, 0xbf, 0x0d, 0x0b, 0x88, 0x73, 0xe3, 0x43, 0xf5, 0x37, 0x77,
-	0xc1, 0x19, 0x31, 0x43, 0x5b, 0xb6, 0x38, 0xdf, 0x00, 0xbc, 0xa1, 0x97, 0xff, 0x19, 0xeb, 0xbd,
-	0xa6, 0x1d, 0xf2, 0x3c, 0xfc, 0x27, 0x0a, 0x76, 0xe0, 0x79, 0x5f, 0x13, 0x98, 0x7d, 0x3c, 0x79,
-	0x9c, 0x7b, 0x21, 0x36, 0x5c, 0x8d, 0x90, 0xb8, 0xd3, 0xf9, 0x0a, 0xe0, 0xb5, 0xf8, 0x05, 0xf1,
-	0x1f, 0x99, 0xd0, 0x78, 0x35, 0xf8, 0x69, 0x5b, 0x1f, 0x47, 0xb6, 0x35, 0x18, 0xd9, 0xe0, 0x64,
-	0x64, 0x83, 0x1f, 0x23, 0x1b, 0x7c, 0x18, 0xdb, 0xd6, 0xc9, 0xd8, 0xb6, 0xbe, 0x8f, 0x6d, 0xeb,
-	0xbd, 0xeb, 0x53, 0xb1, 0x7f, 0xd0, 0x92, 0x43, 0x5d, 0x3d, 0xf8, 0x0e, 0xdb, 0xdb, 0xa3, 0x6d,
-	0x8a, 0x02, 0xf3, 0xdf, 0x8d, 0xdf, 0x57, 0xe2, 0x88, 0x93, 0xa8, 0xb5, 0xa4, 0xde, 0x54, 0xf7,
-	0x7e, 0x05, 0x00, 0x00, 0xff, 0xff, 0x5e, 0x4a, 0x1b, 0x62, 0x8c, 0x0a, 0x00, 0x00,
+	// 500 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x95, 0x4f, 0x8b, 0xd3, 0x40,
+	0x18, 0xc6, 0x33, 0xd6, 0xae, 0xf8, 0xae, 0xc8, 0x1a, 0x57, 0xa9, 0x15, 0x27, 0x25, 0x82, 0xec,
+	0xc5, 0x84, 0x55, 0xfc, 0x7b, 0x4b, 0x55, 0xc4, 0x83, 0xb0, 0x16, 0xbd, 0x78, 0x9b, 0x76, 0x66,
+	0xe3, 0x40, 0xda, 0x19, 0x92, 0xd9, 0xe2, 0x7e, 0x0b, 0x3f, 0x86, 0x82, 0x88, 0x07, 0x0f, 0xde,
+	0xbd, 0xd4, 0xdb, 0x1e, 0x3d, 0x15, 0x6d, 0xbf, 0xc1, 0x7e, 0x02, 0x99, 0x3f, 0x91, 0x80, 0x59,
+	0x71, 0x3d, 0xa4, 0x78, 0x6b, 0xf3, 0x3c, 0xef, 0xcc, 0x6f, 0x1e, 0xde, 0x79, 0x07, 0xf0, 0x48,
+	0x8c, 0x29, 0x7b, 0x1d, 0x93, 0xa2, 0x60, 0x2a, 0x9e, 0x6e, 0x0f, 0x99, 0x22, 0xdb, 0x71, 0x2a,
+	0xa6, 0x91, 0xcc, 0x85, 0x12, 0xfe, 0xa6, 0xd5, 0x23, 0xa3, 0x47, 0x4e, 0xef, 0x6e, 0xa6, 0x22,
+	0x15, 0xc6, 0x10, 0xeb, 0x5f, 0xd6, 0xdb, 0xed, 0xd5, 0xae, 0x65, 0x2b, 0xad, 0x23, 0xa8, 0x75,
+	0x48, 0xc2, 0x73, 0x67, 0xa8, 0xc7, 0x21, 0x52, 0x5a, 0x3d, 0xfc, 0x88, 0xe0, 0x5c, 0x42, 0x69,
+	0xa2, 0xe5, 0x62, 0x27, 0x17, 0x52, 0x14, 0x24, 0xf3, 0xaf, 0x41, 0x5b, 0x71, 0x95, 0xb1, 0x0e,
+	0xea, 0xa1, 0xad, 0xd3, 0xfd, 0x8d, 0xc3, 0x79, 0x70, 0x66, 0x9f, 0x8c, 0xb3, 0xfb, 0xa1, 0xf9,
+	0x1c, 0x0e, 0xac, 0xec, 0xdf, 0x85, 0x75, 0xca, 0x8a, 0x51, 0xce, 0xa5, 0xe2, 0x62, 0xd2, 0x39,
+	0x61, 0xdc, 0x17, 0x0f, 0xe7, 0x81, 0x6f, 0xdd, 0x15, 0x31, 0x1c, 0x54, 0xad, 0xfe, 0x3d, 0x58,
+	0x33, 0x48, 0x45, 0xa7, 0xd5, 0x43, 0x5b, 0xeb, 0x37, 0x2e, 0x47, 0x75, 0xb9, 0x44, 0x86, 0xab,
+	0x7f, 0x72, 0x36, 0x0f, 0xbc, 0x81, 0x2b, 0x08, 0x3f, 0x23, 0xb8, 0x94, 0x50, 0xfa, 0x74, 0x2f,
+	0x53, 0x5c, 0x66, 0x6c, 0xa5, 0xe8, 0xad, 0xe3, 0xa1, 0x7f, 0x42, 0xd0, 0xa9, 0xa0, 0xef, 0x10,
+	0x9e, 0x37, 0x49, 0x7e, 0x1b, 0xda, 0xba, 0x35, 0x4a, 0xf0, 0x6e, 0x3d, 0xb8, 0xa6, 0x72, 0xdc,
+	0xd6, 0xae, 0x9b, 0xe4, 0xfc, 0x0b, 0x49, 0x89, 0xb2, 0x61, 0x37, 0x48, 0x7c, 0x07, 0xda, 0x06,
+	0xee, 0xef, 0xbb, 0xc4, 0xfa, 0xc3, 0xf7, 0x08, 0x36, 0x12, 0x4a, 0x57, 0x98, 0x30, 0x3a, 0x4e,
+	0xc2, 0x1f, 0x10, 0xf8, 0x36, 0x61, 0xad, 0xfd, 0x07, 0xc0, 0xef, 0x10, 0x9c, 0xd5, 0x73, 0x43,
+	0xca, 0x06, 0x61, 0x6f, 0x41, 0x8b, 0x48, 0xe9, 0x50, 0xaf, 0x1c, 0xd1, 0x0b, 0x52, 0x3e, 0x24,
+	0x8a, 0x38, 0x5a, 0xed, 0x0f, 0xbf, 0x20, 0xe8, 0xda, 0x70, 0x1f, 0x8b, 0xe9, 0x73, 0x3e, 0x66,
+	0x4f, 0x26, 0xcd, 0x72, 0x3f, 0x80, 0x53, 0xa9, 0xdd, 0xd9, 0xb1, 0x5f, 0x3d, 0x92, 0x3d, 0x99,
+	0x50, 0x07, 0xe9, 0x4e, 0x50, 0x56, 0xea, 0x4b, 0x78, 0xa1, 0x9c, 0xd4, 0x4d, 0x1f, 0xe0, 0x1f,
+	0x83, 0xff, 0x8a, 0x00, 0xff, 0x3e, 0xa9, 0x1b, 0xbe, 0x92, 0x8f, 0x00, 0xc8, 0xaf, 0x8d, 0xdd,
+	0xe4, 0x0b, 0xfe, 0x30, 0x47, 0x2a, 0xbd, 0x5e, 0x29, 0xec, 0x3f, 0x9b, 0xfd, 0xc0, 0xde, 0xdb,
+	0x05, 0xf6, 0x66, 0x0b, 0x8c, 0x0e, 0x16, 0x18, 0x7d, 0x5f, 0x60, 0xf4, 0x66, 0x89, 0xbd, 0x83,
+	0x25, 0xf6, 0xbe, 0x2d, 0xb1, 0xf7, 0x32, 0x4e, 0xb9, 0x7a, 0xb5, 0x37, 0xd4, 0x4b, 0xc7, 0x76,
+	0xf9, 0xeb, 0x62, 0x77, 0x97, 0x8f, 0x38, 0xc9, 0xdc, 0xff, 0xb8, 0x7c, 0x87, 0xd5, 0xbe, 0x64,
+	0xc5, 0x70, 0xcd, 0x3c, 0xc1, 0x37, 0x7f, 0x06, 0x00, 0x00, 0xff, 0xff, 0x44, 0x27, 0xbf, 0x14,
+	0x33, 0x08, 0x00, 0x00,
 }
 
 func (m *AddAssetsProposal) Marshal() (dAtA []byte, err error) {
@@ -570,10 +484,108 @@ func (m *AddAssetsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	{
+		size, err := m.Assets.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGov(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddMultipleAssetsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddMultipleAssetsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddMultipleAssetsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	if len(m.Assets) > 0 {
 		for iNdEx := len(m.Assets) - 1; iNdEx >= 0; iNdEx-- {
 			{
 				size, err := m.Assets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGov(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddMultiplePairsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddMultiplePairsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddMultiplePairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Pairs) > 0 {
+		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -668,110 +680,8 @@ func (m *AddPairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Pairs) > 0 {
-		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGov(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *AddWhitelistedAssetsProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AddWhitelistedAssetsProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AddWhitelistedAssetsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Assets) > 0 {
-		for iNdEx := len(m.Assets) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Assets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGov(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdateWhitelistedAssetProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdateWhitelistedAssetProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdateWhitelistedAssetProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	{
-		size, err := m.Asset.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.Pairs.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -797,7 +707,7 @@ func (m *UpdateWhitelistedAssetProposal) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *AddWhitelistedPairsProposal) Marshal() (dAtA []byte, err error) {
+func (m *UpdatePairProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -807,69 +717,18 @@ func (m *AddWhitelistedPairsProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddWhitelistedPairsProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdatePairProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddWhitelistedPairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Pairs) > 0 {
-		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGov(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdateWhitelistedPairProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdateWhitelistedPairProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdateWhitelistedPairProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdatePairProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.Pair.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.Pairs.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -895,7 +754,7 @@ func (m *UpdateWhitelistedPairProposal) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *AddExtendedPairsVaultProposal) Marshal() (dAtA []byte, err error) {
+func (m *AddAppProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -905,69 +764,18 @@ func (m *AddExtendedPairsVaultProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddExtendedPairsVaultProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddAppProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddExtendedPairsVaultProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Pairs) > 0 {
-		for iNdEx := len(m.Pairs) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Pairs[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGov(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdateExtendedPairVaultProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdateExtendedPairVaultProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdateExtendedPairVaultProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddAppProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.Pair.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.App.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -993,7 +801,7 @@ func (m *UpdateExtendedPairVaultProposal) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
-func (m *AddAppMappingProposal) Marshal() (dAtA []byte, err error) {
+func (m *UpdateGovTimeInAppProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1003,63 +811,12 @@ func (m *AddAppMappingProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddAppMappingProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateGovTimeInAppProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddAppMappingProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.App) > 0 {
-		for iNdEx := len(m.App) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.App[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGov(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Description) > 0 {
-		i -= len(m.Description)
-		copy(dAtA[i:], m.Description)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Title) > 0 {
-		i -= len(m.Title)
-		copy(dAtA[i:], m.Title)
-		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *UpdateGovTimeInAppMappingProposal) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *UpdateGovTimeInAppMappingProposal) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *UpdateGovTimeInAppMappingProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateGovTimeInAppProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1091,7 +848,7 @@ func (m *UpdateGovTimeInAppMappingProposal) MarshalToSizedBuffer(dAtA []byte) (i
 	return len(dAtA) - i, nil
 }
 
-func (m *AddAssetMappingProposal) Marshal() (dAtA []byte, err error) {
+func (m *AddAssetInAppProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1101,20 +858,67 @@ func (m *AddAssetMappingProposal) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddAssetMappingProposal) MarshalTo(dAtA []byte) (int, error) {
+func (m *AddAssetInAppProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddAssetMappingProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AddAssetInAppProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.App) > 0 {
-		for iNdEx := len(m.App) - 1; iNdEx >= 0; iNdEx-- {
+	{
+		size, err := m.App.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGov(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintGov(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AddMultipleAssetsPairsProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AddMultipleAssetsPairsProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AddMultipleAssetsPairsProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AssetsPair) > 0 {
+		for iNdEx := len(m.AssetsPair) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.App[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.AssetsPair[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1167,8 +971,50 @@ func (m *AddAssetsProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGov(uint64(l))
 	}
+	l = m.Assets.Size()
+	n += 1 + l + sovGov(uint64(l))
+	return n
+}
+
+func (m *AddMultipleAssetsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
 	if len(m.Assets) > 0 {
 		for _, e := range m.Assets {
+			l = e.Size()
+			n += 1 + l + sovGov(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AddMultiplePairsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	if len(m.Pairs) > 0 {
+		for _, e := range m.Pairs {
 			l = e.Size()
 			n += 1 + l + sovGov(uint64(l))
 		}
@@ -1209,58 +1055,12 @@ func (m *AddPairsProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGov(uint64(l))
 	}
-	if len(m.Pairs) > 0 {
-		for _, e := range m.Pairs {
-			l = e.Size()
-			n += 1 + l + sovGov(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *AddWhitelistedAssetsProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	if len(m.Assets) > 0 {
-		for _, e := range m.Assets {
-			l = e.Size()
-			n += 1 + l + sovGov(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *UpdateWhitelistedAssetProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = m.Asset.Size()
+	l = m.Pairs.Size()
 	n += 1 + l + sovGov(uint64(l))
 	return n
 }
 
-func (m *AddWhitelistedPairsProposal) Size() (n int) {
+func (m *UpdatePairProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1274,35 +1074,12 @@ func (m *AddWhitelistedPairsProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGov(uint64(l))
 	}
-	if len(m.Pairs) > 0 {
-		for _, e := range m.Pairs {
-			l = e.Size()
-			n += 1 + l + sovGov(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *UpdateWhitelistedPairProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = m.Pair.Size()
+	l = m.Pairs.Size()
 	n += 1 + l + sovGov(uint64(l))
 	return n
 }
 
-func (m *AddExtendedPairsVaultProposal) Size() (n int) {
+func (m *AddAppProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1316,58 +1093,12 @@ func (m *AddExtendedPairsVaultProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGov(uint64(l))
 	}
-	if len(m.Pairs) > 0 {
-		for _, e := range m.Pairs {
-			l = e.Size()
-			n += 1 + l + sovGov(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *UpdateExtendedPairVaultProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = m.Pair.Size()
+	l = m.App.Size()
 	n += 1 + l + sovGov(uint64(l))
 	return n
 }
 
-func (m *AddAppMappingProposal) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Title)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	l = len(m.Description)
-	if l > 0 {
-		n += 1 + l + sovGov(uint64(l))
-	}
-	if len(m.App) > 0 {
-		for _, e := range m.App {
-			l = e.Size()
-			n += 1 + l + sovGov(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *UpdateGovTimeInAppMappingProposal) Size() (n int) {
+func (m *UpdateGovTimeInAppProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1386,7 +1117,7 @@ func (m *UpdateGovTimeInAppMappingProposal) Size() (n int) {
 	return n
 }
 
-func (m *AddAssetMappingProposal) Size() (n int) {
+func (m *AddAssetInAppProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1400,8 +1131,27 @@ func (m *AddAssetMappingProposal) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGov(uint64(l))
 	}
-	if len(m.App) > 0 {
-		for _, e := range m.App {
+	l = m.App.Size()
+	n += 1 + l + sovGov(uint64(l))
+	return n
+}
+
+func (m *AddMultipleAssetsPairsProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovGov(uint64(l))
+	}
+	if len(m.AssetsPair) > 0 {
+		for _, e := range m.AssetsPair {
 			l = e.Size()
 			n += 1 + l + sovGov(uint64(l))
 		}
@@ -1537,8 +1287,303 @@ func (m *AddAssetsProposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
+			if err := m.Assets.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddMultipleAssetsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddMultipleAssetsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddMultipleAssetsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Assets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
 			m.Assets = append(m.Assets, Asset{})
 			if err := m.Assets[len(m.Assets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddMultiplePairsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddMultiplePairsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddMultiplePairsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pairs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Pairs = append(m.Pairs, Pair{})
+			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1832,8 +1877,7 @@ func (m *AddPairsProposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Pairs = append(m.Pairs, Pair{})
-			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Pairs.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1858,7 +1902,7 @@ func (m *AddPairsProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddWhitelistedAssetsProposal) Unmarshal(dAtA []byte) error {
+func (m *UpdatePairProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1881,305 +1925,10 @@ func (m *AddWhitelistedAssetsProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddWhitelistedAssetsProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: UpdatePairProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddWhitelistedAssetsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Assets", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Assets = append(m.Assets, ExtendedAsset{})
-			if err := m.Assets[len(m.Assets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGov(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGov
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UpdateWhitelistedAssetProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGov
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateWhitelistedAssetProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateWhitelistedAssetProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Asset", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Asset.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGov(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGov
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AddWhitelistedPairsProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGov
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AddWhitelistedPairsProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddWhitelistedPairsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UpdatePairProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2275,8 +2024,7 @@ func (m *AddWhitelistedPairsProposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Pairs = append(m.Pairs, ExtendedPairLend{})
-			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Pairs.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2301,7 +2049,7 @@ func (m *AddWhitelistedPairsProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *UpdateWhitelistedPairProposal) Unmarshal(dAtA []byte) error {
+func (m *AddAppProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2324,452 +2072,10 @@ func (m *UpdateWhitelistedPairProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateWhitelistedPairProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddAppProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateWhitelistedPairProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pair", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Pair.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGov(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGov
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AddExtendedPairsVaultProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGov
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AddExtendedPairsVaultProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddExtendedPairsVaultProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pairs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Pairs = append(m.Pairs, ExtendedPairVault{})
-			if err := m.Pairs[len(m.Pairs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGov(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGov
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UpdateExtendedPairVaultProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGov
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateExtendedPairVaultProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateExtendedPairVaultProposal: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Title = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Description = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pair", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGov
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGov
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGov
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Pair.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGov(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthGov
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AddAppMappingProposal) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGov
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AddAppMappingProposal: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddAppMappingProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddAppProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2865,8 +2171,7 @@ func (m *AddAppMappingProposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.App = append(m.App, AppMapping{})
-			if err := m.App[len(m.App)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.App.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2891,7 +2196,7 @@ func (m *AddAppMappingProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *UpdateGovTimeInAppMappingProposal) Unmarshal(dAtA []byte) error {
+func (m *UpdateGovTimeInAppProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2914,10 +2219,10 @@ func (m *UpdateGovTimeInAppMappingProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateGovTimeInAppMappingProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: UpdateGovTimeInAppProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateGovTimeInAppMappingProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UpdateGovTimeInAppProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3038,7 +2343,7 @@ func (m *UpdateGovTimeInAppMappingProposal) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddAssetMappingProposal) Unmarshal(dAtA []byte) error {
+func (m *AddAssetInAppProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3061,10 +2366,10 @@ func (m *AddAssetMappingProposal) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddAssetMappingProposal: wiretype end group for non-group")
+			return fmt.Errorf("proto: AddAssetInAppProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddAssetMappingProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AddAssetInAppProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3160,8 +2465,155 @@ func (m *AddAssetMappingProposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.App = append(m.App, AppMapping{})
-			if err := m.App[len(m.App)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.App.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGov(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGov
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AddMultipleAssetsPairsProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGov
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AddMultipleAssetsPairsProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AddMultipleAssetsPairsProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssetsPair", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGov
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGov
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGov
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AssetsPair = append(m.AssetsPair, AssetPair{})
+			if err := m.AssetsPair[len(m.AssetsPair)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

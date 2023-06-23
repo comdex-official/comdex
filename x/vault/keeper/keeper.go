@@ -18,20 +18,12 @@ type Keeper struct {
 	asset     expected.AssetKeeper
 	oracle    expected.MarketKeeper
 	collector expected.CollectorKeeper
+	esm       expected.EsmKeeper
+	tokenmint expected.TokenMintKeeper
+	rewards   expected.RewardsKeeper
 }
 
-//
-//func (k *Keeper) CalculateCollaterlizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error) {
-//	//TODO implement me
-//	panic("implement me")
-//}
-
-//func (k *Keeper) BurnCAssets(ctx sdk.Context, moduleName string, collateralDenom string, denom string, amount sdk.Int) error {
-//	//TODO implement me
-//	panic("implement me")
-//}
-
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper, tokenmint expected.TokenMintKeeper, rewards expected.RewardsKeeper) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		key:       key,
@@ -39,13 +31,16 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper
 		asset:     asset,
 		oracle:    oracle,
 		collector: collector,
+		esm:       esm,
+		tokenmint: tokenmint,
+		rewards:   rewards,
 	}
 }
 
-func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.key)
 }

@@ -7,68 +7,68 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/tokenmint/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 
-message QueryAllTokenMintedForAllProductsRequest {
+message QueryAllTokenMintedForAllAppsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryAllTokenMintedForAllProductsResponse {
+message QueryAllTokenMintedForAllAppsResponse {
   repeated TokenMint tokenMint = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"tokenMint\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryTokenMintedByProductRequest {
-  uint64 app_id   = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
+message QueryTokenMintedByAppRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryTokenMintedByProductResponse {
+message QueryTokenMintedByAppResponse {
   TokenMint tokenMint = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"tokenMint\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryTokenMintedByProductAndAssetRequest {
-  uint64 app_id   = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
-  uint64 asset_id   = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
+message QueryTokenMintedByAppAndAssetRequest {
+  uint64 app_id = 1 [(gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [(gogoproto.moretags) = "yaml:\"asset_id\""];
   cosmos.base.query.v1beta1.PageRequest pagination = 3
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
-message QueryTokenMintedByProductAndAssetResponse {
+message QueryTokenMintedByAppAndAssetResponse {
   MintedTokens mintedTokens = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"mintedTokens\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
-      [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
 
 
 service Query {
 
-  rpc QueryAllTokenMintedForAllProducts(QueryAllTokenMintedForAllProductsRequest) returns (QueryAllTokenMintedForAllProductsResponse) {
-    option (google.api.http).get = "/comdex/tokenmint/v1beta1/total-token-minted-all-products";
+  rpc QueryAllTokenMintedForAllApps(QueryAllTokenMintedForAllAppsRequest) returns (QueryAllTokenMintedForAllAppsResponse) {
+    option (google.api.http).get = "/comdex/tokenmint/v1beta1/total-token-minted-all-apps";
   }
 
-  rpc QueryTokenMintedByProduct(QueryTokenMintedByProductRequest) returns (QueryTokenMintedByProductResponse) {
-    option (google.api.http).get = "/comdex/tokenmint/v1beta1/token-minted-by-product/{app_id}";
+  rpc QueryTokenMintedByApp(QueryTokenMintedByAppRequest) returns (QueryTokenMintedByAppResponse) {
+    option (google.api.http).get = "/comdex/tokenmint/v1beta1/token-minted-by-app/{app_id}";
   }
-  rpc QueryTokenMintedByProductAndAsset(QueryTokenMintedByProductAndAssetRequest) returns (QueryTokenMintedByProductAndAssetResponse) {
-    option (google.api.http).get = "/comdex/tokenmint/v1beta1/token-minted-by-product-asset/{app_id}/{asset_id}";
+  rpc QueryTokenMintedByAppAndAsset(QueryTokenMintedByAppAndAssetRequest) returns (QueryTokenMintedByAppAndAssetResponse) {
+    option (google.api.http).get = "/comdex/tokenmint/v1beta1/token-minted-by-app-and-asset/{app_id}/{asset_id}";
   }
 
 }

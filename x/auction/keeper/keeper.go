@@ -5,11 +5,12 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/comdex-official/comdex/x/auction/expected"
-	"github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/comdex-official/comdex/x/auction/expected"
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
 type (
@@ -25,7 +26,9 @@ type (
 		asset       expected.AssetKeeper
 		vault       expected.VaultKeeper
 		collector   expected.CollectorKeeper
-		tokenmint   expected.TokenMintKeeper
+		tokenMint   expected.TokenMintKeeper
+		esm         expected.EsmKeeper
+		lend        expected.LendKeeper
 	}
 )
 
@@ -41,15 +44,16 @@ func NewKeeper(
 	asset expected.AssetKeeper,
 	vault expected.VaultKeeper,
 	collector expected.CollectorKeeper,
-	tokenmint expected.TokenMintKeeper,
-) *Keeper {
+	tokenMintKeeper expected.TokenMintKeeper,
+	esm expected.EsmKeeper,
+	lend expected.LendKeeper,
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
 
-	return &Keeper{
-
+	return Keeper{
 		cdc:         cdc,
 		storeKey:    storeKey,
 		memKey:      memKey,
@@ -61,7 +65,9 @@ func NewKeeper(
 		asset:       asset,
 		vault:       vault,
 		collector:   collector,
-		tokenmint:   tokenmint,
+		tokenMint:   tokenMintKeeper,
+		esm:         esm,
+		lend:        lend,
 	}
 }
 
@@ -69,6 +75,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }

@@ -11,8 +11,5 @@ option go_package = "github.com/comdex-official/comdex/x/bandoracle/types";
 message GenesisState {
     Params params = 1 [(gogoproto.nullable) = false ];
     string port_id = 2;
-    repeated Market markets = 3 [
-        (gogoproto.moretags) = "yaml:\"markets\"",
-        (gogoproto.nullable) = false
-    ];
+    bool flag = 3;
 }

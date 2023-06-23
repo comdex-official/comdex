@@ -33,6 +33,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCloseRequest:
 			res, err := server.MsgClose(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgDepositAndDrawRequest:
+			res, err := server.MsgDepositAndDraw(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCreateStableMintRequest:
 			res, err := server.MsgCreateStableMint(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
@@ -41,6 +44,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgWithdrawStableMintRequest:
 			res, err := server.MsgWithdrawStableMint(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgVaultInterestCalcRequest:
+			res, err := server.MsgVaultInterestCalc(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)

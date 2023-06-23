@@ -1,20 +1,22 @@
 package cli
 
 import (
-	"github.com/comdex-official/comdex/x/bandoracle/types"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/spf13/cobra"
-	"strconv"
+
+	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
 
 func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fetch-price [market-script-id] [requested-validator-count] [sufficient-validator-count]",
-		Args:  cobra.ExactArgs(3),
+		Use:   "fetch-price [market-script-id] [requested-validator-count] [sufficient-validator-count] [twa-batch-size] [accepted-height-diff]",
+		Args:  cobra.ExactArgs(5),
 		Short: "Make a new FetchPrice query request via an existing BandChain market script",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// retrieve the market script id.
@@ -32,6 +34,16 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 
 			// retrieve the sufficient(minimum) validator count.
 			minCount, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			twaBatch, err := strconv.ParseUint(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			acceptedHeightDiff, err := strconv.ParseInt(args[4], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -95,6 +107,8 @@ func NewCmdSubmitFetchPriceProposal() *cobra.Command {
 				feeLimit,
 				prepareGas,
 				executeGas,
+				twaBatch,
+				acceptedHeightDiff,
 			)
 
 			title, err := cmd.Flags().GetString(cli.FlagTitle)

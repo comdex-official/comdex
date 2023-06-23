@@ -1,31 +1,31 @@
 package asset
 
+//goland:noinspection GoLinter
 import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/asset/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
+// NewHandler ...
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	server := keeper.NewMsgServiceServer(k)
+	msgServer := keeper.NewMsgServerImpl(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
-		ctx = ctx.WithEventManager(sdk.NewEventManager())
+		_ = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgAddAssetRequest:
-			res, err := server.MsgAddAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateAssetRequest:
-			res, err := server.MsgUpdateAsset(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgAddPairRequest:
-			res, err := server.MsgAddPair(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgAddAsset:
+			res, err := msgServer.AddAsset(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
+			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }
@@ -35,35 +35,37 @@ func NewUpdateAssetProposalHandler(k keeper.Keeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *types.AddAssetsProposal:
 			return handleAddAssetProposal(ctx, k, c)
+		case *types.AddMultipleAssetsProposal:
+			return handleAddMultipleAssetProposal(ctx, k, c)
 		case *types.UpdateAssetProposal:
 			return handleUpdateAssetProposal(ctx, k, c)
 		case *types.AddPairsProposal:
 			return handleAddPairsProposal(ctx, k, c)
-		case *types.AddWhitelistedAssetsProposal:
-			return handleAddWhitelistedAssetProposal(ctx, k, c)
-		case *types.UpdateWhitelistedAssetProposal:
-			return handleUpdateWhitelistedAssetProposal(ctx, k, c)
-		case *types.UpdateGovTimeInAppMappingProposal:
-			return handleUpdateGovTimeInAppMappingProposal(ctx, k, c)
-		case *types.AddWhitelistedPairsProposal:
-			return handleAddWhitelistedPairsProposal(ctx, k, c)
-		case *types.UpdateWhitelistedPairProposal:
-			return handleUpdateWhitelistedPairProposal(ctx, k, c)
-		case *types.AddAppMappingProposal:
-			return handleAddAppMappingProposal(ctx, k, c)
-		case *types.AddAssetMappingProposal:
-			return handleAddAssetMappingProposal(ctx, k, c)
-		case *types.AddExtendedPairsVaultProposal:
-			return handleExtendedPairsVaultProposal(ctx, k, c)
+		case *types.AddMultiplePairsProposal:
+			return handleAddMultiplePairsProposal(ctx, k, c)
+		case *types.UpdatePairProposal:
+			return handleUpdatePairProposal(ctx, k, c)
+		case *types.UpdateGovTimeInAppProposal:
+			return handleUpdateGovTimeInAppProposal(ctx, k, c)
+		case *types.AddAppProposal:
+			return handleAddAppProposal(ctx, k, c)
+		case *types.AddAssetInAppProposal:
+			return handleAddAssetInAppProposal(ctx, k, c)
+		case *types.AddMultipleAssetsPairsProposal:
+			return handleMultipleAssetsPairsProposal(ctx, k, c)
 
 		default:
-			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
+			return sdkerrors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
 		}
 	}
 }
 
 func handleAddAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetsProposal) error {
 	return k.HandleProposalAddAsset(ctx, p)
+}
+
+func handleAddMultipleAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetsProposal) error {
+	return k.HandleProposalAddMultipleAsset(ctx, p)
 }
 
 func handleUpdateAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateAssetProposal) error {
@@ -74,33 +76,26 @@ func handleAddPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPairsP
 	return k.HandleProposalAddPairs(ctx, p)
 }
 
-func handleAddWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedAssetsProposal) error {
-	return k.HandleAddWhitelistedAssetRecords(ctx, p)
+func handleAddMultiplePairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultiplePairsProposal) error {
+	return k.HandleProposalAddMultiplePairs(ctx, p)
 }
 
-func handleUpdateWhitelistedAssetProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedAssetProposal) error {
-	return k.HandleUpdateWhitelistedAssetRecords(ctx, p)
+func handleUpdatePairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdatePairProposal) error {
+	return k.HandleProposalUpdatePair(ctx, p)
 }
 
-func handleUpdateGovTimeInAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppMappingProposal) error {
-	return k.HandleUpdateGovTimeInAppMapping(ctx, p)
+func handleUpdateGovTimeInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateGovTimeInAppProposal) error {
+	return k.HandleUpdateGovTimeInApp(ctx, p)
 }
 
-func handleAddWhitelistedPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddWhitelistedPairsProposal) error {
-	return k.HandleAddWhitelistedPairsRecords(ctx, p)
+func handleAddAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppProposal) error {
+	return k.HandleAddAppRecords(ctx, p)
 }
 
-func handleUpdateWhitelistedPairProposal(ctx sdk.Context, k keeper.Keeper, p *types.UpdateWhitelistedPairProposal) error {
-	return k.HandleUpdateWhitelistedPairRecords(ctx, p)
+func handleAddAssetInAppProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetInAppProposal) error {
+	return k.HandleAddAssetInAppRecords(ctx, p)
 }
 
-func handleAddAppMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAppMappingProposal) error {
-	return k.HandleAddAppMappingRecords(ctx, p)
-}
-func handleAddAssetMappingProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetMappingProposal) error {
-	return k.HandleAddAssetMappingRecords(ctx, p)
-}
-
-func handleExtendedPairsVaultProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddExtendedPairsVaultProposal) error {
-	return k.HandleAddExtendedPairsVaultRecords(ctx, p)
+func handleMultipleAssetsPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddMultipleAssetsPairsProposal) error {
+	return k.HandleProposalAddMultipleAssetPair(ctx, p)
 }

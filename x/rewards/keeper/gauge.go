@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // ValidateMsgCreateCreateGauge validates types.MsgCreateGauge.
-func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCreateGauge) error {
+func (k Keeper) ValidateMsgCreateGauge(ctx sdk.Context, msg *types.MsgCreateGauge) error {
 	isValidGaugeTypeID := false
 	for _, gaugeTypeID := range types.ValidGaugeTypeIds {
 		if gaugeTypeID == msg.GaugeTypeId {
@@ -23,7 +24,7 @@ func (k Keeper) ValidateMsgCreateCreateGauge(ctx sdk.Context, msg *types.MsgCrea
 		return types.ErrInvalidGaugeTypeID
 	}
 
-	if msg.TriggerDuration <= 0 {
+	if msg.TriggerDuration < types.MinimumEpochDuration {
 		return types.ErrInvalidDuration
 	}
 
@@ -48,11 +49,11 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 		return 0, false
 	}
 
-	price, found := k.marketKeeper.GetPriceForAsset(ctx, asset.Id)
-	if !found {
+	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
+	if !found || !price.IsPriceActive {
 		return 0, false
 	}
-	return price, true
+	return price.Twa, true
 }
 
 func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairID uint64) error {
@@ -91,6 +92,9 @@ func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID u
 
 	childPoolIds := kind.LiquidityMetaData.ChildPoolIds
 	for _, poolID := range childPoolIds {
+		if poolID == kind.LiquidityMetaData.PoolId {
+			return sdkerrors.Wrap(types.ErrSamePoolID, fmt.Sprintf("pool id : %d", poolID))
+		}
 		_, found := k.liquidityKeeper.GetPool(ctx, appID, poolID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))

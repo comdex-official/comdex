@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
 // GetParams returns the parameters for the liquidity module.
@@ -39,7 +40,7 @@ func (k Keeper) GetGenericParams(ctx sdk.Context, appID uint64) (types.GenericPa
 	return genericParams, nil
 }
 
-// SetParams sets the parameters for the liquidity module.
+// SetGenericParams sets the parameters for the liquidity module.
 func (k Keeper) SetGenericParams(ctx sdk.Context, genericParams types.GenericParams) {
 	k.SetGenericLiquidityParams(ctx, genericParams)
 }
@@ -83,7 +84,7 @@ func (k Keeper) UpdateGenericParams(ctx sdk.Context, appID uint64, keys, values 
 		if err != nil {
 			return err
 		}
-		validationErr := parseValidateFunctionMap[k][1].(func(interface{}) error)(parsedValueInterface)
+		validationErr := parseValidateFunctionMap[k][1].(func(interface{}) error)(parsedValueInterface) //nolint:forcetypeassert //this is just for validation of error
 		if validationErr != nil {
 			return validationErr
 		}

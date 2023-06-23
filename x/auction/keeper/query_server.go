@@ -3,46 +3,35 @@ package keeper
 import (
 	"context"
 
-	"github.com/comdex-official/comdex/x/auction/types"
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/auction/types"
 )
 
-var _ types.QueryServer = (*QueryServer)(nil)
+var _ types.QueryServer = QueryServer{}
 
 type QueryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
+func NewQueryServer(k Keeper) types.QueryServer {
 	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q *QueryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
-	var (
-		ctx    = sdk.UnwrapSDKContext(c)
-		params = q.GetParams(ctx)
-	)
-
-	return &types.QueryParamsResponse{
-		Params: params,
-	}, nil
-}
-
-func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (res *types.QuerySurplusAuctionResponse, err error) {
+func (q QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySurplusAuctionRequest) (res *types.QuerySurplusAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.SurplusAuction
+		item types.SurplusAuction
 	)
 	if req.History {
 		item, err = q.GetHistorySurplusAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -58,7 +47,7 @@ func (q *QueryServer) QuerySurplusAuction(c context.Context, req *types.QuerySur
 	}, nil
 }
 
-func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
+func (q QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySurplusAuctionsRequest) (*types.QuerySurplusAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -89,7 +78,6 @@ func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -100,34 +88,58 @@ func (q *QueryServer) QuerySurplusAuctions(c context.Context, req *types.QuerySu
 	}, nil
 }
 
-func (q *QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (res *types.QuerySurplusBiddingsResponse, err error) {
+func (q QueryServer) QuerySurplusBiddings(c context.Context, req *types.QuerySurplusBiddingsRequest) (res *types.QuerySurplusBiddingsResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.SurplusBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.SurplusBiddings
+		key   []byte
 	)
 	if req.History {
-		item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.SurplusString)
+		// item = q.GetHistorySurplusUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.SurplusString)
+		// item = q.GetSurplusUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.SurplusBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QuerySurplusBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
-func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
+
+func (q QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAuctionRequest) (res *types.QueryDebtAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.DebtAuction
+		item types.DebtAuction
 	)
 	if req.History {
 		item, err = q.GetHistoryDebtAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -142,7 +154,8 @@ func (q *QueryServer) QueryDebtAuction(c context.Context, req *types.QueryDebtAu
 		Auction: item,
 	}, nil
 }
-func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
+
+func (q QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtAuctionsRequest) (*types.QueryDebtAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -174,7 +187,6 @@ func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -185,35 +197,58 @@ func (q *QueryServer) QueryDebtAuctions(c context.Context, req *types.QueryDebtA
 	}, nil
 }
 
-func (q *QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
+func (q QueryServer) QueryDebtBiddings(c context.Context, req *types.QueryDebtBiddingsRequest) (*types.QueryDebtBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DebtBiddings
+		ctx   = sdk.UnwrapSDKContext(c)
+		items []types.DebtBiddings
+		key   []byte
 	)
 	if req.History {
-		item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.DebtString)
+		// item = q.GetHistoryDebtUserBiddings(ctx, req.Bidder, req.AppId)
 	} else {
-		item = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.DebtString)
+		// item = q.GetDebtUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DebtBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &types.QueryDebtBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (res *types.QueryDutchAuctionResponse, err error) {
+func (q QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutchAuctionRequest) (res *types.QueryDutchAuctionResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item auctiontypes.DutchAuction
+		item types.DutchAuction
 	)
 	if req.History {
 		item, _ = q.GetHistoryDutchAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
@@ -226,7 +261,7 @@ func (q *QueryServer) QueryDutchAuction(c context.Context, req *types.QueryDutch
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
+func (q QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutchAuctionsRequest) (*types.QueryDutchAuctionsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -257,7 +292,6 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -268,14 +302,59 @@ func (q *QueryServer) QueryDutchAuctions(c context.Context, req *types.QueryDutc
 	}, nil
 }
 
-func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
+func (q QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.DutchBiddings
+	)
+	if req.History {
+		key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+		// item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	} else {
+		key = types.UserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+		// item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryDutchBiddingsResponse{
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
+	}, nil
+}
+
+func (q QueryServer) QueryBiddingsForAuction(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
 		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DutchBiddings
+		item []types.DutchBiddings
 	)
 	if req.History {
 		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
@@ -289,28 +368,7 @@ func (q *QueryServer) QueryDutchBiddings(c context.Context, req *types.QueryDutc
 	}, nil
 }
 
-func (q *QueryServer) QueryBiddingsForAuction(c context.Context, req *types.QueryDutchBiddingsRequest) (*types.QueryDutchBiddingsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-
-	var (
-		ctx  = sdk.UnwrapSDKContext(c)
-		item []auctiontypes.DutchBiddings
-	)
-	if req.History {
-		item = q.GetHistoryDutchUserBiddings(ctx, req.Bidder, req.AppId)
-	} else {
-		item = q.GetDutchUserBiddings(ctx, req.Bidder, req.AppId)
-	}
-
-	return &types.QueryDutchBiddingsResponse{
-		Bidder:   req.Bidder,
-		Biddings: item,
-	}, nil
-}
-
-func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.QueryProtocolStatisticsRequest) (*types.QueryProtocolStatisticsResponse, error) {
+func (q QueryServer) QueryProtocolStatistics(c context.Context, req *types.QueryProtocolStatisticsRequest) (*types.QueryProtocolStatisticsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -339,7 +397,6 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -350,21 +407,174 @@ func (q *QueryServer) QueryProtocolStatistics(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q *QueryServer) QueryAuctionParams(c context.Context, req *auctiontypes.QueryAuctionParamRequest) (*auctiontypes.QueryAuctionParamResponse, error) {
+func (q QueryServer) QueryGenericAuctionParams(c context.Context, req *types.QueryGenericAuctionParamRequest) (*types.QueryGenericAuctionParamResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	item, found := q.GetAuctionParams(ctx, req.AppId)
+	if !found {
+		return &types.QueryGenericAuctionParamResponse{}, nil
+	}
+
+	return &types.QueryGenericAuctionParamResponse{
+		AuctionParams: item,
+	}, nil
+}
+
+func (q QueryServer) QueryDutchLendAuction(c context.Context, req *types.QueryDutchLendAuctionRequest) (*types.QueryDutchLendAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		ctx = sdk.UnwrapSDKContext(c)
+		ctx  = sdk.UnwrapSDKContext(c)
+		item types.DutchAuction
 	)
-
-	item, found := q.GetAuctionParams(ctx, req.AppId)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.AppId)
+	if req.History {
+		item, _ = q.GetHistoryDutchLendAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
+	} else {
+		item, _ = q.GetDutchLendAuction(ctx, req.AppId, req.AuctionMappingId, req.AuctionId)
 	}
 
-	return &types.QueryAuctionParamResponse{
-		AuctionParams: item,
+	return &types.QueryDutchLendAuctionResponse{
+		Auction: item,
+	}, nil
+}
+
+func (q QueryServer) QueryDutchLendAuctions(c context.Context, req *types.QueryDutchLendAuctionsRequest) (*types.QueryDutchLendAuctionsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.DutchAuction
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	if req.History {
+		key = types.HistoryLendAuctionTypeKey(req.AppId, types.DutchString)
+	} else {
+		key = types.LendAuctionTypeKey(req.AppId, types.DutchString)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchAuction
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryDutchLendAuctionsResponse{
+		Auctions:   items,
+		Pagination: pagination,
+	}, nil
+}
+
+func (q QueryServer) QueryDutchLendBiddings(c context.Context, req *types.QueryDutchLendBiddingsRequest) (*types.QueryDutchLendBiddingsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.DutchBiddings
+	)
+	if req.History {
+		key = types.HistoryLendUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+	} else {
+		key = types.LendUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchBiddings
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryDutchLendBiddingsResponse{
+		Bidder:     req.Bidder,
+		Biddings:   items,
+		Pagination: pagination,
+	}, nil
+}
+
+func (q QueryServer) QueryFilterDutchAuctions(c context.Context, req *types.QueryFilterDutchAuctionsRequest) (*types.QueryFilterDutchAuctionsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.DutchAuction
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		count = 0
+	)
+	if req.History {
+		key = types.HistoryAuctionTypeKey(req.AppId, types.DutchString)
+	} else {
+		key = types.AuctionTypeKey(req.AppId, types.DutchString)
+	}
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.DutchAuction
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+			check := false
+			for _, data := range req.Denom {
+				if item.OutflowTokenCurrentAmount.Denom == data || item.InflowTokenCurrentAmount.Denom == data {
+					check = true
+					count++
+					break
+				}
+			}
+
+			if accumulate && check {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	pagination.Total = uint64(count)
+
+	return &types.QueryFilterDutchAuctionsResponse{
+		Auctions:   items,
+		Pagination: pagination,
 	}, nil
 }

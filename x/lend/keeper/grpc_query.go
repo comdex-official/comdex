@@ -2,29 +2,29 @@ package keeper
 
 import (
 	"context"
-	"github.com/comdex-official/comdex/x/lend/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/comdex-official/comdex/x/lend/types"
 )
 
-var (
-	_ types.QueryServer = (*queryServer)(nil)
-)
+var _ types.QueryServer = QueryServer{}
 
-type queryServer struct {
+type QueryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(k Keeper) types.QueryServer {
-	return &queryServer{
+func NewQueryServer(k Keeper) types.QueryServer {
+	return &QueryServer{
 		Keeper: k,
 	}
 }
 
-func (q queryServer) QueryLends(c context.Context, req *types.QueryLendsRequest) (*types.QueryLendsResponse, error) {
+func (q QueryServer) QueryLends(c context.Context, req *types.QueryLendsRequest) (*types.QueryLendsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -50,7 +50,6 @@ func (q queryServer) QueryLends(c context.Context, req *types.QueryLendsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -61,18 +60,16 @@ func (q queryServer) QueryLends(c context.Context, req *types.QueryLendsRequest)
 	}, nil
 }
 
-func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (*types.QueryLendResponse, error) {
+func (q QueryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (*types.QueryLendResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetLend(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryLendResponse{}, nil
 	}
 
 	return &types.QueryLendResponse{
@@ -80,13 +77,14 @@ func (q queryServer) QueryLend(c context.Context, req *types.QueryLendRequest) (
 	}, nil
 }
 
-func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllLendByOwnerRequest) (*types.QueryAllLendByOwnerResponse, error) {
+func (q QueryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllLendByOwnerRequest) (*types.QueryAllLendByOwnerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
 		ctx     = sdk.UnwrapSDKContext(c)
-		lendIds []types.LendAsset
+		lendIds []uint64
+		lends   []types.LendAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -94,18 +92,93 @@ func (q queryServer) QueryAllLendByOwner(c context.Context, req *types.QueryAllL
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetUserLends(ctx, req.Owner)
-	for _, data := range userVaultAssetData.Lends {
-		lendIds = append(lendIds, data)
+	mappingData := q.GetUserTotalMappingData(ctx, req.Owner)
 
+	for _, data := range mappingData {
+		lendIds = append(lendIds, data.LendId)
+	}
+	for _, lendID := range lendIds {
+		lend, _ := q.GetLend(ctx, lendID)
+		lends = append(lends, lend)
+	}
+	if len(lendIds) == 0 {
+		return &types.QueryAllLendByOwnerResponse{}, nil
 	}
 
 	return &types.QueryAllLendByOwnerResponse{
-		Lends: lendIds,
+		Lends: lends,
 	}, nil
 }
 
-func (q queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
+func (q QueryServer) QueryAllLendByOwnerAndPool(c context.Context, req *types.QueryAllLendByOwnerAndPoolRequest) (*types.QueryAllLendByOwnerAndPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx     = sdk.UnwrapSDKContext(c)
+		lendIds []uint64
+		lends   []types.LendAsset
+	)
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
+	mappingData := q.GetUserTotalMappingData(ctx, req.Owner)
+	for _, data := range mappingData {
+		if data.PoolId == req.PoolId {
+			lendIds = append(lendIds, data.LendId)
+		}
+	}
+	for _, lendID := range lendIds {
+		lend, _ := q.GetLend(ctx, lendID)
+		lends = append(lends, lend)
+	}
+	if len(lendIds) == 0 {
+		return &types.QueryAllLendByOwnerAndPoolResponse{}, nil
+	}
+
+	return &types.QueryAllLendByOwnerAndPoolResponse{
+		Lends: lends,
+	}, nil
+}
+
+func (q QueryServer) QueryAllBorrowByOwnerAndPool(c context.Context, req *types.QueryAllBorrowByOwnerAndPoolRequest) (*types.QueryAllBorrowByOwnerAndPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx       = sdk.UnwrapSDKContext(c)
+		borrowIds []uint64
+		borrows   []types.BorrowAsset
+	)
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
+	mappingData := q.GetUserTotalMappingData(ctx, req.Owner)
+	for _, data := range mappingData {
+		if data.PoolId == req.PoolId {
+			borrowIds = append(borrowIds, data.BorrowId...)
+		}
+	}
+	for _, borrowID := range borrowIds {
+		borrow, _ := q.GetBorrow(ctx, borrowID)
+		borrows = append(borrows, borrow)
+	}
+	if len(borrowIds) == 0 {
+		return &types.QueryAllBorrowByOwnerAndPoolResponse{}, nil
+	}
+
+	return &types.QueryAllBorrowByOwnerAndPoolResponse{
+		Borrows: borrows,
+	}, nil
+}
+
+func (q QueryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest) (*types.QueryPairsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -131,7 +204,6 @@ func (q queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -142,18 +214,16 @@ func (q queryServer) QueryPairs(c context.Context, req *types.QueryPairsRequest)
 	}, nil
 }
 
-func (q queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
+func (q QueryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (*types.QueryPairResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetLendPair(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryPairResponse{}, nil
 	}
 
 	return &types.QueryPairResponse{
@@ -161,7 +231,7 @@ func (q queryServer) QueryPair(c context.Context, req *types.QueryPairRequest) (
 	}, nil
 }
 
-func (q queryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest) (*types.QueryPoolsResponse, error) {
+func (q QueryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest) (*types.QueryPoolsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -187,7 +257,6 @@ func (q queryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest)
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -198,18 +267,16 @@ func (q queryServer) QueryPools(c context.Context, req *types.QueryPoolsRequest)
 	}, nil
 }
 
-func (q queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (*types.QueryPoolResponse, error) {
+func (q QueryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (*types.QueryPoolResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetPool(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryPoolResponse{}, nil
 	}
 
 	return &types.QueryPoolResponse{
@@ -217,7 +284,7 @@ func (q queryServer) QueryPool(c context.Context, req *types.QueryPoolRequest) (
 	}, nil
 }
 
-func (q queryServer) QueryAssetToPairMappings(c context.Context, req *types.QueryAssetToPairMappingsRequest) (*types.QueryAssetToPairMappingsResponse, error) {
+func (q QueryServer) QueryAssetToPairMappings(c context.Context, req *types.QueryAssetToPairMappingsRequest) (*types.QueryAssetToPairMappingsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -243,7 +310,6 @@ func (q queryServer) QueryAssetToPairMappings(c context.Context, req *types.Quer
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -254,18 +320,16 @@ func (q queryServer) QueryAssetToPairMappings(c context.Context, req *types.Quer
 	}, nil
 }
 
-func (q queryServer) QueryAssetToPairMapping(c context.Context, req *types.QueryAssetToPairMappingRequest) (*types.QueryAssetToPairMappingResponse, error) {
+func (q QueryServer) QueryAssetToPairMapping(c context.Context, req *types.QueryAssetToPairMappingRequest) (*types.QueryAssetToPairMappingResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetAssetToPair(ctx, req.Id)
+	item, found := q.GetAssetToPair(ctx, req.AssetId, req.PoolId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryAssetToPairMappingResponse{}, nil
 	}
 
 	return &types.QueryAssetToPairMappingResponse{
@@ -273,7 +337,7 @@ func (q queryServer) QueryAssetToPairMapping(c context.Context, req *types.Query
 	}, nil
 }
 
-func (q queryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequest) (*types.QueryBorrowsResponse, error) {
+func (q QueryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequest) (*types.QueryBorrowsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
@@ -299,7 +363,6 @@ func (q queryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequ
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -310,18 +373,16 @@ func (q queryServer) QueryBorrows(c context.Context, req *types.QueryBorrowsRequ
 	}, nil
 }
 
-func (q queryServer) QueryBorrow(c context.Context, req *types.QueryBorrowRequest) (*types.QueryBorrowResponse, error) {
+func (q QueryServer) QueryBorrow(c context.Context, req *types.QueryBorrowRequest) (*types.QueryBorrowResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
 	item, found := q.GetBorrow(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryBorrowResponse{}, nil
 	}
 
 	return &types.QueryBorrowResponse{
@@ -329,13 +390,14 @@ func (q queryServer) QueryBorrow(c context.Context, req *types.QueryBorrowReques
 	}, nil
 }
 
-func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAllBorrowByOwnerRequest) (*types.QueryAllBorrowByOwnerResponse, error) {
+func (q QueryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAllBorrowByOwnerRequest) (*types.QueryAllBorrowByOwnerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 	var (
 		ctx       = sdk.UnwrapSDKContext(c)
-		borrowIds []types.BorrowAsset
+		borrowIds []uint64
+		borrows   []types.BorrowAsset
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -343,33 +405,38 @@ func (q queryServer) QueryAllBorrowByOwner(c context.Context, req *types.QueryAl
 		return nil, status.Errorf(codes.NotFound, "Address is not correct")
 	}
 
-	userVaultAssetData, _ := q.GetUserBorrows(ctx, req.Owner)
-
-	for _, data := range userVaultAssetData.Borrows {
-		borrowIds = append(borrowIds, data)
-
+	mappingData := q.GetUserTotalMappingData(ctx, req.Owner)
+	for _, data := range mappingData {
+		borrowIds = append(borrowIds, data.BorrowId...)
+	}
+	for _, borrowID := range borrowIds {
+		borrow, _ := q.GetBorrow(ctx, borrowID)
+		borrows = append(borrows, borrow)
+	}
+	if len(borrowIds) == 0 {
+		return &types.QueryAllBorrowByOwnerResponse{}, nil
 	}
 
 	return &types.QueryAllBorrowByOwnerResponse{
-		Borrows: borrowIds,
+		Borrows: borrows,
 	}, nil
 }
 
-func (q queryServer) QueryAssetRatesStats(c context.Context, req *types.QueryAssetRatesStatsRequest) (*types.QueryAssetRatesStatsResponse, error) {
+func (q QueryServer) QueryAssetRatesParams(c context.Context, req *types.QueryAssetRatesParamsRequest) (*types.QueryAssetRatesParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
 	var (
-		items []types.AssetRatesStats
+		items []types.AssetRatesParams
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
 	pagination, err := query.FilteredPaginate(
-		prefix.NewStore(q.Store(ctx), types.AssetRatesStatsKeyPrefix),
+		prefix.NewStore(q.Store(ctx), types.AssetRatesParamsKeyPrefix),
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.AssetRatesStats
+			var item types.AssetRatesParams
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
@@ -381,32 +448,172 @@ func (q queryServer) QueryAssetRatesStats(c context.Context, req *types.QueryAss
 			return true, nil
 		},
 	)
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAssetRatesStatsResponse{
-		AssetRatesStats: items,
-		Pagination:      pagination,
+	return &types.QueryAssetRatesParamsResponse{
+		AssetRatesParams: items,
+		Pagination:       pagination,
 	}, nil
 }
 
-func (q queryServer) QueryAssetRatesStat(c context.Context, req *types.QueryAssetRatesStatRequest) (*types.QueryAssetRatesStatResponse, error) {
+func (q QueryServer) QueryAssetRatesParam(c context.Context, req *types.QueryAssetRatesParamRequest) (*types.QueryAssetRatesParamResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
 	}
 
-	var (
-		ctx = sdk.UnwrapSDKContext(c)
-	)
+	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetAssetRatesStats(ctx, req.Id)
+	item, found := q.GetAssetRatesParams(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "asset does not exist for id %d", req.Id)
+		return &types.QueryAssetRatesParamResponse{}, nil
 	}
 
-	return &types.QueryAssetRatesStatResponse{
-		AssetRatesStat: item,
+	return &types.QueryAssetRatesParamResponse{
+		AssetRatesparams: item,
 	}, nil
+}
+
+func (q QueryServer) QueryPoolAssetLBMapping(c context.Context, req *types.QueryPoolAssetLBMappingRequest) (*types.QueryPoolAssetLBMappingResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	assetStatsData, found := q.AssetStatsByPoolIDAndAssetID(ctx, req.PoolId, req.AssetId)
+	if !found {
+		return &types.QueryPoolAssetLBMappingResponse{}, nil
+	}
+
+	return &types.QueryPoolAssetLBMappingResponse{
+		PoolAssetLBMapping: assetStatsData,
+	}, nil
+}
+
+func (q QueryServer) QueryReserveBuybackAssetData(c context.Context, req *types.QueryReserveBuybackAssetDataRequest) (*types.QueryReserveBuybackAssetDataResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	buyBackDepositStatsData, found := q.GetReserveBuybackAssetData(ctx, req.AssetId)
+	if !found {
+		return &types.QueryReserveBuybackAssetDataResponse{}, nil
+	}
+
+	return &types.QueryReserveBuybackAssetDataResponse{
+		ReserveBuybackAssetData: buyBackDepositStatsData,
+	}, nil
+}
+
+func (q QueryServer) QueryAuctionParams(c context.Context, req *types.QueryAuctionParamRequest) (*types.QueryAuctionParamResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	item, found := q.GetAddAuctionParamsData(ctx, req.AppId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "Auction Params not exist for id %d", req.AppId)
+	}
+
+	return &types.QueryAuctionParamResponse{
+		AuctionParams: item,
+	}, nil
+}
+
+func (q QueryServer) QueryModuleBalance(c context.Context, req *types.QueryModuleBalanceRequest) (*types.QueryModuleBalanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetModuleBalanceByPoolID(ctx, req.PoolId)
+	if !found {
+		return &types.QueryModuleBalanceResponse{}, nil
+	}
+
+	return &types.QueryModuleBalanceResponse{
+		ModuleBalance: modBal,
+	}, nil
+}
+
+func (q QueryServer) QueryFundModBal(c context.Context, req *types.QueryFundModBalRequest) (*types.QueryFundModBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetFundModBal(ctx)
+	if !found {
+		return &types.QueryFundModBalResponse{}, nil
+	}
+
+	return &types.QueryFundModBalResponse{
+		FundModBalance: modBal,
+	}, nil
+}
+
+func (q QueryServer) QueryFundReserveBal(c context.Context, req *types.QueryFundReserveBalRequest) (*types.QueryFundReserveBalResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	resBal, found := q.GetFundReserveBal(ctx)
+	if !found {
+		return &types.QueryFundReserveBalResponse{}, nil
+	}
+
+	return &types.QueryFundReserveBalResponse{
+		FundReserveBalance: resBal,
+	}, nil
+}
+
+func (q QueryServer) QueryAllReserveStats(c context.Context, req *types.QueryAllReserveStatsRequest) (*types.QueryAllReserveStatsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	allReserveStats, found := q.GetAllReserveStatsByAssetID(ctx, req.AssetId)
+	if !found {
+		return &types.QueryAllReserveStatsResponse{}, nil
+	}
+
+	return &types.QueryAllReserveStatsResponse{AllReserveStats: allReserveStats}, nil
+}
+
+func (q QueryServer) QueryFundModBalByAssetPool(c context.Context, req *types.QueryFundModBalByAssetPoolRequest) (*types.QueryFundModBalByAssetPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	modBal, found := q.GetFundModBalByAssetPool(ctx, req.AssetId, req.PoolId)
+	if !found {
+		return &types.QueryFundModBalByAssetPoolResponse{}, nil
+	}
+
+	return &types.QueryFundModBalByAssetPoolResponse{Amount: modBal}, nil
+}
+
+func (q QueryServer) QueryLendInterest(c context.Context, req *types.QueryLendInterestRequest) (*types.QueryLendInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	lendInterest, _ := q.IterateLendsForQuery(ctx)
+	return &types.QueryLendInterestResponse{PoolInterest: lendInterest}, nil
+}
+
+func (q QueryServer) QueryBorrowInterest(c context.Context, req *types.QueryBorrowInterestRequest) (*types.QueryBorrowInterestResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	borrowInterest, _ := q.IterateBorrowsForQuery(ctx)
+	return &types.QueryBorrowInterestResponse{PoolInterest: borrowInterest}, nil
 }

@@ -7,94 +7,25 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	_ types.MsgServer = (*msgServer)(nil)
-)
-
 type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServer {
-	return &msgServer{
-		Keeper: keeper,
-	}
+// NewMsgServerImpl returns an implementation of the MsgServer interface
+// for the provided Keeper.
+func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+	return &msgServer{Keeper: keeper}
 }
 
-func (k *msgServer) MsgAddAsset(c context.Context, msg *types.MsgAddAssetRequest) (*types.MsgAddAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
+var _ types.MsgServer = msgServer{}
 
-	if k.HasAssetForDenom(ctx, msg.Denom) {
-		return nil, types.ErrorDuplicateAsset
+// AddAsset defines a method to add asset.
+func (m msgServer) AddAsset(goCtx context.Context, msg *types.MsgAddAsset) (*types.MsgAddAssetResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.AddAsset(ctx, msg); err != nil {
+		return nil, err
 	}
-
-	var (
-		id    = k.GetAssetID(ctx)
-		asset = types.Asset{
-			Id:       id + 1,
-			Name:     msg.Name,
-			Denom:    msg.Denom,
-			Decimals: msg.Decimals,
-		}
-	)
-
-	k.SetAssetID(ctx, asset.Id)
-	k.SetAsset(ctx, asset)
-	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 
 	return &types.MsgAddAssetResponse{}, nil
-}
-
-func (k *msgServer) MsgUpdateAsset(c context.Context, msg *types.MsgUpdateAssetRequest) (*types.MsgUpdateAssetResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	asset, found := k.GetAsset(ctx, msg.Id)
-	if !found {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-
-	if msg.Name != "" {
-		asset.Name = msg.Name
-	}
-	if msg.Denom != "" {
-		if k.HasAssetForDenom(ctx, msg.Denom) {
-			return nil, types.ErrorDuplicateAsset
-		}
-
-		asset.Denom = msg.Denom
-
-		k.DeleteAssetForDenom(ctx, asset.Denom)
-		k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
-	}
-	if msg.Decimals >= 0 {
-		asset.Decimals = msg.Decimals
-	}
-
-	k.SetAsset(ctx, asset)
-	return &types.MsgUpdateAssetResponse{}, nil
-}
-
-func (k *msgServer) MsgAddPair(c context.Context, msg *types.MsgAddPairRequest) (*types.MsgAddPairResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	if !k.HasAsset(ctx, msg.AssetIn) {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-	if !k.HasAsset(ctx, msg.AssetOut) {
-		return nil, types.ErrorAssetDoesNotExist
-	}
-
-	var (
-		id   = k.GetPairID(ctx)
-		pair = types.Pair{
-			Id:       id + 1,
-			AssetIn:  msg.AssetIn,
-			AssetOut: msg.AssetOut,
-		}
-	)
-
-	k.SetPairID(ctx, pair.Id)
-	k.SetPair(ctx, pair)
-
-	return &types.MsgAddPairResponse{}, nil
 }

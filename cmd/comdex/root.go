@@ -2,15 +2,17 @@ package main
 
 import (
 	"errors"
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"os"
 	"path/filepath"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -36,25 +38,33 @@ import (
 )
 
 func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
-	var (
-		config  = comdex.MakeEncodingConfig()
-		context = client.Context{}.
-			WithCodec(config.Marshaler).
-			WithInterfaceRegistry(config.InterfaceRegistry).
-			WithTxConfig(config.TxConfig).
-			WithLegacyAmino(config.Amino).
-			WithInput(os.Stdin).
-			WithAccountRetriever(authtypes.AccountRetriever{}).
-			WithBroadcastMode(flags.BroadcastBlock).
-			WithHomeDir(comdex.DefaultNodeHome)
-	)
+	encodingConfig := comdex.MakeEncodingConfig()
+	initClientCtx := client.Context{}.
+		WithCodec(encodingConfig.Marshaler).
+		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
+		WithTxConfig(encodingConfig.TxConfig).
+		WithLegacyAmino(encodingConfig.Amino).
+		WithInput(os.Stdin).
+		WithAccountRetriever(authtypes.AccountRetriever{}).
+		WithBroadcastMode(flags.BroadcastBlock).
+		WithHomeDir(comdex.DefaultNodeHome).
+		WithViper("")
 
 	cobra.EnableCommandSorting = false
 	root := &cobra.Command{
 		Use:   "comdex",
 		Short: "Comdex - Decentralised Synthetic Asset Exchange",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := client.SetCmdClientContextHandler(context, cmd); err != nil {
+			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			initClientCtx, err = config.ReadFromClientConfig(initClientCtx)
+			if err != nil {
+				return err
+			}
+
+			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
 			}
 
@@ -62,8 +72,8 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 		},
 	}
 
-	initRootCmd(root, config)
-	return root, config
+	initRootCmd(root, encodingConfig)
+	return root, encodingConfig
 }
 
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
@@ -73,10 +83,12 @@ func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
 		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
 		AddGenesisAccountCmd(comdex.DefaultNodeHome),
-		AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
+		// AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(comdex.ModuleBasics, banktypes.GenesisBalancesIterator{}),
+		MigrateStoreCmd(),
 		debug.Cmd(),
+		config.Cmd(),
 	)
 
 	server.AddCommands(rootCmd, comdex.DefaultNodeHome, appCreatorFunc, appExportFunc, addModuleInitFlags)
@@ -194,7 +206,8 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 }
 
 func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
-	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions) (servertypes.ExportedApp, error) {
+	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions,
+) (servertypes.ExportedApp, error) {
 	config := comdex.MakeEncodingConfig()
 	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
 	homePath, ok := options.Get(flags.FlagHome).(string)

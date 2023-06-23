@@ -1,20 +1,45 @@
 package types
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
+func NewGenesisState(borrowAsset []BorrowAsset, borrowInterestTracker []BorrowInterestTracker, lendAsset []LendAsset, pool []Pool, assetToPairMapping []AssetToPairMapping, poolAssetLBMapping []PoolAssetLBMapping, lendRewardsTracker []LendRewardsTracker, userAssetLendBorrowMapping []UserAssetLendBorrowMapping, reserveBuybackAssetData []ReserveBuybackAssetData, extendedPair []Extended_Pair, auctionParams []AuctionParams, assetRatesParams []AssetRatesParams, modBal ModBal, reserveBal ReserveBal, allReserveStats []AllReserveStats) *GenesisState {
 	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
+		BorrowAsset:                borrowAsset,
+		BorrowInterestTracker:      borrowInterestTracker,
+		LendAsset:                  lendAsset,
+		Pool:                       pool,
+		AssetToPairMapping:         assetToPairMapping,
+		PoolAssetLBMapping:         poolAssetLBMapping,
+		LendRewardsTracker:         lendRewardsTracker,
+		UserAssetLendBorrowMapping: userAssetLendBorrowMapping,
+		ReserveBuybackAssetData:    reserveBuybackAssetData,
+		Extended_Pair:              extendedPair,
+		AuctionParams:              auctionParams,
+		AssetRatesParams:           assetRatesParams,
+		ModBal:                     modBal,
+		ReserveBal:                 reserveBal,
+		AllReserveStats:            allReserveStats,
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
-func (gs GenesisState) Validate() error {
-	// this line is used by starport scaffolding # genesis/types/validate
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		[]BorrowAsset{},
+		[]BorrowInterestTracker{},
+		[]LendAsset{},
+		[]Pool{},
+		[]AssetToPairMapping{},
+		[]PoolAssetLBMapping{},
+		[]LendRewardsTracker{},
+		[]UserAssetLendBorrowMapping{},
+		[]ReserveBuybackAssetData{},
+		[]Extended_Pair{},
+		[]AuctionParams{},
+		[]AssetRatesParams{},
+		ModBal{},
+		ReserveBal{},
+		[]AllReserveStats{},
+	)
+}
 
-	return gs.Params.Validate()
+func (m *GenesisState) Validate() error {
+	return nil
 }

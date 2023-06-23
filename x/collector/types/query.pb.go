@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -112,22 +113,23 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
-type QueryCollectorLookupByProductRequest struct {
-	AppId uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+type QueryCollectorLookupByAppRequest struct {
+	AppId      uint64             `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
 }
 
-func (m *QueryCollectorLookupByProductRequest) Reset()         { *m = QueryCollectorLookupByProductRequest{} }
-func (m *QueryCollectorLookupByProductRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryCollectorLookupByProductRequest) ProtoMessage()    {}
-func (*QueryCollectorLookupByProductRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCollectorLookupByAppRequest) Reset()         { *m = QueryCollectorLookupByAppRequest{} }
+func (m *QueryCollectorLookupByAppRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCollectorLookupByAppRequest) ProtoMessage()    {}
+func (*QueryCollectorLookupByAppRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{2}
 }
-func (m *QueryCollectorLookupByProductRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorLookupByAppRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorLookupByProductRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorLookupByAppRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorLookupByProductRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorLookupByAppRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -137,41 +139,49 @@ func (m *QueryCollectorLookupByProductRequest) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorLookupByProductRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorLookupByProductRequest.Merge(m, src)
+func (m *QueryCollectorLookupByAppRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorLookupByAppRequest.Merge(m, src)
 }
-func (m *QueryCollectorLookupByProductRequest) XXX_Size() int {
+func (m *QueryCollectorLookupByAppRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorLookupByProductRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorLookupByProductRequest.DiscardUnknown(m)
+func (m *QueryCollectorLookupByAppRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorLookupByAppRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorLookupByProductRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorLookupByAppRequest proto.InternalMessageInfo
 
-func (m *QueryCollectorLookupByProductRequest) GetAppId() uint64 {
+func (m *QueryCollectorLookupByAppRequest) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-type QueryCollectorLookupByProductResponse struct {
-	CollectorLookup []CollectorLookupTable `protobuf:"bytes,1,rep,name=collectorLookup,proto3" json:"collectorLookup" yaml:"collectorLookup"`
+func (m *QueryCollectorLookupByAppRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
 }
 
-func (m *QueryCollectorLookupByProductResponse) Reset()         { *m = QueryCollectorLookupByProductResponse{} }
-func (m *QueryCollectorLookupByProductResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryCollectorLookupByProductResponse) ProtoMessage()    {}
-func (*QueryCollectorLookupByProductResponse) Descriptor() ([]byte, []int) {
+type QueryCollectorLookupByAppResponse struct {
+	CollectorLookup []CollectorLookupTableData `protobuf:"bytes,1,rep,name=collectorLookup,proto3" json:"collectorLookup" yaml:"collectorLookup"`
+	Pagination      *query.PageResponse        `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty" yaml:"pagination"`
+}
+
+func (m *QueryCollectorLookupByAppResponse) Reset()         { *m = QueryCollectorLookupByAppResponse{} }
+func (m *QueryCollectorLookupByAppResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCollectorLookupByAppResponse) ProtoMessage()    {}
+func (*QueryCollectorLookupByAppResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{3}
 }
-func (m *QueryCollectorLookupByProductResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorLookupByAppResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorLookupByProductResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorLookupByAppResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorLookupByProductResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorLookupByAppResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -181,46 +191,51 @@ func (m *QueryCollectorLookupByProductResponse) XXX_Marshal(b []byte, determinis
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorLookupByProductResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorLookupByProductResponse.Merge(m, src)
+func (m *QueryCollectorLookupByAppResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorLookupByAppResponse.Merge(m, src)
 }
-func (m *QueryCollectorLookupByProductResponse) XXX_Size() int {
+func (m *QueryCollectorLookupByAppResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorLookupByProductResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorLookupByProductResponse.DiscardUnknown(m)
+func (m *QueryCollectorLookupByAppResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorLookupByAppResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorLookupByProductResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorLookupByAppResponse proto.InternalMessageInfo
 
-func (m *QueryCollectorLookupByProductResponse) GetCollectorLookup() []CollectorLookupTable {
+func (m *QueryCollectorLookupByAppResponse) GetCollectorLookup() []CollectorLookupTableData {
 	if m != nil {
 		return m.CollectorLookup
 	}
 	return nil
 }
 
-type QueryCollectorLookupByProductAndAssetRequest struct {
+func (m *QueryCollectorLookupByAppResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryCollectorLookupByAppAndAssetRequest struct {
 	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) Reset() {
-	*m = QueryCollectorLookupByProductAndAssetRequest{}
+func (m *QueryCollectorLookupByAppAndAssetRequest) Reset() {
+	*m = QueryCollectorLookupByAppAndAssetRequest{}
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryCollectorLookupByProductAndAssetRequest) ProtoMessage() {}
-func (*QueryCollectorLookupByProductAndAssetRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCollectorLookupByAppAndAssetRequest) ProtoMessage()    {}
+func (*QueryCollectorLookupByAppAndAssetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{4}
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorLookupByAppAndAssetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorLookupByProductAndAssetRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorLookupByAppAndAssetRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -230,52 +245,52 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_Marshal(b []byte, det
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorLookupByProductAndAssetRequest.Merge(m, src)
+func (m *QueryCollectorLookupByAppAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorLookupByAppAndAssetRequest.Merge(m, src)
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_Size() int {
+func (m *QueryCollectorLookupByAppAndAssetRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorLookupByProductAndAssetRequest.DiscardUnknown(m)
+func (m *QueryCollectorLookupByAppAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorLookupByAppAndAssetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorLookupByProductAndAssetRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorLookupByAppAndAssetRequest proto.InternalMessageInfo
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) GetAppId() uint64 {
+func (m *QueryCollectorLookupByAppAndAssetRequest) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) GetAssetId() uint64 {
+func (m *QueryCollectorLookupByAppAndAssetRequest) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
 	return 0
 }
 
-type QueryCollectorLookupByProductAndAssetResponse struct {
-	CollectorLookup CollectorLookupTable `protobuf:"bytes,1,opt,name=collectorLookup,proto3" json:"collectorLookup" yaml:"collectorLookup"`
+type QueryCollectorLookupByAppAndAssetResponse struct {
+	CollectorLookup CollectorLookupTableData `protobuf:"bytes,1,opt,name=collectorLookup,proto3" json:"collectorLookup" yaml:"collectorLookup"`
 }
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) Reset() {
-	*m = QueryCollectorLookupByProductAndAssetResponse{}
+func (m *QueryCollectorLookupByAppAndAssetResponse) Reset() {
+	*m = QueryCollectorLookupByAppAndAssetResponse{}
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) String() string {
+func (m *QueryCollectorLookupByAppAndAssetResponse) String() string {
 	return proto.CompactTextString(m)
 }
-func (*QueryCollectorLookupByProductAndAssetResponse) ProtoMessage() {}
-func (*QueryCollectorLookupByProductAndAssetResponse) Descriptor() ([]byte, []int) {
+func (*QueryCollectorLookupByAppAndAssetResponse) ProtoMessage() {}
+func (*QueryCollectorLookupByAppAndAssetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{5}
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorLookupByAppAndAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorLookupByAppAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorLookupByProductAndAssetResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorLookupByAppAndAssetResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -285,46 +300,44 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_Marshal(b []byte, de
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorLookupByProductAndAssetResponse.Merge(m, src)
+func (m *QueryCollectorLookupByAppAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorLookupByAppAndAssetResponse.Merge(m, src)
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_Size() int {
+func (m *QueryCollectorLookupByAppAndAssetResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorLookupByProductAndAssetResponse.DiscardUnknown(m)
+func (m *QueryCollectorLookupByAppAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorLookupByAppAndAssetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorLookupByProductAndAssetResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorLookupByAppAndAssetResponse proto.InternalMessageInfo
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) GetCollectorLookup() CollectorLookupTable {
+func (m *QueryCollectorLookupByAppAndAssetResponse) GetCollectorLookup() CollectorLookupTableData {
 	if m != nil {
 		return m.CollectorLookup
 	}
-	return CollectorLookupTable{}
+	return CollectorLookupTableData{}
 }
 
-type QueryCollectorDataByProductAndAssetRequest struct {
+type QueryCollectorDataByAppAndAssetRequest struct {
 	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) Reset() {
-	*m = QueryCollectorDataByProductAndAssetRequest{}
+func (m *QueryCollectorDataByAppAndAssetRequest) Reset() {
+	*m = QueryCollectorDataByAppAndAssetRequest{}
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryCollectorDataByProductAndAssetRequest) ProtoMessage() {}
-func (*QueryCollectorDataByProductAndAssetRequest) Descriptor() ([]byte, []int) {
+func (m *QueryCollectorDataByAppAndAssetRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryCollectorDataByAppAndAssetRequest) ProtoMessage()    {}
+func (*QueryCollectorDataByAppAndAssetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{6}
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorDataByAppAndAssetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorDataByAppAndAssetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorDataByAppAndAssetRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -334,52 +347,50 @@ func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.Merge(m, src)
+func (m *QueryCollectorDataByAppAndAssetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorDataByAppAndAssetRequest.Merge(m, src)
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) XXX_Size() int {
+func (m *QueryCollectorDataByAppAndAssetRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest.DiscardUnknown(m)
+func (m *QueryCollectorDataByAppAndAssetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorDataByAppAndAssetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorDataByProductAndAssetRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorDataByAppAndAssetRequest proto.InternalMessageInfo
 
-func (m *QueryCollectorDataByProductAndAssetRequest) GetAppId() uint64 {
+func (m *QueryCollectorDataByAppAndAssetRequest) GetAppId() uint64 {
 	if m != nil {
 		return m.AppId
 	}
 	return 0
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) GetAssetId() uint64 {
+func (m *QueryCollectorDataByAppAndAssetRequest) GetAssetId() uint64 {
 	if m != nil {
 		return m.AssetId
 	}
 	return 0
 }
 
-type QueryCollectorDataByProductAndAssetResponse struct {
+type QueryCollectorDataByAppAndAssetResponse struct {
 	CollectorData CollectorData `protobuf:"bytes,1,opt,name=collectorData,proto3" json:"collectorData" yaml:"collectorData"`
 }
 
-func (m *QueryCollectorDataByProductAndAssetResponse) Reset() {
-	*m = QueryCollectorDataByProductAndAssetResponse{}
+func (m *QueryCollectorDataByAppAndAssetResponse) Reset() {
+	*m = QueryCollectorDataByAppAndAssetResponse{}
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*QueryCollectorDataByProductAndAssetResponse) ProtoMessage() {}
-func (*QueryCollectorDataByProductAndAssetResponse) Descriptor() ([]byte, []int) {
+func (m *QueryCollectorDataByAppAndAssetResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryCollectorDataByAppAndAssetResponse) ProtoMessage()    {}
+func (*QueryCollectorDataByAppAndAssetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d4bd1f010dddda3, []int{7}
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryCollectorDataByAppAndAssetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryCollectorDataByAppAndAssetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryCollectorDataByAppAndAssetResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -389,19 +400,19 @@ func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Marshal(b []byte, dete
 		return b[:n], nil
 	}
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.Merge(m, src)
+func (m *QueryCollectorDataByAppAndAssetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryCollectorDataByAppAndAssetResponse.Merge(m, src)
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) XXX_Size() int {
+func (m *QueryCollectorDataByAppAndAssetResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse.DiscardUnknown(m)
+func (m *QueryCollectorDataByAppAndAssetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryCollectorDataByAppAndAssetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryCollectorDataByProductAndAssetResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryCollectorDataByAppAndAssetResponse proto.InternalMessageInfo
 
-func (m *QueryCollectorDataByProductAndAssetResponse) GetCollectorData() CollectorData {
+func (m *QueryCollectorDataByAppAndAssetResponse) GetCollectorData() CollectorData {
 	if m != nil {
 		return m.CollectorData
 	}
@@ -463,7 +474,7 @@ func (m *QueryAuctionMappingForAppAndAssetRequest) GetAssetId() uint64 {
 }
 
 type QueryAuctionMappingForAppAndAssetResponse struct {
-	AssetIdToAuctionLookupTable AssetIdToAuctionLookupTable `protobuf:"bytes,1,opt,name=assetIdToAuctionLookupTable,proto3" json:"assetIdToAuctionLookupTable" yaml:"assetIdToAuctionLookupTable"`
+	AssetIdToAuctionLookupTable AppAssetIdToAuctionLookupTable `protobuf:"bytes,1,opt,name=assetIdToAuctionLookupTable,proto3" json:"assetIdToAuctionLookupTable" yaml:"assetIdToAuctionLookupTable"`
 }
 
 func (m *QueryAuctionMappingForAppAndAssetResponse) Reset() {
@@ -503,11 +514,11 @@ func (m *QueryAuctionMappingForAppAndAssetResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAuctionMappingForAppAndAssetResponse proto.InternalMessageInfo
 
-func (m *QueryAuctionMappingForAppAndAssetResponse) GetAssetIdToAuctionLookupTable() AssetIdToAuctionLookupTable {
+func (m *QueryAuctionMappingForAppAndAssetResponse) GetAssetIdToAuctionLookupTable() AppAssetIdToAuctionLookupTable {
 	if m != nil {
 		return m.AssetIdToAuctionLookupTable
 	}
-	return AssetIdToAuctionLookupTable{}
+	return AppAssetIdToAuctionLookupTable{}
 }
 
 type QueryNetFeeCollectedForAppAndAssetRequest struct {
@@ -567,7 +578,7 @@ func (m *QueryNetFeeCollectedForAppAndAssetRequest) GetAssetId() uint64 {
 }
 
 type QueryNetFeeCollectedForAppAndAssetResponse struct {
-	AssetIdToFeeCollected AssetIdToFeeCollected `protobuf:"bytes,1,opt,name=assetIdToFeeCollected,proto3" json:"assetIdToFeeCollected" yaml:"assetIdToFeeCollected"`
+	AssetIdToFeeCollected AppAssetIdToFeeCollectedData `protobuf:"bytes,1,opt,name=assetIdToFeeCollected,proto3" json:"assetIdToFeeCollected" yaml:"assetIdToFeeCollected"`
 }
 
 func (m *QueryNetFeeCollectedForAppAndAssetResponse) Reset() {
@@ -607,22 +618,22 @@ func (m *QueryNetFeeCollectedForAppAndAssetResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryNetFeeCollectedForAppAndAssetResponse proto.InternalMessageInfo
 
-func (m *QueryNetFeeCollectedForAppAndAssetResponse) GetAssetIdToFeeCollected() AssetIdToFeeCollected {
+func (m *QueryNetFeeCollectedForAppAndAssetResponse) GetAssetIdToFeeCollected() AppAssetIdToFeeCollectedData {
 	if m != nil {
 		return m.AssetIdToFeeCollected
 	}
-	return AssetIdToFeeCollected{}
+	return AppAssetIdToFeeCollectedData{}
 }
 
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "comdex.collector.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "comdex.collector.v1beta1.QueryParamsResponse")
-	proto.RegisterType((*QueryCollectorLookupByProductRequest)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductRequest")
-	proto.RegisterType((*QueryCollectorLookupByProductResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductResponse")
-	proto.RegisterType((*QueryCollectorLookupByProductAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductAndAssetRequest")
-	proto.RegisterType((*QueryCollectorLookupByProductAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByProductAndAssetResponse")
-	proto.RegisterType((*QueryCollectorDataByProductAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorDataByProductAndAssetRequest")
-	proto.RegisterType((*QueryCollectorDataByProductAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorDataByProductAndAssetResponse")
+	proto.RegisterType((*QueryCollectorLookupByAppRequest)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByAppRequest")
+	proto.RegisterType((*QueryCollectorLookupByAppResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByAppResponse")
+	proto.RegisterType((*QueryCollectorLookupByAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByAppAndAssetRequest")
+	proto.RegisterType((*QueryCollectorLookupByAppAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorLookupByAppAndAssetResponse")
+	proto.RegisterType((*QueryCollectorDataByAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryCollectorDataByAppAndAssetRequest")
+	proto.RegisterType((*QueryCollectorDataByAppAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryCollectorDataByAppAndAssetResponse")
 	proto.RegisterType((*QueryAuctionMappingForAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryAuctionMappingForAppAndAssetRequest")
 	proto.RegisterType((*QueryAuctionMappingForAppAndAssetResponse)(nil), "comdex.collector.v1beta1.QueryAuctionMappingForAppAndAssetResponse")
 	proto.RegisterType((*QueryNetFeeCollectedForAppAndAssetRequest)(nil), "comdex.collector.v1beta1.QueryNetFeeCollectedForAppAndAssetRequest")
@@ -634,59 +645,63 @@ func init() {
 }
 
 var fileDescriptor_1d4bd1f010dddda3 = []byte{
-	// 823 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x97, 0xc1, 0x4f, 0x13, 0x4b,
-	0x1c, 0xc7, 0x3b, 0x7d, 0xd0, 0xf7, 0x32, 0x84, 0x90, 0x37, 0xf0, 0x5e, 0xc8, 0x3e, 0x5e, 0x8b,
-	0x23, 0xc4, 0x8a, 0x6c, 0x57, 0x20, 0x5e, 0x3c, 0xa0, 0x5d, 0xb0, 0x86, 0x44, 0x14, 0x16, 0x88,
-	0x51, 0x0f, 0x66, 0xba, 0x3b, 0xd4, 0x86, 0xb2, 0x33, 0xb4, 0x5b, 0x43, 0x43, 0xb8, 0x18, 0x31,
-	0x24, 0xc6, 0xc4, 0xc4, 0x18, 0x13, 0x6f, 0xc6, 0x93, 0xff, 0x82, 0xff, 0x80, 0x1c, 0x31, 0x5e,
-	0x3c, 0x35, 0x06, 0x3c, 0x78, 0xe6, 0x2f, 0x30, 0x3b, 0x3b, 0xc5, 0xb6, 0xb0, 0xdd, 0x85, 0x26,
-	0x78, 0xdb, 0xec, 0x7e, 0x7f, 0xdf, 0xf9, 0xfe, 0x3e, 0x9d, 0x99, 0x5f, 0x0a, 0x87, 0x4c, 0xb6,
-	0x6a, 0xd1, 0x75, 0xcd, 0x64, 0x85, 0x02, 0x35, 0x1d, 0x56, 0xd4, 0x1e, 0x8f, 0x65, 0xa9, 0x43,
-	0xc6, 0xb4, 0xb5, 0x32, 0x2d, 0x56, 0x52, 0xbc, 0xc8, 0x1c, 0x86, 0xfa, 0x3d, 0x55, 0xea, 0x50,
-	0x95, 0x92, 0x2a, 0xa5, 0x2f, 0xc7, 0x72, 0x4c, 0x88, 0x34, 0xf7, 0xc9, 0xd3, 0x2b, 0x03, 0x39,
-	0xc6, 0x72, 0x05, 0xaa, 0x11, 0x9e, 0xd7, 0x88, 0x6d, 0x33, 0x87, 0x38, 0x79, 0x66, 0x97, 0xe4,
-	0xd7, 0x61, 0xdf, 0x35, 0x39, 0x29, 0x92, 0xd5, 0x9a, 0x2c, 0xe9, 0x2b, 0xfb, 0x15, 0x43, 0x28,
-	0x71, 0x1f, 0x44, 0xf3, 0x6e, 0xda, 0x39, 0x51, 0x6e, 0xd0, 0xb5, 0x32, 0x2d, 0x39, 0x78, 0x09,
-	0xf6, 0x36, 0xbc, 0x2d, 0x71, 0x66, 0x97, 0x28, 0x9a, 0x84, 0x31, 0x6f, 0x99, 0x7e, 0x30, 0x08,
-	0x92, 0x5d, 0xe3, 0x83, 0x29, 0xbf, 0xe6, 0x52, 0x5e, 0xa5, 0xde, 0xb1, 0x53, 0x4d, 0x44, 0x0c,
-	0x59, 0x85, 0xe7, 0xe0, 0x90, 0xb0, 0x9d, 0xaa, 0xc9, 0x6f, 0x31, 0xb6, 0x52, 0xe6, 0x7a, 0x65,
-	0xae, 0xc8, 0xac, 0xb2, 0xe9, 0xc8, 0xe5, 0x51, 0x12, 0xc6, 0x08, 0xe7, 0x0f, 0xf3, 0x96, 0x58,
-	0xa7, 0x43, 0xff, 0xfb, 0xa0, 0x9a, 0xe8, 0xae, 0x90, 0xd5, 0xc2, 0x55, 0xec, 0xbd, 0xc7, 0x46,
-	0x27, 0xe1, 0x7c, 0xc6, 0xc2, 0xef, 0x00, 0x1c, 0x0e, 0xb0, 0x94, 0xd9, 0xd7, 0x61, 0x8f, 0xd9,
-	0xa8, 0xe9, 0x07, 0x83, 0x7f, 0x24, 0xbb, 0xc6, 0x53, 0xfe, 0x4d, 0x34, 0x99, 0x2e, 0x92, 0x6c,
-	0x81, 0xea, 0x71, 0xb7, 0xa5, 0x83, 0x6a, 0xe2, 0x5f, 0x2f, 0x50, 0x93, 0x29, 0x36, 0x9a, 0x97,
-	0xc1, 0xdb, 0x00, 0x8e, 0xb6, 0xcc, 0x98, 0xb6, 0xad, 0x74, 0xa9, 0x44, 0x4f, 0xde, 0x3e, 0x4a,
-	0xc1, 0xbf, 0x88, 0x5b, 0xe9, 0x6a, 0xa3, 0x42, 0xdb, 0x7b, 0x50, 0x4d, 0xf4, 0x48, 0xad, 0xfc,
-	0x82, 0x8d, 0x3f, 0xc5, 0xe3, 0x8c, 0x85, 0x3f, 0x00, 0xa8, 0x86, 0x8c, 0xd2, 0x0a, 0x1b, 0x38,
-	0x0b, 0x6c, 0xcf, 0x00, 0x1c, 0x69, 0xcc, 0x3a, 0x4d, 0x1c, 0xf2, 0x1b, 0xa0, 0xbd, 0x05, 0xf0,
-	0x52, 0xa8, 0x20, 0x12, 0xd9, 0x0a, 0xec, 0x36, 0xeb, 0x95, 0x12, 0xd8, 0x85, 0x10, 0xc0, 0x84,
-	0xf1, 0x80, 0x24, 0xd5, 0xd7, 0x44, 0xca, 0xfd, 0x88, 0x8d, 0x46, 0x6f, 0xfc, 0x14, 0xc0, 0xa4,
-	0x08, 0x97, 0x2e, 0x9b, 0xee, 0x45, 0x31, 0x4b, 0x38, 0xcf, 0xdb, 0xb9, 0x0c, 0x2b, 0xa6, 0x39,
-	0x3f, 0x3b, 0x46, 0x9f, 0x01, 0xbc, 0x18, 0x22, 0x86, 0x24, 0xf4, 0x1e, 0xc0, 0xff, 0x64, 0xe5,
-	0x22, 0x93, 0x15, 0x75, 0x7b, 0x45, 0x02, 0xbb, 0xe2, 0x0f, 0x2c, 0xed, 0x5f, 0xac, 0x8f, 0x48,
-	0x7c, 0xb8, 0x2e, 0xec, 0xf1, 0x52, 0x6c, 0xb4, 0x4a, 0x81, 0xb7, 0x6a, 0x3d, 0xdd, 0xa6, 0x4e,
-	0x86, 0x52, 0xf9, 0x23, 0x51, 0xeb, 0xac, 0xd9, 0x7e, 0xac, 0x1d, 0x84, 0x80, 0x1c, 0x12, 0xee,
-	0x73, 0x00, 0xff, 0x39, 0x6c, 0xab, 0x5e, 0x2f, 0xb1, 0x6a, 0x21, 0xb0, 0xd6, 0x97, 0xe9, 0x43,
-	0x12, 0xe8, 0x40, 0x13, 0xd0, 0x7a, 0x11, 0x36, 0x8e, 0x5f, 0x73, 0xfc, 0x53, 0x17, 0xec, 0x14,
-	0xe1, 0xd1, 0x1b, 0x00, 0x63, 0xde, 0x54, 0x40, 0xa3, 0xfe, 0x11, 0x8e, 0x0e, 0x23, 0x45, 0x0d,
-	0xa9, 0xf6, 0xfa, 0xc7, 0x97, 0x9f, 0x7c, 0xf9, 0xfe, 0x2a, 0x3a, 0x82, 0x92, 0x9a, 0x57, 0xa6,
-	0xb2, 0xe5, 0xe5, 0xbc, 0x99, 0x27, 0x05, 0xed, 0xc8, 0x50, 0xf4, 0xc6, 0x12, 0xfa, 0x01, 0xe0,
-	0xff, 0x2d, 0x6f, 0x45, 0x34, 0x19, 0x10, 0x21, 0x60, 0xa0, 0x29, 0xd7, 0x4e, 0x5d, 0x2f, 0x9b,
-	0xca, 0x88, 0xa6, 0xae, 0xa3, 0x49, 0x2d, 0x78, 0xb2, 0xab, 0x05, 0x61, 0xa2, 0x66, 0x2b, 0x2a,
-	0xf7, 0x6c, 0xb4, 0x0d, 0x6f, 0x0b, 0x6e, 0xa2, 0xd7, 0xd1, 0x80, 0x79, 0x59, 0xdb, 0x4e, 0x28,
-	0x73, 0xca, 0xc8, 0x4d, 0xe7, 0x42, 0xb9, 0xd9, 0xb6, 0x8f, 0x44, 0xf0, 0x40, 0x20, 0x58, 0x42,
-	0x0b, 0xa7, 0x42, 0xa0, 0x12, 0xdb, 0x52, 0xc5, 0x16, 0x3d, 0x84, 0xa1, 0x6d, 0xd4, 0x0e, 0xdb,
-	0x26, 0x7a, 0x11, 0x85, 0xe7, 0x43, 0xdc, 0xf1, 0x68, 0x3a, 0x6c, 0x37, 0xad, 0x66, 0x95, 0x72,
-	0xa3, 0x4d, 0x17, 0x49, 0xe4, 0x9e, 0x20, 0xb2, 0x80, 0xe6, 0xc3, 0x10, 0xb1, 0x88, 0x43, 0xc2,
-	0xf3, 0xd8, 0x8a, 0xc2, 0x73, 0x81, 0xf7, 0x39, 0xd2, 0x03, 0xfa, 0x08, 0x31, 0x93, 0x94, 0xa9,
-	0xb6, 0x3c, 0x24, 0x89, 0xbb, 0x82, 0xc4, 0x3c, 0xba, 0xe3, 0x4f, 0x82, 0x78, 0x3e, 0x27, 0xe4,
-	0xb0, 0x1d, 0x85, 0x38, 0xf8, 0xee, 0x45, 0x41, 0x4d, 0x84, 0x99, 0x20, 0xca, 0x74, 0x7b, 0x26,
-	0xe1, 0x51, 0xd8, 0xd4, 0x51, 0x97, 0x29, 0x3d, 0x19, 0x0a, 0x7d, 0x76, 0x67, 0x2f, 0x0e, 0x76,
-	0xf7, 0xe2, 0xe0, 0xdb, 0x5e, 0x1c, 0xbc, 0xdc, 0x8f, 0x47, 0x76, 0xf7, 0xe3, 0x91, 0xaf, 0xfb,
-	0xf1, 0xc8, 0xfd, 0x89, 0x5c, 0xde, 0x79, 0x54, 0xce, 0xba, 0xf1, 0xfd, 0xee, 0xdc, 0xfa, 0x18,
-	0x4e, 0x85, 0xd3, 0x52, 0x36, 0x26, 0xfe, 0x7f, 0x4c, 0xfc, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x9e,
-	0xbd, 0x2d, 0xd8, 0x46, 0x0d, 0x00, 0x00,
+	// 884 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x97, 0x51, 0x6b, 0x23, 0x55,
+	0x14, 0xc7, 0x73, 0xe3, 0x6e, 0x94, 0x5b, 0x96, 0x65, 0xef, 0x76, 0x25, 0xc6, 0x92, 0xc4, 0xcb,
+	0xba, 0x8d, 0xc1, 0x99, 0x71, 0xb3, 0x20, 0x52, 0x45, 0xcc, 0xec, 0xb2, 0xb0, 0x68, 0x5c, 0x77,
+	0xdc, 0x45, 0x10, 0x54, 0x6e, 0x66, 0x6e, 0xc7, 0x61, 0x93, 0xb9, 0xb7, 0x99, 0x89, 0x18, 0x6a,
+	0x1f, 0x2c, 0xed, 0xb3, 0xa2, 0xa0, 0xdf, 0x40, 0x10, 0x3f, 0x85, 0x6f, 0x7d, 0x2c, 0xe8, 0x43,
+	0x9f, 0x82, 0xb4, 0x7e, 0x82, 0xbc, 0x0b, 0x32, 0xf7, 0xde, 0x24, 0x93, 0xb4, 0x93, 0x99, 0xb6,
+	0x90, 0xb7, 0x90, 0xf9, 0x9f, 0x73, 0xfe, 0xe7, 0x77, 0x4f, 0xee, 0x99, 0xc0, 0xdb, 0x36, 0xeb,
+	0x3a, 0xf4, 0x5b, 0xc3, 0x66, 0x9d, 0x0e, 0xb5, 0x43, 0xd6, 0x33, 0xbe, 0xb9, 0xdb, 0xa6, 0x21,
+	0xb9, 0x6b, 0x6c, 0xf5, 0x69, 0x6f, 0xa0, 0xf3, 0x1e, 0x0b, 0x19, 0x2a, 0x4a, 0x95, 0x3e, 0x51,
+	0xe9, 0x4a, 0x55, 0x5a, 0x75, 0x99, 0xcb, 0x84, 0xc8, 0x88, 0x3e, 0x49, 0x7d, 0x69, 0xcd, 0x65,
+	0xcc, 0xed, 0x50, 0x83, 0x70, 0xcf, 0x20, 0xbe, 0xcf, 0x42, 0x12, 0x7a, 0xcc, 0x0f, 0xd4, 0xd3,
+	0xd7, 0x13, 0x6b, 0x72, 0xd2, 0x23, 0xdd, 0xb1, 0xac, 0x96, 0x28, 0x9b, 0xda, 0x90, 0xca, 0xba,
+	0xcd, 0x82, 0x2e, 0x0b, 0x8c, 0x36, 0x09, 0xa8, 0xf4, 0x1d, 0xcb, 0xe8, 0x7a, 0xbe, 0xa8, 0x2e,
+	0xb5, 0x78, 0x15, 0xa2, 0x27, 0x91, 0xe2, 0x13, 0x51, 0xca, 0xa2, 0x5b, 0x7d, 0x1a, 0x84, 0xf8,
+	0x19, 0xbc, 0x39, 0xf3, 0x6d, 0xc0, 0x99, 0x1f, 0x50, 0xf4, 0x3e, 0x2c, 0x48, 0x4b, 0x45, 0x50,
+	0x05, 0xb5, 0x95, 0x46, 0x55, 0x4f, 0x02, 0xa1, 0xcb, 0x48, 0xf3, 0xca, 0xc1, 0xb0, 0x92, 0xb3,
+	0x54, 0x14, 0xfe, 0x03, 0xc0, 0xaa, 0xc8, 0x7b, 0x7f, 0xac, 0xff, 0x88, 0xb1, 0xe7, 0x7d, 0x6e,
+	0x0e, 0x9a, 0x9c, 0xab, 0xda, 0xa8, 0x06, 0x0b, 0x84, 0xf3, 0xaf, 0x3c, 0x47, 0x14, 0xb9, 0x62,
+	0xde, 0x18, 0x0d, 0x2b, 0xd7, 0x06, 0xa4, 0xdb, 0xd9, 0xc0, 0xf2, 0x7b, 0x6c, 0x5d, 0x25, 0x9c,
+	0x3f, 0x72, 0xd0, 0x17, 0x10, 0x4e, 0xfb, 0x29, 0xe6, 0x85, 0xa5, 0x3b, 0xba, 0x6c, 0x5e, 0x8f,
+	0x9a, 0xd7, 0xe5, 0xa1, 0x4d, 0x3d, 0xb9, 0x54, 0x55, 0x31, 0x6f, 0x8d, 0x86, 0x95, 0x1b, 0x32,
+	0xeb, 0x34, 0x07, 0xb6, 0x62, 0x09, 0xf1, 0xf7, 0x79, 0xf8, 0xda, 0x02, 0xb7, 0x8a, 0xc9, 0x77,
+	0xf0, 0xba, 0x3d, 0xfb, 0xbc, 0x08, 0xaa, 0x2f, 0xd4, 0x56, 0x1a, 0x8d, 0x64, 0x38, 0x73, 0x09,
+	0x9f, 0x92, 0x76, 0x87, 0x3e, 0x20, 0x21, 0x31, 0xcb, 0x11, 0xae, 0xd1, 0xb0, 0xf2, 0xb2, 0x74,
+	0x36, 0x97, 0x18, 0x5b, 0xf3, 0xa5, 0xd0, 0x97, 0x67, 0x20, 0x58, 0x4f, 0x45, 0x20, 0xad, 0x67,
+	0x61, 0xb0, 0x07, 0x60, 0x2d, 0x91, 0x41, 0xd3, 0x77, 0x9a, 0x41, 0x40, 0xc3, 0xf3, 0x9f, 0x9c,
+	0x0e, 0x5f, 0x22, 0x51, 0x64, 0xa4, 0xcd, 0x0b, 0xed, 0xcd, 0xd1, 0xb0, 0x72, 0x5d, 0x69, 0xd5,
+	0x13, 0x6c, 0xbd, 0x28, 0x3e, 0x3e, 0x72, 0xf0, 0xef, 0x00, 0xbe, 0x91, 0xc1, 0xc6, 0xa2, 0x23,
+	0x01, 0x4b, 0x3a, 0x12, 0xbc, 0x0b, 0xe0, 0x9d, 0x59, 0xaf, 0x22, 0xcf, 0x72, 0x81, 0xfd, 0x02,
+	0xe0, 0x7a, 0xaa, 0x09, 0x85, 0xeb, 0x39, 0xbc, 0x66, 0xc7, 0x55, 0x0a, 0xd6, 0x7a, 0x06, 0x58,
+	0x22, 0xe9, 0x9a, 0x22, 0xb4, 0x3a, 0x47, 0x28, 0x7a, 0x88, 0xad, 0xd9, 0xdc, 0xd3, 0x81, 0x6a,
+	0xf6, 0xed, 0x68, 0xc2, 0x5a, 0x84, 0x73, 0xcf, 0x77, 0x1f, 0xb2, 0xde, 0x52, 0xf9, 0xfc, 0x3d,
+	0x1e, 0xa8, 0xc5, 0x36, 0x14, 0xa1, 0xdf, 0x00, 0x7c, 0x55, 0x45, 0x3e, 0x65, 0x2a, 0x22, 0x36,
+	0x27, 0x0a, 0xd8, 0x3b, 0xc9, 0xc0, 0xa2, 0xa4, 0xc9, 0xf1, 0x66, 0x5d, 0x11, 0xc4, 0x31, 0xbf,
+	0x67, 0x4b, 0xb1, 0xb5, 0xc8, 0x08, 0xde, 0x1f, 0xb7, 0xf5, 0x31, 0x0d, 0x1f, 0x52, 0xaa, 0xce,
+	0x89, 0x3a, 0xcb, 0xc6, 0xfb, 0x27, 0x80, 0xf5, 0x2c, 0x3e, 0x14, 0xdf, 0x9f, 0x00, 0xbc, 0x35,
+	0x69, 0x2b, 0xae, 0x57, 0x64, 0xdf, 0xce, 0x46, 0x36, 0x1e, 0x29, 0x26, 0xf3, 0xb6, 0xe2, 0xba,
+	0x36, 0xc7, 0x35, 0x2e, 0xc4, 0xd6, 0xd9, 0xa5, 0x1b, 0x3f, 0xac, 0xc0, 0xab, 0xa2, 0x07, 0xf4,
+	0x2b, 0x80, 0x05, 0xb9, 0xcf, 0xd0, 0x9b, 0xc9, 0x4e, 0x4e, 0xaf, 0xd1, 0x92, 0x96, 0x51, 0x2d,
+	0x31, 0xe0, 0xb7, 0x76, 0xff, 0xfa, 0xf7, 0xe7, 0x7c, 0x1d, 0xd5, 0x0c, 0x19, 0xa6, 0xb1, 0xcd,
+	0x4d, 0xcf, 0xf6, 0x48, 0xc7, 0x38, 0xb5, 0xfa, 0xe5, 0x42, 0x45, 0x47, 0x00, 0xbe, 0x92, 0x78,
+	0x2f, 0xa2, 0x8d, 0x94, 0xf2, 0x0b, 0xb6, 0x70, 0xe9, 0xdd, 0x0b, 0xc5, 0xaa, 0x46, 0x4c, 0xd1,
+	0xc8, 0x7b, 0x68, 0xc3, 0x48, 0x7f, 0x67, 0xd1, 0x3a, 0x22, 0x81, 0xd6, 0x1e, 0x68, 0x84, 0x73,
+	0x63, 0x5b, 0x4e, 0xde, 0x0e, 0xda, 0x5f, 0xb4, 0x7d, 0xc7, 0x13, 0x84, 0xcc, 0x0b, 0xd8, 0x9c,
+	0xfb, 0x19, 0x94, 0xee, 0x5f, 0x2a, 0x87, 0x6a, 0xf9, 0x33, 0xd1, 0xf2, 0x13, 0xf4, 0xf8, 0xdc,
+	0x2d, 0x6b, 0xc4, 0x77, 0x34, 0x31, 0x82, 0x93, 0xe6, 0x8d, 0xed, 0xf1, 0x6f, 0x6a, 0x07, 0xfd,
+	0x07, 0x60, 0x25, 0xe5, 0x26, 0x47, 0x1f, 0x64, 0xed, 0x20, 0x69, 0x13, 0x95, 0x9a, 0x97, 0xc8,
+	0xa0, 0x08, 0x3c, 0x13, 0x04, 0x1e, 0xa3, 0x56, 0x16, 0x02, 0x0e, 0x09, 0x49, 0xb6, 0xfe, 0x27,
+	0x6f, 0x61, 0x8b, 0x6e, 0xea, 0xd4, 0x39, 0xc8, 0xb0, 0x6d, 0x52, 0xe7, 0x20, 0xcb, 0xaa, 0xc0,
+	0x9f, 0x0a, 0x0a, 0x2d, 0xf4, 0x61, 0x32, 0x05, 0x22, 0xf3, 0x9c, 0x83, 0xc1, 0x5e, 0x1e, 0xe2,
+	0xf4, 0xeb, 0x14, 0xa5, 0x35, 0x90, 0x65, 0x29, 0x94, 0x1e, 0x5c, 0x2e, 0x49, 0x76, 0x0c, 0x3e,
+	0x0d, 0xb5, 0x4d, 0x4a, 0xb3, 0x63, 0x30, 0x5b, 0x07, 0xc7, 0x65, 0x70, 0x78, 0x5c, 0x06, 0xff,
+	0x1c, 0x97, 0xc1, 0x8f, 0x27, 0xe5, 0xdc, 0xe1, 0x49, 0x39, 0x77, 0x74, 0x52, 0xce, 0x7d, 0x7e,
+	0xcf, 0xf5, 0xc2, 0xaf, 0xfb, 0xed, 0xc8, 0x7a, 0xd2, 0xdd, 0x19, 0xb7, 0x10, 0x0e, 0x38, 0x0d,
+	0xda, 0x05, 0xf1, 0x0f, 0xe8, 0xde, 0xff, 0x01, 0x00, 0x00, 0xff, 0xff, 0x55, 0x84, 0x51, 0xb2,
+	0xf4, 0x0d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -703,9 +718,9 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	QueryCollectorLookupByProduct(ctx context.Context, in *QueryCollectorLookupByProductRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductResponse, error)
-	QueryCollectorLookupByProductAndAsset(ctx context.Context, in *QueryCollectorLookupByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductAndAssetResponse, error)
-	QueryCollectorDataByProductAndAsset(ctx context.Context, in *QueryCollectorDataByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByProductAndAssetResponse, error)
+	QueryCollectorLookupByApp(ctx context.Context, in *QueryCollectorLookupByAppRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByAppResponse, error)
+	QueryCollectorLookupByAppAndAsset(ctx context.Context, in *QueryCollectorLookupByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByAppAndAssetResponse, error)
+	QueryCollectorDataByAppAndAsset(ctx context.Context, in *QueryCollectorDataByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByAppAndAssetResponse, error)
 	QueryAuctionMappingForAppAndAsset(ctx context.Context, in *QueryAuctionMappingForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryAuctionMappingForAppAndAssetResponse, error)
 	QueryNetFeeCollectedForAppAndAsset(ctx context.Context, in *QueryNetFeeCollectedForAppAndAssetRequest, opts ...grpc.CallOption) (*QueryNetFeeCollectedForAppAndAssetResponse, error)
 }
@@ -727,27 +742,27 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) QueryCollectorLookupByProduct(ctx context.Context, in *QueryCollectorLookupByProductRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductResponse, error) {
-	out := new(QueryCollectorLookupByProductResponse)
-	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorLookupByProduct", in, out, opts...)
+func (c *queryClient) QueryCollectorLookupByApp(ctx context.Context, in *QueryCollectorLookupByAppRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByAppResponse, error) {
+	out := new(QueryCollectorLookupByAppResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorLookupByApp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryCollectorLookupByProductAndAsset(ctx context.Context, in *QueryCollectorLookupByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByProductAndAssetResponse, error) {
-	out := new(QueryCollectorLookupByProductAndAssetResponse)
-	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorLookupByProductAndAsset", in, out, opts...)
+func (c *queryClient) QueryCollectorLookupByAppAndAsset(ctx context.Context, in *QueryCollectorLookupByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorLookupByAppAndAssetResponse, error) {
+	out := new(QueryCollectorLookupByAppAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorLookupByAppAndAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) QueryCollectorDataByProductAndAsset(ctx context.Context, in *QueryCollectorDataByProductAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByProductAndAssetResponse, error) {
-	out := new(QueryCollectorDataByProductAndAssetResponse)
-	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorDataByProductAndAsset", in, out, opts...)
+func (c *queryClient) QueryCollectorDataByAppAndAsset(ctx context.Context, in *QueryCollectorDataByAppAndAssetRequest, opts ...grpc.CallOption) (*QueryCollectorDataByAppAndAssetResponse, error) {
+	out := new(QueryCollectorDataByAppAndAssetResponse)
+	err := c.cc.Invoke(ctx, "/comdex.collector.v1beta1.Query/QueryCollectorDataByAppAndAsset", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -776,9 +791,9 @@ func (c *queryClient) QueryNetFeeCollectedForAppAndAsset(ctx context.Context, in
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	QueryCollectorLookupByProduct(context.Context, *QueryCollectorLookupByProductRequest) (*QueryCollectorLookupByProductResponse, error)
-	QueryCollectorLookupByProductAndAsset(context.Context, *QueryCollectorLookupByProductAndAssetRequest) (*QueryCollectorLookupByProductAndAssetResponse, error)
-	QueryCollectorDataByProductAndAsset(context.Context, *QueryCollectorDataByProductAndAssetRequest) (*QueryCollectorDataByProductAndAssetResponse, error)
+	QueryCollectorLookupByApp(context.Context, *QueryCollectorLookupByAppRequest) (*QueryCollectorLookupByAppResponse, error)
+	QueryCollectorLookupByAppAndAsset(context.Context, *QueryCollectorLookupByAppAndAssetRequest) (*QueryCollectorLookupByAppAndAssetResponse, error)
+	QueryCollectorDataByAppAndAsset(context.Context, *QueryCollectorDataByAppAndAssetRequest) (*QueryCollectorDataByAppAndAssetResponse, error)
 	QueryAuctionMappingForAppAndAsset(context.Context, *QueryAuctionMappingForAppAndAssetRequest) (*QueryAuctionMappingForAppAndAssetResponse, error)
 	QueryNetFeeCollectedForAppAndAsset(context.Context, *QueryNetFeeCollectedForAppAndAssetRequest) (*QueryNetFeeCollectedForAppAndAssetResponse, error)
 }
@@ -790,14 +805,14 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) QueryCollectorLookupByProduct(ctx context.Context, req *QueryCollectorLookupByProductRequest) (*QueryCollectorLookupByProductResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorLookupByProduct not implemented")
+func (*UnimplementedQueryServer) QueryCollectorLookupByApp(ctx context.Context, req *QueryCollectorLookupByAppRequest) (*QueryCollectorLookupByAppResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorLookupByApp not implemented")
 }
-func (*UnimplementedQueryServer) QueryCollectorLookupByProductAndAsset(ctx context.Context, req *QueryCollectorLookupByProductAndAssetRequest) (*QueryCollectorLookupByProductAndAssetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorLookupByProductAndAsset not implemented")
+func (*UnimplementedQueryServer) QueryCollectorLookupByAppAndAsset(ctx context.Context, req *QueryCollectorLookupByAppAndAssetRequest) (*QueryCollectorLookupByAppAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorLookupByAppAndAsset not implemented")
 }
-func (*UnimplementedQueryServer) QueryCollectorDataByProductAndAsset(ctx context.Context, req *QueryCollectorDataByProductAndAssetRequest) (*QueryCollectorDataByProductAndAssetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorDataByProductAndAsset not implemented")
+func (*UnimplementedQueryServer) QueryCollectorDataByAppAndAsset(ctx context.Context, req *QueryCollectorDataByAppAndAssetRequest) (*QueryCollectorDataByAppAndAssetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryCollectorDataByAppAndAsset not implemented")
 }
 func (*UnimplementedQueryServer) QueryAuctionMappingForAppAndAsset(ctx context.Context, req *QueryAuctionMappingForAppAndAssetRequest) (*QueryAuctionMappingForAppAndAssetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryAuctionMappingForAppAndAsset not implemented")
@@ -828,56 +843,56 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryCollectorLookupByProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCollectorLookupByProductRequest)
+func _Query_QueryCollectorLookupByApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCollectorLookupByAppRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryCollectorLookupByProduct(ctx, in)
+		return srv.(QueryServer).QueryCollectorLookupByApp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorLookupByProduct",
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorLookupByApp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryCollectorLookupByProduct(ctx, req.(*QueryCollectorLookupByProductRequest))
+		return srv.(QueryServer).QueryCollectorLookupByApp(ctx, req.(*QueryCollectorLookupByAppRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryCollectorLookupByProductAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCollectorLookupByProductAndAssetRequest)
+func _Query_QueryCollectorLookupByAppAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCollectorLookupByAppAndAssetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryCollectorLookupByProductAndAsset(ctx, in)
+		return srv.(QueryServer).QueryCollectorLookupByAppAndAsset(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorLookupByProductAndAsset",
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorLookupByAppAndAsset",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryCollectorLookupByProductAndAsset(ctx, req.(*QueryCollectorLookupByProductAndAssetRequest))
+		return srv.(QueryServer).QueryCollectorLookupByAppAndAsset(ctx, req.(*QueryCollectorLookupByAppAndAssetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_QueryCollectorDataByProductAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryCollectorDataByProductAndAssetRequest)
+func _Query_QueryCollectorDataByAppAndAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryCollectorDataByAppAndAssetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).QueryCollectorDataByProductAndAsset(ctx, in)
+		return srv.(QueryServer).QueryCollectorDataByAppAndAsset(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorDataByProductAndAsset",
+		FullMethod: "/comdex.collector.v1beta1.Query/QueryCollectorDataByAppAndAsset",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).QueryCollectorDataByProductAndAsset(ctx, req.(*QueryCollectorDataByProductAndAssetRequest))
+		return srv.(QueryServer).QueryCollectorDataByAppAndAsset(ctx, req.(*QueryCollectorDataByAppAndAssetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -927,16 +942,16 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Params_Handler,
 		},
 		{
-			MethodName: "QueryCollectorLookupByProduct",
-			Handler:    _Query_QueryCollectorLookupByProduct_Handler,
+			MethodName: "QueryCollectorLookupByApp",
+			Handler:    _Query_QueryCollectorLookupByApp_Handler,
 		},
 		{
-			MethodName: "QueryCollectorLookupByProductAndAsset",
-			Handler:    _Query_QueryCollectorLookupByProductAndAsset_Handler,
+			MethodName: "QueryCollectorLookupByAppAndAsset",
+			Handler:    _Query_QueryCollectorLookupByAppAndAsset_Handler,
 		},
 		{
-			MethodName: "QueryCollectorDataByProductAndAsset",
-			Handler:    _Query_QueryCollectorDataByProductAndAsset_Handler,
+			MethodName: "QueryCollectorDataByAppAndAsset",
+			Handler:    _Query_QueryCollectorDataByAppAndAsset_Handler,
 		},
 		{
 			MethodName: "QueryAuctionMappingForAppAndAsset",
@@ -1007,7 +1022,7 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorLookupByProductRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorLookupByAppRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1017,16 +1032,28 @@ func (m *QueryCollectorLookupByProductRequest) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorLookupByProductRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorLookupByProductRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
 	if m.AppId != 0 {
 		i = encodeVarintQuery(dAtA, i, uint64(m.AppId))
 		i--
@@ -1035,7 +1062,7 @@ func (m *QueryCollectorLookupByProductRequest) MarshalToSizedBuffer(dAtA []byte)
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorLookupByProductResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorLookupByAppResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1045,16 +1072,28 @@ func (m *QueryCollectorLookupByProductResponse) Marshal() (dAtA []byte, err erro
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorLookupByProductResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorLookupByProductResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.CollectorLookup) > 0 {
 		for iNdEx := len(m.CollectorLookup) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -1072,7 +1111,7 @@ func (m *QueryCollectorLookupByProductResponse) MarshalToSizedBuffer(dAtA []byte
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1082,12 +1121,12 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) Marshal() (dAtA []byte, e
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1105,7 +1144,7 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) MarshalToSizedBuffer(dAtA
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorLookupByAppAndAssetResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1115,12 +1154,12 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Marshal() (dAtA []byte, 
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorLookupByAppAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1138,7 +1177,7 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) MarshalToSizedBuffer(dAt
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorDataByAppAndAssetRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1148,12 +1187,12 @@ func (m *QueryCollectorDataByProductAndAssetRequest) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorDataByAppAndAssetRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorDataByAppAndAssetRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1171,7 +1210,7 @@ func (m *QueryCollectorDataByProductAndAssetRequest) MarshalToSizedBuffer(dAtA [
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryCollectorDataByProductAndAssetResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryCollectorDataByAppAndAssetResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1181,12 +1220,12 @@ func (m *QueryCollectorDataByProductAndAssetResponse) Marshal() (dAtA []byte, er
 	return dAtA[:n], nil
 }
 
-func (m *QueryCollectorDataByProductAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryCollectorDataByAppAndAssetResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryCollectorDataByProductAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryCollectorDataByAppAndAssetResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1367,7 +1406,7 @@ func (m *QueryParamsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryCollectorLookupByProductRequest) Size() (n int) {
+func (m *QueryCollectorLookupByAppRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1376,10 +1415,14 @@ func (m *QueryCollectorLookupByProductRequest) Size() (n int) {
 	if m.AppId != 0 {
 		n += 1 + sovQuery(uint64(m.AppId))
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
-func (m *QueryCollectorLookupByProductResponse) Size() (n int) {
+func (m *QueryCollectorLookupByAppResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1391,10 +1434,14 @@ func (m *QueryCollectorLookupByProductResponse) Size() (n int) {
 			n += 1 + l + sovQuery(uint64(l))
 		}
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
-func (m *QueryCollectorLookupByProductAndAssetRequest) Size() (n int) {
+func (m *QueryCollectorLookupByAppAndAssetRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1409,7 +1456,7 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryCollectorLookupByProductAndAssetResponse) Size() (n int) {
+func (m *QueryCollectorLookupByAppAndAssetResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1420,7 +1467,7 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryCollectorDataByProductAndAssetRequest) Size() (n int) {
+func (m *QueryCollectorDataByAppAndAssetRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1435,7 +1482,7 @@ func (m *QueryCollectorDataByProductAndAssetRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryCollectorDataByProductAndAssetResponse) Size() (n int) {
+func (m *QueryCollectorDataByAppAndAssetResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1637,7 +1684,7 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryCollectorLookupByProductRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorLookupByAppRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1660,10 +1707,10 @@ func (m *QueryCollectorLookupByProductRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorLookupByAppRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorLookupByAppRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1685,6 +1732,42 @@ func (m *QueryCollectorLookupByProductRequest) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1706,7 +1789,7 @@ func (m *QueryCollectorLookupByProductRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryCollectorLookupByProductResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorLookupByAppResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1729,10 +1812,10 @@ func (m *QueryCollectorLookupByProductResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorLookupByAppResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorLookupByAppResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1764,8 +1847,44 @@ func (m *QueryCollectorLookupByProductResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CollectorLookup = append(m.CollectorLookup, CollectorLookupTable{})
+			m.CollectorLookup = append(m.CollectorLookup, CollectorLookupTableData{})
 			if err := m.CollectorLookup[len(m.CollectorLookup)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1790,7 +1909,7 @@ func (m *QueryCollectorLookupByProductResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryCollectorLookupByProductAndAssetRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorLookupByAppAndAssetRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1813,10 +1932,10 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) Unmarshal(dAtA []byte) er
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductAndAssetRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorLookupByAppAndAssetRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorLookupByAppAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1878,7 +1997,7 @@ func (m *QueryCollectorLookupByProductAndAssetRequest) Unmarshal(dAtA []byte) er
 	}
 	return nil
 }
-func (m *QueryCollectorLookupByProductAndAssetResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorLookupByAppAndAssetResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1901,10 +2020,10 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Unmarshal(dAtA []byte) e
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductAndAssetResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorLookupByAppAndAssetResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorLookupByProductAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorLookupByAppAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1961,7 +2080,7 @@ func (m *QueryCollectorLookupByProductAndAssetResponse) Unmarshal(dAtA []byte) e
 	}
 	return nil
 }
-func (m *QueryCollectorDataByProductAndAssetRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorDataByAppAndAssetRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1984,10 +2103,10 @@ func (m *QueryCollectorDataByProductAndAssetRequest) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorDataByAppAndAssetRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorDataByAppAndAssetRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2049,7 +2168,7 @@ func (m *QueryCollectorDataByProductAndAssetRequest) Unmarshal(dAtA []byte) erro
 	}
 	return nil
 }
-func (m *QueryCollectorDataByProductAndAssetResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryCollectorDataByAppAndAssetResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2072,10 +2191,10 @@ func (m *QueryCollectorDataByProductAndAssetResponse) Unmarshal(dAtA []byte) err
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryCollectorDataByAppAndAssetResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryCollectorDataByProductAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryCollectorDataByAppAndAssetResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

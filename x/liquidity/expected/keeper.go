@@ -3,11 +3,13 @@ package expected
 import (
 	"time"
 
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	markettypes "github.com/comdex-official/comdex/x/market/types"
+	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
 // AccountKeeper is the expected account keeper.
@@ -34,16 +36,21 @@ type BankKeeper interface {
 type AssetKeeper interface {
 	HasAssetForDenom(ctx sdk.Context, denom string) bool
 	GetAssetForDenom(ctx sdk.Context, denom string) (asset assettypes.Asset, found bool)
-	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppMapping, found bool)
-	GetApps(ctx sdk.Context) (apps []assettypes.AppMapping, found bool)
+	GetApp(ctx sdk.Context, id uint64) (app assettypes.AppData, found bool)
+	GetApps(ctx sdk.Context) (apps []assettypes.AppData, found bool)
+	GetAsset(ctx sdk.Context, id uint64) (asset assettypes.Asset, found bool)
 }
 
 type MarketKeeper interface {
-	GetPriceForAsset(ctx sdk.Context, id uint64) (uint64, bool)
+	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
 type RewardsKeeper interface {
 	GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []rewardstypes.Gauge)
 	GetEpochInfoByDuration(ctx sdk.Context, duration time.Duration) (epochInfo rewardstypes.EpochInfo, found bool)
 	CreateNewGauge(ctx sdk.Context, msg *rewardstypes.MsgCreateGauge, forSwapFee bool) error
+}
+
+type TokenMintKeeper interface {
+	UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int)
 }

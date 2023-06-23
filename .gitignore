@@ -4,3 +4,8 @@
 /target/
 /release/
 /build/
+/cover.out
+/bin/
+__pycache__
+*.pyc
+**/*/node_modules

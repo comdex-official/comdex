@@ -16,7 +16,7 @@ var _ sdk.Msg = &MsgCreateGauge{}
 // NewMsgCreateGauge creates a message to add a new gauge.
 func NewMsgCreateGauge(
 	appID uint64,
-	//nolint
+
 	from sdk.AccAddress,
 	startTime time.Time,
 	gaugeTypeID uint64,
@@ -60,11 +60,11 @@ func (m MsgCreateGauge) ValidateBasic() error {
 		return fmt.Errorf("duration should be positive: %d < 0", m.TriggerDuration)
 	}
 	if m.DepositAmount.Amount.IsNegative() || m.DepositAmount.Amount.IsZero() {
-		return fmt.Errorf("invalid coin amount: %d < 0", m.DepositAmount.Amount)
+		return fmt.Errorf("invalid coin amount: %s < 0", m.DepositAmount.Amount)
 	}
 
 	if m.DepositAmount.Amount.LT(sdk.NewIntFromUint64(m.TotalTriggers)) {
-		return fmt.Errorf("deposit amount : %d smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
+		return fmt.Errorf("deposit amount : %s smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
 	}
 
 	return nil
@@ -81,160 +81,11 @@ func (m MsgCreateGauge) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{owner}
 }
 
-func NewMsgWhitelistAsset(
-	appMappingID uint64,
-	// nolint
-	from sdk.AccAddress,
-	assetID []uint64,
-) *WhitelistAsset {
-	return &WhitelistAsset{
-		AppMappingId: appMappingID,
-		From:         from.String(),
-		AssetId:      assetID,
-	}
-}
-
-func (m *WhitelistAsset) Route() string {
-	return RouterKey
-}
-
-func (m *WhitelistAsset) Type() string {
-	return ModuleName
-}
-
-func (m *WhitelistAsset) ValidateBasic() error {
-	return nil
-}
-
-func (m *WhitelistAsset) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *WhitelistAsset) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
-func NewMsgRemoveWhitelistAsset(
-	appMappingID uint64,
-	// nolint
-	from sdk.AccAddress,
-	assetID uint64,
-) *RemoveWhitelistAsset {
-	return &RemoveWhitelistAsset{
-		AppMappingId: appMappingID,
-		From:         from.String(),
-		AssetId:      assetID,
-	}
-}
-
-func (m *RemoveWhitelistAsset) Route() string {
-	return RouterKey
-}
-
-func (m *RemoveWhitelistAsset) Type() string {
-	return ModuleName
-}
-
-func (m *RemoveWhitelistAsset) ValidateBasic() error {
-	return nil
-}
-
-func (m *RemoveWhitelistAsset) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *RemoveWhitelistAsset) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
-func NewMsgWhitelistAppIDVault(
-	appMappingID uint64,
-	// nolint
-	from sdk.AccAddress,
-) *WhitelistAppIdVault {
-	return &WhitelistAppIdVault{
-		AppMappingId: appMappingID,
-		From:         from.String(),
-	}
-}
-
-func (m *WhitelistAppIdVault) Route() string {
-	return RouterKey
-}
-
-func (m *WhitelistAppIdVault) Type() string {
-	return ModuleName
-}
-
-func (m *WhitelistAppIdVault) ValidateBasic() error {
-	return nil
-}
-
-func (m *WhitelistAppIdVault) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *WhitelistAppIdVault) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
-func NewMsgRemoveWhitelistAppIDVault(
-	appMappingID uint64,
-	// nolint
-	from sdk.AccAddress,
-) *RemoveWhitelistAppIdVault {
-	return &RemoveWhitelistAppIdVault{
-		AppMappingId: appMappingID,
-		From:         from.String(),
-	}
-}
-
-func (m *RemoveWhitelistAppIdVault) Route() string {
-	return RouterKey
-}
-
-func (m *RemoveWhitelistAppIdVault) Type() string {
-	return ModuleName
-}
-
-func (m *RemoveWhitelistAppIdVault) ValidateBasic() error {
-	return nil
-}
-
-func (m *RemoveWhitelistAppIdVault) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *RemoveWhitelistAppIdVault) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from}
-}
-
 func NewMsgActivateExternalRewardsLockers(
 	appMappingID uint64,
 	assetID uint64,
 	totalRewards sdk.Coin,
 	durationDays, minLockupTimeSeconds int64,
-	// nolint
 	from sdk.AccAddress,
 ) *ActivateExternalRewardsLockers {
 	return &ActivateExternalRewardsLockers{
@@ -256,6 +107,21 @@ func (m *ActivateExternalRewardsLockers) Type() string {
 }
 
 func (m *ActivateExternalRewardsLockers) ValidateBasic() error {
+	if m.AppMappingId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
+	}
+	if m.AssetId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", m.AssetId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.MinLockupTimeSeconds <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	}
 	return nil
 }
 
@@ -264,7 +130,7 @@ func (m *ActivateExternalRewardsLockers) GetSignBytes() []byte {
 }
 
 func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
 	if err != nil {
 		panic(err)
 	}
@@ -272,17 +138,16 @@ func (m *ActivateExternalRewardsLockers) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgActivateExternalVaultLockers(
+func NewMsgActivateExternalRewardsVault(
 	appMappingID uint64,
 	extendedPairID uint64,
 	totalRewards sdk.Coin,
 	durationDays, minLockupTimeSeconds int64,
-	// nolint
 	from sdk.AccAddress,
 ) *ActivateExternalRewardsVault {
 	return &ActivateExternalRewardsVault{
 		AppMappingId:         appMappingID,
-		Extended_Pair_Id:     extendedPairID,
+		ExtendedPairId:       extendedPairID,
 		TotalRewards:         totalRewards,
 		DurationDays:         durationDays,
 		MinLockupTimeSeconds: minLockupTimeSeconds,
@@ -299,6 +164,21 @@ func (m *ActivateExternalRewardsVault) Type() string {
 }
 
 func (m *ActivateExternalRewardsVault) ValidateBasic() error {
+	if m.AppMappingId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
+	}
+	if m.ExtendedPairId <= 0 {
+		return fmt.Errorf("asset id should be positive: %d > 0", m.ExtendedPairId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.MinLockupTimeSeconds <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.MinLockupTimeSeconds)
+	}
 	return nil
 }
 
@@ -307,7 +187,123 @@ func (m *ActivateExternalRewardsVault) GetSignBytes() []byte {
 }
 
 func (m *ActivateExternalRewardsVault) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.Depositor)
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgActivateExternalRewardsLend(
+	appMappingID, cPoolID uint64,
+	assetID []uint64,
+	cSwapAppID, cSwapMinLockAmount uint64,
+	totalRewards sdk.Coin,
+	masterPoolID, durationDays, minLockupTimeSeconds int64,
+	from sdk.AccAddress,
+) *ActivateExternalRewardsLend {
+	return &ActivateExternalRewardsLend{
+		AppMappingId:         appMappingID,
+		CPoolId:              cPoolID,
+		AssetId:              assetID,
+		CSwapAppId:           cSwapAppID,
+		CSwapMinLockAmount:   cSwapMinLockAmount,
+		TotalRewards:         totalRewards,
+		MasterPoolId:         masterPoolID,
+		DurationDays:         durationDays,
+		MinLockupTimeSeconds: minLockupTimeSeconds,
+		Depositor:            from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsLend) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsLend) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsLend) ValidateBasic() error {
+	if m.AppMappingId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppMappingId)
+	}
+	if m.CPoolId <= 0 {
+		return fmt.Errorf("cPoolID id should be positive: %d > 0", m.CPoolId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+
+	return nil
+}
+
+func (m *ActivateExternalRewardsLend) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsLend) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgActivateExternalRewardsStableVault(
+	appID uint64,
+	cswapAppID uint64,
+	commodoAppID uint64,
+	totalRewards sdk.Coin,
+	durationDays, acceptedBlockHeight int64,
+	from sdk.AccAddress,
+) *ActivateExternalRewardsStableMint {
+	return &ActivateExternalRewardsStableMint{
+		AppId:               appID,
+		CswapAppId:          cswapAppID,
+		CommodoAppId:        commodoAppID,
+		TotalRewards:        totalRewards,
+		DurationDays:        durationDays,
+		AcceptedBlockHeight: acceptedBlockHeight,
+		Depositor:           from.String(),
+	}
+}
+
+func (m *ActivateExternalRewardsStableMint) Route() string {
+	return RouterKey
+}
+
+func (m *ActivateExternalRewardsStableMint) Type() string {
+	return ModuleName
+}
+
+func (m *ActivateExternalRewardsStableMint) ValidateBasic() error {
+	if m.AppId <= 0 {
+		return fmt.Errorf("app id should be positive: %d > 0", m.AppId)
+	}
+	if m.TotalRewards.IsZero() {
+		return fmt.Errorf("TotalRewards should be positive: > 0")
+	}
+	if m.DurationDays <= 0 {
+		return fmt.Errorf("DurationDays should be positive: %d > 0", m.DurationDays)
+	}
+	if m.AcceptedBlockHeight <= 0 {
+		return fmt.Errorf("MinLockupTimeSeconds should be positive: %d > 0", m.AcceptedBlockHeight)
+	}
+	return nil
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *ActivateExternalRewardsStableMint) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.GetDepositor())
 	if err != nil {
 		panic(err)
 	}
