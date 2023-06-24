@@ -177,6 +177,10 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	// "github.com/comdex-official/comdex/x/nft"
+	nftkeeper "github.com/comdex-official/comdex/x/nft/keeper"
+	nfttypes "github.com/comdex-official/comdex/x/nft/types"
+
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
 )
@@ -276,6 +280,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
+		// nft.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
@@ -355,6 +360,7 @@ type App struct {
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
+	NFTKeeper         nftkeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -401,7 +407,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
+			ibchookstypes.StoreKey, packetforwardtypes.StoreKey, nfttypes.StoreKey,
 		)
 	)
 
@@ -455,6 +461,7 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(nfttypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
@@ -758,6 +765,11 @@ func New(
 		&app.LendKeeper,
 	)
 
+	app.NFTKeeper = nftkeeper.NewKeeper(
+		app.cdc,
+		app.keys[nfttypes.StoreKey],
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	if err != nil {
@@ -885,6 +897,7 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		// nft.NewAppModule(app.cdc, app.NFTKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -931,6 +944,7 @@ func New(
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		packetforwardtypes.ModuleName,
+		nfttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -970,6 +984,7 @@ func New(
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		packetforwardtypes.ModuleName,
+		nfttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1009,6 +1024,7 @@ func New(
 		lockertypes.StoreKey,
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
+		nfttypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
@@ -1337,6 +1353,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
+		nfttypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 		assettypes.ModuleName:          nil,
 	}
 }

@@ -26,6 +26,7 @@ require (
 require (
 	github.com/cosmos/ibc-go/v4 v4.4.2
 	github.com/golangci/golangci-lint v1.51.2
+	github.com/google/uuid v1.3.0
 	github.com/osmosis-labs/osmosis/v15 v15.1.2
 	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
 	github.com/rakyll/statik v0.1.7
