@@ -2,14 +2,12 @@ syntax = "proto3";
 package comdex.erc20.v1beta1;
 
 
-
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "evmos/erc20/v1/erc20.proto";
-import "evmos/erc20/v1/genesis.proto";
+import "comdex/erc20/v1beta1/erc20.proto";
+import "comdex/erc20/v1beta1/genesis.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-package comdex.erc20.v1beta1;
 
 option go_package = "github.com/comdex-official/comdex/x/erc20/types";
 
