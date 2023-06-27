@@ -22,7 +22,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 	liquidationWhitelistingAppData, _ := k.LiquidationsV2.GetLiquidationWhiteListing(ctx, auctionData.AppId)
 
 	if bid.Denom != auctionData.DebtToken.Denom {
-		return bidId, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Bid token is not the debt token ", bid.Denom)
+		return bidId, types.ErrorUnknownDebtToken
 	}
 	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, auctionData.AppId, auctionData.LockedVaultId)
 	//Price data of the token from market module
@@ -83,10 +83,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 				return bidId, err
 			}
 		}
-		//Burn Debt Token,
+		//Burn Debt Token, only for vault
 		liquidationPenalty := sdk.NewCoin(auctionData.DebtToken.Denom, liquidationData.FeeToBeCollected)
 		var tokensToBurn sdk.Coin
-		if liquidationData.InitiatorType != "external" {
+		if liquidationData.InitiatorType == "vault" {
 			tokensToBurn = liquidationData.TargetDebt.Sub(liquidationPenalty)
 			if tokensToBurn.Amount.GT(sdk.ZeroInt()) {
 				err := k.bankKeeper.BurnCoins(ctx, auctionsV2types.ModuleName, sdk.NewCoins(tokensToBurn))
@@ -182,9 +182,8 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//Updating mapping data of vault
 			k.vault.UpdateTokenMintedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, tokensToBurn.Amount, false)
 			k.vault.UpdateCollateralLockedAmountLockerMapping(ctx, auctionData.AppId, liquidationData.ExtendedPairId, liquidationData.CollateralToken.Amount, false)
-		} else if liquidationData.InitiatorType == "borrow" {
+		} else if liquidationData.InitiatorType == "lend" {
 			//Check if they are initiated through a keeper, if so they will be incentivised
-			//TODO:
 			// send money back to the debt pool (assetOut pool)
 			// liquidation penalty to the reserve and interest to the pool
 			// send token to the bidder
@@ -216,7 +215,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		//if bid amount is less than the target bid
 		//Calculating collateral token value from bid(debt) token value
 		_, collateralTokenQuantity, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.DebtAssetId, debtPrice, bid.Amount, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice)
-		debtLeft := bid.Amount.Sub(bid.Amount)
+		debtLeft := auctionData.DebtToken.Amount.Sub(bid.Amount)
 		debtuDollar, _ := k.CalcDollarValueForToken(ctx, auctionData.DebtAssetId, debtPrice, debtLeft)
 		if !(debtuDollar).GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.MinUsdValueLeft))) {
 			return bidId, types.ErrCannotLeaveDebtLessThanDust
@@ -318,7 +317,7 @@ func (k Keeper) PlaceEnglishAuctionBid(ctx sdk.Context, auctionID uint64, bidder
 		tokenCollateralData = bid
 	}
 	if bid.Denom != tokenLastBid.Denom {
-		return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "Bid is not in correct denom ", bid.Denom)
+		return types.ErrorUnknownDebtToken
 	}
 	if auctionData.BiddingIds != nil {
 
@@ -479,6 +478,16 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
 	}
+
+	debtToken, found := k.asset.GetAsset(ctx, DebtTokenId)
+	if !found {
+		return assettypes.ErrorAssetDoesNotExist
+	}
+
+	if debtToken.Denom != amount.Denom {
+		return types.ErrorUnknownDebtToken
+	}
+
 	userLimitBid, found := k.GetUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
 	if !found {
 		userLimitBid = types.LimitOrderBid{
@@ -525,8 +534,8 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 	}
 	// return all the tokens back to the user
 	if userLimitBid.DebtToken.Amount.GT(sdk.ZeroInt()) {
-		feesToBecollected := auctionParams.ClosingFee.Mul(sdk.NewDecFromInt(userLimitBid.DebtToken.Amount)).TruncateInt()
-		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBecollected)
+		feesToBeCollected := auctionParams.ClosingFee.Mul(sdk.NewDecFromInt(userLimitBid.DebtToken.Amount)).TruncateInt()
+		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBeCollected)
 
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(userLimitBid.DebtToken))
 		if err != nil {
@@ -537,9 +546,9 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 		if !found {
 			var feeData types.AuctionFeesCollectionFromLimitBidTx
 			feeData.AssetId = DebtTokenId
-			feeData.Amount = feesToBecollected
+			feeData.Amount = feesToBeCollected
 		} else {
-			feeData.Amount = feeData.Amount.Add(feesToBecollected)
+			feeData.Amount = feeData.Amount.Add(feesToBeCollected)
 		}
 		err := k.SetAuctionLimitBidFeeData(ctx, feeData)
 		if err != nil {
@@ -557,7 +566,7 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount sdk.Int, amount sdk.Coin) error {
 	userLimitBid, found := k.GetUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
 	if !found {
-		// return err not found
+		return types.ErrBidNotFound
 	}
 
 	bidderAddr, err := sdk.AccAddressFromBech32(bidder)
@@ -576,8 +585,8 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 
 	// return all the tokens back to the user
 	if userLimitBid.DebtToken.Amount.GT(sdk.ZeroInt()) {
-		feesToBecollected := auctionParams.WithdrawalFee.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()
-		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBecollected)
+		feesToBeCollected := auctionParams.WithdrawalFee.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()
+		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBeCollected)
 
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(amount))
 		if err != nil {
@@ -588,9 +597,9 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 		if !found {
 			var feeData types.AuctionFeesCollectionFromLimitBidTx
 			feeData.AssetId = DebtTokenId
-			feeData.Amount = feesToBecollected
+			feeData.Amount = feesToBeCollected
 		} else {
-			feeData.Amount = feeData.Amount.Add(feesToBecollected)
+			feeData.Amount = feeData.Amount.Add(feesToBeCollected)
 		}
 		err := k.SetAuctionLimitBidFeeData(ctx, feeData)
 		if err != nil {

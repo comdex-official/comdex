@@ -69,7 +69,9 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	//Premium : Initial Price i.e price of the collateral at which the auction will start
 	//Discount: Final Price , i.e less than the oracle price of the collateral asset and at this , auction would end
 	//Decrement Factor:     Linear decrease in the price of the collateral every block is governed by this.
-	CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
+	//CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
+	CollateralTokenInitialPrice := sdk.NewDecFromInt(sdk.NewIntFromUint64(twaDataCollateral.Twa)).Add(k.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium))
+
 	// CollateralTokenEndPrice := k.getOutflowTokenEndPrice(CollateralTokenInitialPrice, dutchAuctionParams.Cusp)
 	auctionParams, _ := k.GetAuctionParams(ctx)
 
@@ -233,40 +235,6 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 
 	return nil
 }
-
-// DutchAuctionsIterator iterates over existing active dutch auctions and does 2 main job
-// First: if auction time is complete and target not reached with collateral available then Restart
-// Second: if not restarting update the price
-// func (k Keeper) DutchAuctionsIterator(ctx sdk.Context) error {
-// 	dutchAuctions := k.GetAuctions(ctx)
-// 	// SET current price of inflow token and outflow token
-
-// 	for _, dutchAuction := range dutchAuctions {
-// 		lockedVault, found := k.LiquidationsV2.GetLockedVault(ctx, dutchAuction.AppId, dutchAuction.LockedVaultId)
-// 		if !found {
-// 			return auctiontypes.ErrorInvalidLockedVault
-// 		}
-// 		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-// 			// First case to check if we have to restart the auction
-// 			if ctx.BlockTime().After(dutchAuction.EndTime) {
-// 				// restart
-// 				err := k.RestartDutchAuctions(ctx, dutchAuction, lockedVault)
-// 				if err != nil {
-// 					return err
-// 				}
-
-// 			} else {
-// 				// Second case to only reduce the price
-// 				err := k.UpdateDutchAuctionPrice(ctx, dutchAuction)
-// 				if err != nil {
-// 					return err
-// 				}
-// 			}
-// 			return nil
-// 		})
-// 	}
-// 	return nil
-// }
 
 func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)

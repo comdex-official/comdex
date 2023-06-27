@@ -2,11 +2,10 @@ package keeper
 
 import (
 	"fmt"
-	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-
 	utils "github.com/comdex-official/comdex/types"
+	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
@@ -114,10 +113,10 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 			return fmt.Errorf("error Calculating vault interest in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 		}
 		//Calling vault to use the updated values of the vault
-		vault, _ := k.vault.GetVault(ctx, vault.Id)
+		vault, _ = k.vault.GetVault(ctx, vault.Id)
 
-		totalOut := vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
-		collateralizationRatio, err := k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
+		totalOut = vault.AmountOut.Add(vault.InterestAccumulated).Add(vault.ClosingFeeAccumulated)
+		collateralizationRatio, err = k.vault.CalculateCollateralizationRatio(ctx, vault.ExtendedPairVaultID, vault.AmountIn, totalOut)
 		if err != nil {
 			return fmt.Errorf("error Calculating CR in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 		}
@@ -125,7 +124,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
 
 		//Calculating auction bonus to be given
-		auctionBonusToBeGiven := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
+		auctionBonusToBeGiven := sdk.ZeroInt()
 
 		//Checking if the vault getting liquidated is a cmst based vault or not
 		//This is primarily to infer that primary market will consider cmst at $1 at the time of buying it
@@ -364,7 +363,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 		return err
 	}
 
-	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, borrow.AmountIn, borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
+	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
 	if err != nil {
 		return err
 	}
@@ -676,7 +675,6 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 }
 
 func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData types.LockedVault, auctionData auctionsV2types.Auction) error {
-	//TODO:
 	// send money back to the debt pool (assetOut pool)
 	// liquidation penalty to the reserve and interest to the pool
 	// send token to the bidder
@@ -687,7 +685,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	pair, _ := k.lend.GetLendPair(ctx, borrowPos.PairID)
 	pool, _ := k.lend.GetPool(ctx, pair.AssetOutPoolID)
 	poolAssetLBMappingData, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-	amountToPool := auctionData.DebtToken // subtract liquidation penalty and interest after sending all the collateral to pool
+	amountToPool := liquidationData.DebtToken
 	assetOutStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetOut)
 	cAsset, _ := k.asset.GetAsset(ctx, assetOutStats.CAssetID)
 

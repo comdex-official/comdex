@@ -33,7 +33,6 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	//From auction ID, checking the whether its an english or a dutch auction
 	//If true triggering Dutch Auction Bid Request
 	if auctionData.AuctionType {
-
 		_, err = k.PlaceDutchAuctionBid(ctx, msg.AuctionId, bidder.String(), msg.Amount, auctionData, false)
 		if err != nil {
 			return nil, err
@@ -62,7 +61,7 @@ func (k msgServer) MsgDepositLimitBid(goCtx context.Context, msg *types.MsgDepos
 
 func (k msgServer) MsgCancelLimitBid(goCtx context.Context, msg *types.MsgCancelLimitBidRequest) (*types.MsgCancelLimitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	err := k.CancelLimitAuctionBid(ctx, msg.Bidder, msg.CollateralTokenId, msg.DebtTokenId, msg.PremiumDiscount)
+	err := k.CancelLimitAuctionBid(ctx, msg.Bidder, msg.DebtTokenId, msg.CollateralTokenId, msg.PremiumDiscount)
 	if err != nil {
 		return nil, err
 	}

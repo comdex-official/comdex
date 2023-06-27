@@ -19,4 +19,5 @@ var (
 	ErrBidNotFound                 = sdkerrors.Register(ModuleName, 709, "There exists no active bid for the user with given params")
 	ErrAuctionParamsNotFound       = sdkerrors.Register(ModuleName, 710, "There exists no auction params")
 	ErrorUnknownProposalType       = sdkerrors.Register(ModuleName, 711, "unknown proposal type")
+	ErrorUnknownDebtToken          = sdkerrors.Register(ModuleName, 712, "Bid token is not the debt token")
 )
