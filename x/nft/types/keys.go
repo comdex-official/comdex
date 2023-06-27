@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "nft"
@@ -25,3 +29,34 @@ const (
 	DenomKey      = "Denom-value-"
 	DenomCountKey = "Denom-count-"
 )
+
+var (
+	PrefixDenom = []byte{0x01}
+	PrefixDenomSymbol = []byte{0x02}
+	PrefixCreator = []byte{0x03}
+
+	delimiter = []byte("/")
+)
+
+func KeyDenomID(id string) []byte {
+	key := append(PrefixDenom, delimiter...)
+	return append(key, []byte(id)...)
+}
+
+func KeyDenomSymbol(symbol string) []byte {
+	key := append(PrefixDenomSymbol, delimiter...)
+	return append(key, []byte(symbol)...)
+}
+
+func KeyDenomCreator( address sdk.AccAddress, denomId string) []byte {
+	key := append(PrefixCreator, delimiter...)
+	if address != nil {
+		key = append(key, []byte(address)...)
+		key = append(key, delimiter...)
+	}
+	if address != nil && len(denomId) > 0 {
+		key = append(key, []byte(denomId)...)
+		key = append(key, delimiter...)
+	}
+	return key
+}
