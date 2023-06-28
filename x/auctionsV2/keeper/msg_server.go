@@ -27,7 +27,6 @@ func (k msgServer) MsgPlaceMarketBid(goCtx context.Context, msg *types.MsgPlaceM
 	}
 	auctionData, err := k.GetAuction(ctx, msg.AuctionId)
 	if err != nil {
-
 		return nil, err
 	}
 	//From auction ID, checking the whether its an english or a dutch auction

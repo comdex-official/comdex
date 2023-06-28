@@ -6,6 +6,7 @@ import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2Keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	collectKeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
@@ -37,6 +38,7 @@ type KeeperTestSuite struct {
 	lendQuerier         lendkeeper.QueryServer
 	auctionsV2Keeper    auctionsV2Keeper.Keeper
 	auctionsV2MsgServer auctionsV2types.MsgServer
+	collectorKeeper     collectKeeper.Keeper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -58,6 +60,7 @@ func (s *KeeperTestSuite) SetupTest() {
 	s.lendQuerier = lendkeeper.QueryServer{Keeper: s.lendKeeper}
 	s.auctionsV2Keeper = s.app.NewaucKeeper
 	s.auctionsV2MsgServer = auctionsV2Keeper.NewMsgServerImpl(s.auctionsV2Keeper)
+	s.collectorKeeper = s.app.CollectorKeeper
 }
 
 func (s *KeeperTestSuite) CreateNewAsset(name, denom string, twa uint64) uint64 {

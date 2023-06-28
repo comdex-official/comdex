@@ -1,9 +1,11 @@
 package keeper_test
 
 import (
+	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
@@ -685,4 +687,195 @@ func (s *KeeperTestSuite) TestWithdrawLimitBid() {
 			}
 		})
 	}
+}
+
+func (s *KeeperTestSuite) TestDebtActivator() {
+	collectorKeeper := &s.collectorKeeper
+	liquidationKeeper := &s.liquidationKeeper
+	s.AddAppAssets()
+	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
+
+	err := collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(4700000))
+	s.Require().NoError(err)
+	k, ctx := &s.liquidationKeeper, &s.ctx
+	err = k.Liquidate(*ctx)
+	s.Require().NoError(err)
+	lockedVault := liquidationKeeper.GetLockedVaults(s.ctx)
+	s.Require().Equal(lockedVault[0].OriginalVaultId, uint64(0))
+	s.Require().Equal(lockedVault[0].ExtendedPairId, uint64(0))
+	s.Require().Equal(lockedVault[0].Owner, "")
+	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
+	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
+	s.Require().Equal(lockedVault[0].InitiatorType, "debt")
+
+}
+
+func (s *KeeperTestSuite) TestSurplusActivator() {
+	collectorKeeper := &s.collectorKeeper
+	liquidationKeeper := &s.liquidationKeeper
+	s.AddAppAssets()
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
+	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	s.Require().NoError(err)
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	s.Require().NoError(err)
+
+	err = collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(100000000))
+	s.Require().NoError(err)
+	k, ctx := &s.liquidationKeeper, &s.ctx
+	err = k.Liquidate(*ctx)
+	s.Require().NoError(err)
+	lockedVault := liquidationKeeper.GetLockedVaults(s.ctx)
+	s.Require().Equal(lockedVault[0].OriginalVaultId, uint64(0))
+	s.Require().Equal(lockedVault[0].ExtendedPairId, uint64(0))
+	s.Require().Equal(lockedVault[0].Owner, "")
+	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
+	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
+	s.Require().Equal(lockedVault[0].InitiatorType, "surplus")
+}
+
+func (s *KeeperTestSuite) TestDebtAuctionBid() {
+	s.TestDebtActivator()
+	bidder := "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"
+
+	testCases := []struct {
+		Name    string
+		Msg     auctionsV2types.MsgPlaceMarketBidRequest
+		ExpErr  error
+		ExpResp *auctionsV2types.MsgPlaceMarketBidResponse
+	}{
+		{
+			Name:    "auction does not exist",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 10, sdk.NewCoin("uasset2", sdk.NewInt(100000))),
+			ExpErr:  sdkerrors.ErrNotFound,
+			ExpResp: nil,
+		},
+		{
+			Name:    "bidding amount is greater than maximum bidding amount",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(53000000))),
+			ExpErr:  auctionsV2types.ErrorMaxBidAmount,
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(200000))),
+			ExpErr:  nil,
+			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
+		},
+		{
+			Name:    "bid should be less than or equal to 180000",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(200000))),
+			ExpErr:  fmt.Errorf("bid should be less than or equal to 180000 : not found"),
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case 2",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(180000))),
+			ExpErr:  nil,
+			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.auctionMsgServer.MsgPlaceMarketBid(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+			}
+		})
+	}
+
+	//auctionKeeper := &s.keeper
+	//debtAuction := auctionKeeper.GetAuctions(s.ctx)
+	//fmt.Println("debtAuction", debtAuction)
+	//fmt.Println("debtAuction[0].AuctionId", debtAuction[0].AuctionId)
+	//fmt.Println("debtAuction[0].CollateralToken", debtAuction[0].CollateralToken)
+	//fmt.Println("debtAuction[0].DebtToken", debtAuction[0].DebtToken)
+	//fmt.Println("debtAuction[0].ActiveBiddingId", debtAuction[0].ActiveBiddingId)
+	//fmt.Println("debtAuction[0].BiddingIds", debtAuction[0].BiddingIds)
+	//fmt.Println("debtAuction[0].CollateralTokenAuctionPrice", debtAuction[0].CollateralTokenAuctionPrice)
+	//fmt.Println("debtAuction[0].CollateralTokenOraclePrice", debtAuction[0].CollateralTokenOraclePrice)
+	//fmt.Println("debtAuction[0].DebtTokenOraclePrice", debtAuction[0].DebtTokenOraclePrice)
+	//fmt.Println("debtAuction[0].LockedVaultId", debtAuction[0].LockedVaultId)
+	//fmt.Println("debtAuction[0].StartTime", debtAuction[0].StartTime)
+	//fmt.Println("debtAuction[0].EndTime", debtAuction[0].EndTime)
+	//fmt.Println("debtAuction[0].AppId", debtAuction[0].AppId)
+	//fmt.Println("debtAuction[0].AuctionType", debtAuction[0].AuctionType)
+	//fmt.Println("debtAuction[0].CollateralAssetId", debtAuction[0].CollateralAssetId)
+	//fmt.Println("debtAuction[0].DebtAssetId", debtAuction[0].DebtAssetId)
+	//fmt.Println("debtAuction[0].BonusAmount", debtAuction[0].BonusAmount)
+
+}
+
+func (s *KeeperTestSuite) TestSurplusAuctionBid() {
+	s.TestSurplusActivator()
+	bidder := "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"
+
+	testCases := []struct {
+		Name    string
+		Msg     auctionsV2types.MsgPlaceMarketBidRequest
+		ExpErr  error
+		ExpResp *auctionsV2types.MsgPlaceMarketBidResponse
+	}{
+		{
+			Name:    "auction does not exist",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 10, sdk.NewCoin("uasset3", sdk.NewInt(100000))),
+			ExpErr:  sdkerrors.ErrNotFound,
+			ExpResp: nil,
+		},
+		//{
+		//	Name:    "bidding amount is lower than minimum bidding amount",
+		//	Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(5300))),
+		//	ExpErr:  auctionsV2types.ErrorLowBidAmount,
+		//	ExpResp: nil,
+		//},
+		{
+			Name:    "success valid case",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(200000))),
+			ExpErr:  nil,
+			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
+		},
+		{
+			Name:    "bid should be greater than or equal to 220000",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(200000))),
+			ExpErr:  fmt.Errorf("bid should be greater than or equal to 220000 : not found"),
+			ExpResp: nil,
+		},
+		{
+			Name:    "success valid case 2",
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(220000))),
+			ExpErr:  nil,
+			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.Name, func() {
+
+			ctx := sdk.WrapSDKContext(s.ctx)
+			resp, err := s.auctionMsgServer.MsgPlaceMarketBid(ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+				s.Require().Equal(tc.ExpResp, resp)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+				s.Require().Equal(tc.ExpResp, resp)
+
+			}
+		})
+	}
+
 }

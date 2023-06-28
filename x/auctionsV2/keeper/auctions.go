@@ -125,11 +125,13 @@ func (k Keeper) EnglishAuctionActivator(ctx sdk.Context, liquidationData liquida
 		// CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
 		// CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
 		// DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
-		LockedVaultId: liquidationData.LockedVaultId,
-		StartTime:     ctx.BlockTime(),
-		EndTime:       ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
-		AppId:         liquidationData.AppId,
-		AuctionType:   liquidationData.AuctionType,
+		LockedVaultId:     liquidationData.LockedVaultId,
+		StartTime:         ctx.BlockTime(),
+		EndTime:           ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
+		AppId:             liquidationData.AppId,
+		AuctionType:       liquidationData.AuctionType,
+		CollateralAssetId: liquidationData.CollateralAssetId,
+		DebtAssetId:       liquidationData.DebtAssetId,
 	}
 	k.SetAuctionID(ctx, auctionData.AuctionId)
 	err := k.SetAuction(ctx, auctionData)

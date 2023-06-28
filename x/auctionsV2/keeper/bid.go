@@ -323,13 +323,14 @@ func (k Keeper) PlaceEnglishAuctionBid(ctx sdk.Context, auctionID uint64, bidder
 
 		change := auctionParams.BidFactor.MulInt(tokenLastBid.Amount).Ceil().TruncateInt()
 		bidAmount := tokenLastBid.Amount.Add(change)
-		if bid.Amount.LT(bidAmount) {
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", bidAmount.Uint64())
-		}
 		if liquidationData.InitiatorType == "debt" {
 			bidAmount = tokenLastBid.Amount.Sub(change)
 			if bid.Amount.GT(bidAmount) {
 				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", bidAmount.Uint64())
+			}
+		} else {
+			if bid.Amount.LT(bidAmount) {
+				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", bidAmount.Uint64())
 			}
 		}
 	} else {
