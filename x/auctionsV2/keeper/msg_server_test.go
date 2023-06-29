@@ -3,7 +3,9 @@ package keeper_test
 import (
 	"fmt"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
+	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
+	"github.com/comdex-official/comdex/x/auctionsV2"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
@@ -130,8 +132,8 @@ func (s *KeeperTestSuite) AddAppAssets() {
 
 	// set liquidation whitelisting
 	dutchAuctionParams := types.DutchAuctionParam{
-		Premium:         newDec("0.2"),
-		Discount:        newDec("0.1"),
+		Premium:         newDec("1.2"),
+		Discount:        newDec("0.7"),
 		DecrementFactor: sdk.NewInt(1),
 	}
 	englishAuctionParams := types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
@@ -311,7 +313,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults() {
 	twaDataCollateral, _ := s.app.MarketKeeper.GetTwa(s.ctx, lockedVault[0].CollateralAssetId)
 	liquidationWhitelistingAppData, _ := s.app.NewliqKeeper.GetLiquidationWhiteListing(s.ctx, lockedVault[0].AppId)
 	CollateralTokenInitialPrice := s.app.NewaucKeeper.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), liquidationWhitelistingAppData.DutchAuctionParam.Premium)
-	s.Require().Equal(auctions[0].CollateralTokenAuctionPrice, CollateralTokenInitialPrice.Add(sdk.NewDecFromInt(sdk.NewIntFromUint64(twaDataCollateral.Twa))))
+	s.Require().Equal(auctions[0].CollateralTokenAuctionPrice, CollateralTokenInitialPrice)
 
 }
 
@@ -402,7 +404,7 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	twaDataCollateral, _ := s.app.MarketKeeper.GetTwa(s.ctx, lockedVault[0].CollateralAssetId)
 	liquidationWhitelistingAppData, _ := s.app.NewliqKeeper.GetLiquidationWhiteListing(s.ctx, lockedVault[0].AppId)
 	CollateralTokenInitialPrice := s.app.NewaucKeeper.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), liquidationWhitelistingAppData.DutchAuctionParam.Premium)
-	s.Require().Equal(auctions[0].CollateralTokenAuctionPrice, CollateralTokenInitialPrice.Add(sdk.NewDecFromInt(sdk.NewIntFromUint64(twaDataCollateral.Twa))))
+	s.Require().Equal(auctions[0].CollateralTokenAuctionPrice, CollateralTokenInitialPrice)
 }
 
 func (s *KeeperTestSuite) TestPlaceMarketBidForVaults() {
@@ -833,12 +835,6 @@ func (s *KeeperTestSuite) TestSurplusAuctionBid() {
 			ExpErr:  sdkerrors.ErrNotFound,
 			ExpResp: nil,
 		},
-		//{
-		//	Name:    "bidding amount is lower than minimum bidding amount",
-		//	Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(5300))),
-		//	ExpErr:  auctionsV2types.ErrorLowBidAmount,
-		//	ExpResp: nil,
-		//},
 		{
 			Name:    "success valid case",
 			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(200000))),
@@ -878,4 +874,91 @@ func (s *KeeperTestSuite) TestSurplusAuctionBid() {
 		})
 	}
 
+}
+
+func (s *KeeperTestSuite) TestAuctionIterator() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:00:00Z"))
+	s.TestLiquidateVaults()
+
+	// debt auction
+	collectorKeeper := &s.collectorKeeper
+	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
+	err := collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(4700000))
+	s.Require().NoError(err)
+	k := &s.liquidationKeeper
+	err = k.Liquidate(s.ctx)
+	s.Require().NoError(err)
+
+	auction, _ := s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1200000)))
+
+	// update auction price
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:30:00Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+	auction, _ = s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1020000)))
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:59:59Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+	auction, _ = s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(840100)))
+
+	// restart auction
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T13:30:00Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+	auction, _ = s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1200000)))
+}
+
+func (s *KeeperTestSuite) TestAuctionIteratorSurplus() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:00:00Z"))
+	s.TestLiquidateVaults()
+	//winnerAddress := "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"
+
+	collectorKeeper := &s.collectorKeeper
+	k := &s.liquidationKeeper
+	// surplus auction
+
+	//tokenmintKeeper := &s.tokenmintKeeper
+	//server := tokenmintKeeper1.NewMsgServer(*tokenmintKeeper)
+	//msg1 := tokenminttypes.MsgMintNewTokensRequest{
+	//	From:    winnerAddress,
+	//	AppId:   1,
+	//	AssetId: 3,
+	//}
+	//_, err := server.MsgMintNewTokens(sdk.WrapSDKContext(s.ctx), &msg1)
+	//s.Require().NoError(err)
+
+	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
+	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	s.Require().NoError(err)
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	s.Require().NoError(err)
+	err = collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(100000000))
+	s.Require().NoError(err)
+	k, ctx := &s.liquidationKeeper, &s.ctx
+	err = k.Liquidate(*ctx)
+	s.Require().NoError(err)
+
+	auction, _ := s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1200000)))
+
+	// update auction price and bid for english auction
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:30:00Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+
+	msg := auctionsV2types.MsgPlaceMarketBidRequest{
+		AuctionId: 3,
+		Bidder:    "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7",
+		Amount:    sdk.NewCoin("uasset3", sdk.NewInt(220000)),
+	}
+	_, err = s.auctionMsgServer.MsgPlaceMarketBid(sdk.WrapSDKContext(s.ctx), &msg)
+	s.Require().NoError(err)
+
+	// restart auction
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T13:30:00Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+	auction, _ = s.keeper.GetAuction(s.ctx, 1)
+	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1200000)))
 }

@@ -35,13 +35,6 @@ message Auction{
     (gogoproto.moretags) = "yaml:\"inflow_token_target_amount\"",
     (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
   ];
-  // string collateral_figure = 2 [
-  //   (gogoproto.nullable) = false,
-  //   (gogoproto.moretags) = "yaml:\"collateral_token\"",
-  //   (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
-  // ];
-
-
 
   uint64 active_bidding_id = 4 [
     (gogoproto.moretags) = "yaml:\"active_bidding_id\""
@@ -87,9 +80,6 @@ message Auction{
   bool auction_type = 14 [
     (gogoproto.customname) = "AuctionType",
     (gogoproto.moretags) = "yaml:\"auction_type\""];
-  // uint64 auction_status = 20 [
-  //   (gogoproto.moretags) = "yaml:\"auction_status\""
-  // ];
 
   uint64 collateral_asset_id = 15 [
     (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
@@ -103,6 +93,11 @@ message Auction{
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
   ];
 
+  string collateral_token_initial_price = 18 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"collateral_token_initial_price\""
+  ];
 
 }
 

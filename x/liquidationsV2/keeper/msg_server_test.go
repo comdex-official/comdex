@@ -524,7 +524,6 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 
 				s.Require().NoError(err)
 				id = liquidationKeeper.GetLockedVaultID(s.ctx)
-				fmt.Println("id", id)
 				s.Require().Equal(id, uint64(1))
 				s.Require().Equal(s.GetBorrowsCount(), currentBorrowsCount)
 
