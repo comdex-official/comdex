@@ -10,7 +10,7 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -29,7 +29,7 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// locker_id will be the key which will be derived from the LockerLookUpTable
+//locker_id will be the key which will be derived from the LockerLookUpTable
 type Locker struct {
 	LockerId           uint64                                 `protobuf:"varint,1,opt,name=locker_id,json=lockerId,proto3" json:"locker_id,omitempty" yaml:"locker_id"`
 	Depositor          string                                 `protobuf:"bytes,2,opt,name=depositor,proto3" json:"depositor,omitempty" yaml:"depositor"`
@@ -197,7 +197,7 @@ func (m *LockerLookupTableData) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LockerLookupTableData proto.InternalMessageInfo
 
-// Key is app_mapping_id
+//Key is app_mapping_id
 type LockerProductAssetMapping struct {
 	AppId   uint64 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
 	AssetId uint64 `protobuf:"varint,2,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`

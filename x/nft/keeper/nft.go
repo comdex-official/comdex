@@ -33,17 +33,17 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
 	return nfts
 }
 
-func (k Keeper) GetOwnerNFTs(ctx sdk.Context, denom string, owner string) (nfts []*types.NFT) {
+func (k Keeper) GetOwnerNFTs(ctx sdk.Context, denom string, owner string) (nfts []types.NFT) {
 	store := ctx.KVStore(k.storeKey)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.KeyNFT(denom, ""))
 	defer iterator.Close()
-	var nftList []*types.NFT
+	var nftList []types.NFT
 	for ; iterator.Valid(); iterator.Next() {
 		var NFT types.NFT
 		k.cdc.MustUnmarshal(iterator.Value(), &NFT)
 		if NFT.Owner == owner {
-			nftList = append(nftList, &NFT)
+			nftList = append(nftList, NFT)
 		}
 	}
 	return nftList

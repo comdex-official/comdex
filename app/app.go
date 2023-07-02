@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/nft"
 	"io"
 	"net/http"
 	"os"
@@ -183,6 +184,7 @@ import (
 
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
+	tv12 "github.com/comdex-official/comdex/app/upgrades/testnet/v12"
 )
 
 const (
@@ -280,7 +282,7 @@ var (
 		wasm.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
-		// nft.AppModuleBasic{},
+		nft.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
@@ -897,7 +899,7 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
-		// nft.NewAppModule(app.cdc, app.NFTKeeper),
+		//nft.NewAppModule(app.cdc, app.NFTKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -1378,6 +1380,11 @@ func (a *App) registerUpgradeHandlers() {
 			mv11.UpgradeName,
 			mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
 		)
+	case upgradeInfo.Name == tv12.UpgradeName:
+		a.UpgradeKeeper.SetUpgradeHandler(
+			tv12.UpgradeName,
+			tv12.CreateUpgradeHandlerV12(a.mm, a.configurator),
+		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
@@ -1399,6 +1406,11 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
+		}
+
+	case upgradeInfo.Name == tv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{},
 		}
 	}
 	return storeUpgrades

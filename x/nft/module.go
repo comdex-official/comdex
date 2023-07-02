@@ -2,6 +2,8 @@ package nft
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	// "encoding/json"
 	// "github.com/gogo/protobuf/grpc"
 	"github.com/gorilla/mux"
@@ -22,8 +24,8 @@ import (
 )
 
 var (
-	// _ module.AppModule      = AppModule{}
-	// _ module.AppModuleBasic = AppModuleBasic{}
+// _ module.AppModule      = AppModule{}
+// _ module.AppModuleBasic = AppModuleBasic{}
 )
 
 type AppModuleBasic struct {
@@ -36,18 +38,22 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 }
 
-// func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-// 	return cdc.MustMarshalJSON(DefaultGenesisState())
-// }
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(DefaultGenesisState())
+}
 
-// func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
-// 	var data types.GenesisState
-// 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-// 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
-// 	}
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
+	var data types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
+	}
 
-// 	return types.ValidateGenesis(data)
-// }
+	return types.ValidateGenesis(data)
+}
+
+func DefaultGenesisState() *types.GenesisState {
+	return types.NewGenesisState([]types.Collection{})
+}
 
 // func (AppModuleBasic) RegisterGRPCRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 // 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
@@ -103,6 +109,7 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
+
 // func (am AppModule) RegisterServices(cfg module.Configurator) {
 // 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 // }
@@ -116,10 +123,10 @@ func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *r
 // 	return []abci.ValidatorUpdate{}
 // }
 
-// func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-// 	// gs := ExportGenesis(ctx, am.keeper)
-// 	return cdc.MustMarshalJSON(gs)
-// }
+//	func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+//		// gs := ExportGenesis(ctx, am.keeper)
+//		return cdc.MustMarshalJSON(gs)
+//	}
 func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 func (AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}

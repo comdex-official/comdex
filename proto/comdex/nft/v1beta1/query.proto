@@ -80,7 +80,7 @@ option go_package = "github.com/comdex-official/comdex/x/nft/types";
 
 	message QueryOwnerNFTsResponse {
 	string                                 owner       = 1;
-			repeated OwnerNFTCollection           collections = 2 [(gogoproto.nullable) = false];
+	OwnerNFTCollection           collections = 2 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination  = 3;
 			}
 
