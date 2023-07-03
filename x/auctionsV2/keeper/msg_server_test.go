@@ -519,7 +519,7 @@ func (s *KeeperTestSuite) TestPlaceMarketBidForBorrows() {
 }
 
 func (s *KeeperTestSuite) TestDepositLimitBid() {
-	s.AddAppAssets()
+	s.TestLiquidateVaults()
 	auctionKeeper := &s.keeper
 	bidder := "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"
 
@@ -961,4 +961,33 @@ func (s *KeeperTestSuite) TestAuctionIteratorSurplus() {
 	auctionsV2.BeginBlocker(s.ctx, s.keeper)
 	auction, _ = s.keeper.GetAuction(s.ctx, 1)
 	s.Require().Equal(auction.CollateralTokenAuctionPrice, sdk.NewDecFromInt(sdk.NewInt(1200000)))
+}
+
+func (s *KeeperTestSuite) TestLimitBid() {
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:00:00Z"))
+	s.TestLiquidateVaults()
+	auctions := s.app.NewaucKeeper.GetAuctions(s.ctx)
+	s.Require().Equal(len(auctions), 2)
+
+	bidder := "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7"
+
+	auctionKeeper := &s.keeper
+	liquidationKeeper := &s.liquidationKeeper
+	err := liquidationKeeper.MsgAppReserveFundsFn(s.ctx, bidder, 2, 3, sdk.NewCoin("uasset3", sdk.NewInt(5990000)))
+	s.Require().NoError(err)
+
+	err = auctionKeeper.DepositLimitAuctionBid(s.ctx, bidder, 2, 3, sdk.NewInt(9), sdk.NewCoin("uasset3", sdk.NewInt(7000000)))
+	s.Require().NoError(err)
+
+	a, _ := auctionKeeper.GetUserLimitBidDataByPremium(s.ctx, 3, 2, sdk.NewInt(9))
+	s.Require().Equal(len(a), 1)
+
+	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-06-01T12:49:00Z"))
+	auctionsV2.BeginBlocker(s.ctx, s.keeper)
+
+	a, _ = auctionKeeper.GetUserLimitBidDataByPremium(s.ctx, 3, 2, sdk.NewInt(9))
+	s.Require().Equal(len(a), 1)
+
+	auctions = s.app.NewaucKeeper.GetAuctions(s.ctx)
+	s.Require().Equal(len(auctions), 0)
 }
