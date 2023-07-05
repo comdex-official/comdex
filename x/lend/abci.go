@@ -13,9 +13,11 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
-		err := k.DeletePoolAndTransferInterest(ctx)
-		if err != nil {
-			return err
+		if ctx.BlockHeight()%14400 == 0 {
+			err := k.DeletePoolAndTransferInterest(ctx)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})
