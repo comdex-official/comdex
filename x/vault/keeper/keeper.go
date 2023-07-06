@@ -5,15 +5,16 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/comdex-official/comdex/x/vault/expected"
 	"github.com/comdex-official/comdex/x/vault/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 type Keeper struct {
 	cdc       codec.BinaryCodec
-	key       sdk.StoreKey
+	key       storetypes.StoreKey
 	bank      expected.BankKeeper
 	asset     expected.AssetKeeper
 	oracle    expected.MarketKeeper
@@ -23,7 +24,7 @@ type Keeper struct {
 	rewards   expected.RewardsKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper, tokenmint expected.TokenMintKeeper, rewards expected.RewardsKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper, oracle expected.MarketKeeper, collector expected.CollectorKeeper, esm expected.EsmKeeper, tokenmint expected.TokenMintKeeper, rewards expected.RewardsKeeper) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		key:       key,

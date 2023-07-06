@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/tokenmint/keeper"
@@ -33,7 +33,7 @@ func CreateTestInput() (*app.App, *sdk.Context) {
 }
 
 func FundAccount(t *testing.T, ctx sdk.Context, comdex *app.App, acct sdk.AccAddress) {
-	err := simapp.FundAccount(comdex.BankKeeper, ctx, acct, sdk.NewCoins(
+	err := simtestutil.FundAccount(comdex.BankKeeper, ctx, acct, sdk.NewCoins(
 		sdk.NewCoin("ucmdx", sdk.NewInt(10000000000)),
 	))
 	require.NoError(t, err)

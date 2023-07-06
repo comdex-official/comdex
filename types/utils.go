@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -20,7 +19,7 @@ import (
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
 func GetShareValue(amount sdk.Int, ratio sdk.Dec) sdk.Int {
-	return amount.ToDec().MulTruncate(ratio).TruncateInt()
+	return sdk.NewDec(amount.Int64()).MulTruncate(ratio).TruncateInt()
 }
 
 type StrIntMap map[string]sdk.Int

@@ -3,19 +3,20 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/comdex-official/comdex/x/liquidity/expected"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 // Keeper of the liquidity store.
 type Keeper struct {
 	cdc        codec.BinaryCodec
-	storeKey   sdk.StoreKey
+	storeKey   storetypes.StoreKey
 	paramSpace paramstypes.Subspace
 
 	accountKeeper expected.AccountKeeper
@@ -30,7 +31,7 @@ type Keeper struct {
 // NewKeeper creates a new liquidity Keeper instance.
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	paramSpace paramstypes.Subspace,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,

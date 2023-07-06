@@ -3,7 +3,7 @@ package collector_test
 import (
 	"testing"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	app "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/collector"

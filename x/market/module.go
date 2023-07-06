@@ -3,8 +3,8 @@ package market
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -14,7 +14,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	bandkeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
@@ -109,15 +108,9 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawM
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(a.keeper))
-}
-
 func (a AppModule) QuerierRoute() string {
 	return types.QuerierRoute
 }
-
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(a.keeper))
@@ -137,9 +130,9 @@ func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.Weigh
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange {
-	return nil
-}
+// func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange {
+// 	return nil
+// }
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 

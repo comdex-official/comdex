@@ -164,7 +164,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	newVault.AmountIn = msg.AmountIn
 
 	// closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-	closingFeeVal := msg.AmountOut.ToDec().Mul(extendedPairVault.ClosingFee).TruncateInt()
+	closingFeeVal := sdk.NewDec(msg.AmountOut.Int64()).Mul(extendedPairVault.ClosingFee).TruncateInt()
 
 	newVault.ClosingFeeAccumulated = closingFeeVal
 	newVault.AmountOut = msg.AmountOut

@@ -1,7 +1,7 @@
 package types
 
 import (
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 const (
@@ -19,34 +19,24 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalAddAssets)
-	govtypes.RegisterProposalTypeCodec(&AddAssetsProposal{}, "comdex/AddAssetsProposal")
 
 	govtypes.RegisterProposalType(ProposalAddMultipleAssets)
-	govtypes.RegisterProposalTypeCodec(&AddMultipleAssetsProposal{}, "comdex/AddMultipleAssetsProposal")
 
 	govtypes.RegisterProposalType(ProposalUpdateAsset)
-	govtypes.RegisterProposalTypeCodec(&UpdateAssetProposal{}, "comdex/UpdateAssetProposal")
 
 	govtypes.RegisterProposalType(ProposalAddPairs)
-	govtypes.RegisterProposalTypeCodec(&AddPairsProposal{}, "comdex/AddPairsProposal")
 
 	govtypes.RegisterProposalType(ProposalAddMultiplePairs)
-	govtypes.RegisterProposalTypeCodec(&AddMultiplePairsProposal{}, "comdex/AddMultiplePairsProposal")
 
 	govtypes.RegisterProposalType(ProposalUpdatePair)
-	govtypes.RegisterProposalTypeCodec(&UpdatePairProposal{}, "comdex/UpdatePairProposal")
 
 	govtypes.RegisterProposalType(ProposalUpdateGovTimeInApp)
-	govtypes.RegisterProposalTypeCodec(&UpdateGovTimeInAppProposal{}, "comdex/UpdateGovTimeInAppProposal")
 
 	govtypes.RegisterProposalType(ProposalAddApp)
-	govtypes.RegisterProposalTypeCodec(&AddAppProposal{}, "comdex/AddAppProposal")
 
 	govtypes.RegisterProposalType(ProposalAddAssetInApp)
-	govtypes.RegisterProposalTypeCodec(&AddAssetInAppProposal{}, "comdex/AddAssetInAppProposal")
 
 	govtypes.RegisterProposalType(ProposalAddMultipleAssetsPairs)
-	govtypes.RegisterProposalTypeCodec(&AddMultipleAssetsPairsProposal{}, "comdex/AddMultipleAssetsPairsProposal")
 }
 
 var (

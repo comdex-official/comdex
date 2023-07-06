@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/std"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
+	simappparams "github.com/cosmos/cosmos-sdk/testutil/sims"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
@@ -45,7 +45,7 @@ func MakeTestEncodingConfig() simappparams.EncodingConfig {
 func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := MakeTestEncodingConfig()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, MakeEncodingConfig(), simapp.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
 	if withGenesis {
 		return app, NewDefaultGenesisState(encCdc.Marshaler)
 	}

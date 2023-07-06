@@ -19,8 +19,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"

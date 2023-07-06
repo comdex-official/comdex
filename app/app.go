@@ -14,32 +14,34 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cast"
 
-	ibchooks "github.com/osmosis-labs/osmosis/x/ibc-hooks"
-	ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
-	ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
+	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 
-	ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
-	"github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
-	ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
+	// bump47: uncomment below 6
+	// ibchooks "github.com/osmosis-labs/osmosis/x/ibc-hooks"
+	// ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
+	// ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
 
-	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
-	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+	// ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
+	// "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
+	// ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
+
+	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
+	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 
 	"github.com/rakyll/statik/fs"
 
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
+	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -51,7 +53,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -67,7 +68,6 @@ import (
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -81,6 +81,8 @@ import (
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -98,27 +100,27 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctransfer "github.com/cosmos/ibc-go/v4/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v4/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibctransfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v7/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 
-	abcitypes "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
+	tmdb "github.com/cometbft/cometbft-db"
+	abcitypes "github.com/cometbft/cometbft/abci/types"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/libs/log"
+	tmos "github.com/cometbft/cometbft/libs/os"
+	tmprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/comdex-official/comdex/x/asset"
 	assetclient "github.com/comdex-official/comdex/x/asset/client"
@@ -175,9 +177,9 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
-	icq "github.com/cosmos/ibc-apps/modules/async-icq/v4"
-	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v4/keeper"
-	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v4/types"
+	icq "github.com/strangelove-ventures/async-icq/v7"
+	icqkeeper "github.com/strangelove-ventures/async-icq/v7/keeper"
+	icqtypes "github.com/strangelove-ventures/async-icq/v7/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
@@ -219,13 +221,11 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		lendclient.AddPoolPairsHandler,
 		lendclient.AddAssetRatesPoolPairsHandler,
 		paramsclient.ProposalHandler,
-		distrclient.ProposalHandler,
-		upgradeclient.ProposalHandler,
-		upgradeclient.CancelProposalHandler,
+		upgradeclient.LegacyProposalHandler,
+		upgradeclient.LegacyCancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
 	}
-	proposalHandlers = append(proposalHandlers, wasmclient.ProposalHandlers...)
 	proposalHandlers = append(proposalHandlers, assetclient.AddAssetsHandler...)
 	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
 	return proposalHandlers
@@ -254,7 +254,7 @@ var (
 		staking.AppModuleBasic{},
 		mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(GetGovProposalHandlers()...),
+		gov.NewAppModuleBasic(GetGovProposalHandlers()),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
@@ -311,9 +311,9 @@ type App struct {
 	invCheckPeriod uint
 
 	// keys to access the substores
-	keys  map[string]*sdk.KVStoreKey
-	tkeys map[string]*sdk.TransientStoreKey
-	mkeys map[string]*sdk.MemoryStoreKey
+	keys  map[string]*storetypes.KVStoreKey
+	tkeys map[string]*storetypes.TransientStoreKey
+	mkeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
 	AccountKeeper     authkeeper.AccountKeeper
@@ -434,15 +434,14 @@ func New(
 	)
 
 	//nolint:godox  //TODO: refactor this code
-	app.ParamsKeeper.Subspace(authtypes.ModuleName)
-	app.ParamsKeeper.Subspace(banktypes.ModuleName)
-	app.ParamsKeeper.Subspace(stakingtypes.ModuleName)
-	app.ParamsKeeper.Subspace(minttypes.ModuleName)
-	app.ParamsKeeper.Subspace(distrtypes.ModuleName)
-	app.ParamsKeeper.Subspace(slashingtypes.ModuleName)
-	app.ParamsKeeper.Subspace(govtypes.ModuleName).
-		WithKeyTable(govtypes.ParamKeyTable())
-	app.ParamsKeeper.Subspace(crisistypes.ModuleName)
+	app.ParamsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(minttypes.ModuleName).WithKeyTable(minttypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(distrtypes.ModuleName).WithKeyTable(distrtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypesv1.ParamKeyTable())
+	app.ParamsKeeper.Subspace(crisistypes.ModuleName).WithKeyTable(crisistypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibchost.ModuleName)
 	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName)
@@ -509,7 +508,7 @@ func New(
 		app.keys[stakingtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		app.GetSubspace(stakingtypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.MintKeeper = mintkeeper.NewKeeper(
 		app.cdc,
@@ -818,10 +817,9 @@ func New(
 	app.Ics20WasmHooks.ContractKeeper = app.ContractKeeper
 
 	// register the proposal types
-	govRouter := govtypes.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+	govRouter := govtypesv1beta1.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
@@ -834,15 +832,23 @@ func New(
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))
 	}
 
-	app.GovKeeper = govkeeper.NewKeeper(
-		app.cdc,
-		app.keys[govtypes.StoreKey],
-		app.GetSubspace(govtypes.ModuleName),
-		app.AccountKeeper,
-		app.BankKeeper,
-		&stakingKeeper,
-		govRouter,
+	govKeeper := govkeeper.NewKeeper(
+		app.cdc, keys[govtypes.StoreKey], app.AccountKeeper, app.BankKeeper,
+		app.StakingKeeper, app.MsgServiceRouter(), govtypes.DefaultConfig(), authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+
+	govKeeper.SetLegacyRouter(govRouter)
+	app.GovKeeper = *govKeeper
+
+	// app.GovKeeper = govkeeper.NewKeeper(
+	// 	app.cdc,
+	// 	app.keys[govtypes.StoreKey],
+	// 	app.GetSubspace(govtypes.ModuleName),
+	// 	app.AccountKeeper,
+	// 	app.BankKeeper,
+	// 	&stakingKeeper,
+	// 	govRouter,
+	// )
 
 	var (
 		evidenceRouter = evidencetypes.NewRouter()
@@ -880,16 +886,16 @@ func New(
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encoding.TxConfig),
-		auth.NewAppModule(app.cdc, app.AccountKeeper, nil),
+		auth.NewAppModule(app.cdc, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		bank.NewAppModule(app.cdc, app.BankKeeper, app.AccountKeeper),
-		capability.NewAppModule(app.cdc, *app.CapabilityKeeper),
-		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
-		gov.NewAppModule(app.cdc, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		bank.NewAppModule(app.cdc, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		capability.NewAppModule(app.cdc, *app.CapabilityKeeper, false),
+		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
+		gov.NewAppModule(app.cdc, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(app.cdc, app.MintKeeper, app.AccountKeeper),
-		slashing.NewAppModule(app.cdc, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distr.NewAppModule(app.cdc, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		staking.NewAppModule(app.cdc, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		slashing.NewAppModule(app.cdc, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
+		distr.NewAppModule(app.cdc, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+		staking.NewAppModule(app.cdc, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(app.cdc, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
@@ -1046,7 +1052,6 @@ func New(
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encoding.Amino)
 	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 	app.registerUpgradeHandlers()
@@ -1270,21 +1275,21 @@ func (a *App) InterfaceRegistry() codectypes.InterfaceRegistry {
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (a *App) GetKey(storeKey string) *sdk.KVStoreKey {
+func (a *App) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return a.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (a *App) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (a *App) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return a.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (a *App) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (a *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return a.mkeys[storeKey]
 }
 
@@ -1300,22 +1305,24 @@ func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
 // API server.
 func (a *App) RegisterAPIRoutes(server *api.Server, apiConfig serverconfig.APIConfig) {
 	ctx := server.ClientCtx
-	rpc.RegisterRoutes(ctx, server.Router)
-	// Register legacy tx routes.
-	authrest.RegisterTxRoutes(ctx, server.Router)
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 	// Register new tendermint queries routes from grpc-gateway.
 	tmservice.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(ctx, server.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
+	nodeservice.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
 		RegisterSwaggerAPI(ctx, server.Router)
 	}
+}
+
+// RegisterNodeService registers the node gRPC Query service.
+func (a *App) RegisterNodeService(ctx client.Context) {
+	nodeservice.RegisterNodeService(ctx, a.GRPCQueryRouter())
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server.
@@ -1337,7 +1344,12 @@ func (a *App) RegisterTxService(ctx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (a *App) RegisterTendermintService(ctx client.Context) {
-	tmservice.RegisterTendermintService(a.BaseApp.GRPCQueryRouter(), ctx, a.interfaceRegistry)
+	tmservice.RegisterTendermintService(ctx, a.BaseApp.GRPCQueryRouter(), a.interfaceRegistry, a.Query)
+}
+
+// RegisterNodeService registers the node gRPC Query service.
+func (a *App) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, a.GRPCQueryRouter())
 }
 
 func (a *App) ModuleAccountsPermissions() map[string][]string {

@@ -662,5 +662,5 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	updatedPrice := price.Sub(price.Mul(Dec("0.09090909090")))
 
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned.TruncateInt(), updatedPrice.TruncateInt())
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2)).Quo(beforeAmtIn.ToDec().Mul(s.GetAssetPrice(1))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2)).Quo(sdk.NewDec(beforeAmtIn.Int64()).Mul(s.GetAssetPrice(1))))
 }

@@ -3,6 +3,7 @@ package v2
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	expected "github.com/comdex-official/comdex/x/liquidity/expected"
 	v1liquidity "github.com/comdex-official/comdex/x/liquidity/legacy/v1"
@@ -129,7 +130,7 @@ func MigrateOrders(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec) error
 func MigrateStore(
 	ctx sdk.Context,
 	assetKeeper expected.AssetKeeper,
-	storeKey sdk.StoreKey,
+	storeKey storetypes.StoreKey,
 	cdc codec.BinaryCodec,
 ) error {
 	allApps, found := assetKeeper.GetApps(ctx)

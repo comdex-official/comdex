@@ -2,14 +2,15 @@ package keeper_test
 
 import (
 	"encoding/binary"
-	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	"testing"
+
+	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	"github.com/stretchr/testify/suite"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/vault/keeper"

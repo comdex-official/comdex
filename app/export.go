@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"log"
 
+	tmprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
@@ -33,7 +33,7 @@ func (a *App) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
+	validators, err := staking.WriteValidators(ctx, &a.StakingKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}

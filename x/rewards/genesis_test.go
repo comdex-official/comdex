@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/comdex-official/comdex/app"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/comdex-official/comdex/x/rewards"
 	"github.com/comdex-official/comdex/x/rewards/types"

@@ -14,10 +14,10 @@ func (k Keeper) GetUtilisationRatioByPoolIDAndAssetID(ctx sdk.Context, poolID, a
 	if !found {
 		return sdk.ZeroDec(), types.ErrAssetStatsNotFound
 	}
-	if moduleBalance.ToDec().Add(assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).ToDec()).IsZero() {
+	if sdk.NewDec(moduleBalance.Int64()).Add(sdk.NewDec(assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).Int64())).IsZero() {
 		return sdk.ZeroDec(), nil
 	}
-	utilizationRatio := (assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).ToDec()).Quo(moduleBalance.ToDec().Add(assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).ToDec()))
+	utilizationRatio := (sdk.NewDec(assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).Int64())).Quo(sdk.NewDec(moduleBalance.Int64()).Add(sdk.NewDec(assetStats.TotalBorrowed.Add(assetStats.TotalStableBorrowed).Int64())))
 	return utilizationRatio, nil
 }
 
@@ -80,10 +80,10 @@ func (k Keeper) GetLendAPRByAssetIDAndPoolID(ctx sdk.Context, poolID, assetID ui
 
 func (k Keeper) GetAverageBorrowRate(ctx sdk.Context, poolID, assetID uint64) (sdk.Dec, error) {
 	assetStats, _ := k.UpdateAPR(ctx, poolID, assetID)
-	factor1 := assetStats.BorrowApr.Mul(assetStats.TotalBorrowed.ToDec())
-	factor2 := assetStats.StableBorrowApr.Mul(assetStats.TotalStableBorrowed.ToDec())
+	factor1 := assetStats.BorrowApr.Mul(sdk.NewDec(assetStats.TotalBorrowed.Int64()))
+	factor2 := assetStats.StableBorrowApr.Mul(sdk.NewDec(assetStats.TotalStableBorrowed.Int64()))
 	numerator := factor1.Add(factor2)
-	denominator := assetStats.TotalStableBorrowed.Add(assetStats.TotalBorrowed).ToDec()
+	denominator := sdk.NewDec(assetStats.TotalStableBorrowed.Add(assetStats.TotalBorrowed).Int64())
 
 	if denominator.LTE(sdk.ZeroDec()) {
 		return sdk.ZeroDec(), types.ErrAverageBorrowRate

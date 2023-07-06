@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -258,7 +258,7 @@ func (s *KeeperTestSuite) LimitOrder(
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgLimitOrder(
@@ -297,7 +297,7 @@ func (s *KeeperTestSuite) MarketOrder(
 		demandCoinDenom = pair.QuoteCoinDenom
 	}
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, offerCoin.Amount.ToDec().Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgMarketOrder(

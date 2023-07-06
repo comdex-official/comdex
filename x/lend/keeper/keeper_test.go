@@ -6,8 +6,8 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/lend/keeper"

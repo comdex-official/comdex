@@ -5,25 +5,26 @@ import (
 	"strconv"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/lend/expected"
 	"github.com/comdex-official/comdex/x/lend/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	// liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 type (
 	Keeper struct {
 		cdc         codec.BinaryCodec
-		storeKey    sdk.StoreKey
-		memKey      sdk.StoreKey
+		storeKey    storetypes.StoreKey
+		memKey      storetypes.StoreKey
 		paramstore  paramtypes.Subspace
 		bank        expected.BankKeeper
 		account     expected.AccountKeeper
@@ -38,7 +39,7 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
@@ -676,7 +677,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
-		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
+		updatedAmtIn := sdk.NewDec(AmountIn.Amount.Int64()).Mul(assetInRatesStats.Ltv)
 		updatedAmtInPrice, err := k.Market.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
@@ -1605,7 +1606,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	// Adjusting bridged asset qty after auctions
 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv).TruncateInt())
+		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, sdk.NewDec(borrowPos.AmountIn.Amount.Int64()).Mul(assetInRatesStats.Ltv).TruncateInt())
 		priceFirstBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, firstTransitAssetID, sdk.OneInt())
 		priceSecondBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, secondTransitAssetID, sdk.OneInt())
 		firstBridgedAsset, _ := k.Asset.GetAsset(ctx, firstTransitAssetID)

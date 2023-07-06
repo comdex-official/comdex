@@ -3,9 +3,9 @@ package esm
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/expected"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/esm/keeper"

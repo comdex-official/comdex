@@ -1,12 +1,13 @@
 package vault_test
 
 import (
+	"testing"
+
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/vault"
 	"github.com/comdex-official/comdex/x/vault/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"testing"
 )
 
 func TestGenesis(t *testing.T) {
