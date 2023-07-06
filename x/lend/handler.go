@@ -73,6 +73,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.FundReserveAccounts(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
+		case *types.MsgRepayWithdraw:
+			res, err := server.RepayWithdraw(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
@@ -101,6 +104,10 @@ func NewLendHandler(k keeper.Keeper) govtypes.Handler {
 			return handleAddPoolPairsProposal(ctx, k, c)
 		case *types.AddAssetRatesPoolPairsProposal:
 			return handleAddAssetRatesPoolPairsProposal(ctx, k, c)
+		case *types.AddPoolDepreciateProposal:
+			return handlePoolDepreciateProposal(ctx, k, c)
+		case *types.AddEModePairsProposal:
+			return handleEModePairsProposal(ctx, k, c)
 
 		default:
 			return errors.Wrapf(types.ErrorUnknownProposalType, "%T", c)
@@ -142,4 +149,12 @@ func handleAddPoolPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPo
 
 func handleAddAssetRatesPoolPairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddAssetRatesPoolPairsProposal) error {
 	return k.HandleAddAssetRatesPoolPairsRecords(ctx, p)
+}
+
+func handlePoolDepreciateProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddPoolDepreciateProposal) error {
+	return k.HandlePoolDepreciateProposal(ctx, p)
+}
+
+func handleEModePairsProposal(ctx sdk.Context, k keeper.Keeper, p *types.AddEModePairsProposal) error {
+	return k.HandleEModePairsProposal(ctx, p)
 }

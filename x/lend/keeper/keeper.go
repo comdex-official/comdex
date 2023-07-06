@@ -134,7 +134,10 @@ func (k Keeper) LendAsset(ctx sdk.Context, lenderAddr string, AssetID uint64, Am
 	// sends the asset to pool's module-acc
 	// mints cAsset representative of the lent asset
 	// creates a lent Position and updates global lend
-
+	depreciated := k.IsPoolDepreciated(ctx, PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
+	}
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, AppID)
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -378,6 +381,10 @@ func (k Keeper) DepositAsset(ctx sdk.Context, addr string, lendID uint64, deposi
 	if !found {
 		return types.ErrLendNotFound
 	}
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
+	}
 
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
 	if killSwitchParams.BreakerEnable {
@@ -523,6 +530,11 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return types.ErrLendNotFound
 	}
 
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
+	}
+
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -580,6 +592,16 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		}
 		return nil
 	}
+	if assetInRatesStats.IsIsolated {
+		err = k.CheckIsolatedModeForBorrow(ctx, addr, pair.AssetIn)
+		if err != nil {
+			return err
+		}
+	}
+	assetInRatesStatsLtv := assetInRatesStats.Ltv
+	if pair.IsEModeEnabled {
+		assetInRatesStatsLtv = assetInRatesStats.ELtv
+	}
 
 	if AmountIn.Amount.GT(lendPos.AvailableToBorrow) {
 		return types.ErrAvailableToBorrowInsufficient
@@ -602,7 +624,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		return sdkerrors.Wrap(types.ErrStableBorrowDisabled, loan.String())
 	}
 
-	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStats.Ltv)
+	err = k.VerifyCollateralizationRatio(ctx, AmountIn.Amount, assetIn, loan.Amount, assetOut, assetInRatesStatsLtv)
 	if err != nil {
 		return err
 	}
@@ -676,7 +698,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
-		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv)
+		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStatsLtv)
 		updatedAmtInPrice, err := k.Market.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
@@ -922,7 +944,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, payment.Amount)
 	} else if payment.Amount.GT(amtToReservePool.TruncateInt()) && payment.Amount.LTE(borrowPos.InterestAccumulated.TruncateInt()) {
 		// from reservePoolRecords amount send tokens to reserve pool
 		// send remaining payment back to cPool and mint additional tokens for that amount
@@ -939,7 +961,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := payment.Amount.Sub(amtToReservePool.TruncateInt())
@@ -977,7 +999,7 @@ func (k Keeper) RepayAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amtToReservePool.TruncateInt())
 
 		// calculation for tokens to be minted and updated in global lend and interest accumulated parameter
 		cTokensAmount := borrowPos.InterestAccumulated.Sub(reservePoolRecords.ReservePoolInterest).TruncateInt()
@@ -1021,6 +1043,11 @@ func (k Keeper) DepositBorrowAsset(ctx sdk.Context, borrowID uint64, addr string
 	lendPos, found := k.GetLend(ctx, borrowPos.LendingID)
 	if !found {
 		return types.ErrLendNotFound
+	}
+
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
 	}
 
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
@@ -1172,6 +1199,11 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 		return types.ErrLendNotFound
 	}
 
+	depreciated := k.IsPoolDepreciated(ctx, lendPos.PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
+	}
+
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, lendPos.AppID)
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
@@ -1211,7 +1243,11 @@ func (k Keeper) DrawAsset(ctx sdk.Context, borrowID uint64, borrowerAddr string,
 	if amount.Amount.GT(assetOutModBal) {
 		return types.ErrInsufficientFundsInPool
 	}
-	err = k.VerifyCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()).Add(amount.Amount), assetOut, assetRatesStats.Ltv)
+	assetRatesStatsLtv := assetRatesStats.Ltv
+	if pair.IsEModeEnabled {
+		assetRatesStatsLtv = assetRatesStats.ELtv
+	}
+	err = k.VerifyCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()).Add(amount.Amount), assetOut, assetRatesStatsLtv)
 	if err != nil {
 		return err
 	}
@@ -1309,7 +1345,7 @@ func (k Keeper) CloseBorrow(ctx sdk.Context, borrowerAddr string, borrowID uint6
 		if err != nil {
 			return err
 		}
-		k.UpdateReserverAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
+		k.UpdateReserveAmtFromRepayments(ctx, pair.AssetOut, amount.Amount)
 	}
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 	if amtToMint.GT(sdk.ZeroInt()) {
@@ -1344,6 +1380,10 @@ func (k Keeper) BorrowAlternate(ctx sdk.Context, lenderAddr string, AssetID, Poo
 	killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, AppID)
 	if killSwitchParams.BreakerEnable {
 		return esmtypes.ErrCircuitBreakerEnabled
+	}
+	depreciated := k.IsPoolDepreciated(ctx, PoolID)
+	if depreciated {
+		return types.ErrorPoolDepreciated
 	}
 	asset, found := k.Asset.GetAsset(ctx, AssetID)
 	if !found {
@@ -1806,7 +1846,7 @@ func (k Keeper) MsgCalculateInterestAndRewards(ctx sdk.Context, addr string) err
 	return nil
 }
 
-func (k Keeper) UpdateReserverAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
+func (k Keeper) UpdateReserveAmtFromRepayments(ctx sdk.Context, id uint64, amt sdk.Int) {
 	allReserveStats, found := k.GetAllReserveStatsByAssetID(ctx, id)
 	if !found {
 		allReserveStats = types.AllReserveStats{
@@ -1865,6 +1905,33 @@ func (k Keeper) DepositDraw(ctx sdk.Context, addr string, borrowID uint64, Amoun
 		return err
 	}
 	err = k.DrawAsset(ctx, borrowID, addr, loan)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k Keeper) CheckIsolatedModeForBorrow(ctx sdk.Context, address string, assetID uint64) error {
+	mappingData := k.GetUserTotalMappingData(ctx, address)
+	for _, data := range mappingData {
+		lendPos, _ := k.GetLend(ctx, data.LendId)
+		if lendPos.AssetID == assetID {
+			if len(data.BorrowId) >= 1 {
+				return types.ErrorIsolatedModeActivated
+			}
+		}
+	}
+	return nil
+}
+
+func (k Keeper) RepayWithdraw(ctx sdk.Context, borrowID uint64, borrowerAddr string) error {
+	borrow, _ := k.GetBorrow(ctx, borrowID)
+	err := k.CloseBorrow(ctx, borrowerAddr, borrowID)
+	if err != nil {
+		return err
+	}
+	lend, _ := k.GetLend(ctx, borrow.LendingID)
+	err = k.WithdrawAsset(ctx, borrowerAddr, borrow.LendingID, sdk.NewCoin(lend.AmountIn.Denom, borrow.AmountIn.Amount))
 	if err != nil {
 		return err
 	}

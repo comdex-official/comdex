@@ -32,7 +32,7 @@ func (k Keeper) Liquidate(ctx sdk.Context) error {
 }
 
 // Liquidate Vaults function can liquidate all vaults created using the vault module.
-//All vauts are looped and check if their underlying app has enabled liquidations.
+//All vaults are looped and check if their underlying app has enabled liquidations.
 
 func (k Keeper) LiquidateVaults(ctx sdk.Context, offsetCounterId uint64) error {
 	params := k.GetParams(ctx)
@@ -141,7 +141,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 		if vault.AmountIn.GT(sdk.ZeroInt()) {
 			err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn)))
 			if err != nil {
-				return fmt.Errorf("Error , not enough token in vault to transfer %d", vault.AmountIn)
+				return fmt.Errorf("error , not enough token in vault to transfer %s", vault.AmountIn)
 			}
 		}
 		err = k.CreateLockedVault(ctx, vault.Id, vault.ExtendedPairVaultID, vault.Owner, k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn), k.ReturnCoin(ctx, pair.AssetOut, totalOut), collateralizationRatio, vault.AppId, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "vault", whitelistingData.IsDutchActivated, isCMST, pair.AssetIn, pair.AssetOut)
@@ -284,6 +284,11 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 		}
 	}
 
+	LiquidationThreshold := liqThreshold.LiquidationThreshold
+	if lendPair.IsEModeEnabled {
+		LiquidationThreshold = liqThreshold.ELiquidationThreshold
+	}
+
 	var currentCollateralizationRatio sdk.Dec
 	var firstTransitAssetID, secondTransitAssetID uint64
 	// for getting transit assets details
@@ -309,7 +314,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 		if err != nil {
 			return err
 		}
-		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
+		if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold) {
 			err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 			if err != nil {
 				return fmt.Errorf("error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID ")
@@ -321,7 +326,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 			if err != nil {
 				return err
 			}
-			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
+			if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
 				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 				if err != nil {
 					return fmt.Errorf("error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
@@ -333,7 +338,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 				return err
 			}
 
-			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
+			if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
 				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 				if err != nil {
 					return fmt.Errorf("error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
@@ -701,6 +706,30 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 		}
 	}
 
+	// sending liquidation penalty
+	liquidationPenalty := assetOutStats.LiquidationPenalty
+	if pair.IsEModeEnabled {
+		liquidationPenalty = assetOutStats.ELiquidationPenalty
+	}
+	liqPenaltyAmount := sdk.NewDecFromInt(borrowPos.AmountOut.Amount).Mul(liquidationPenalty).TruncateInt()
+	err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, sdk.NewCoin(borrowPos.AmountOut.Denom, liqPenaltyAmount), true)
+	if err != nil {
+		return err
+	}
+
+	allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetOut)
+	if !found {
+		allReserveStats = lendtypes.AllReserveStats{
+			AssetID:                        pair.AssetOut,
+			AmountOutFromReserveToLenders:  sdk.ZeroInt(),
+			AmountOutFromReserveForAuction: sdk.ZeroInt(),
+			AmountInFromLiqPenalty:         sdk.ZeroInt(),
+			AmountInFromRepayments:         sdk.ZeroInt(),
+			TotalAmountOutToLenders:        sdk.ZeroInt(),
+		}
+	}
+	allReserveStats.AmountInFromLiqPenalty = allReserveStats.AmountInFromLiqPenalty.Add(liqPenaltyAmount)
+
 	// calculating amount sent to be reserve pool and the debt pool
 	// after recovering interest some part of the interest goes into the reserve pool
 	// and for the remaining quantity equivalent number of cToken is minted to be given to the lenders upon calculate interest and rewards
@@ -710,18 +739,6 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 		err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, amount, true)
 		if err != nil {
 			return err
-		}
-
-		allReserveStats, found := k.lend.GetAllReserveStatsByAssetID(ctx, pair.AssetOut)
-		if !found {
-			allReserveStats = lendtypes.AllReserveStats{
-				AssetID:                        pair.AssetOut,
-				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-				AmountOutFromReserveForAuction: sdk.ZeroInt(),
-				AmountInFromLiqPenalty:         sdk.ZeroInt(),
-				AmountInFromRepayments:         sdk.ZeroInt(),
-				TotalAmountOutToLenders:        sdk.ZeroInt(),
-			}
 		}
 		allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amount.Amount)
 		k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)

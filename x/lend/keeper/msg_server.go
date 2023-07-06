@@ -279,3 +279,23 @@ func (m msgServer) FundReserveAccounts(goCtx context.Context, accounts *types.Ms
 
 	return &types.MsgFundReserveAccountsResponse{}, nil
 }
+
+func (m msgServer) RepayWithdraw(goCtx context.Context, repayWithdraw *types.MsgRepayWithdraw) (*types.MsgRepayWithdrawResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx.GasMeter().ConsumeGas(types.RepayWithdrawGas, "RepayWithdrawGas")
+
+	borrowID := repayWithdraw.BorrowId
+
+	if err := m.keeper.RepayWithdraw(ctx, borrowID, repayWithdraw.Borrower); err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCloseBorrow,
+			sdk.NewAttribute(types.AttributeKeyCreator, repayWithdraw.Borrower),
+			sdk.NewAttribute(types.AttributeKeyBorrowID, strconv.FormatUint(repayWithdraw.BorrowId, 10)),
+			sdk.NewAttribute(types.AttributeKeyTimestamp, ctx.BlockTime().String()),
+		),
+	})
+	return &types.MsgRepayWithdrawResponse{}, nil
+}
