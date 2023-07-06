@@ -14,7 +14,7 @@ import (
 )
 
 func CalculateSwapFeeAmount(ctx sdk.Context, params types.GenericParams, calculatedOfferCoinAmt sdk.Int) sdk.Int {
-	return calculatedOfferCoinAmt.ToDec().MulTruncate(params.SwapFeeRate).TruncateInt()
+	return sdk.NewDec(calculatedOfferCoinAmt.Int64()).MulTruncate(params.SwapFeeRate).TruncateInt()
 }
 
 func (k Keeper) PriceLimits(ctx sdk.Context, lastPrice sdk.Dec, params types.GenericParams) (lowest, highest sdk.Dec) {
@@ -1001,7 +1001,7 @@ func (k Keeper) ConvertAccumulatedSwapFeesWithSwapDistrToken(ctx sdk.Context, ap
 					switch orderDirection {
 					case types.OrderDirectionBuy:
 						maxPrice := lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
-						amount = offerCoin.Amount.ToDec().Quo(maxPrice).TruncateInt()
+						amount = sdk.NewDec(offerCoin.Amount.Int64()).Quo(maxPrice).TruncateInt()
 						demandCoinDenom = swappablePair.BaseCoinDenom
 					case types.OrderDirectionSell:
 						amount = offerCoin.Amount

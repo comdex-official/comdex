@@ -514,7 +514,7 @@ func TestCreateRangedPool(t *testing.T) {
 	intApproxEq := func(exp, got sdk.Int) (*testing.T, bool, string, string, string) {
 		c := exp.Sub(got).Abs().LTE(sdk.OneInt())
 		if c && !exp.IsZero() {
-			c = exp.ToDec().Sub(got.ToDec()).Abs().Quo(exp.ToDec()).LTE(sdk.NewDecWithPrec(1, 3))
+			c = sdk.NewDec(exp.Int64()).Sub(sdk.NewDec(got.Int64())).Abs().Quo(sdk.NewDec(exp.Int64())).LTE(sdk.NewDecWithPrec(1, 3))
 		}
 		return t, c, "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
 	}
@@ -696,21 +696,21 @@ func TestRangedPool_Deposit(t *testing.T) {
 			var reserveRatio sdk.Dec
 			switch {
 			case tc.rx.IsZero():
-				reserveRatio = ay.ToDec().Quo(tc.ry.ToDec())
+				reserveRatio = sdk.NewDec(ay.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))
 			case tc.ry.IsZero():
-				reserveRatio = ax.ToDec().Quo(tc.rx.ToDec())
+				reserveRatio = sdk.NewDec(ax.Int64()).Quo(sdk.NewDec(tc.rx.Int64()))
 			default:
-				reserveRatio = ax.ToDec().Quo(tc.rx.ToDec())
-				require.True(t, utils.DecApproxEqual(reserveRatio, ay.ToDec().Quo(tc.ry.ToDec())))
+				reserveRatio = sdk.NewDec(ax.Int64()).Quo(sdk.NewDec(tc.rx.Int64()))
+				require.True(t, utils.DecApproxEqual(reserveRatio, sdk.NewDec(ay.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))))
 			}
 
 			// check ax/ay == rx/ry
 			if !tc.rx.IsZero() && !tc.ry.IsZero() {
-				require.True(t, utils.DecApproxEqual(ax.ToDec().Quo(ay.ToDec()), tc.rx.ToDec().Quo(tc.ry.ToDec())))
+				require.True(t, utils.DecApproxEqual(sdk.NewDec(ax.Int64()).Quo(sdk.NewDec(ay.Int64())), sdk.NewDec(tc.rx.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))))
 			}
 
 			// check ax/rx == ay/ry == pc/ps
-			require.True(t, utils.DecApproxEqual(reserveRatio, pc.ToDec().Quo(tc.ps.ToDec())))
+			require.True(t, utils.DecApproxEqual(reserveRatio, sdk.NewDec(pc.Int64()).Quo(sdk.NewDec(tc.ps.Int64()))))
 
 			// check pool price before == pool price after
 			require.True(t, utils.DecApproxEqual(pool.Price(), newPool.Price()))
@@ -769,21 +769,21 @@ func TestRangedPool_Withdraw(t *testing.T) {
 			var reserveRatio sdk.Dec
 			switch {
 			case tc.rx.IsZero():
-				reserveRatio = y.ToDec().Quo(tc.ry.ToDec())
+				reserveRatio = sdk.NewDec(y.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))
 			case tc.ry.IsZero():
-				reserveRatio = x.ToDec().Quo(tc.rx.ToDec())
+				reserveRatio = sdk.NewDec(y.Int64()).Quo(sdk.NewDec(tc.rx.Int64()))
 			default:
-				reserveRatio = x.ToDec().Quo(tc.rx.ToDec())
-				require.True(t, utils.DecApproxEqual(reserveRatio, y.ToDec().Quo(tc.ry.ToDec())))
+				reserveRatio = sdk.NewDec(y.Int64()).Quo(sdk.NewDec(tc.rx.Int64()))
+				require.True(t, utils.DecApproxEqual(reserveRatio, sdk.NewDec(y.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))))
 			}
 
 			// check x/y == rx/ry
 			if !tc.rx.IsZero() && !tc.ry.IsZero() {
-				require.True(t, utils.DecApproxEqual(x.ToDec().Quo(y.ToDec()), tc.rx.ToDec().Quo(tc.ry.ToDec())))
+				require.True(t, utils.DecApproxEqual(sdk.NewDec(x.Int64()).Quo(sdk.NewDec(y.Int64())), sdk.NewDec(tc.rx.Int64()).Quo(sdk.NewDec(tc.ry.Int64()))))
 			}
 
 			// check x/rx == y/ry == pc/ps
-			require.True(t, utils.DecApproxEqual(reserveRatio, tc.pc.ToDec().Quo(tc.ps.ToDec())))
+			require.True(t, utils.DecApproxEqual(reserveRatio, sdk.NewDec(tc.pc.Int64()).Quo(sdk.NewDec(tc.ps.Int64()))))
 
 			// check pool price before == pool price after
 			require.True(t, utils.DecApproxEqual(pool.Price(), newPool.Price()))
@@ -921,14 +921,14 @@ func TestRangedPool_exhaust(t *testing.T) {
 			orders := amm.PoolSellOrders(tc.pool, amm.DefaultOrderer, minPrice, maxPrice, 4)
 			amt := amm.TotalAmount(orders)
 			require.True(t, amt.LTE(ry))
-			require.True(t, amt.GTE(ry.ToDec().Mul(utils.ParseDec("0.99")).TruncateInt()))
+			require.True(t, amt.GTE(sdk.NewDec(ry.Int64()).Mul(utils.ParseDec("0.99")).TruncateInt()))
 			orders = amm.PoolBuyOrders(tc.pool, amm.DefaultOrderer, minPrice, maxPrice, 4)
 			x := sdk.ZeroInt()
 			for _, order := range orders {
 				x = x.Add(order.GetPrice().MulInt(order.GetAmount()).TruncateInt())
 			}
 			require.True(t, x.LTE(rx))
-			require.True(t, x.GTE(rx.ToDec().Mul(utils.ParseDec("0.99")).TruncateInt()))
+			require.True(t, x.GTE(sdk.NewDec(rx.Int64()).Mul(utils.ParseDec("0.99")).TruncateInt()))
 		})
 	}
 }

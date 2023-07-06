@@ -31,8 +31,8 @@ func New(dir string) *comdex.App {
 	return a
 }
 
-var defaultConsensusParams = &abcitypes.ConsensusParams{
-	Block: &abcitypes.BlockParams{
+var defaultConsensusParams = &tmprototypes.ConsensusParams{
+	Block: &tmprototypes.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},

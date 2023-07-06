@@ -148,9 +148,9 @@ func TestMatchOrders(t *testing.T) {
 						var effPrice sdk.Dec // Effective swap price
 						switch order.GetDirection() {
 						case amm.Buy:
-							effPrice = paid.ToDec().QuoInt(received)
+							effPrice = sdk.NewDec(paid.Int64()).QuoInt(received)
 						case amm.Sell:
-							effPrice = received.ToDec().QuoInt(paid)
+							effPrice = sdk.NewDec(received.Int64()).QuoInt(paid)
 						}
 						require.True(t, utils.DecApproxEqual(tc.lastPrice, effPrice))
 					}

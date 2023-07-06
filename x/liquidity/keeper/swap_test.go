@@ -2143,7 +2143,7 @@ func (s *KeeperTestSuite) TestPoolPreserveK() {
 		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
 		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
 		transX, transY := ammPool.Translation()
-		ks[pool.Id] = rx.Amount.ToDec().Add(transX).Mul(ry.Amount.ToDec().Add(transY))
+		ks[pool.Id] = sdk.NewDec(rx.Amount.Int64()).Add(transX).Mul(sdk.NewDec(ry.Amount.Int64()).Add(transY))
 	}
 
 	for i := 0; i < 20; i++ {
@@ -2172,7 +2172,7 @@ func (s *KeeperTestSuite) TestPoolPreserveK() {
 			rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
 			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
 			transX, transY := ammPool.Translation()
-			k := rx.Amount.ToDec().Add(transX).Mul(ry.Amount.ToDec().Add(transY))
+			k := sdk.NewDec(rx.Amount.Int64()).Add(transX).Mul(sdk.NewDec(ry.Amount.Int64()).Add(transY))
 			s.Require().True(k.GTE(ks[pool.Id].Mul(utils.ParseDec("0.99999")))) // there may be a small error
 			ks[pool.Id] = k
 		}
@@ -2217,7 +2217,7 @@ func (s *KeeperTestSuite) TestRangedLiquidity() {
 	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received := order.ReceivedCoin.Amount
 	s.Require().True(received.LT(orderAmt))
-	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	pair = s.CreateNewLiquidityPair(appID1, s.addr(0), asset3.Denom, asset4.Denom)
@@ -2231,7 +2231,7 @@ func (s *KeeperTestSuite) TestRangedLiquidity() {
 	paid = order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received = order.ReceivedCoin.Amount
 	s.Require().True(intEq(orderAmt, received))
-	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 }
 
 func (s *KeeperTestSuite) TestOneSidedRangedPool() {
@@ -2259,7 +2259,7 @@ func (s *KeeperTestSuite) TestOneSidedRangedPool() {
 	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received := order.ReceivedCoin.Amount
 	s.Require().True(intEq(orderAmt, received))
-	s.Require().True(paid.ToDec().QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 
 	rx, _ = s.keeper.GetPoolBalances(s.ctx, pool)
 	s.Require().True(rx.IsPositive())
