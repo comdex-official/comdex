@@ -31,7 +31,7 @@ require (
 	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4
+	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.6
 	gopkg.in/yaml.v2 v2.4.0
 	mvdan.cc/gofumpt v0.4.0
 )
