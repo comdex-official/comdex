@@ -1485,11 +1485,11 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 
 	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{icqtypes.StoreKey},
-		}
-	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{},
+			Added: []string{
+				icqtypes.StoreKey,
+				newliqtypes.StoreKey,
+				newauctypes.StoreKey,
+			},
 		}
 	}
 	return storeUpgrades
