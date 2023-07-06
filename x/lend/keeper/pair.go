@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/lend/types"
@@ -169,7 +170,14 @@ func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) erro
 	// store data and, first create pair as current cPool main asset as assetIn and other {{poolID, mainAssetID}} as assetOut
 	// In second step reverse the pair
 
-	pools := k.GetPools(ctx)
+	allPools := k.GetPools(ctx) // implement changes to get only active pools
+	var pools []types.Pool
+	for _, v := range allPools {
+		if k.IsPoolDepreciated(ctx, v.PoolID) {
+			continue
+		}
+		pools = append(pools, v)
+	}
 	var diffPoolID, mainAssetID []uint64
 	if len(pools) > 1 {
 		for _, cPool := range pools {
@@ -523,6 +531,7 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 		LiquidationBonus:     msg.LiquidationBonus,
 		ReserveFactor:        msg.ReserveFactor,
 		CAssetID:             msg.CAssetID,
+		IsIsolated:           msg.IsIsolated,
 	}
 
 	k.SetAssetRatesParams(ctx, assetRatesParams)
@@ -536,6 +545,137 @@ func (k Keeper) AddAssetRatesPoolPairs(ctx sdk.Context, msg types.AssetRatesPool
 	err := k.AddPoolsPairsRecords(ctx, poolPairs)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (k Keeper) AddPoolDepreciate(ctx sdk.Context, msg types.PoolDepreciate) error {
+	for _, individualPoolDepreciateData := range msg.IndividualPoolDepreciate {
+		_, found := k.GetPool(ctx, individualPoolDepreciateData.PoolID)
+		if !found {
+			return types.ErrPoolNotFound
+		}
+	}
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx)
+	if !found {
+		k.SetPoolDepreciateRecords(ctx, msg)
+	}
+	depreciatedPoolRecords.IndividualPoolDepreciate = append(depreciatedPoolRecords.IndividualPoolDepreciate, msg.IndividualPoolDepreciate...)
+	k.SetPoolDepreciateRecords(ctx, depreciatedPoolRecords)
+	return nil
+}
+
+func (k Keeper) SetPoolDepreciateRecords(ctx sdk.Context, msg types.PoolDepreciate) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepreciatedPoolPrefix
+		value = k.cdc.MustMarshal(&msg)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetPoolDepreciateRecords(ctx sdk.Context) (msg types.PoolDepreciate, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.DepreciatedPoolPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return msg, false
+	}
+
+	k.cdc.MustUnmarshal(value, &msg)
+	return msg, true
+}
+
+func (k Keeper) IsPoolDepreciated(ctx sdk.Context, poolID uint64) bool {
+	depreciatedPoolRecords, found := k.GetPoolDepreciateRecords(ctx)
+	if !found {
+		return false
+	}
+	for _, v := range depreciatedPoolRecords.IndividualPoolDepreciate {
+		if v.PoolID == poolID {
+			return true
+		}
+	}
+	return false
+}
+
+func (k Keeper) DeletePoolAndTransferInterest(ctx sdk.Context) error {
+	poolDepRecords, found := k.GetPoolDepreciateRecords(ctx)
+	if !found {
+		return nil
+	}
+	for _, poolDepRecord := range poolDepRecords.IndividualPoolDepreciate {
+		// condition when the proposal is passed and pool isn't deprecated yet
+		if !poolDepRecord.IsPoolDepreciated {
+			pool, _ := k.GetPool(ctx, poolDepRecord.PoolID)
+			var firstAssetID, secondAssetID, thirdAssetID uint64
+			// for getting transit assets details
+			for _, data := range pool.AssetData {
+				if data.AssetTransitType == 1 {
+					firstAssetID = data.AssetID
+				}
+				if data.AssetTransitType == 2 {
+					secondAssetID = data.AssetID
+				}
+				if data.AssetTransitType == 3 {
+					thirdAssetID = data.AssetID
+				}
+			}
+			firstAsset, _ := k.Asset.GetAsset(ctx, firstAssetID)
+			secondAsset, _ := k.Asset.GetAsset(ctx, secondAssetID)
+			thirdAsset, _ := k.Asset.GetAsset(ctx, thirdAssetID)
+			LBMappingFirstAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, firstAssetID)
+			LBMappingSecondAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, secondAssetID)
+			LBMappingThirdAsset, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, poolDepRecord.PoolID, thirdAssetID)
+			// condition when all lend and borrow positions are deleted
+			if LBMappingFirstAsset.LendIds == nil && LBMappingFirstAsset.BorrowIds == nil && LBMappingSecondAsset.LendIds == nil && LBMappingSecondAsset.BorrowIds == nil && LBMappingThirdAsset.LendIds == nil && LBMappingThirdAsset.BorrowIds == nil {
+				// transfer excess funds to the reserve
+				// make IsPoolDepreciated true
+				// delete Pool
+				modBalFirstAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), firstAsset.Denom)
+				modBalSecondAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), secondAsset.Denom)
+				modBalThirdAsset := k.bank.GetBalance(ctx, authtypes.NewModuleAddress(pool.ModuleName), thirdAsset.Denom)
+				err := k.UpdateReserveBalances(ctx, firstAssetID, pool.ModuleName, modBalFirstAsset, true)
+				if err != nil {
+					return err
+				}
+				err = k.UpdateReserveBalances(ctx, secondAssetID, pool.ModuleName, modBalSecondAsset, true)
+				if err != nil {
+					return err
+				}
+				err = k.UpdateReserveBalances(ctx, thirdAssetID, pool.ModuleName, modBalThirdAsset, true)
+				if err != nil {
+					return err
+				}
+				poolDepRecord.IsPoolDepreciated = true
+				k.SetPoolDepreciateRecords(ctx, poolDepRecords)
+				k.DeletePool(ctx, poolDepRecord.PoolID)
+			}
+		}
+	}
+	return nil
+}
+
+func (k Keeper) AddEModePairs(ctx sdk.Context, msg types.EModePairsForProposal) error {
+	for _, eModePair := range msg.EModePairs {
+		pair, found := k.GetLendPair(ctx, eModePair.PairID)
+		if !found {
+			return types.ErrorPairNotFound
+		}
+		pair.IsEModeEnabled = true
+		assetRatesParam, found := k.GetAssetRatesParams(ctx, pair.AssetIn)
+		if !found {
+			return types.ErrorAssetRatesParamsNotFound
+		}
+		assetRatesParam.ELtv = eModePair.ELtv
+		assetRatesParam.ELiquidationThreshold = eModePair.ELiquidationThreshold
+		assetRatesParam.ELiquidationPenalty = eModePair.ELiquidationPenalty
+		k.SetLendPair(ctx, pair)
+		k.SetAssetRatesParams(ctx, assetRatesParam)
 	}
 	return nil
 }

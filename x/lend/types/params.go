@@ -20,6 +20,7 @@ const (
 	CloseBorrowAssetGas           = sdk.Gas(22763)
 	BorrowAssetAlternateGas       = sdk.Gas(22763)
 	CalculateInterestAndRewardGas = sdk.Gas(22763)
+	RepayWithdrawGas              = sdk.Gas(22763)
 )
 
 const (

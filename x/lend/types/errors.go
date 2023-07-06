@@ -49,4 +49,6 @@ var (
 	ErrInsufficientFundsInPool         = sdkerrors.Register(ModuleName, 640, "Insufficient Funds in Pool")
 	ErrBorrowLessThanMinAmount         = sdkerrors.Register(ModuleName, 641, "The Borrow amount requested is less than the min borrow limit of 1$")
 	ErrorEmptyProposalAssets           = sdkerrors.Register(ModuleName, 642, "Empty proposal for asset")
+	ErrorPoolDepreciated               = sdkerrors.Register(ModuleName, 643, "Pool is depreciated, lending and borrowing are restricted, users can repay and withdraw their funds")
+	ErrorIsolatedModeActivated         = sdkerrors.Register(ModuleName, 644, "Isolated-Mode Activated for the asset, multiple borrow positions are restricted")
 )

@@ -39,6 +39,8 @@ service Msg {
 
   rpc FundReserveAccounts(MsgFundReserveAccounts) returns (MsgFundReserveAccountsResponse);
 
+  rpc RepayWithdraw(MsgRepayWithdraw) returns (MsgRepayWithdrawResponse);
+
 }
 
 message MsgLend {
@@ -126,6 +128,11 @@ message MsgFundReserveAccounts {
   cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
 }
 
+message MsgRepayWithdraw {
+  string                   borrower = 1;
+  uint64                   borrow_id = 2;
+}
+
 message MsgLendResponse {}
 
 message MsgWithdrawResponse {}
@@ -151,3 +158,5 @@ message MsgFundModuleAccountsResponse {}
 message MsgCalculateInterestAndRewardsResponse {}
 
 message MsgFundReserveAccountsResponse {}
+
+message MsgRepayWithdrawResponse {}

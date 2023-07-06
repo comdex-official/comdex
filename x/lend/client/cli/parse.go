@@ -16,6 +16,8 @@ type (
 	XSetAuctionParamsInputs           addNewAuctionParamsInputs
 	XAddLendPoolPairsInputs           addLendPoolPairsInputs
 	XAddAssetRatesLendPoolPairsInputs addAssetRatesPoolPairsInputs
+	XAddDepreciatePoolsInputs         addDepreciatePoolsInputs
+	XAddEModePairsInputs              addEModePairsInputs
 )
 
 type XAddNewLendPairsInputsExceptions struct {
@@ -43,8 +45,18 @@ type XAddAssetRatesParamsInputsExceptions struct {
 	Other *string // Other won't raise an error
 }
 
+type XAddDepreciatePoolsInputsExceptions struct {
+	XAddDepreciatePoolsInputs
+	Other *string // Other won't raise an error
+}
+
 type XSetAuctionParamsInputsExceptions struct {
 	XSetAuctionParamsInputs
+	Other *string // Other won't raise an error
+}
+
+type XAddEModePairsInputsExceptions struct {
+	XAddEModePairsInputs
 	Other *string // Other won't raise an error
 }
 
@@ -195,7 +207,7 @@ func parseAddPoolPairsFlags(fs *pflag.FlagSet) (*addLendPoolPairsInputs, error) 
 	return addPoolPairsParams, nil
 }
 
-func parseAddAssetratesPoolPairsFlags(fs *pflag.FlagSet) (*addAssetRatesPoolPairsInputs, error) {
+func parseAddAssetRatesPoolPairsFlags(fs *pflag.FlagSet) (*addAssetRatesPoolPairsInputs, error) {
 	addPoolPairsParams := &addAssetRatesPoolPairsInputs{}
 	addPoolPairsParamsFile, _ := fs.GetString(FlagAddAssetRatesPoolPairsFile)
 
@@ -259,4 +271,74 @@ func parseAuctionPramsFlags(fs *pflag.FlagSet) (*addNewAuctionParamsInputs, erro
 	}
 
 	return addNewAuctionParams, nil
+}
+
+func parseDepreciatePoolsFlags(fs *pflag.FlagSet) (*addDepreciatePoolsInputs, error) {
+	depreciatePools := &addDepreciatePoolsInputs{}
+	depreciatePoolsFile, _ := fs.GetString(FlagDepreciatePoolsFile)
+
+	if depreciatePoolsFile == "" {
+		return nil, fmt.Errorf("must pass in a appID and poolID for depreciate pool json using the --%s flag", FlagAddAssetRatesPoolPairsFile)
+	}
+
+	contents, err := os.ReadFile(depreciatePoolsFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = depreciatePools.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return depreciatePools, nil
+}
+
+func (release *addDepreciatePoolsInputs) UnmarshalJSON(data []byte) error {
+	var addDepreciatePoolsE XAddDepreciatePoolsInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&addDepreciatePoolsE); err != nil {
+		return err
+	}
+
+	*release = addDepreciatePoolsInputs(addDepreciatePoolsE.XAddDepreciatePoolsInputs)
+	return nil
+}
+
+func parseAddEModePairsFlags(fs *pflag.FlagSet) (*addEModePairsInputs, error) {
+	eModePairs := &addEModePairsInputs{}
+	eModePairsFile, _ := fs.GetString(FlagAddEModePairsFile)
+
+	if eModePairsFile == "" {
+		return nil, fmt.Errorf("must pass in pairId, e_ltv, e_liquidation_threshold & e_liquidation_penalty json using the --%s flag", FlagAddEModePairsFile)
+	}
+
+	contents, err := os.ReadFile(eModePairsFile)
+	if err != nil {
+		return nil, err
+	}
+
+	// make exception if unknown field exists
+	err = eModePairs.UnmarshalJSON(contents)
+	if err != nil {
+		return nil, err
+	}
+
+	return eModePairs, nil
+}
+
+func (release *addEModePairsInputs) UnmarshalJSON(data []byte) error {
+	var addEModePairsE XAddEModePairsInputsExceptions
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields() // Force
+
+	if err := dec.Decode(&addEModePairsE); err != nil {
+		return err
+	}
+
+	*release = addEModePairsInputs(addEModePairsE.XAddEModePairsInputs)
+	return nil
 }
