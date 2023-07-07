@@ -41,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 		txFundModuleAccounts(),
 		txCalculateInterestAndRewards(),
 		txFundReserveAccounts(),
+		txRepayWithdraw(),
 	)
 
 	return cmd
@@ -1231,7 +1232,7 @@ func CmdAddAssetRatesPoolPairsProposal() *cobra.Command {
 }
 
 func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
-	assetRatesPoolPairs, err := parseAddAssetratesPoolPairsFlags(fs)
+	assetRatesPoolPairs, err := parseAddAssetRatesPoolPairsFlags(fs)
 	if err != nil {
 		return txf, nil, fmt.Errorf("failed to parse add asset rates, lend pool file: %w", err)
 	}
@@ -1273,7 +1274,10 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	if err != nil {
 		return txf, nil, err
 	}
-
+	isIsolated, err := strconv.ParseUint(assetRatesPoolPairs.IsIsolated, 10, 64)
+	if err != nil {
+		return txf, nil, err
+	}
 	newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
 	newBase, _ := sdk.NewDecFromStr(base)
 	newSlope1, _ := sdk.NewDecFromStr(slope1)
@@ -1287,6 +1291,7 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
 	newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
 	newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
+	newIsIsolated := ParseBoolFromString(isIsolated)
 
 	moduleName := assetRatesPoolPairs.ModuleName
 	cPoolName := assetRatesPoolPairs.CPoolName
@@ -1346,6 +1351,7 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 		CPoolName:            cPoolName,
 		AssetData:            assetData,
 		MinUsdValueLeft:      minUSDValueLeft,
+		IsIsolated:           newIsIsolated,
 	}
 
 	content := types.NewAddassetRatesPoolPairs(assetRatesPoolPairs.Title, assetRatesPoolPairs.Description, assetRatesPoolPairsE)
@@ -1356,4 +1362,162 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	}
 
 	return txf, msg, nil
+}
+
+func CmdDepreciatePoolsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "depreciate-pools [flag] ",
+		Short: "Depreciate the pool",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewDepreciatePools(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagSetDepreciatePoolsMapping())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewDepreciatePools(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	depreciatePools, err := parseDepreciatePoolsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse add asset rates, lend pool file: %w", err)
+	}
+	poolIDs, err := ParseUint64SliceFromString(depreciatePools.PoolID, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	var IndividualPoolDepreciateVar []types.IndividualPoolDepreciate
+	for _, poolID := range poolIDs {
+		IndividualPoolDepreciateVar = append(IndividualPoolDepreciateVar, types.IndividualPoolDepreciate{PoolID: poolID, IsPoolDepreciated: false})
+	}
+
+	depreciatePoolsStruct := types.PoolDepreciate{
+		IndividualPoolDepreciate: IndividualPoolDepreciateVar,
+	}
+
+	content := types.NewAddDepreciatePool(depreciatePools.Title, depreciatePools.Description, depreciatePoolsStruct)
+	from := clientCtx.GetFromAddress()
+	deposit, err := sdk.ParseCoinsNormalized(depreciatePools.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
+
+func CmdAddEModePairsProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add_e_mode_pairs [flag] ",
+		Short: "Enable pairs for E-Mode",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+
+			txf, msg, err := NewAddEModePairs(clientCtx, txf, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
+		},
+	}
+
+	cmd.Flags().AddFlagSet(FlagAddEModePairs())
+	cmd.Flags().String(cli.FlagProposal, "", "Proposal file path (if this path is given, other proposal flags are ignored)")
+	return cmd
+}
+
+func NewAddEModePairs(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
+	eModePairs, err := parseAddEModePairsFlags(fs)
+	if err != nil {
+		return txf, nil, fmt.Errorf("failed to parse add E-Mode file: %w", err)
+	}
+	pairIDs, err := ParseUint64SliceFromString(eModePairs.PairID, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELtv, err := ParseDecSliceFromStringForDec(eModePairs.ELTV, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELiquidationThreshold, err := ParseDecSliceFromStringForDec(eModePairs.ELiquidationThreshold, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	ELiquidationPenalty, err := ParseDecSliceFromStringForDec(eModePairs.ELiquidationPenalty, ",")
+	if err != nil {
+		return tx.Factory{}, nil, err
+	}
+	var eModePair []types.EModePairs
+	for i, pairID := range pairIDs {
+
+		eModePair = append(eModePair, types.EModePairs{
+			PairID:                pairID,
+			ELtv:                  ELtv[i],
+			ELiquidationThreshold: ELiquidationThreshold[i],
+			ELiquidationPenalty:   ELiquidationPenalty[i],
+		})
+	}
+
+	eModePairsInput := types.EModePairsForProposal{EModePairs: eModePair}
+
+	content := types.NewAddEModePairs(eModePairs.Title, eModePairs.Description, eModePairsInput)
+	from := clientCtx.GetFromAddress()
+	deposit, err := sdk.ParseCoinsNormalized(eModePairs.Deposit)
+	if err != nil {
+		return txf, nil, err
+	}
+	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
+	if err != nil {
+		return txf, nil, err
+	}
+
+	return txf, msg, nil
+}
+
+func txRepayWithdraw() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "repay-withdraw [borrow-id] ",
+		Short: "repay-withdraw for a borrow position",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			borrowID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRepayWithdraw(ctx.GetFromAddress().String(), borrowID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }

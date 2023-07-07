@@ -46,6 +46,7 @@ var (
 	TypeBorrowAlternateAssetRequest        = ModuleName + ":borrow-alternate"
 	TypeCalculateInterestAndRewardsRequest = ModuleName + ":calculate-interest-rewards"
 	TypeFundReserveAccountRequest          = ModuleName + ":fund-reserve"
+	TypeRepayWithdrawRequest               = ModuleName + ":repay-withdraw"
 )
 
 var (
@@ -73,6 +74,7 @@ var (
 	KeyFundReserveBal                     = []byte{0x49}
 	AllReserveStatsPrefix                 = []byte{0x50}
 	AssetAndPoolWiseModBalKeyPrefix       = []byte{0x51}
+	DepreciatedPoolPrefix                 = []byte{0x52}
 )
 
 func LendUserKey(ID uint64) []byte {

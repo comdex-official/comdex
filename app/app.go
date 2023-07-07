@@ -218,6 +218,8 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 		lendclient.AddMultipleLendPairsHandler,
 		lendclient.AddPoolPairsHandler,
 		lendclient.AddAssetRatesPoolPairsHandler,
+		lendclient.AddDepreciatePoolsHandler,
+		lendclient.AddEModePairsHandler,
 		paramsclient.ProposalHandler,
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
@@ -1382,10 +1384,13 @@ func (a *App) registerUpgradeHandlers() {
 		panic(err)
 	}
 
-	a.UpgradeKeeper.SetUpgradeHandler(
-		mv12.UpgradeName,
-		mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper),
-	)
+	switch {
+	case upgradeInfo.Name == mv12.UpgradeName:
+		a.UpgradeKeeper.SetUpgradeHandler(
+			mv12.UpgradeName,
+			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper),
+		)
+	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
 
@@ -1403,6 +1408,10 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{icqtypes.StoreKey},
+		}
+	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{},
 		}
 	}
 	return storeUpgrades

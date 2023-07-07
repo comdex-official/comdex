@@ -77,9 +77,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	for _, item := range state.AllReserveStats {
 		k.SetAllReserveStatsByAssetID(ctx, item)
 	}
+	k.SetPoolDepreciateRecords(ctx, state.PoolDepreciate)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
+	poolDepreciate, _ := k.GetPoolDepreciateRecords(ctx)
 	return types.NewGenesisState(
 		k.GetAllBorrow(ctx),
 		k.GetAllBorrowInterestTracker(ctx),
@@ -96,5 +98,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetAllFundModBal(ctx),
 		k.GetAllFundReserveBal(ctx),
 		k.GetTotalReserveStatsByAssetID(ctx),
+		poolDepreciate,
 	)
 }

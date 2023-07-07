@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	migrationtypes "github.com/comdex-official/comdex/x/lend/migrations/v2/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -117,6 +118,127 @@ func SetResStats(store sdk.KVStore, cdc codec.BinaryCodec, allReserveStats types
 	var (
 		key   = types.AllReserveStatsKey(allReserveStats.AssetID)
 		value = cdc.MustMarshal(&allReserveStats)
+	)
+
+	store.Set(key, value)
+}
+
+func (m Migrator) Migrate2to3(ctx sdk.Context) error {
+	return MigrateStoreV2(ctx, m.keeper.storeKey, m.keeper.cdc)
+}
+
+func MigrateStoreV2(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
+	//  Migrate these 2 for their store:
+	// 		LendPairs
+	//		AssetRatesParams
+
+	store := ctx.KVStore(storeKey)
+	err := MigrateLendPairs(store, cdc)
+	if err != nil {
+		return err
+	}
+
+	err = MigrateAssetRatesParams(store, cdc)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
+
+	iterator := store.Iterator(types.LendPairKeyPrefix, sdk.PrefixEndBytes(types.LendPairKeyPrefix))
+	defer func(iterator storetypes.Iterator) {
+		err := iterator.Close()
+		if err != nil {
+		}
+	}(iterator)
+
+	var pair migrationtypes.Extended_Pair_Old
+
+	for iterator.Valid() {
+		key := iterator.Key()
+		value := iterator.Value()
+
+		cdc.MustUnmarshal(value, &pair)
+		store.Delete(key)
+		SetLendPairs(store, cdc, pair)
+
+		iterator.Next()
+	}
+	return nil
+}
+
+func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair_Old) {
+	newPair := types.Extended_Pair{
+		Id:              pair.Id,
+		AssetIn:         pair.AssetIn,
+		AssetOut:        pair.AssetOut,
+		IsInterPool:     pair.IsInterPool,
+		AssetOutPoolID:  pair.AssetOutPoolID,
+		MinUsdValueLeft: pair.MinUsdValueLeft,
+		IsEModeEnabled:  false,
+	}
+
+	var (
+		key   = types.LendPairKey(pair.Id)
+		value = cdc.MustMarshal(&newPair)
+	)
+
+	store.Set(key, value)
+}
+
+func MigrateAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
+
+	iterator := store.Iterator(types.AssetRatesParamsKeyPrefix, sdk.PrefixEndBytes(types.AssetRatesParamsKeyPrefix))
+	defer func(iterator storetypes.Iterator) {
+		err := iterator.Close()
+		if err != nil {
+		}
+	}(iterator)
+
+	var assetRatesParams migrationtypes.AssetRatesParams_Old
+
+	for iterator.Valid() {
+		key := iterator.Key()
+		value := iterator.Value()
+
+		cdc.MustUnmarshal(value, &assetRatesParams)
+		store.Delete(key)
+		SetAssetRatesParams(store, cdc, assetRatesParams)
+
+		iterator.Next()
+	}
+	return nil
+}
+
+func SetAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec, assetRatesParams migrationtypes.AssetRatesParams_Old) {
+	newAssetRatesParams := types.AssetRatesParams{
+		AssetID:               assetRatesParams.AssetID,
+		UOptimal:              assetRatesParams.UOptimal,
+		Base:                  assetRatesParams.Base,
+		Slope1:                assetRatesParams.Slope1,
+		Slope2:                assetRatesParams.Slope2,
+		EnableStableBorrow:    assetRatesParams.EnableStableBorrow,
+		StableBase:            assetRatesParams.StableBase,
+		StableSlope1:          assetRatesParams.StableSlope1,
+		StableSlope2:          assetRatesParams.StableSlope2,
+		Ltv:                   assetRatesParams.Ltv,
+		LiquidationThreshold:  assetRatesParams.LiquidationThreshold,
+		LiquidationPenalty:    assetRatesParams.LiquidationPenalty,
+		LiquidationBonus:      assetRatesParams.LiquidationBonus,
+		ReserveFactor:         assetRatesParams.ReserveFactor,
+		CAssetID:              assetRatesParams.CAssetID,
+		IsIsolated:            false,
+		ELtv:                  sdk.NewDec(0),
+		ELiquidationThreshold: sdk.NewDec(0),
+		ELiquidationPenalty:   sdk.NewDec(0),
+	}
+
+	var (
+		key   = types.AssetRatesParamsKey(newAssetRatesParams.AssetID)
+		value = cdc.MustMarshal(&newAssetRatesParams)
 	)
 
 	store.Set(key, value)
