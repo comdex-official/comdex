@@ -424,8 +424,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			newliqtypes.StoreKey, newauctypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
-			ibchookstypes.StoreKey, icqtypes.StoreKey, packetforwardtypes.StoreKey,
+			newliqtypes.StoreKey, newauctypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey,
 		)
 	)
 
