@@ -94,8 +94,8 @@ endif
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 check_version:
-ifneq ($(GO_MINOR_VERSION),19)
-	@echo "ERROR: Please upgrade Go version to 1.19+"
+ifneq ($(GO_MINOR_VERSION),20)
+	@echo "ERROR: Please upgrade Go version to 1.20+"
 	exit 1
 endif
 
