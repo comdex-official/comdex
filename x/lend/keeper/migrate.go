@@ -152,6 +152,7 @@ func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	defer func(iterator storetypes.Iterator) {
 		err := iterator.Close()
 		if err != nil {
+			return
 		}
 	}(iterator)
 
@@ -195,6 +196,7 @@ func MigrateAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	defer func(iterator storetypes.Iterator) {
 		err := iterator.Close()
 		if err != nil {
+			return
 		}
 	}(iterator)
 
