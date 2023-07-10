@@ -89,6 +89,7 @@ func (k Keeper) SetAuctionLimitBidFeeData(ctx sdk.Context, feeData types.Auction
 	store.Set(key, value)
 	return nil
 }
+
 func (k Keeper) GetAuctionLimitBidFeeData(ctx sdk.Context, assetId uint64) (feeData types.AuctionFeesCollectionFromLimitBidTx, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -127,31 +128,6 @@ func (k Keeper) SetUserBid(ctx sdk.Context, userBid types.Bid) error {
 	store.Set(key, value)
 	return nil
 }
-
-// func (k Keeper) AddAuctionParams(ctx sdk.Context, liquidationData liquidationtypes.LockedVault,auctionID uint64) (auction types.Auctions, err error) {
-
-// 	auctionData := types.Auctions{
-// 		AuctionId:                   auctionID + 1,
-// 		CollateralToken:             liquidationData.CollateralToken,
-// 		DebtToken:                   liquidationData.TargetDebt,
-// 		CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
-// 		CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
-// 		DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
-// 		LockedVaultId:               liquidationData.LockedVaultId,
-// 		StartTime:                   ctx.BlockTime(),
-// 		EndTime:                     ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
-// 		AppId:                       liquidationData.AppId,
-// 		AuctionType:                 liquidationData.AuctionType,
-// 	}
-
-// 	err := k.SetAuction(ctx, auctionData)
-// 	if err != nil {
-// 		return auction, err
-// 	}
-
-// 	return auctionData, nil
-
-// }
 
 func (k Keeper) DeleteAuction(ctx sdk.Context, auction types.Auction) error {
 
@@ -229,6 +205,7 @@ func (k Keeper) GetAuctions(ctx sdk.Context) (auctions []types.Auction) {
 
 	return auctions
 }
+
 func (k Keeper) GetAuctionHistoricals(ctx sdk.Context) (auctions []types.AuctionHistorical) {
 	var (
 		store = k.Store(ctx)

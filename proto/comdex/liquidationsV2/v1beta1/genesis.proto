@@ -3,9 +3,16 @@ package comdex.liquidationsV2.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "comdex/liquidationsV2/v1beta1/params.proto";
+import "comdex/liquidationsV2/v1beta1/liquidate.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
 
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
+  repeated LockedVault lockedVault = 1
+  [ (gogoproto.moretags) = "yaml:\"lockedVault\"", (gogoproto.nullable) = false ];
+  repeated LiquidationWhiteListing liquidationWhiteListing = 2
+  [ (gogoproto.moretags) = "yaml:\"liquidationWhiteListing\"", (gogoproto.nullable) = false ];
+  repeated AppReserveFunds appReserveFunds = 3
+  [ (gogoproto.moretags) = "yaml:\"appReserveFunds\"", (gogoproto.nullable) = false ];
+  Params params = 4 [(gogoproto.nullable) = false];
 }

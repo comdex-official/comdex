@@ -20,6 +20,7 @@ message AuctionHistorical{
   ];
   
 }
+
 message Auction{
   uint64 auction_id = 1 [
     (gogoproto.moretags) = "yaml:\"auction_id\""

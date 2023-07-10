@@ -9,16 +9,29 @@ import (
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// this line is used by starport scaffolding # genesis/module/init
+	var lockedVaultID uint64
+	for _, item := range genState.LockedVault {
+		k.SetLockedVault(ctx, item)
+		lockedVaultID = lockedVaultID + 1
+	}
+
+	for _, item := range genState.LiquidationWhiteListing {
+		k.SetLiquidationWhiteListing(ctx, item)
+	}
+
+	for _, item := range genState.AppReserveFunds {
+		k.SetAppReserveFunds(ctx, item)
+	}
+
 	k.SetParams(ctx, genState.Params)
 }
 
 // ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
-	genesis.Params = k.GetParams(ctx)
-
-	// this line is used by starport scaffolding # genesis/module/export
-
-	return genesis
+	return types.NewGenesisState(
+		k.GetLockedVaults(ctx),
+		k.GetGenLiquidationWhiteListing(ctx),
+		k.GetGenAppReserveFunds(ctx),
+		k.GetParams(ctx),
+	)
 }

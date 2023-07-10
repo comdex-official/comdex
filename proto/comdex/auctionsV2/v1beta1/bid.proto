@@ -157,11 +157,6 @@ string premium_discount = 3 [
 uint64 limit_order_bidding_id = 4 [
   (gogoproto.moretags) = "yaml:\"limit_order_bidding_id\""
 ];
-
-
-
-
-
 }
 
 message AuctionFeesCollectionFromLimitBidTx{
