@@ -15,7 +15,7 @@ protoc_gen_gocosmos() {
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
+   protoc \
     -I "proto" \
     -I "third_party/proto" \
     --gocosmos_out=plugins=interfacetype+grpc,\

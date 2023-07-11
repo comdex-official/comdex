@@ -175,6 +175,15 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
+	"github.com/comdex-official/comdex/x/liquidationsV2"
+	newliqclient "github.com/comdex-official/comdex/x/liquidationsV2/client"
+	newliqkeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
+	newliqtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
+
+	"github.com/comdex-official/comdex/x/auctionsV2"
+	newaucclient "github.com/comdex-official/comdex/x/auctionsV2/client"
+	newauckeeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
+	newauctypes "github.com/comdex-official/comdex/x/auctionsV2/types"
 	icq "github.com/cosmos/ibc-apps/modules/async-icq/v4"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v4/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v4/types"
@@ -230,6 +239,9 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers = append(proposalHandlers, wasmclient.ProposalHandlers...)
 	proposalHandlers = append(proposalHandlers, assetclient.AddAssetsHandler...)
 	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
+	proposalHandlers = append(proposalHandlers, newliqclient.LiquidationsV2Handler...)
+	proposalHandlers = append(proposalHandlers, newaucclient.AuctionsV2Handler...)
+
 	return proposalHandlers
 }
 
@@ -282,6 +294,8 @@ var (
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
+		liquidationsV2.AppModuleBasic{},
+		auctionsV2.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -361,6 +375,8 @@ type App struct {
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
+	NewliqKeeper      newliqkeeper.Keeper
+	NewaucKeeper      newauckeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -408,7 +424,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			ibchookstypes.StoreKey, icqtypes.StoreKey, packetforwardtypes.StoreKey,
+			newliqtypes.StoreKey, newauctypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey,
 		)
 	)
 
@@ -462,6 +478,8 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(newliqtypes.ModuleName)
+	app.ParamsKeeper.Subspace(newauctypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
@@ -767,6 +785,38 @@ func New(
 		&app.LendKeeper,
 	)
 
+	app.NewliqKeeper = newliqkeeper.NewKeeper(
+		app.cdc,
+		app.keys[newliqtypes.StoreKey],
+		app.keys[newliqtypes.MemStoreKey],
+		app.GetSubspace(newliqtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		&app.AssetKeeper,
+		&app.VaultKeeper,
+		&app.MarketKeeper,
+		&app.EsmKeeper,
+		&app.Rewardskeeper,
+		&app.LendKeeper,
+		&app.NewaucKeeper,
+		&app.CollectorKeeper,
+	)
+
+	app.NewaucKeeper = newauckeeper.NewKeeper(
+		app.cdc,
+		app.keys[newauctypes.StoreKey],
+		app.keys[newauctypes.MemStoreKey],
+		app.GetSubspace(newauctypes.ModuleName),
+		&app.NewliqKeeper,
+		app.BankKeeper,
+		&app.MarketKeeper,
+		&app.AssetKeeper,
+		&app.EsmKeeper,
+		&app.VaultKeeper,
+		&app.CollectorKeeper,
+		&app.TokenmintKeeper,
+	)
+
 	// ICQ Keeper
 	icqKeeper := icqkeeper.NewKeeper(
 		appCodec,
@@ -830,7 +880,8 @@ func New(
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
-		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.LiquidityKeeper))
+		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.LiquidityKeeper)).
+		AddRoute(newliqtypes.RouterKey, liquidationsV2.NewLiquidationsV2Handler(app.NewliqKeeper))
 
 	if len(wasmEnabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))
@@ -913,6 +964,8 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
+		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
@@ -957,6 +1010,8 @@ func New(
 		liquiditytypes.ModuleName,
 		lendtypes.ModuleName,
 		esmtypes.ModuleName,
+		newliqtypes.ModuleName,
+		newauctypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
@@ -997,6 +1052,8 @@ func New(
 		rewardstypes.ModuleName,
 		liquiditytypes.ModuleName,
 		esmtypes.ModuleName,
+		newliqtypes.ModuleName,
+		newauctypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
@@ -1041,6 +1098,8 @@ func New(
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
 		crisistypes.ModuleName,
+		newliqtypes.ModuleName,
+		newauctypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
@@ -1369,6 +1428,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		wasm.ModuleName:                {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		newliqtypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		newauctypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
 		assettypes.ModuleName:          nil,
 		icqtypes.ModuleName:            nil,
@@ -1407,11 +1468,11 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 
 	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{icqtypes.StoreKey},
-		}
-	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
-		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{},
+			Added: []string{
+				icqtypes.StoreKey,
+				newliqtypes.StoreKey,
+				newauctypes.StoreKey,
+			},
 		}
 	}
 	return storeUpgrades
