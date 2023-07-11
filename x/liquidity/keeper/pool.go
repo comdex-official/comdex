@@ -548,7 +548,7 @@ func (k Keeper) FinishDepositRequest(ctx sdk.Context, req types.DepositRequest, 
 		return nil
 	}
 
-	refundingCoins := req.DepositCoins.Sub(req.AcceptedCoins)
+	refundingCoins := req.DepositCoins.Sub(req.AcceptedCoins...)
 	if !refundingCoins.IsZero() {
 		if err := k.bankKeeper.SendCoins(ctx, types.GlobalEscrowAddress, req.GetDepositor(), refundingCoins); err != nil {
 			return err

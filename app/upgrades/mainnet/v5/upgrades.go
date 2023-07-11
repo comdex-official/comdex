@@ -240,7 +240,7 @@ func CreateUpgradeHandler(
 		// Deleting these modules from the upgrades current state
 		// Add Interchain Accounts host module
 		// set the ICS27 consensus version so InitGenesis is not run
-		fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
+		// fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
 		// create ICS27 Controller submodule params, controller module not enabled.
 		controllerParams := icacontrollertypes.Params{}
