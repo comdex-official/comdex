@@ -37,7 +37,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	} else {
 		cfg = configs[0]
 	}
-	net := network.New(t, cfg)
+	net, _ := network.New(t,t.TempDir(), cfg)
 	t.Cleanup(net.Cleanup)
 	return net
 }

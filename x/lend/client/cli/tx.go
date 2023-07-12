@@ -465,7 +465,11 @@ func CmdAddNewLendPairsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateNewLendPairs(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -548,7 +552,11 @@ func CmdAddNewMultipleLendPairsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateNewMultipleLendPairs(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -637,7 +645,11 @@ func CmdAddPoolProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateLendPool(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -866,7 +878,11 @@ func CmdAddNewAssetRatesParamsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateassetRatesParams(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -985,7 +1001,11 @@ func CmdAddNewAuctionParamsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewAddAuctionParams(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -1126,7 +1146,11 @@ func CmdAddPoolPairsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateLendPoolPairs(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -1214,7 +1238,11 @@ func CmdAddAssetRatesPoolPairsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewCreateAssetRatesPoolPairs(clientCtx, txf, cmd.Flags())
 			if err != nil {

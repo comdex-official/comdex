@@ -13,7 +13,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	store "github.com/cosmos/cosmos-sdk/store/types"
+	// store "github.com/cosmos/cosmos-sdk/store/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -64,7 +64,7 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	s.network, _ = network.New(s.T(), s.T().TempDir(), cfg)
 
 	s.val = s.network.Validators[0]
 

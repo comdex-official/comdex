@@ -60,7 +60,7 @@ func (s *LiquidityIntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	s.network, _ = network.New(s.T(), s.T().TempDir(), cfg)
 
 	s.val = s.network.Validators[0]
 

@@ -172,7 +172,7 @@ func GenAndDeliverTxWithFees(txCtx simulation.OperationInput, gas uint64, fees s
 
 	var err error
 
-	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
+	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg...)
 	if hasNeg {
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
 	}
