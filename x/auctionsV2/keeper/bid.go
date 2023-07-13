@@ -203,6 +203,20 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		if err != nil {
 			return 0, err
 		}
+
+		// Set Bid History
+		userBid, err := k.GetUserBid(ctx, biddingId)
+		if err != nil {
+			return 0, err
+		}
+		err = k.DeleteIndividualUserBid(ctx, userBid)
+		if err != nil {
+			return 0, err
+		}
+		err = k.SetBidHistorical(ctx, userBid)
+		if err != nil {
+			return 0, err
+		}
 		//Close Auction
 		err = k.DeleteAuction(ctx, auctionData)
 		if err != nil {
@@ -290,6 +304,11 @@ func (k Keeper) CreateUserBid(ctx sdk.Context, appID uint64, BidderAddress strin
 	if err != nil {
 		return bidding_id, err
 	}
+	err = k.SetIndividualUserBid(ctx, bidding)
+	if err != nil {
+		return bidding_id, err
+	}
+
 	return bidding.BiddingId, nil
 }
 
