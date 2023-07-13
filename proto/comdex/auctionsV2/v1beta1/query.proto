@@ -69,6 +69,55 @@ message QueryAuctionParamsResponse {
   ];
 }
 
+message QueryUserLimitBidsRequest {
+  string bidder = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryUserLimitBidsResponse {
+  LimitOrderBidsForUser limitOrderBids = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bids\""
+  ];
+}
+
+message QueryUserLimitBidsByAssetIDRequest {
+  string bidder = 1;
+  uint64 collateral_token_id = 2;
+  uint64 debt_token_id = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryUserLimitBidsByAssetIDResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated LimitOrderBid limitOrderBids = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidsRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidsResponse {
+  repeated LimitOrderBid limitOrderBids = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/params";
@@ -84,5 +133,14 @@ service Query {
   }
   rpc AuctionParams(QueryAuctionParamsRequest) returns (QueryAuctionParamsResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/auction_params";
+  }
+  rpc UserLimitBids(QueryUserLimitBidsRequest) returns (QueryUserLimitBidsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/userlimitorderbids/{bidder}";
+  }
+  rpc UserLimitBidsByAssetID(QueryUserLimitBidsByAssetIDRequest) returns (QueryUserLimitBidsByAssetIDResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/userlimitorderbids/{bidder}/{collateral_token_id}/{debt_token_id}";
+  }
+  rpc LimitBids(QueryLimitBidsRequest) returns (QueryLimitBidsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/limitorderbids/{collateral_token_id}/{debt_token_id}";
   }
 }

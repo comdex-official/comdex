@@ -98,11 +98,9 @@ func (q QueryServer) Bids(c context.Context, req *types.QueryBidsRequest) (*type
 		items []types.Bid
 	)
 	if req.History {
-		//TODO: add historical key
-		//key = types.HistoryUserAuctionTypeKey(req.Bidder, req.AppId, types.DutchString)
+		key = types.GetBidHistoricalKey(req.Bidder)
 	} else {
-		key = types.UserBidKeyPrefix
-
+		key = types.GetUserBidHistoricalKey(req.Bidder)
 	}
 
 	pagination, err := query.FilteredPaginate(
@@ -159,4 +157,104 @@ func (q QueryServer) Params(c context.Context, req *types.QueryParamsRequest) (*
 	ctx := sdk.UnwrapSDKContext(c)
 
 	return &types.QueryParamsResponse{Params: q.GetParams(ctx)}, nil
+}
+
+func (q QueryServer) UserLimitBids(c context.Context, req *types.QueryUserLimitBidsRequest) (*types.QueryUserLimitBidsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		item types.LimitOrderBidsForUser
+		ctx  = sdk.UnwrapSDKContext(c)
+	)
+
+	item, found := q.GetUserLimitBidDataByAddress(ctx, req.Bidder)
+	if !found {
+		return nil, nil
+	}
+
+	return &types.QueryUserLimitBidsResponse{
+		LimitOrderBids: item,
+	}, nil
+}
+
+func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryUserLimitBidsByAssetIDRequest) (*types.QueryUserLimitBidsByAssetIDResponse, error) {
+
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.LimitOrderBid
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.LimitBidKeyForAssetID(req.DebtTokenId, req.CollateralTokenId)
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.LimitOrderBid
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				if item.BidderAddress == req.Bidder {
+					items = append(items, item)
+				}
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryUserLimitBidsByAssetIDResponse{
+		Bidder:         req.Bidder,
+		LimitOrderBids: items,
+		Pagination:     pagination,
+	}, nil
+}
+
+func (q QueryServer) LimitBids(c context.Context, req *types.QueryLimitBidsRequest) (*types.QueryLimitBidsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.LimitOrderBid
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.LimitBidKeyForAssetID(req.DebtTokenId, req.CollateralTokenId)
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.LimitOrderBid
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLimitBidsResponse{
+		LimitOrderBids: items,
+		Pagination:     pagination,
+	}, nil
 }

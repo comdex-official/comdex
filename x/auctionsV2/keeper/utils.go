@@ -117,6 +117,30 @@ func (k Keeper) SetAuctionHistorical(ctx sdk.Context, auction types.AuctionHisto
 	return nil
 }
 
+func (k Keeper) SetBidHistorical(ctx sdk.Context, bid types.Bid) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.BidHistoricalKey(bid.BiddingId, bid.BidderAddress)
+		value = k.cdc.MustMarshal(&bid)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k Keeper) SetIndividualUserBid(ctx sdk.Context, userBid types.Bid) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.UserBidHistoricalKey(userBid.BiddingId, userBid.BidderAddress)
+		value = k.cdc.MustMarshal(&userBid)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
 func (k Keeper) SetUserBid(ctx sdk.Context, userBid types.Bid) error {
 
 	var (
@@ -126,6 +150,16 @@ func (k Keeper) SetUserBid(ctx sdk.Context, userBid types.Bid) error {
 	)
 
 	store.Set(key, value)
+	return nil
+}
+
+func (k Keeper) DeleteIndividualUserBid(ctx sdk.Context, userBid types.Bid) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.UserBidHistoricalKey(userBid.BiddingId, userBid.BidderAddress)
+	)
+	store.Delete(key)
 	return nil
 }
 
