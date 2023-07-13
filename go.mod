@@ -3,6 +3,7 @@ module github.com/comdex-official/comdex
 go 1.20
 
 require (
+	cosmossdk.io/simapp v0.0.0-20230323161446-0af178d721ff
 	github.com/CosmWasm/wasmd v0.40.2
 	github.com/CosmWasm/wasmvm v1.2.4
 	github.com/bandprotocol/bandchain-packet v0.0.3

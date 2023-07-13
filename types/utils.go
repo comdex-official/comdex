@@ -15,6 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
@@ -143,7 +144,8 @@ func RandomDec(r *rand.Rand, min, max sdk.Dec) sdk.Dec {
 // GenAndDeliverTx generates a transactions and delivers it.
 func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	tx, err := helpers.GenTx(
+	tx, err := simtestutil.GenSignedMockTx(
+		rand.New(rand.NewSource(time.Now().UnixNano())),
 		txCtx.TxGen,
 		[]sdk.Msg{txCtx.Msg},
 		fees,
@@ -157,7 +159,7 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
 	}
 
-	_, _, err = txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
+	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
 	}

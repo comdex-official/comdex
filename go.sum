@@ -567,6 +567,8 @@ cosmossdk.io/math v1.0.0-beta.4/go.mod h1:An0MllWJY6PxibUpnwGk8jOm+a/qIxlKmL5Zyp
 cosmossdk.io/math v1.0.0-beta.6/go.mod h1:gUVtWwIzfSXqcOT+lBVz2jyjfua8DoBdzRsIyaUAT/8=
 cosmossdk.io/math v1.0.1 h1:Qx3ifyOPaMLNH/89WeZFH268yCvU4xEcnPLu3sJqPPg=
 cosmossdk.io/math v1.0.1/go.mod h1:Ygz4wBHrgc7g0N+8+MrnTfS9LLn9aaTGa9hKopuym5k=
+cosmossdk.io/simapp v0.0.0-20230323161446-0af178d721ff h1:P1ialzTepD1oxdNPYc5N8Eggq3RdejZq3cJs8YYMs9Y=
+cosmossdk.io/simapp v0.0.0-20230323161446-0af178d721ff/go.mod h1:AKzx6Mb544LjJ9RHmGFHjY9rEOLiUAi8I0F727TR0dY=
 cosmossdk.io/tools/rosetta v0.2.1 h1:ddOMatOH+pbxWbrGJKRAawdBkPYLfKXutK9IETnjYxw=
 cosmossdk.io/tools/rosetta v0.2.1/go.mod h1:Pqdc1FdvkNV3LcNIkYWt2RQY6IP1ge6YWZk8MhhO9Hw=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=

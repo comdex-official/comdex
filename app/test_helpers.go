@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"time"
+	simappparams "cosmossdk.io/simapp/params"
 
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -32,8 +33,8 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func MakeTestEncodingConfig() simtestutil.EncodingConfig {
-	encodingConfig := simtestutil.MakeTestEncodingConfig()
+func MakeTestEncodingConfig() simappparams.EncodingConfig {
+	encodingConfig := simappparams.MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
@@ -46,7 +47,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*App, GenesisState) {
 	encCdc := MakeTestEncodingConfig()
 	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
 	if withGenesis {
-		return app, NewDefaultGenesisState(encCdc.Marshaler)
+		return app, NewDefaultGenesisState(encCdc.Codec)
 	}
 	return app, GenesisState{}
 }

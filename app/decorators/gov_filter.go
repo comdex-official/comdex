@@ -42,7 +42,7 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 	validMsg := func(m sdk.Msg) error {
 		if msg, ok := m.(*govtypes.MsgSubmitProposal); ok {
 			// prevent spam gov msg
-			depositParams := gpsd.govKeeper.GetDepositParams(ctx)
+			depositParams := gpsd.govKeeper.GetParams(ctx)
 			miniumInitialDeposit := gpsd.calcMiniumInitialDeposit(depositParams.MinDeposit)
 			if msg.InitialDeposit.IsAllLT(miniumInitialDeposit) {
 				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "not enough initial deposit. required: %v", miniumInitialDeposit)

@@ -8,13 +8,15 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	tokenmintTypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	// simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/app"
@@ -33,7 +35,7 @@ func CreateTestInput() (*app.App, *sdk.Context) {
 }
 
 func FundAccount(t *testing.T, ctx sdk.Context, comdex *app.App, acct sdk.AccAddress) {
-	err := simtestutil.FundAccount(comdex.BankKeeper, ctx, acct, sdk.NewCoins(
+	err := FundAccountFunc(comdex.BankKeeper, ctx, acct, sdk.NewCoins(
 		sdk.NewCoin("ucmdx", sdk.NewInt(10000000000)),
 	))
 	require.NoError(t, err)
@@ -234,4 +236,12 @@ func MsgMintNewTokens(app *app.App, ctx1 sdk.Context) {
 		_, err := server.MsgMintNewTokens(wctx, &tc.msg)
 		fmt.Println(err)
 	}
+}
+
+func FundAccountFunc(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
+		return err
+	}
+
+	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
 }
