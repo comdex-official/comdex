@@ -825,7 +825,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper, // may be replaced with middleware
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
-		app.ScopedICQKeeper,
+		scopedICliQKeeper,
 		app.GRPCQueryRouter(),
 	)
 	app.ICQKeeper = &icqKeeper
@@ -881,7 +881,8 @@ func New(
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.LiquidityKeeper)).
-		AddRoute(newliqtypes.RouterKey, liquidationsV2.NewLiquidationsV2Handler(app.NewliqKeeper))
+		AddRoute(newliqtypes.RouterKey, liquidationsV2.NewLiquidationsV2Handler(app.NewliqKeeper)).
+		AddRoute(newauctypes.RouterKey, auctionsV2.NewAuctionsV2Handler(app.NewaucKeeper))
 
 	if len(wasmEnabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))
