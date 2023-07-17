@@ -1449,7 +1449,7 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == mv12.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			mv12.UpgradeName,
-			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper),
+			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper),
 		)
 	}
 
@@ -1470,8 +1470,8 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				icqtypes.StoreKey,
-				newliqtypes.StoreKey,
-				newauctypes.StoreKey,
+				newliqtypes.ModuleName,
+				newauctypes.ModuleName,
 			},
 		}
 	}
