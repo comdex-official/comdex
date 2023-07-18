@@ -16,11 +16,11 @@ import (
 
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 
-	// bump47: uncomment below 6
-	// ibchooks "github.com/osmosis-labs/osmosis/x/ibc-hooks"
-	// ibchookskeeper "github.com/osmosis-labs/osmosis/x/ibc-hooks/keeper"
-	// ibchookstypes "github.com/osmosis-labs/osmosis/x/ibc-hooks/types"
+	ibchooks "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7"
+	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/keeper"
+	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 
+	// bump47: uncomment below 3
 	// ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
 	// "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
 	// ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
@@ -40,8 +40,8 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
+	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server/api"
