@@ -20,6 +20,9 @@ import (
 	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/keeper"
 	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v7/types"
 
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+
 	// bump47: uncomment below 3
 	// ibcratelimit "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit"
 	// "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
@@ -322,13 +325,13 @@ type App struct {
 	BankBaseKeeper    *bankkeeper.BaseKeeper
 	AuthzKeeper       authzkeeper.Keeper
 	CapabilityKeeper  *capabilitykeeper.Keeper
-	StakingKeeper     stakingkeeper.Keeper
+	StakingKeeper     *stakingkeeper.Keeper
 	SlashingKeeper    slashingkeeper.Keeper
 	MintKeeper        mintkeeper.Keeper
 	DistrKeeper       distrkeeper.Keeper
 	GovKeeper         govkeeper.Keeper
-	CrisisKeeper      crisiskeeper.Keeper
-	UpgradeKeeper     upgradekeeper.Keeper
+	CrisisKeeper      *crisiskeeper.Keeper
+	UpgradeKeeper     *upgradekeeper.Keeper
 	ParamsKeeper      paramskeeper.Keeper
 	IbcKeeper         *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IbcHooksKeeper    *ibchookskeeper.Keeper
@@ -369,6 +372,8 @@ type App struct {
 	HooksICS4Wrapper          ibchooks.ICS4Middleware
 	PacketForwardKeeper       *packetforwardkeeper.Keeper
 	ICQKeeper                 *icqkeeper.Keeper
+
+	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
@@ -464,11 +469,13 @@ func New(
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
 	// set the BaseApp's parameter store
-	baseApp.SetParamStore(
-		app.ParamsKeeper.
-			Subspace(baseapp.Paramspace).
-			WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
-	)
+	// baseApp.SetParamStore(
+	// 	app.ParamsKeeper.
+	// 		Subspace(baseapp.Paramspace).
+	// 		WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
+	// )
+	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(appCodec, keys[consensusparamtypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	baseApp.SetParamStore(&app.ConsensusParamsKeeper)
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -562,12 +569,17 @@ func New(
 	)
 	// register the staking hooks
 	// NOTE: StakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(
-			app.DistrKeeper.Hooks(),
-			app.SlashingKeeper.Hooks(),
-		),
+	// app.StakingKeeper = *stakingKeeper.SetHooks(
+	// 	stakingtypes.NewMultiStakingHooks(
+	// 		app.DistrKeeper.Hooks(),
+	// 		app.SlashingKeeper.Hooks(),
+	// 	),
+	// )
+	stakingKeeper.SetHooks(
+		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(),
+			app.SlashingKeeper.Hooks()),
 	)
+	app.StakingKeeper = stakingKeeper
 
 	// Create IBC Keeper
 	app.IbcKeeper = ibckeeper.NewKeeper(
@@ -827,7 +839,7 @@ func New(
 	govRouter := govtypesv1beta1.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypesv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(&app.UpgradeKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(assettypes.RouterKey, asset.NewUpdateAssetProposalHandler(app.AssetKeeper)).
 		AddRoute(lendtypes.RouterKey, lend.NewLendHandler(app.LendKeeper)).
 		AddRoute(bandoraclemoduletypes.RouterKey, bandoraclemodule.NewFetchPriceHandler(app.BandoracleKeeper)).
@@ -877,7 +889,7 @@ func New(
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
 		app.cdc,
 		app.keys[evidencetypes.StoreKey],
-		&app.StakingKeeper,
+		app.StakingKeeper,
 		app.SlashingKeeper,
 	)
 	app.EvidenceKeeper.SetRouter(evidenceRouter)
@@ -897,13 +909,13 @@ func New(
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(app.cdc, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		capability.NewAppModule(app.cdc, *app.CapabilityKeeper, false),
-		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
+		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
 		gov.NewAppModule(app.cdc, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(app.cdc, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(app.cdc, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
 		distr.NewAppModule(app.cdc, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(app.cdc, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
-		upgrade.NewAppModule(&app.UpgradeKeeper),
+		staking.NewAppModule(app.cdc, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(app.cdc, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IbcKeeper),
@@ -1058,7 +1070,7 @@ func New(
 		packetforwardtypes.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.CrisisKeeper)
+	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 	app.registerUpgradeHandlers()

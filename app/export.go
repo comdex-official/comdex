@@ -33,7 +33,7 @@ func (a *App) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, &a.StakingKeeper)
+	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
