@@ -779,7 +779,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
 		app.ScopedICQKeeper,
-		app.GRPCQueryRouter(),
+		NewQuerierWrapper(baseApp),
 	)
 	app.ICQKeeper = &icqKeeper
 
