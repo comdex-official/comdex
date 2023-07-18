@@ -821,7 +821,7 @@ func New(
 	// Pass the contract keeper to all the structs (generally ICS4Wrappers for ibc middlewares) that need it
 	app.ContractKeeper = wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)
 	app.RateLimitingICS4Wrapper.ContractKeeper = app.ContractKeeper
-	app.Ics20WasmHooks.ContractKeeper = app.ContractKeeper
+	app.Ics20WasmHooks.ContractKeeper = &app.WasmKeeper
 
 	// register the proposal types
 	govRouter := govtypesv1beta1.NewRouter()
