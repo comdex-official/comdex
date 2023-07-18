@@ -22,7 +22,7 @@ func parseLiquidationWhitelistingFlags(fs *pflag.FlagSet) (*createWhitelistLiqui
 	whitelistLiquidationFile, _ := fs.GetString(FlagWhitelistLiquidation)
 
 	if whitelistLiquidationFile == "" {
-		return nil, fmt.Errorf("must pass in add asset mapping json using the --%s flag", whitelistLiquidationFile)
+		return nil, fmt.Errorf("must pass in whitelist liquidation file json using the --%s flag", whitelistLiquidationFile)
 	}
 
 	contents, err := os.ReadFile(whitelistLiquidationFile)
