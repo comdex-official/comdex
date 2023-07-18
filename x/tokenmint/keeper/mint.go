@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
@@ -109,7 +108,6 @@ func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetI
 
 func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
 	assetData, found := k.asset.GetAsset(ctx, assetID)
-	fmt.Println("assetID", assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
 	}
