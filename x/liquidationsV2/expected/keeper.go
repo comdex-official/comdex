@@ -90,6 +90,9 @@ type LendKeeper interface {
 	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
 	GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allReserveStats lendtypes.AllReserveStats, found bool)
 	MsgCalculateBorrowInterest(ctx sdk.Context, borrowerAddr string, borrowID uint64) error
+	UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount sdk.Int, inc bool)
+	DeleteLendForAddressByAsset(ctx sdk.Context, address string, lendingID uint64)
+	DeleteLend(ctx sdk.Context, id uint64)
 }
 
 type RewardsKeeper interface {
