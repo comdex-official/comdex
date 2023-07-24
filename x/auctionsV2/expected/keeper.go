@@ -3,6 +3,7 @@ package expected
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	"github.com/comdex-official/comdex/x/collector/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	liquidationsV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
@@ -59,6 +60,8 @@ type VaultKeeper interface {
 }
 type CollectorKeeper interface {
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
+	GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) (collectorAuctionLookupTable types.AppAssetIdToAuctionLookupTable, found bool)
+	SetAuctionMappingForApp(ctx sdk.Context, records types.AppAssetIdToAuctionLookupTable) error
 }
 
 type TokenMintKeeper interface {

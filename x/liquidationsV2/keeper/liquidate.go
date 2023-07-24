@@ -444,10 +444,14 @@ func (k Keeper) WhitelistLiquidation(ctx sdk.Context, msg types.LiquidationWhite
 func (k Keeper) LiquidateForSurplusAndDebt(ctx sdk.Context) error {
 	auctionMapData, _ := k.collector.GetAllAuctionMappingForApp(ctx)
 	for _, data := range auctionMapData {
-		err := k.CheckStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
-		if err != nil {
-			return err
+		killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, data.AppId)
+		if data.IsDebtAuction && data.IsSurplusAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable {
+			err := k.CheckStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 
 	return nil
@@ -458,6 +462,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	if !found {
 		return nil
 	}
+	auctionLookupTable, _ := k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 	// coin denomination will be of 2 type: Auctioned Asset the asset which is being sold; i.e. Collateral Token // CMST
 	// Asset required to bid on Collateral Asset; i.e. Debt Token // HARBOR
 
@@ -478,6 +483,11 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		if err != nil {
 			return err
 		}
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
+		}
 	}
 
 	// for surplus auction
@@ -494,6 +504,11 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "surplus", false, false, collateralAssetID, debtAssetID)
 		if err != nil {
 			return err
+		}
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
 		}
 	}
 
