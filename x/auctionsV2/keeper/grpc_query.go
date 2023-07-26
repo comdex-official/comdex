@@ -172,26 +172,6 @@ func (q QueryServer) Params(c context.Context, req *types.QueryParamsRequest) (*
 	return &types.QueryParamsResponse{Params: q.GetParams(ctx)}, nil
 }
 
-func (q QueryServer) UserLimitBids(c context.Context, req *types.QueryUserLimitBidsRequest) (*types.QueryUserLimitBidsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
-	}
-
-	var (
-		item types.LimitOrderBidsForUser
-		ctx  = sdk.UnwrapSDKContext(c)
-	)
-
-	item, found := q.GetUserLimitBidDataByAddress(ctx, req.Bidder)
-	if !found {
-		return nil, nil
-	}
-
-	return &types.QueryUserLimitBidsResponse{
-		LimitOrderBids: item,
-	}, nil
-}
-
 func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryUserLimitBidsByAssetIDRequest) (*types.QueryUserLimitBidsByAssetIDResponse, error) {
 
 	if req == nil {
