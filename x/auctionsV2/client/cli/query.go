@@ -36,6 +36,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryAuctionParams(),
 		queryUserLimitOrderBidsByAssetID(),
 		queryLimitOrderBids(),
+		queryLimitBidProtocolData(),
 	)
 
 	return cmd
@@ -79,15 +80,19 @@ func queryAuction() *cobra.Command {
 
 func queryAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auctions [history]",
+		Use:   "auctions [type] [history]",
 		Short: "Query all auctions",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			history, err := strconv.ParseBool(args[0])
+			auctionType, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[1])
 			if err != nil {
 				return err
 			}
@@ -99,8 +104,9 @@ func queryAuctions() *cobra.Command {
 			res, err := queryClient.Auctions(
 				context.Background(),
 				&types.QueryAuctionsRequest{
-					History:    history,
-					Pagination: pagination,
+					AuctionType: auctionType,
+					History:     history,
+					Pagination:  pagination,
 				},
 			)
 			if err != nil {
@@ -310,6 +316,38 @@ func queryLimitOrderBids() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "limit-order-bids")
+
+	return cmd
+}
+
+func queryLimitBidProtocolData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "limit-bid-protocol-data",
+		Short: "Query Limit Bid Protocol Data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.LimitBidProtocolData(
+				context.Background(),
+				&types.QueryLimitBidProtocolDataRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "limit-bid-protocol-data")
 
 	return cmd
 }

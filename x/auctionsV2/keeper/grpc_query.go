@@ -70,10 +70,23 @@ func (q QueryServer) Auctions(c context.Context, req *types.QueryAuctionsRequest
 				return false, err
 			}
 
-			if accumulate {
-				items = append(items, item)
+			if req.AuctionType == 1 {
+				if accumulate {
+					if item.AuctionType {
+						items = append(items, item)
+					}
+				}
+			} else if req.AuctionType == 2 {
+				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
+				if !item.AuctionType && lockedVault.InitiatorType == "surplus" {
+					items = append(items, item)
+				}
+			} else if req.AuctionType == 3 {
+				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
+				if !item.AuctionType && lockedVault.InitiatorType == "debt" {
+					items = append(items, item)
+				}
 			}
-
 			return true, nil
 		},
 	)
@@ -256,5 +269,43 @@ func (q QueryServer) LimitBids(c context.Context, req *types.QueryLimitBidsReque
 	return &types.QueryLimitBidsResponse{
 		LimitOrderBids: items,
 		Pagination:     pagination,
+	}, nil
+}
+
+func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLimitBidProtocolDataRequest) (*types.QueryLimitBidProtocolDataResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.LimitBidProtocolData
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.MarketBidProtocolKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.LimitBidProtocolData
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLimitBidProtocolDataResponse{
+		LimitBidProtocolData: items,
+		Pagination:           pagination,
 	}, nil
 }

@@ -540,6 +540,22 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 	k.SetLimitAuctionBidID(ctx, userLimitBid.LimitOrderBiddingId)
 	k.SetUserLimitBidData(ctx, userLimitBid, DebtTokenId, CollateralTokenId, PremiumDiscount)
 
+	protocolData, found := k.GetLimitBidProtocolDataByAssetID(ctx, DebtTokenId, CollateralTokenId)
+	if !found {
+		protocolData = types.LimitBidProtocolData{
+			CollateralAssetId: CollateralTokenId,
+			DebtAssetId:       DebtTokenId,
+			BidValue:          amount.Amount,
+			MaxDiscount:       sdk.Dec{},
+		}
+	} else {
+		protocolData.BidValue = protocolData.BidValue.Add(amount.Amount)
+	}
+	err = k.SetLimitBidProtocolData(ctx, protocolData)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -550,6 +566,7 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 		return types.ErrBidNotFound
 	}
 	auctionParams, _ := k.GetAuctionParams(ctx)
+	amount := userLimitBid.DebtToken.Amount
 
 	bidderAddr, err := sdk.AccAddressFromBech32(bidder)
 	if err != nil {
@@ -582,6 +599,13 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 	// delete userLimitBid from KV store
 	k.UpdateUserLimitBidDataForAddress(ctx, userLimitBid, false)
 	k.DeleteUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
+
+	protocolData, _ := k.GetLimitBidProtocolDataByAssetID(ctx, DebtTokenId, CollateralTokenId)
+	protocolData.BidValue = protocolData.BidValue.Sub(amount)
+	err = k.SetLimitBidProtocolData(ctx, protocolData)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -632,6 +656,14 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 
 	userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(amount.Amount)
 	k.SetUserLimitBidData(ctx, userLimitBid, DebtTokenId, CollateralTokenId, PremiumDiscount)
+
+	protocolData, _ := k.GetLimitBidProtocolDataByAssetID(ctx, DebtTokenId, CollateralTokenId)
+	protocolData.BidValue = protocolData.BidValue.Sub(amount.Amount)
+	err = k.SetLimitBidProtocolData(ctx, protocolData)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

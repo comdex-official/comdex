@@ -106,3 +106,23 @@ message Auction{
    uint64 bid_id = 1;
    string bid_owner = 2;
  }
+
+message LimitBidProtocolData{
+  uint64 collateral_asset_id = 1 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+  ];
+  uint64 debt_asset_id = 2 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+  ];
+  string bid_value = 3 [
+    (gogoproto.moretags) = "yaml:\"bid_value\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string max_discount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max_discount\""
+  ];
+}

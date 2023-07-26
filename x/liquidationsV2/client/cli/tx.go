@@ -39,6 +39,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txLiquidateInternalKeeper(),
+		txLiquidateExternalKeeper(),
 		txAppReserveFunds(),
 	)
 	return cmd
@@ -46,7 +47,7 @@ func GetTxCmd() *cobra.Command {
 
 func txLiquidateInternalKeeper() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "liquidate_internal_keeper [type] [id]",
+		Use:   "liquidate-internal-keeper [type] [id]",
 		Short: "liquidate faulty positions",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -117,6 +118,55 @@ func txAppReserveFunds() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+func txLiquidateExternalKeeper() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "liquidate-external-keeper [app-id] [owner] [collateral-token] [debt-token] [collateral-asset-id] [debt-asset-id] [is-debt-cmst]",
+		Short: "liquidate faulty positions - external apps",
+		Args:  cobra.ExactArgs(7),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			AppId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			Owner := args[1]
+			CollateralToken, err := sdk.ParseCoinNormalized(args[2])
+			if err != nil {
+				return err
+			}
+			DebtToken, err := sdk.ParseCoinNormalized(args[3])
+			if err != nil {
+				return err
+			}
+			CollateralAssetId, err := strconv.ParseUint(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+			DebtAssetId, err := strconv.ParseUint(args[5], 10, 64)
+			if err != nil {
+				return err
+			}
+			IsDebtCmst := ParseBoolFromString(args[6])
+
+			msg := types.NewMsgLiquidateExternalKeeperRequest(ctx.FromAddress, AppId, Owner, CollateralToken, DebtToken, CollateralAssetId, DebtAssetId, IsDebtCmst)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+
 }
 
 func NewCmdSubmitWhitelistingLiquidationProposal() *cobra.Command {
