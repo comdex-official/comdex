@@ -445,7 +445,7 @@ func (k Keeper) LiquidateForSurplusAndDebt(ctx sdk.Context) error {
 	auctionMapData, _ := k.collector.GetAllAuctionMappingForApp(ctx)
 	for _, data := range auctionMapData {
 		killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, data.AppId)
-		if data.IsDebtAuction && data.IsSurplusAuction && !data.IsAuctionActive && !killSwitchParams.BreakerEnable {
+		if !data.IsAuctionActive && !killSwitchParams.BreakerEnable {
 			err := k.CheckStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
 			if err != nil {
 				return err
@@ -476,7 +476,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
 	// for debt Auction
-	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) {
+	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
 		// net = 200 debtThreshold = 500 , lotSize = 100
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
 		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
@@ -491,7 +491,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	}
 
 	// for surplus auction
-	if netFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) {
+	if netFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) && auctionLookupTable.IsSurplusAuction {
 		// net = 900 surplusThreshold = 500 , lotSize = 100
 		amount := collector.LotSize
 		collateralToken, debtToken := k.SurplusTokenAmount(ctx, collateralAssetID, debtAssetID, amount)

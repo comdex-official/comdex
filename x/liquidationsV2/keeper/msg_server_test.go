@@ -348,7 +348,7 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(len(assetStatsLend.LendIds), 2)
 	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
 	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(11900000000))
 
 	assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
 	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
@@ -544,7 +544,7 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 				s.Require().Equal(len(assetStatsLend.LendIds), 2)
 				s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
 				s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-				s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+				s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(12900000000))
 
 				assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(s.ctx, 1, 2)
 				s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
@@ -650,13 +650,13 @@ func (s *KeeperTestSuite) TestLiquidateExternal() {
 	}{
 		{
 			Name:    "asset does not exist",
-			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), sdk.NewDecFromInt(sdk.NewInt(0)), sdk.NewDecFromInt(sdk.NewInt(0)), true, 10, 2, false),
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), 10, 2, false),
 			ExpErr:  assetTypes.ErrorAssetDoesNotExist,
 			ExpResp: nil,
 		},
 		{
 			Name:    "success valid case",
-			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), sdk.NewDecFromInt(sdk.NewInt(0)), sdk.NewDecFromInt(sdk.NewInt(0)), true, 1, 2, false),
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), 1, 2, false),
 			ExpErr:  nil,
 			ExpResp: &types.MsgLiquidateExternalKeeperResponse{},
 		},
