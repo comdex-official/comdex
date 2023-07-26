@@ -350,6 +350,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 }
 
 func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdk.Dec, assetRatesStats lendtypes.AssetRatesParams, lendPair lendtypes.Extended_Pair, pool lendtypes.Pool, assetIn assettypes.Asset, liquidator string, isInternalkeeper bool) error {
+	lendPos, _ := k.lend.GetLend(ctx, borrow.LendingID)
 	whitelistingData, found := k.GetLiquidationWhiteListing(ctx, appID)
 	if !found {
 		return fmt.Errorf("Liquidation not enabled for App ID  %d", appID)
@@ -357,6 +358,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	borrow.IsLiquidated = true
 	k.lend.SetBorrow(ctx, borrow)
 	pair, _ := k.lend.GetLendPair(ctx, borrow.PairID)
+	cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 	//Calculating Liquidation Fees
 	feesToBeCollected := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationPenalty).TruncateInt()
 
@@ -368,12 +370,28 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 		return err
 	}
 
+	err = k.bank.BurnCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, borrow.AmountIn.Amount)))
+	if err != nil {
+		return err
+	}
+
 	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
 	if err != nil {
 		return err
 	}
 
 	k.lend.UpdateBorrowStats(ctx, lendPair, borrow.IsStableBorrow, borrow.AmountOut.Amount, false)
+	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(borrow.AmountIn.Amount)
+	k.lend.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, borrow.AmountIn.Amount, false)
+	if !lendPos.AmountIn.Amount.GT(sdk.ZeroInt()) {
+		// delete lend position
+		k.lend.DeleteLendForAddressByAsset(ctx, lendPos.Owner, lendPos.ID)
+		k.lend.DeleteIDFromAssetStatsMapping(ctx, lendPos.PoolID, lendPos.AssetID, borrow.LendingID, true)
+		k.lend.DeleteLend(ctx, lendPos.ID)
+	} else {
+		k.lend.SetLend(ctx, lendPos)
+	}
+
 	return nil
 }
 
@@ -426,10 +444,14 @@ func (k Keeper) WhitelistLiquidation(ctx sdk.Context, msg types.LiquidationWhite
 func (k Keeper) LiquidateForSurplusAndDebt(ctx sdk.Context) error {
 	auctionMapData, _ := k.collector.GetAllAuctionMappingForApp(ctx)
 	for _, data := range auctionMapData {
-		err := k.CheckStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
-		if err != nil {
-			return err
+		killSwitchParams, _ := k.esm.GetKillSwitchData(ctx, data.AppId)
+		if !data.IsAuctionActive && !killSwitchParams.BreakerEnable {
+			err := k.CheckStatsForSurplusAndDebt(ctx, data.AppId, data.AssetId)
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 
 	return nil
@@ -440,6 +462,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	if !found {
 		return nil
 	}
+	auctionLookupTable, _ := k.collector.GetAuctionMappingForApp(ctx, appID, assetID)
 	// coin denomination will be of 2 type: Auctioned Asset the asset which is being sold; i.e. Collateral Token // CMST
 	// Asset required to bid on Collateral Asset; i.e. Debt Token // HARBOR
 
@@ -453,17 +476,22 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
 	// for debt Auction
-	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) {
+	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
 		// net = 200 debtThreshold = 500 , lotSize = 100
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
 		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
 		if err != nil {
 			return err
 		}
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
+		}
 	}
 
 	// for surplus auction
-	if netFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) {
+	if netFeeCollectedData.NetFeesCollected.GTE(collector.SurplusThreshold.Add(collector.LotSize)) && auctionLookupTable.IsSurplusAuction {
 		// net = 900 surplusThreshold = 500 , lotSize = 100
 		amount := collector.LotSize
 		collateralToken, debtToken := k.SurplusTokenAmount(ctx, collateralAssetID, debtAssetID, amount)
@@ -476,6 +504,11 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "surplus", false, false, collateralAssetID, debtAssetID)
 		if err != nil {
 			return err
+		}
+		auctionLookupTable.IsAuctionActive = true
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
 		}
 	}
 
@@ -688,9 +721,11 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	pair, _ := k.lend.GetLendPair(ctx, borrowPos.PairID)
 	pool, _ := k.lend.GetPool(ctx, pair.AssetOutPoolID)
 	poolAssetLBMappingData, _ := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
-	amountToPool := liquidationData.DebtToken
+	amountToPool := liquidationData.TargetDebt
 	assetOutStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetOut)
+	assetInStats, _ := k.lend.GetAssetRatesParams(ctx, pair.AssetIn)
 	cAsset, _ := k.asset.GetAsset(ctx, assetOutStats.CAssetID)
+	lend, _ := k.lend.GetLend(ctx, borrowPos.LendingID)
 
 	// sending tokens debt tokens to the pool
 	err := k.bank.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, pool.ModuleName, sdk.NewCoins(amountToPool))
@@ -707,9 +742,9 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	}
 
 	// sending liquidation penalty
-	liquidationPenalty := assetOutStats.LiquidationPenalty
+	liquidationPenalty := assetInStats.LiquidationPenalty
 	if pair.IsEModeEnabled {
-		liquidationPenalty = assetOutStats.ELiquidationPenalty
+		liquidationPenalty = assetInStats.ELiquidationPenalty
 	}
 	liqPenaltyAmount := sdk.NewDecFromInt(borrowPos.AmountOut.Amount).Mul(liquidationPenalty).TruncateInt()
 	err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, sdk.NewCoin(borrowPos.AmountOut.Denom, liqPenaltyAmount), true)
@@ -741,8 +776,8 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 			return err
 		}
 		allReserveStats.AmountInFromRepayments = allReserveStats.AmountInFromRepayments.Add(amount.Amount)
-		k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 	}
+	k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 	// amount minted in the debt pool
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
 	if amtToMint.GT(sdk.ZeroInt()) {
@@ -755,7 +790,6 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	}
 	// if borrow position is having bridged asset then return to the initial pool
 	if borrowPos.BridgedAssetAmount.Amount.GT(sdk.NewInt(0)) {
-		lend, _ := k.lend.GetLend(ctx, borrowPos.LendingID)
 		assetInPool, _ := k.lend.GetPool(ctx, lend.PoolID)
 		err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, assetInPool.ModuleName, sdk.NewCoins(borrowPos.BridgedAssetAmount))
 		if err != nil {

@@ -21,6 +21,7 @@ const (
 	MemStoreKey             = "mem_newauc"
 	SurplusAuctionInitiator = "surplus"
 	DebtAuctionInitiator    = "debt"
+	MaxPremiumDiscount      = 30
 )
 
 var (
@@ -41,6 +42,7 @@ var (
 	ExternalAuctionLimitBidFeeKeyPrefix    = []byte{0x11}
 	BidHistoricalKeyPrefix                 = []byte{0x12}
 	UserBidHistoricalKeyPrefix             = []byte{0x13}
+	MarketBidProtocolKeyPrefix             = []byte{0x14}
 )
 
 func AuctionKey(auctionID uint64) []byte {
@@ -75,6 +77,10 @@ func GetUserBidHistoricalKey(address string) []byte {
 
 func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium sdk.Int, address string) []byte {
 	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian((premium.Uint64()))...), address...)
+}
+
+func MarketBidProtocolKey(debtTokenID, collateralTokenID uint64) []byte {
+	return append(append(MarketBidProtocolKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...)
 }
 
 func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium sdk.Int) []byte {

@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"fmt"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -188,7 +187,7 @@ func (k Keeper) AuctionIterator(ctx sdk.Context) error {
 					//Continue normal operation
 
 					//DO update
-					//then check if to be restarred , then restart
+					//then check if to be restarted , then restart
 
 					if ctx.BlockTime().After(auction.EndTime) {
 						//Restart
@@ -371,7 +370,7 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		// send collateral to user
 		// send harbor to token mint to burn
 		// set net fees data
-		err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
 		if err != nil {
 			return err
 		}
@@ -382,7 +381,6 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		}
 
 		err = k.tokenMint.BurnTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
-		fmt.Println(err)
 		if err != nil {
 			return err
 		}
@@ -390,6 +388,17 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
+		}
+
+		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId)
+		if !found {
+			return auctiontypes.ErrorInvalidAddress
+		}
+
+		auctionLookupTable.IsAuctionActive = false
+		err = k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err != nil {
+			return err
 		}
 
 	} else if liquidationData.InitiatorType == types.DebtAuctionInitiator {
@@ -411,6 +420,18 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		if err != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
 		}
+
+		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId)
+		if !found {
+			return auctiontypes.ErrorInvalidAddress
+		}
+
+		auctionLookupTable.IsAuctionActive = false
+		err = k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err != nil {
+			return err
+		}
+
 	} else {
 		//External auction
 		//TODO:
@@ -522,14 +543,31 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
 						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
+						// subtract auction.DebtToken.Amount from protocol data
+						protocolData, _ := k.GetLimitBidProtocolDataByAssetID(ctx, auction.DebtAssetId, auction.CollateralAssetId)
+						protocolData.BidValue = protocolData.BidValue.Sub(auction.DebtToken.Amount)
+						err = k.SetLimitBidProtocolData(ctx, protocolData)
+						if err != nil {
+							return err
+						}
 					} else {
 						biddingId, err := k.PlaceDutchAuctionBid(ctx, auction.AuctionId, addr.String(), individualBids.DebtToken, auction, true)
 						if err != nil {
 							return err
 						}
-						individualBids.DebtToken.Amount = individualBids.DebtToken.Amount.Sub(auction.DebtToken.Amount)
+						individualBids.DebtToken.Amount = sdk.ZeroInt()
 						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
+						// delete limit order bid
+						k.UpdateUserLimitBidDataForAddress(ctx, individualBids, false)
+						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, individualBids.PremiumDiscount, individualBids.BidderAddress)
+						// subtract auction.DebtToken.Amount from protocol data
+						protocolData, _ := k.GetLimitBidProtocolDataByAssetID(ctx, auction.DebtAssetId, auction.CollateralAssetId)
+						protocolData.BidValue = protocolData.BidValue.Sub(individualBids.DebtToken.Amount)
+						err = k.SetLimitBidProtocolData(ctx, protocolData)
+						if err != nil {
+							return err
+						}
 					}
 
 				}

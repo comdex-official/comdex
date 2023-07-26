@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 
 	// "strings"
@@ -32,10 +31,10 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryAuction(),
 		queryAuctions(),
 		queryBids(),
-		queryUserLimitOrderBids(),
 		queryAuctionParams(),
 		queryUserLimitOrderBidsByAssetID(),
 		queryLimitOrderBids(),
+		queryLimitBidProtocolData(),
 	)
 
 	return cmd
@@ -79,15 +78,19 @@ func queryAuction() *cobra.Command {
 
 func queryAuctions() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "auctions [history]",
+		Use:   "auctions [type] [history]",
 		Short: "Query all auctions",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
-			history, err := strconv.ParseBool(args[0])
+			auctionType, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[1])
 			if err != nil {
 				return err
 			}
@@ -99,8 +102,9 @@ func queryAuctions() *cobra.Command {
 			res, err := queryClient.Auctions(
 				context.Background(),
 				&types.QueryAuctionsRequest{
-					History:    history,
-					Pagination: pagination,
+					AuctionType: auctionType,
+					History:     history,
+					Pagination:  pagination,
 				},
 			)
 			if err != nil {
@@ -128,10 +132,8 @@ func queryBids() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bidder, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+			bidder := args[0]
+
 			history, err := strconv.ParseBool(args[1])
 			if err != nil {
 				return err
@@ -140,7 +142,7 @@ func queryBids() *cobra.Command {
 			res, err := queryClient.Bids(
 				context.Background(),
 				&types.QueryBidsRequest{
-					Bidder:     bidder.String(),
+					Bidder:     bidder,
 					History:    history,
 					Pagination: pagination,
 				},
@@ -153,45 +155,6 @@ func queryBids() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "bids")
-
-	return cmd
-}
-
-func queryUserLimitOrderBids() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "user-limit-order-bids [bidder]",
-		Short: "Query limit order bids by bidder address",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			ctx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			bidder, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			queryClient := types.NewQueryClient(ctx)
-			res, err := queryClient.UserLimitBids(
-				context.Background(),
-				&types.QueryUserLimitBidsRequest{
-					Bidder:     bidder.String(),
-					Pagination: pagination,
-				},
-			)
-			if err != nil {
-				return err
-			}
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "user-limit-order-bids")
 
 	return cmd
 }
@@ -237,10 +200,7 @@ func queryUserLimitOrderBidsByAssetID() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bidder, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
+			bidder := args[0]
 			collateralID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
@@ -253,7 +213,7 @@ func queryUserLimitOrderBidsByAssetID() *cobra.Command {
 			res, err := queryClient.UserLimitBidsByAssetID(
 				context.Background(),
 				&types.QueryUserLimitBidsByAssetIDRequest{
-					Bidder:            bidder.String(),
+					Bidder:            bidder,
 					CollateralTokenId: collateralID,
 					DebtTokenId:       debtID,
 					Pagination:        pagination,
@@ -285,11 +245,11 @@ func queryLimitOrderBids() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			collateralID, err := strconv.ParseUint(args[1], 10, 64)
+			collateralID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			debtID, err := strconv.ParseUint(args[2], 10, 64)
+			debtID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -310,6 +270,38 @@ func queryLimitOrderBids() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "limit-order-bids")
+
+	return cmd
+}
+
+func queryLimitBidProtocolData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "limit-bid-protocol-data",
+		Short: "Query Limit Bid Protocol Data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.LimitBidProtocolData(
+				context.Background(),
+				&types.QueryLimitBidProtocolDataRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "limit-bid-protocol-data")
 
 	return cmd
 }

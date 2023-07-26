@@ -19,6 +19,7 @@ func (k Keeper) SetAuctionID(ctx sdk.Context, id uint64) {
 	)
 	store.Set(key, value)
 }
+
 func (k Keeper) GetAuctionID(ctx sdk.Context) uint64 {
 	var (
 		store = k.Store(ctx)
@@ -295,6 +296,7 @@ func (k Keeper) SetAuctionLimitBidFeeDataExternal(ctx sdk.Context, feeData types
 	store.Set(key, value)
 	return nil
 }
+
 func (k Keeper) GetAuctionLimitBidFeeDataExternal(ctx sdk.Context, assetId uint64) (feeData types.AuctionFeesCollectionFromLimitBidTx, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -308,4 +310,53 @@ func (k Keeper) GetAuctionLimitBidFeeDataExternal(ctx sdk.Context, assetId uint6
 
 	k.cdc.MustUnmarshal(value, &feeData)
 	return feeData, true
+}
+
+func (k Keeper) SetLimitBidProtocolData(ctx sdk.Context, data types.LimitBidProtocolData) error {
+
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketBidProtocolKey(data.DebtAssetId, data.CollateralAssetId)
+		value = k.cdc.MustMarshal(&data)
+	)
+
+	store.Set(key, value)
+	return nil
+}
+
+func (k Keeper) GetAllLimitBidProtocolData(ctx sdk.Context) (bidData []types.LimitBidProtocolData) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.MarketBidProtocolKeyPrefix)
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var data types.LimitBidProtocolData
+		k.cdc.MustUnmarshal(iter.Value(), &data)
+		bidData = append(bidData, data)
+	}
+
+	return bidData
+}
+
+func (k Keeper) GetLimitBidProtocolDataByAssetID(ctx sdk.Context, debtAssetID, collateralAssetID uint64) (data types.LimitBidProtocolData, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.MarketBidProtocolKey(debtAssetID, collateralAssetID)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return data, false
+	}
+
+	k.cdc.MustUnmarshal(value, &data)
+	return data, true
 }
