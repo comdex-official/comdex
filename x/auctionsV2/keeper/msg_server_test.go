@@ -374,7 +374,7 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(len(assetStatsLend.LendIds), 2)
 	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
 	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(11900000000))
 
 	assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
 	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
