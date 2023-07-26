@@ -21,6 +21,7 @@ const (
 	MemStoreKey             = "mem_newauc"
 	SurplusAuctionInitiator = "surplus"
 	DebtAuctionInitiator    = "debt"
+	MaxPremiumDiscount      = 30
 )
 
 var (

@@ -497,6 +497,10 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 		return nil
 	}
 
+	if PremiumDiscount.GT(sdk.NewIntFromUint64(types.MaxPremiumDiscount)) {
+		return types.ErrorDiscountGreaterThanMaxDiscount
+	}
+
 	_, found := k.asset.GetAsset(ctx, CollateralTokenId)
 	if !found {
 		return assettypes.ErrorAssetDoesNotExist
@@ -546,7 +550,7 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 			CollateralAssetId: CollateralTokenId,
 			DebtAssetId:       DebtTokenId,
 			BidValue:          amount.Amount,
-			MaxDiscount:       sdk.Dec{},
+			MaxDiscount:       sdk.NewDecFromInt(sdk.NewIntFromUint64(types.MaxPremiumDiscount)),
 		}
 	} else {
 		protocolData.BidValue = protocolData.BidValue.Add(amount.Amount)
