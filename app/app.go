@@ -28,6 +28,10 @@ import (
 	// "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
 	// ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
 
+	ibcratelimit "github.com/comdex-official/comdex/x/ibcratelimit"
+	"github.com/comdex-official/comdex/x/ibcratelimit/ibcratelimitmodule"
+	ibcratelimittypes "github.com/comdex-official/comdex/x/ibcratelimit/types"
+
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
 	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"

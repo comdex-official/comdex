@@ -1,0 +1,12 @@
+syntax = "proto3";
+package comdex.ibcratelimit.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/ibcratelimit/types";
+
+// Params defines the parameters for the ibcratelimit module.
+message Params {
+  string contract_address = 1
+      [ (gogoproto.moretags) = "yaml:\"contract_address\"" ];
+}

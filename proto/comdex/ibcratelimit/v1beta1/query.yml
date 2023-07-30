@@ -1,0 +1,10 @@
+keeper: 
+  path: "github.com/comdex-official/comdex/x/ibcratelimit"
+  struct: "Keeper"
+client_path: "github.com/comdex-official/comdex/x/ibcratelimit/client"
+queries:
+  Params:
+    proto_wrapper:
+      query_func: "k.GetParams"
+    cli:
+      cmd: "GetParams"
