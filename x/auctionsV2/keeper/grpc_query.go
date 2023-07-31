@@ -289,3 +289,41 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 		Pagination:           pagination,
 	}, nil
 }
+
+func (q QueryServer) AuctionFeesCollectionData(c context.Context, req *types.QueryAuctionFeesCollectionFromLimitBidTxRequest) (*types.QueryAuctionFeesCollectionFromLimitBidTxResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.AuctionFeesCollectionFromLimitBidTx
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.ExternalAuctionLimitBidFeeKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.AuctionFeesCollectionFromLimitBidTx
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAuctionFeesCollectionFromLimitBidTxResponse{
+		AuctionFeesCollectionFromLimitBidTx: items,
+		Pagination:                          pagination,
+	}, nil
+}

@@ -274,7 +274,7 @@ func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction)
 	dutchAuction.CollateralTokenInitialPrice = CollateralTokenInitialPrice
 	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
 	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
-	// dutchAuction.StartTime = ctx.BlockTime()
+	dutchAuction.StartTime = ctx.BlockTime()
 	dutchAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 
 	err := k.SetAuction(ctx, dutchAuction)
@@ -555,6 +555,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 						if err != nil {
 							return err
 						}
+						debtAmount := individualBids.DebtToken.Amount
 						individualBids.DebtToken.Amount = sdk.ZeroInt()
 						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
@@ -563,7 +564,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 						k.DeleteUserLimitBidData(ctx, auction.DebtAssetId, auction.CollateralAssetId, individualBids.PremiumDiscount, individualBids.BidderAddress)
 						// subtract auction.DebtToken.Amount from protocol data
 						protocolData, _ := k.GetLimitBidProtocolDataByAssetID(ctx, auction.DebtAssetId, auction.CollateralAssetId)
-						protocolData.BidValue = protocolData.BidValue.Sub(individualBids.DebtToken.Amount)
+						protocolData.BidValue = protocolData.BidValue.Sub(debtAmount)
 						err = k.SetLimitBidProtocolData(ctx, protocolData)
 						if err != nil {
 							return err

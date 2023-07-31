@@ -35,6 +35,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryUserLimitOrderBidsByAssetID(),
 		queryLimitOrderBids(),
 		queryLimitBidProtocolData(),
+		queryAuctionFeesCollectionData(),
 	)
 
 	return cmd
@@ -302,6 +303,38 @@ func queryLimitBidProtocolData() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "limit-bid-protocol-data")
+
+	return cmd
+}
+
+func queryAuctionFeesCollectionData() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auction-fees-collection-data",
+		Short: "Query Auction Fees Collection Data",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.AuctionFeesCollectionData(
+				context.Background(),
+				&types.QueryAuctionFeesCollectionFromLimitBidTxRequest{
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "auction-fees-collection-data")
 
 	return cmd
 }
