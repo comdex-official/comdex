@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/comdex-official/comdex/x/ibcratelimit/types"
-	"github.com/osmosis-labs/osmosis/v16/app/apptesting"
+	// "github.com/osmosis-labs/osmosis/v16/app/apptesting"
 )
 
 type GenesisTestSuite struct {

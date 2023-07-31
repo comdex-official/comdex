@@ -15,11 +15,11 @@ import (
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	"github.com/stretchr/testify/suite"
 
-	txfeetypes "github.com/osmosis-labs/osmosis/v16/x/txfees/types"
+	// txfeetypes "github.com/osmosis-labs/osmosis/v16/x/txfees/types"
 
 	"github.com/comdex-official/comdex/x/ibcratelimit/types"
-	"github.com/osmosis-labs/osmosis/v16/app/apptesting"
-	"github.com/osmosis-labs/osmosis/v16/tests/osmosisibctesting"
+	// "github.com/osmosis-labs/osmosis/v16/app/apptesting"
+	// "github.com/osmosis-labs/osmosis/v16/tests/osmosisibctesting"
 )
 
 type MiddlewareTestSuite struct {
