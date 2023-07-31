@@ -221,6 +221,11 @@ func InitializeStates(
 
 	}
 
+	err := collectorKeeper.DecreaseNetFeeCollectedData(ctx, 2, 3,sdk.NewInt(20163520000))
+    if err != nil {
+		fmt.Println("error in recreasing net fee collected",  err)
+    }
+
 
 
 }

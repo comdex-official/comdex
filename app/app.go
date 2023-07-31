@@ -1450,7 +1450,7 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == mv12.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			mv12.UpgradeName,
-			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper),
+			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper,a.BankKeeper,a.CollectorKeeper),
 		)
 	}
 
