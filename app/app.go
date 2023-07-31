@@ -175,6 +175,10 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
+	"github.com/comdex-official/comdex/x/oracle"
+	oraclekeeper "github.com/comdex-official/comdex/x/oracle/keeper"
+	oracletypes "github.com/comdex-official/comdex/x/oracle/types"
+
 	"github.com/comdex-official/comdex/x/liquidationsV2"
 	liquidationsV2client "github.com/comdex-official/comdex/x/liquidationsV2/client"
 	liquidationsV2keeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
@@ -299,6 +303,7 @@ var (
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		oracle.AppModuleBasic{},
 	)
 )
 
@@ -377,6 +382,7 @@ type App struct {
 	Rewardskeeper     rewardskeeper.Keeper
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
+	OracleKeeper      oraclekeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -425,6 +431,7 @@ func New(
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
 			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey,
+			oracletypes.StoreKey,
 		)
 	)
 
@@ -483,6 +490,7 @@ func New(
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(oracletypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	baseApp.SetParamStore(
@@ -817,6 +825,19 @@ func New(
 		&app.TokenmintKeeper,
 	)
 
+	app.OracleKeeper = oraclekeeper.NewKeeper(
+		app.cdc,
+		app.keys[oracletypes.StoreKey],
+		app.GetSubspace(oracletypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.OracleKeeper.StakingKeeper,
+		distrtypes.ModuleName,
+		cast.ToBool(appOptions.Get("telemetry.enabled")),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	// ICQ Keeper
 	icqKeeper := icqkeeper.NewKeeper(
 		appCodec,
@@ -971,6 +992,7 @@ func New(
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		oracle.NewAppModule(app.cdc, app.OracleKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1017,6 +1039,7 @@ func New(
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -1059,6 +1082,7 @@ func New(
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1105,6 +1129,7 @@ func New(
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
+		oracletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -1434,6 +1459,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		icatypes.ModuleName:            nil,
 		assettypes.ModuleName:          nil,
 		icqtypes.ModuleName:            nil,
+		oracletypes.ModuleName:         nil,
 	}
 }
 
