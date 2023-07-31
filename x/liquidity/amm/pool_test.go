@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -50,12 +51,12 @@ func TestCreateBasicPool(t *testing.T) {
 		},
 		{
 			"too low price",
-			sdk.NewInt(1000000), sdk.NewIntWithDecimal(1, 26),
+			sdk.NewInt(1000000), sdkmath.NewIntWithDecimal(1, 26),
 			"pool price is lower than min price 0.000000000000001000",
 		},
 		{
 			"too high price",
-			sdk.NewIntWithDecimal(1, 48), sdk.NewInt(1000000),
+			sdkmath.NewIntWithDecimal(1, 48), sdk.NewInt(1000000),
 			"pool price is greater than max price 100000000000000000000.000000000000000000",
 		},
 	} {
@@ -470,7 +471,7 @@ func TestValidateRangedPoolParams(t *testing.T) {
 		},
 		{
 			"too high max price",
-			utils.ParseDec("0.5"), sdk.NewIntWithDecimal(1, 25).ToDec(),
+			utils.ParseDec("0.5"), sdk.NewDec(sdkmath.NewIntWithDecimal(1, 25).Int64()),
 			utils.ParseDec("1.0"),
 			"max price must not be higher than 100000000000000000000.000000000000000000",
 		},
@@ -602,7 +603,7 @@ func TestCreateRangedPool(t *testing.T) {
 		{
 			"large max price",
 			sdk.NewInt(1_000000000000000000), sdk.NewInt(1_000000000000000000),
-			utils.ParseDec("1.0"), sdk.NewIntWithDecimal(1, 20).ToDec(),
+			utils.ParseDec("1.0"), sdk.NewDec(sdkmath.NewIntWithDecimal(1, 20).Int64()),
 			utils.ParseDec("2.0"),
 			"",
 			sdk.NewInt(585786437709747665), sdk.NewInt(1_000000000000000000),

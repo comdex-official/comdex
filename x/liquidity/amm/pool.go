@@ -56,7 +56,7 @@ func CreateBasicPool(rx, ry sdk.Int) (*BasicPool, error) {
 	if rx.IsZero() || ry.IsZero() {
 		return nil, fmt.Errorf("cannot create basic pool with zero reserve amount")
 	}
-	p := rx.ToDec().Quo(ry.ToDec())
+	p := sdk.NewDec(rx.Int64()).Quo(sdk.NewDec(ry.Int64()))
 	if p.LT(MinPoolPrice) {
 		return nil, fmt.Errorf("pool price is lower than min price %s", MinPoolPrice)
 	}
@@ -86,7 +86,7 @@ func (pool *BasicPool) Price() sdk.Dec {
 	if pool.rx.IsZero() || pool.ry.IsZero() {
 		panic("pool price is not defined for a depleted pool")
 	}
-	return pool.rx.ToDec().Quo(pool.ry.ToDec())
+	return sdk.NewDec(pool.rx.Int64()).Quo(sdk.NewDec(pool.ry.Int64()))
 }
 
 // IsDepleted returns whether the pool is depleted or not.
@@ -119,7 +119,7 @@ func (pool *BasicPool) BuyAmountOver(price sdk.Dec, _ bool) (amt sdk.Int) {
 	if price.GTE(pool.Price()) {
 		return zeroInt
 	}
-	dx := pool.rx.ToDec().Sub(price.MulInt(pool.ry))
+	dx := sdk.NewDec(pool.rx.Int64()).Sub(price.MulInt(pool.ry))
 	if !dx.IsPositive() {
 		return zeroInt
 	}
@@ -141,7 +141,7 @@ func (pool *BasicPool) SellAmountUnder(price sdk.Dec, _ bool) (amt sdk.Int) {
 	if price.LTE(pool.Price()) {
 		return zeroInt
 	}
-	amt = pool.ry.ToDec().Sub(pool.rx.ToDec().QuoRoundUp(price)).TruncateInt()
+	amt = sdk.NewDec(pool.ry.Int64()).Sub(sdk.NewDec(pool.rx.Int64()).QuoRoundUp(price)).TruncateInt()
 	if !amt.IsPositive() {
 		return zeroInt
 	}
@@ -159,10 +159,10 @@ func (pool *BasicPool) BuyAmountTo(price sdk.Dec) (amt sdk.Int) {
 	if price.GTE(pool.Price()) {
 		return zeroInt
 	}
-	sqrtRx := utils.DecApproxSqrt(pool.rx.ToDec())
-	sqrtRy := utils.DecApproxSqrt(pool.ry.ToDec())
+	sqrtRx := utils.DecApproxSqrt(sdk.NewDec(pool.rx.Int64()))
+	sqrtRy := utils.DecApproxSqrt(sdk.NewDec(pool.ry.Int64()))
 	sqrtPrice := utils.DecApproxSqrt(price)
-	dx := pool.rx.ToDec().Sub(sqrtPrice.Mul(sqrtRx.Mul(sqrtRy))) // dx = rx - sqrt(P * rx * ry)
+	dx := sdk.NewDec(pool.rx.Int64()).Sub(sqrtPrice.Mul(sqrtRx.Mul(sqrtRy))) // dx = rx - sqrt(P * rx * ry)
 	if !dx.IsPositive() {
 		return zeroInt
 	}
@@ -187,11 +187,11 @@ func (pool *BasicPool) SellAmountTo(price sdk.Dec) (amt sdk.Int) {
 	if price.LTE(pool.Price()) {
 		return zeroInt
 	}
-	sqrtRx := utils.DecApproxSqrt(pool.rx.ToDec())
-	sqrtRy := utils.DecApproxSqrt(pool.ry.ToDec())
+	sqrtRx := utils.DecApproxSqrt(sdk.NewDec(pool.rx.Int64()))
+	sqrtRy := utils.DecApproxSqrt(sdk.NewDec(pool.ry.Int64()))
 	sqrtPrice := utils.DecApproxSqrt(price)
 	// dy = ry - sqrt(rx * ry / P)
-	amt = pool.ry.ToDec().Sub(sqrtRx.Mul(sqrtRy).Quo(sqrtPrice)).TruncateInt()
+	amt = sdk.NewDec(pool.ry.Int64()).Sub(sqrtRx.Mul(sqrtRy).Quo(sqrtPrice)).TruncateInt()
 	if !amt.IsPositive() {
 		return zeroInt
 	}
@@ -221,8 +221,8 @@ func NewRangedPool(rx, ry, ps sdk.Int, minPrice, maxPrice sdk.Dec) *RangedPool {
 		maxPrice: maxPrice,
 		transX:   transX,
 		transY:   transY,
-		xComp:    rx.ToDec().Add(transX),
-		yComp:    ry.ToDec().Add(transY),
+		xComp:    sdk.NewDec(rx.Int64()).Add(transX),
+		yComp:    sdk.NewDec(ry.Int64()).Add(transY),
 	}
 }
 
@@ -247,7 +247,7 @@ func CreateRangedPool(x, y sdk.Int, minPrice, maxPrice, initialPrice sdk.Dec) (p
 		ay = zeroInt
 	default: // normal pool
 		sqrt := utils.DecApproxSqrt
-		xDec, yDec := x.ToDec(), y.ToDec()
+		xDec, yDec := sdk.NewDec(x.Int64()), sdk.NewDec(y.Int64())
 		sqrtP := sqrt(initialPrice) // sqrt(P)
 		sqrtM := sqrt(minPrice)     // sqrt(M)
 		sqrtL := sqrt(maxPrice)     // sqrt(L)
@@ -306,8 +306,8 @@ func (pool *RangedPool) SetBalances(rx, ry sdk.Int, derive bool) {
 	}
 	pool.rx = rx
 	pool.ry = ry
-	pool.xComp = pool.rx.ToDec().Add(pool.transX)
-	pool.yComp = pool.ry.ToDec().Add(pool.transY)
+	pool.xComp = sdk.NewDec(pool.rx.Int64()).Add(pool.transX)
+	pool.yComp = sdk.NewDec(pool.ry.Int64()).Add(pool.transY)
 }
 
 // PoolCoinSupply returns the pool coin supply.
@@ -368,8 +368,8 @@ func (pool *RangedPool) BuyAmountOver(price sdk.Dec, _ bool) (amt sdk.Int) {
 	dx := pool.xComp.Sub(price.Mul(pool.yComp))
 	if !dx.IsPositive() {
 		return zeroInt
-	} else if dx.GT(pool.rx.ToDec()) {
-		dx = pool.rx.ToDec()
+	} else if dx.GT(sdk.NewDec(pool.rx.Int64())) {
+		dx = sdk.NewDec(pool.rx.Int64())
 	}
 	utils.SafeMath(func() {
 		amt = dx.QuoTruncate(origPrice).TruncateInt() // dy = dx / P
@@ -417,11 +417,11 @@ func (pool *RangedPool) BuyAmountTo(price sdk.Dec) (amt sdk.Int) {
 	sqrtYComp := utils.DecApproxSqrt(pool.yComp)
 	sqrtPrice := utils.DecApproxSqrt(price)
 	// dx = rx - (sqrt(P * (rx + transX) * (ry + transY)) - transX)
-	dx := pool.rx.ToDec().Sub(sqrtPrice.Mul(sqrtXComp.Mul(sqrtYComp)).Sub(pool.transX))
+	dx := sdk.NewDec(pool.rx.Int64()).Sub(sqrtPrice.Mul(sqrtXComp.Mul(sqrtYComp)).Sub(pool.transX))
 	if !dx.IsPositive() {
 		return zeroInt
-	} else if dx.GT(pool.rx.ToDec()) {
-		dx = pool.rx.ToDec()
+	} else if dx.GT(sdk.NewDec(pool.rx.Int64())) {
+		dx = sdk.NewDec(pool.rx.Int64())
 	}
 	utils.SafeMath(func() {
 		amt = dx.QuoTruncate(origPrice).TruncateInt() // dy = dx / P
@@ -448,7 +448,7 @@ func (pool *RangedPool) SellAmountTo(price sdk.Dec) (amt sdk.Int) {
 	sqrtYComp := utils.DecApproxSqrt(pool.yComp)
 	sqrtPrice := utils.DecApproxSqrt(price)
 	// dy = ry - (sqrt((x + transX) * (y + transY) / P) - b)
-	amt = pool.ry.ToDec().Sub(sqrtXComp.Mul(sqrtYComp).QuoRoundUp(sqrtPrice).Sub(pool.transY)).TruncateInt()
+	amt = sdk.NewDec(pool.ry.Int64()).Sub(sqrtXComp.Mul(sqrtYComp).QuoRoundUp(sqrtPrice).Sub(pool.transY)).TruncateInt()
 	if amt.GT(pool.ry) {
 		amt = pool.ry
 	}
@@ -480,25 +480,25 @@ func Deposit(rx, ry, ps, x, y sdk.Int) (ax, ay, pc sdk.Int) {
 	// from depositor and mint as little coins as possible.
 
 	utils.SafeMath(func() {
-		rx, ry := rx.ToDec(), ry.ToDec()
-		ps := ps.ToDec()
+		rx, ry := sdk.NewDec(rx.Int64()), sdk.NewDec(ry.Int64())
+		ps := sdk.NewDec(ps.Int64())
 
 		// pc = floor(ps * min(x / rx, y / ry))
 		var ratio sdk.Dec
 		switch {
 		case rx.IsZero():
-			ratio = y.ToDec().QuoTruncate(ry)
+			ratio = sdk.NewDec(y.Int64()).QuoTruncate(ry)
 		case ry.IsZero():
-			ratio = x.ToDec().QuoTruncate(rx)
+			ratio = sdk.NewDec(x.Int64()).QuoTruncate(rx)
 		default:
 			ratio = sdk.MinDec(
-				x.ToDec().QuoTruncate(rx),
-				y.ToDec().QuoTruncate(ry),
+				sdk.NewDec(x.Int64()).QuoTruncate(rx),
+				sdk.NewDec(y.Int64()).QuoTruncate(ry),
 			)
 		}
 		pc = ps.MulTruncate(ratio).TruncateInt()
 
-		mintProportion := pc.ToDec().Quo(ps)             // pc / ps
+		mintProportion := sdk.NewDec(pc.Int64()).Quo(ps)             // pc / ps
 		ax = rx.Mul(mintProportion).Ceil().TruncateInt() // ceil(rx * mintProportion)
 		ay = ry.Mul(mintProportion).Ceil().TruncateInt() // ceil(ry * mintProportion)
 	}, func() {
@@ -520,10 +520,10 @@ func Withdraw(rx, ry, ps, pc sdk.Int, feeRate sdk.Dec) (x, y sdk.Int) {
 	}
 
 	utils.SafeMath(func() {
-		proportion := pc.ToDec().QuoTruncate(ps.ToDec())                             // pc / ps
+		proportion := sdk.NewDec(pc.Int64()).QuoTruncate(sdk.NewDec(ps.Int64()))                             // pc / ps
 		multiplier := sdk.OneDec().Sub(feeRate)                                      // 1 - feeRate
-		x = rx.ToDec().MulTruncate(proportion).MulTruncate(multiplier).TruncateInt() // floor(rx * proportion * multiplier)
-		y = ry.ToDec().MulTruncate(proportion).MulTruncate(multiplier).TruncateInt() // floor(ry * proportion * multiplier)
+		x = sdk.NewDec(rx.Int64()).MulTruncate(proportion).MulTruncate(multiplier).TruncateInt() // floor(rx * proportion * multiplier)
+		y = sdk.NewDec(ry.Int64()).MulTruncate(proportion).MulTruncate(multiplier).TruncateInt() // floor(ry * proportion * multiplier)
 	}, func() {
 		x, y = sdk.ZeroInt(), sdk.ZeroInt()
 	})
@@ -535,7 +535,7 @@ func DeriveTranslation(rx, ry sdk.Int, minPrice, maxPrice sdk.Dec) (transX, tran
 	sqrt := utils.DecApproxSqrt
 
 	// M = minPrice, L = maxPrice
-	rxDec, ryDec := rx.ToDec(), ry.ToDec()
+	rxDec, ryDec := sdk.NewDec(rx.Int64()), sdk.NewDec(ry.Int64())
 	sqrtM := sqrt(minPrice)
 	sqrtL := sqrt(maxPrice)
 
