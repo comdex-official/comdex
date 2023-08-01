@@ -84,7 +84,7 @@ func txAppReserveFunds() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "app-reserve-funds [app-id] [asset-id] [amount]",
 		Short: "app reserve funds",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {

@@ -58,7 +58,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//So we call the module account to give funds to compensate the user.
 			debtGettingLeft := auctionData.DebtToken.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, debtTokenAgainstLeftOverCollateral))
 			//Calling reserve account for debt adjustment : debtGettingLeft
-			//Updating the protocol was in loss stuct
+			//Updating the protocol was in loss struct
 			err := k.LiquidationsV2.WithdrawAppReserveFundsFn(ctx, auctionData.AppId, auctionData.DebtAssetId, debtGettingLeft)
 			if err != nil {
 				return bidId, err
@@ -119,7 +119,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		if liquidationData.InitiatorType == "external" {
 			//Send Liquidation penalty to the comdex protocol  --  create a kv store like SetAuctionLimitBidFeeData with name SetAuctionExternalFeeData
 			//Send debt to the initiator address of the auction
-			finalDebtToInitiator := liquidationData.DebtToken.Sub(liquidationPenalty)
+			finalDebtToInitiator := liquidationData.TargetDebt.Sub(liquidationPenalty)
 			keeperIncentive := (liquidationWhitelistingAppData.KeeeperIncentive.Mul(sdk.NewDecFromInt(liquidationPenalty.Amount))).TruncateInt()
 			if keeperIncentive.GT(sdk.ZeroInt()) {
 				liquidationPenalty = liquidationPenalty.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive))
@@ -637,9 +637,9 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	// return all the tokens back to the user
 	if userLimitBid.DebtToken.Amount.GT(sdk.ZeroInt()) {
 		feesToBeCollected := auctionParams.WithdrawalFee.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()
-		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBeCollected)
+		updatedAmount := amount.Amount.Sub(feesToBeCollected)
 
-		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(amount))
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(sdk.NewCoin(amount.Denom, updatedAmount)))
 		if err != nil {
 			return err
 		}

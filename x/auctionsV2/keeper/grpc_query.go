@@ -179,9 +179,10 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 	}
 
 	var (
-		items []types.LimitOrderBid
-		ctx   = sdk.UnwrapSDKContext(c)
-		key   []byte
+		items  []types.LimitOrderBid
+		ctx    = sdk.UnwrapSDKContext(c)
+		key    []byte
+		amount = sdk.NewInt(0)
 	)
 	key = types.LimitBidKeyForAssetID(req.DebtTokenId, req.CollateralTokenId)
 
@@ -196,6 +197,7 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 
 			if accumulate {
 				if item.BidderAddress == req.Bidder {
+					amount = amount.Add(item.DebtToken.Amount)
 					items = append(items, item)
 				}
 			}
@@ -209,6 +211,7 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 
 	return &types.QueryUserLimitBidsByAssetIDResponse{
 		Bidder:         req.Bidder,
+		TotalAmount:    amount,
 		LimitOrderBids: items,
 		Pagination:     pagination,
 	}, nil
@@ -287,5 +290,43 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 	return &types.QueryLimitBidProtocolDataResponse{
 		LimitBidProtocolData: items,
 		Pagination:           pagination,
+	}, nil
+}
+
+func (q QueryServer) AuctionFeesCollectionData(c context.Context, req *types.QueryAuctionFeesCollectionFromLimitBidTxRequest) (*types.QueryAuctionFeesCollectionFromLimitBidTxResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.AuctionFeesCollectionFromLimitBidTx
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.ExternalAuctionLimitBidFeeKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.AuctionFeesCollectionFromLimitBidTx
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAuctionFeesCollectionFromLimitBidTxResponse{
+		AuctionFeesCollectionFromLimitBidTx: items,
+		Pagination:                          pagination,
 	}, nil
 }

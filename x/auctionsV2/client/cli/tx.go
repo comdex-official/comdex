@@ -203,7 +203,7 @@ func txWithdrawLimitDutchBid() *cobra.Command {
 
 func NewAddAuctionParamsProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-auction-params [flags]",
+		Use:   "add-auctions-params [flags]",
 		Args:  cobra.ExactArgs(0),
 		Short: "Submit auction params",
 		Long:  `Must provide path to a add auction params in JSON file (--add-auction-params)`,
@@ -233,7 +233,7 @@ func NewAddAuctionParamsProposal() *cobra.Command {
 func AddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet) (tx.Factory, sdk.Msg, error) {
 	auctionParams, err := parseAuctionParamsFlags(fs)
 	if err != nil {
-		return txf, nil, fmt.Errorf("failed to parse liquidationWhitelisting: %w", err)
+		return txf, nil, fmt.Errorf("failed to parse add auctionsV2 params: %w", err)
 	}
 	from := clientCtx.GetFromAddress()
 
