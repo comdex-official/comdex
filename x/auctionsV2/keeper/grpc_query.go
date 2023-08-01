@@ -179,9 +179,10 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 	}
 
 	var (
-		items []types.LimitOrderBid
-		ctx   = sdk.UnwrapSDKContext(c)
-		key   []byte
+		items  []types.LimitOrderBid
+		ctx    = sdk.UnwrapSDKContext(c)
+		key    []byte
+		amount = sdk.NewInt(0)
 	)
 	key = types.LimitBidKeyForAssetID(req.DebtTokenId, req.CollateralTokenId)
 
@@ -196,6 +197,7 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 
 			if accumulate {
 				if item.BidderAddress == req.Bidder {
+					amount = amount.Add(item.DebtToken.Amount)
 					items = append(items, item)
 				}
 			}
@@ -209,6 +211,7 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 
 	return &types.QueryUserLimitBidsByAssetIDResponse{
 		Bidder:         req.Bidder,
+		TotalAmount:    amount,
 		LimitOrderBids: items,
 		Pagination:     pagination,
 	}, nil
