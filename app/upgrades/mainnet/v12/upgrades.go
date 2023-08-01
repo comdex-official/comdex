@@ -40,7 +40,7 @@ func CreateUpgradeHandlerV12(
 		if err != nil {
 			return nil, err
 		}
-		InitializeStates(ctx, liquidationKeeper, auctionKeeper,bankKeeper,collectorKeeper)
+		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
 		Refund(ctx, bankKeeper, collectorKeeper)
 		return vm, err
 	}
@@ -50,9 +50,6 @@ func InitializeStates(
 	ctx sdk.Context,
 	liquidationKeeper liquidationkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper,
-	bankKeeper bankkeeper.Keeper,
-	collectorKeeper collectorkeeper.Keeper,
-
 ) {
 	dutchAuctionParams := liquidationtypes.DutchAuctionParam{
 		Premium:         newDec("1.2"),
