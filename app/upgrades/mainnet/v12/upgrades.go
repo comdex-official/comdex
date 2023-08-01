@@ -10,6 +10,8 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v4/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v4/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 )
 
 // An error occurred during the creation of the CMST/STJUNO pair, as it was mistakenly created in the Harbor app (ID-2) instead of the cSwap app (ID-1).
@@ -24,6 +26,8 @@ func CreateUpgradeHandlerV12(
 	icqkeeper *icqkeeper.Keeper,
 	liquidationKeeper liquidationkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
+	collectorKeeper collectorkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying main net upgrade - v.12.0.0")
@@ -36,7 +40,8 @@ func CreateUpgradeHandlerV12(
 		if err != nil {
 			return nil, err
 		}
-		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
+		InitializeStates(ctx, liquidationKeeper, auctionKeeper,bankKeeper,collectorKeeper)
+		Refund(ctx, bankKeeper, collectorKeeper)
 		return vm, err
 	}
 }
@@ -45,6 +50,9 @@ func InitializeStates(
 	ctx sdk.Context,
 	liquidationKeeper liquidationkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper,
+	bankKeeper bankkeeper.Keeper,
+	collectorKeeper collectorkeeper.Keeper,
+
 ) {
 	dutchAuctionParams := liquidationtypes.DutchAuctionParam{
 		Premium:         newDec("1.2"),
@@ -104,6 +112,7 @@ func InitializeStates(
 	auctionKeeper.SetParams(ctx, auctionsV2types.Params{})
 	auctionKeeper.SetAuctionID(ctx, 0)
 	auctionKeeper.SetUserBidID(ctx, 0)
+
 }
 
 func newDec(i string) sdk.Dec {
