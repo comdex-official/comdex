@@ -319,13 +319,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace (
-	// github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
-	github.com/cosmos/cosmos-sdk => /Users/chandragupta/go/src/github.com/cosmos/cosmos-sdk
-	//breaking changes
-	// github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
-	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-// Informal Tendermint fork to be replaced with skip-mev tendermint
-// github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
-// google.golang.org/grpc => google.golang.org/grpc v1.33.2
-)
+// github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+// github.com/cosmos/cosmos-sdk => /Users/chandragupta/go/src/github.com/cosmos/cosmos-sdk
+//breaking changes
+// github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
