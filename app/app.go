@@ -847,7 +847,8 @@ func New(
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
 		app.ScopedICQKeeper,
-		NewQuerierWrapper(baseApp),
+		app.GRPCQueryRouter(),
+		// NewQuerierWrapper(baseApp), // in-case of strangelove-ventures icq
 	)
 	app.ICQKeeper = &icqKeeper
 
