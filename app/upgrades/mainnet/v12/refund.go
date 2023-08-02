@@ -128,7 +128,7 @@ func Refund (
 		// decrease net fee collected
 		err := collectorKeeper.DecreaseNetFeeCollectedData(ctx, 2, 3,sdk.NewInt(20163520000))
 		if err != nil {
-			panic("error in recreasing net fee collected")
+			panic("error in decreasing net fee collected")
 		}
 	}
 }
