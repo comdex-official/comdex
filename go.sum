@@ -494,6 +494,8 @@ github.com/cosmos/iavl v0.15.3/go.mod h1:OLjQiAQ4fGD2KDZooyJG9yz+p2ao2IAYSbke8mV
 github.com/cosmos/iavl v0.16.0/go.mod h1:2A8O/Jz9YwtjqXMO0CjnnbTYEEaovE8jWcwrakH3PoE=
 github.com/cosmos/iavl v0.20.0 h1:fTVznVlepH0KK8NyKq8w+U7c2L6jofa27aFX6YGlm38=
 github.com/cosmos/iavl v0.20.0/go.mod h1:WO7FyvaZJoH65+HFOsDir7xU9FWk2w9cHXNW1XHcl7A=
+github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230629164013-34f5e666f806 h1:QIRbYK2r9Ww8ua8j1S7c4i+cV6AiBLxghIdwZJW14C4=
+github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230629164013-34f5e666f806/go.mod h1:/P6l2bWo2AR3rrsfs0DHuFZO3Imzb93sxFD3ihrIgw4=
 github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230629164013-34f5e666f806 h1:ygkYdRulR9lGLSYOAQUBOBTyeRKZc1svBw5Bnv9Boe4=
 github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230629164013-34f5e666f806/go.mod h1:JwHFbo1oX/ht4fPpnPvmhZr+dCkYK1Vihw+vZE9umR4=
 github.com/cosmos/ibc-go v1.0.0/go.mod h1:2wHKQUa+BLJMEyN635KrHfmTTwSNHBtXcqdY8JWGuXA=
@@ -1503,8 +1505,6 @@ github.com/stbenjam/no-sprintf-host-port v0.1.1 h1:tYugd/yrm1O0dV+ThCbaKZh195Dfm
 github.com/stbenjam/no-sprintf-host-port v0.1.1/go.mod h1:TLhvtIvONRzdmkFiio4O8LHsN9N74I+PhRquPsxpL0I=
 github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570/go.mod h1:8OR4w3TdeIHIh1g6EMY5p0gVNOovcWC+1vpc7naMuAw=
 github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3/go.mod h1:hpGUWaI9xL8pRQCTXQgocU38Qw1g0Us7n5PxxTwTCYU=
-github.com/strangelove-ventures/async-icq/v7 v7.0.0-20230413165143-a3b65ccdc897 h1:lCTD5L1v1K1KC6KXjyt4o1X+yzV14RbbrPZaF29n8uI=
-github.com/strangelove-ventures/async-icq/v7 v7.0.0-20230413165143-a3b65ccdc897/go.mod h1:ag05Q54Wkr0jVwfe+14sxnuWbw0gBOxtPQv9afBBnr0=
 github.com/strangelove-ventures/packet-forward-middleware/v7 v7.0.0-20230523193151-73dea436e53f h1:NJdZ+YJ9Vf2t286L20IjFK0SxGpobF1xIp5ZQlxWetk=
 github.com/strangelove-ventures/packet-forward-middleware/v7 v7.0.0-20230523193151-73dea436e53f/go.mod h1:DJNSVK8NCYHM+aZHCFkcAqPwjzwHYAjhjSMlhAGtJ3c=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
