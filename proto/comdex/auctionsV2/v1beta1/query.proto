@@ -1,0 +1,170 @@
+syntax = "proto3";
+package comdex.auctionsV2.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/auctionsV2/v1beta1/params.proto";
+import "comdex/auctionsV2/v1beta1/auction.proto";
+import "comdex/auctionsV2/v1beta1/bid.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAuctionRequest {
+  uint64 auction_id = 1;
+  bool history = 2;
+}
+
+message QueryAuctionResponse {
+  Auction auction = 1
+  [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"auction\""];
+}
+
+message QueryAuctionsRequest {
+  uint64 auction_type = 1;
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAuctionsResponse {
+  repeated Auction auctions = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auctions\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryBidsRequest {
+  string bidder = 1;
+  bool history = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryBidsResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated Bid bids = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAuctionParamsRequest {}
+
+message QueryAuctionParamsResponse {
+  AuctionParams auction_params = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auction_params\""
+  ];
+}
+
+message QueryUserLimitBidsByAssetIDRequest {
+  string bidder = 1;
+  uint64 collateral_token_id = 2;
+  uint64 debt_token_id = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryUserLimitBidsByAssetIDResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  string total_amount = 2 [
+    (gogoproto.moretags) = "yaml:\"total_amount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  repeated LimitOrderBid limit_order_bids = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidsRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidsResponse {
+  repeated LimitOrderBid limit_order_bids = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_order_bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidProtocolDataRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidProtocolDataResponse {
+  repeated LimitBidProtocolData limit_bid_protocol_data = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_bid_protocol_data\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAuctionFeesCollectionFromLimitBidTxRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAuctionFeesCollectionFromLimitBidTxResponse {
+  repeated AuctionFeesCollectionFromLimitBidTx auction_fees_collection_from_limit_bid_tx = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auction_fees_collection_from_limit_bid_tx\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/params";
+  }
+  rpc Auction(QueryAuctionRequest) returns (QueryAuctionResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/auction/{auction_id}/{history}";
+  }
+  rpc Auctions(QueryAuctionsRequest) returns (QueryAuctionsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/auctions/{auction_type}/{history}";
+  }
+  rpc Bids(QueryBidsRequest) returns (QueryBidsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/bids/{bidder}/{history}";
+  }
+  rpc AuctionParams(QueryAuctionParamsRequest) returns (QueryAuctionParamsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/auction_params";
+  }
+  rpc UserLimitBidsByAssetID(QueryUserLimitBidsByAssetIDRequest) returns (QueryUserLimitBidsByAssetIDResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/userlimitorderbids/{bidder}/{collateral_token_id}/{debt_token_id}";
+  }
+  rpc LimitBids(QueryLimitBidsRequest) returns (QueryLimitBidsResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/limitorderbids/{collateral_token_id}/{debt_token_id}";
+  }
+  rpc LimitBidProtocolData(QueryLimitBidProtocolDataRequest) returns (QueryLimitBidProtocolDataResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/limit_bid_protocol_data";
+  }
+  rpc AuctionFeesCollectionData(QueryAuctionFeesCollectionFromLimitBidTxRequest) returns (QueryAuctionFeesCollectionFromLimitBidTxResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/auction_fees_collection_from_limit_bid_tx";
+  }
+}

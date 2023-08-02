@@ -16,6 +16,8 @@ const (
 	FlagSetAuctionParamsFile       = "add-auction-params-file"
 	FlagAddLendPoolPairsFile       = "add-lend-pool-pairs-file"
 	FlagAddAssetRatesPoolPairsFile = "add-asset-rates-pool-pairs-file"
+	FlagDepreciatePoolsFile        = "depreciate-pools-file"
+	FlagAddEModePairsFile          = "e-mode-pairs-file"
 )
 
 func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
@@ -96,6 +98,34 @@ func FlagSetAuctionParams() *flag.FlagSet {
 
 	fs.String(FlagSetAuctionParamsFile, "", "add auction params json file path")
 	return fs
+}
+
+func FlagSetDepreciatePoolsMapping() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagDepreciatePoolsFile, "", "depreciates existing pool, json file path")
+	return fs
+}
+
+func FlagAddEModePairs() *flag.FlagSet {
+	fs := flag.NewFlagSet("", flag.ContinueOnError)
+
+	fs.String(FlagAddEModePairsFile, "", "enable e-mode for a pair, json file path")
+	return fs
+}
+
+func ParseDecSliceFromStringForDec(s string, separator string) ([]sdk.Dec, error) {
+	var newParsedDec []sdk.Dec
+	for _, s := range strings.Split(s, separator) {
+		s = strings.TrimSpace(s)
+
+		parsed, err := sdk.NewDecFromStr(s)
+		if err != nil {
+			return []sdk.Dec{}, err
+		}
+		newParsedDec = append(newParsedDec, parsed)
+	}
+	return newParsedDec, nil
 }
 
 type addNewLendPairsInputs struct {
@@ -189,7 +219,25 @@ type addAssetRatesPoolPairsInputs struct {
 	SupplyCap            string `json:"supply_cap"`
 	CPoolName            string `json:"c_pool_name"`
 	MinUSDValueLeft      string `json:"min_usd_value_left"`
+	IsIsolated           string `json:"is_isolated"`
 	Title                string
 	Description          string
 	Deposit              string
+}
+
+type addDepreciatePoolsInputs struct {
+	PoolID      string `json:"pool_id"`
+	Title       string
+	Description string
+	Deposit     string
+}
+
+type addEModePairsInputs struct {
+	PairID                string `json:"pair_id"`
+	ELTV                  string `json:"e_ltv"`
+	ELiquidationThreshold string `json:"e_liquidation_threshold"`
+	ELiquidationPenalty   string `json:"e_liquidation_penalty"`
+	Title                 string
+	Description           string
+	Deposit               string
 }

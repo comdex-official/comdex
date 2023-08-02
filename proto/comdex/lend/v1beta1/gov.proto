@@ -60,3 +60,15 @@ message AddAssetRatesPoolPairsProposal {
   string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
   AssetRatesPoolPairs AssetRatesPoolPairs = 3 [(gogoproto.nullable) = false];
 }
+
+message AddPoolDepreciateProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  PoolDepreciate PoolDepreciate = 3 [(gogoproto.nullable) = false];
+}
+
+message AddEModePairsProposal {
+  string title = 1 [(gogoproto.moretags) = "yaml:\"title\""];
+  string description = 2 [(gogoproto.moretags) = "yaml:\"description\""];
+  EModePairsForProposal EModePairsForProposal = 3 [(gogoproto.nullable) = false];
+}

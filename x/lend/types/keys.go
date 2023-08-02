@@ -9,13 +9,17 @@ const (
 	ModuleName = "lendV2"
 
 	// ModuleAcc1 , ModuleAcc2 & ModuleAcc3  defines different module accounts to store selected pairs of asset.
-	ModuleAcc1 = "cmdx"
-	ModuleAcc2 = "atom"
-	ModuleAcc3 = "osmo"
-	ModuleAcc4 = "axlusdc"
-	ModuleAcc5 = "statom"
-	ModuleAcc6 = "evmos"
-	ModuleAcc7 = "gusdc"
+	ModuleAcc1  = "cmdx"
+	ModuleAcc2  = "atom"
+	ModuleAcc3  = "osmo"
+	ModuleAcc4  = "axlusdc"
+	ModuleAcc5  = "statom"
+	ModuleAcc6  = "evmos"
+	ModuleAcc7  = "gusdc"
+	ModuleAcc8  = "dai"
+	ModuleAcc9  = "weth"
+	ModuleAcc10 = "stcmdx"
+	ModuleAcc11 = "cmdxnew"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
@@ -46,6 +50,7 @@ var (
 	TypeBorrowAlternateAssetRequest        = ModuleName + ":borrow-alternate"
 	TypeCalculateInterestAndRewardsRequest = ModuleName + ":calculate-interest-rewards"
 	TypeFundReserveAccountRequest          = ModuleName + ":fund-reserve"
+	TypeRepayWithdrawRequest               = ModuleName + ":repay-withdraw"
 )
 
 var (
@@ -73,6 +78,7 @@ var (
 	KeyFundReserveBal                     = []byte{0x49}
 	AllReserveStatsPrefix                 = []byte{0x50}
 	AssetAndPoolWiseModBalKeyPrefix       = []byte{0x51}
+	DepreciatedPoolPrefix                 = []byte{0x52}
 )
 
 func LendUserKey(ID uint64) []byte {

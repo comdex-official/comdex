@@ -547,3 +547,39 @@ func (msg *MsgFundReserveAccounts) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+func NewMsgRepayWithdraw(borrower string, borrowId uint64) *MsgRepayWithdraw {
+	return &MsgRepayWithdraw{
+		Borrower: borrower,
+		BorrowId: borrowId,
+	}
+}
+
+func (msg MsgRepayWithdraw) Route() string { return ModuleName }
+func (msg MsgRepayWithdraw) Type() string  { return TypeRepayWithdrawRequest }
+
+func (msg *MsgRepayWithdraw) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		return err
+	}
+	if msg.BorrowId == 0 {
+		return fmt.Errorf("borrow id should not be 0: %d ", msg.BorrowId)
+	}
+
+	return nil
+}
+
+func (msg *MsgRepayWithdraw) GetSigners() []sdk.AccAddress {
+	lender, err := sdk.AccAddressFromBech32(msg.GetBorrower())
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{lender}
+}
+
+// GetSignBytes get the bytes for the message signer to sign on.
+func (msg *MsgRepayWithdraw) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

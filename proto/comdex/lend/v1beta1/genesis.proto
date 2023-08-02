@@ -38,5 +38,6 @@ message GenesisState {
   [ (gogoproto.moretags) = "yaml:\"reserveBal\"", (gogoproto.nullable) = false ];
   repeated AllReserveStats allReserveStats = 15
   [ (gogoproto.moretags) = "yaml:\"allReserveStats\"", (gogoproto.nullable) = false ];
-
+  PoolDepreciate poolDepreciate = 16
+  [ (gogoproto.moretags) = "yaml:\"poolDepreciate\"", (gogoproto.nullable) = false ];
 }

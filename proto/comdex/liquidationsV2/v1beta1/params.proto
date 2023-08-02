@@ -1,0 +1,8 @@
+syntax = "proto3";
+package comdex.liquidationsV2.v1beta1;
+
+option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+
+message Params {
+  uint64 liquidation_batch_size = 1;
+}

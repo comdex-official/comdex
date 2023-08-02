@@ -32,6 +32,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgFundReserveAccounts{}, "comdex/lend/MsgFundReserveAccounts", nil)
 	cdc.RegisterConcrete(&AddPoolPairsProposal{}, "comdex/lend/AddPoolPairsProposal", nil)
 	cdc.RegisterConcrete(&AddAssetRatesPoolPairsProposal{}, "comdex/lend/AddAssetRatesPoolPairsProposal", nil)
+	cdc.RegisterConcrete(&AddEModePairsProposal{}, "comdex/lend/AddEModePairsProposal", nil)
+	cdc.RegisterConcrete(&MsgRepayWithdraw{}, "comdex/lend/MsgRepayWithdraw", nil)
+
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -46,6 +49,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&AddMultipleAssetToPairProposal{},
 		&AddPoolPairsProposal{},
 		&AddAssetRatesPoolPairsProposal{},
+		&AddPoolDepreciateProposal{},
+		&AddEModePairsProposal{},
 	)
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
@@ -62,6 +67,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgFundModuleAccounts{},
 		&MsgCalculateInterestAndRewards{},
 		&MsgFundReserveAccounts{},
+		&MsgRepayWithdraw{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

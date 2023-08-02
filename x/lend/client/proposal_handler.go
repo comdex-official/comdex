@@ -16,4 +16,6 @@ var (
 	AddMultipleLendPairsHandler   = govclient.NewProposalHandler(cli.CmdAddNewMultipleLendPairsProposal)
 	AddPoolPairsHandler           = govclient.NewProposalHandler(cli.CmdAddPoolPairsProposal)
 	AddAssetRatesPoolPairsHandler = govclient.NewProposalHandler(cli.CmdAddAssetRatesPoolPairsProposal)
+	AddDepreciatePoolsHandler     = govclient.NewProposalHandler(cli.CmdDepreciatePoolsProposal)
+	AddEModePairsHandler          = govclient.NewProposalHandler(cli.CmdAddEModePairsProposal)
 )

@@ -28,7 +28,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Will become governance proposal- will trigger token minting & sending
+//Will become governance proposal- will trigger token minting & sending
 type MsgMintNewTokensRequest struct {
 	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
 	AppId   uint64 `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
