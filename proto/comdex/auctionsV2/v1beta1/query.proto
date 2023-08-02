@@ -117,7 +117,7 @@ message QueryLimitBidProtocolDataRequest {
 }
 
 message QueryLimitBidProtocolDataResponse {
-  repeated LimitBidProtocolData limit_bid_protocol_data = 1 [
+  repeated LimitBidProtocolDataForQuery limit_bid_protocol_data = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"limit_bid_protocol_data\""
   ];

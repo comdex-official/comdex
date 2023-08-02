@@ -261,7 +261,7 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 	}
 
 	var (
-		items []types.LimitBidProtocolData
+		items []types.LimitBidProtocolDataForQuery
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
 	)
@@ -272,12 +272,23 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LimitBidProtocolData
+			var data types.LimitBidProtocolDataForQuery
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 
 			if accumulate {
-				items = append(items, item)
+				collateralAsset, _ := q.asset.GetAsset(ctx, item.CollateralAssetId)
+				debtAsset, _ := q.asset.GetAsset(ctx, item.DebtAssetId)
+				data = types.LimitBidProtocolDataForQuery{
+					CollateralAssetId:    item.CollateralAssetId,
+					DebtAssetId:          item.DebtAssetId,
+					BidValue:             item.BidValue,
+					MaxDiscount:          item.MaxDiscount,
+					CollateralAssetDenom: collateralAsset.Denom,
+					DebtAssetDenom:       debtAsset.Denom,
+				}
+				items = append(items, data)
 			}
 
 			return true, nil
