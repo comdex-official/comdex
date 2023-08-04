@@ -152,3 +152,34 @@ message LimitBidProtocolDataForQuery{
     (gogoproto.moretags) = "yaml:\"debt_asset_denom\""
   ];
 }
+
+message LimitBidProtocolDataWithUserForQuery{
+  uint64 collateral_asset_id = 1 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+  ];
+  uint64 debt_asset_id = 2 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+  ];
+  string bid_value = 3 [
+    (gogoproto.moretags) = "yaml:\"bid_value\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+
+  string max_discount = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"max_discount\""
+  ];
+  string collateral_asset_denom = 5 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_denom\""
+  ];
+  string debt_asset_denom = 6 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_denom\""
+  ];
+  string user_bid_value = 7 [
+    (gogoproto.moretags) = "yaml:\"user_bid_value\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+}

@@ -341,3 +341,57 @@ func (q QueryServer) AuctionFeesCollectionData(c context.Context, req *types.Que
 		Pagination:                          pagination,
 	}, nil
 }
+
+func (q QueryServer) LimitBidProtocolDataWithUser(c context.Context, req *types.QueryLimitBidProtocolDataWithUserRequest) (*types.QueryLimitBidProtocolDataWithUserResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.LimitBidProtocolDataWithUserForQuery
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.MarketBidProtocolKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.LimitBidProtocolData
+			var data types.LimitBidProtocolDataWithUserForQuery
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				collateralAsset, _ := q.asset.GetAsset(ctx, item.CollateralAssetId)
+				debtAsset, _ := q.asset.GetAsset(ctx, item.DebtAssetId)
+				userBidValue, found := q.GetUserLimitBidsByAssetID(ctx, req.Bidder, item.DebtAssetId, item.CollateralAssetId)
+				if !found {
+					userBidValue = sdk.ZeroInt()
+				}
+				data = types.LimitBidProtocolDataWithUserForQuery{
+					CollateralAssetId:    item.CollateralAssetId,
+					DebtAssetId:          item.DebtAssetId,
+					BidValue:             item.BidValue,
+					MaxDiscount:          item.MaxDiscount,
+					CollateralAssetDenom: collateralAsset.Denom,
+					DebtAssetDenom:       debtAsset.Denom,
+					UserBidValue:         userBidValue,
+				}
+				items = append(items, data)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLimitBidProtocolDataWithUserResponse{
+		LimitBidProtocolDataWithUser: items,
+		Pagination:                   pagination,
+	}, nil
+}
