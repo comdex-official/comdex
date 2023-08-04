@@ -117,7 +117,7 @@ message QueryLimitBidProtocolDataRequest {
 }
 
 message QueryLimitBidProtocolDataResponse {
-  repeated LimitBidProtocolData limit_bid_protocol_data = 1 [
+  repeated LimitBidProtocolDataForQuery limit_bid_protocol_data = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"limit_bid_protocol_data\""
   ];
@@ -134,6 +134,21 @@ message QueryAuctionFeesCollectionFromLimitBidTxResponse {
   repeated AuctionFeesCollectionFromLimitBidTx auction_fees_collection_from_limit_bid_tx = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"auction_fees_collection_from_limit_bid_tx\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidProtocolDataWithUserRequest {
+  string bidder = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryLimitBidProtocolDataWithUserResponse {
+  repeated LimitBidProtocolDataWithUserForQuery limit_bid_protocol_data_with_user = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"limit_bid_protocol_data_with_user\""
   ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2
   [(gogoproto.moretags) = "yaml:\"pagination\""];
@@ -166,5 +181,8 @@ service Query {
   }
   rpc AuctionFeesCollectionData(QueryAuctionFeesCollectionFromLimitBidTxRequest) returns (QueryAuctionFeesCollectionFromLimitBidTxResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/auction_fees_collection_from_limit_bid_tx";
+  }
+  rpc LimitBidProtocolDataWithUser(QueryLimitBidProtocolDataWithUserRequest) returns (QueryLimitBidProtocolDataWithUserResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/limit_bid_protocol_data_with_user/{bidder}";
   }
 }
