@@ -51,7 +51,7 @@ func CreateUpgradeHandlerV12(
 		}
 		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
 		Refund(ctx, bankKeeper, collectorKeeper)
-		ClearFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
+		RemoveFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
 		return vm, err
 	}
 }
@@ -122,7 +122,7 @@ func InitializeStates(
 
 }
 
-func ClearFaultyAuctions(
+func RemoveFaultyAuctions(
 	ctx sdk.Context,
 	lendKeeper lendkeeper.Keeper,
 	auctionKeeper auctionkeeperold.Keeper,
