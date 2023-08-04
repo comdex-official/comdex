@@ -27,7 +27,7 @@ require (
 require (
 	github.com/cosmos/ibc-go/v4 v4.4.2
 	github.com/golangci/golangci-lint v1.53.3
-	github.com/osmosis-labs/osmosis/v15 v15.1.2
+	github.com/osmosis-labs/osmosis/v15 v15.2.0
 	github.com/osmosis-labs/osmosis/x/ibc-hooks v0.0.6
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
@@ -67,7 +67,7 @@ require (
 	github.com/bombsimon/wsl/v3 v3.4.0 // indirect
 	github.com/breml/bidichk v0.2.4 // indirect
 	github.com/breml/errchkjson v0.3.1 // indirect
-	github.com/btcsuite/btcd v0.22.2 // indirect
+	github.com/btcsuite/btcd v0.22.3 // indirect
 	github.com/butuzov/ireturn v0.2.0 // indirect
 	github.com/butuzov/mirror v1.1.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
