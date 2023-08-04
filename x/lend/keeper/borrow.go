@@ -180,3 +180,20 @@ func (k Keeper) DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64) {
 
 	store.Delete(key)
 }
+
+func (k Keeper) GetBorrowByUserAndAssetID(ctx sdk.Context, owner, debtDenom string, assetIn uint64) types.BorrowAsset {
+	var borrowAsset types.BorrowAsset
+	mappingData := k.GetUserTotalMappingData(ctx, owner)
+	for _, data := range mappingData {
+		lend, _ := k.GetLend(ctx, data.LendId)
+		if lend.AssetID == assetIn {
+			for _, borrowID := range data.BorrowId {
+				borrow, _ := k.GetBorrow(ctx, borrowID)
+				if borrow.AmountOut.Denom == debtDenom {
+					borrowAsset = borrow
+				}
+			}
+		}
+	}
+	return borrowAsset
+}

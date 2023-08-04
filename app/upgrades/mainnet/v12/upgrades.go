@@ -1,17 +1,23 @@
 package v12
 
 import (
+	"fmt"
+	auctionkeeperold "github.com/comdex-official/comdex/x/auction/keeper"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	auctionkeeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
+	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquidationkeeperold "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v4/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v4/types"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 )
 
 // An error occurred during the creation of the CMST/STJUNO pair, as it was mistakenly created in the Harbor app (ID-2) instead of the cSwap app (ID-1).
@@ -28,6 +34,9 @@ func CreateUpgradeHandlerV12(
 	auctionKeeper auctionkeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 	collectorKeeper collectorkeeper.Keeper,
+	lendKeeper lendkeeper.Keeper,
+	auctionKeeperOld auctionkeeperold.Keeper,
+	liquidationKeeperOld liquidationkeeperold.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying main net upgrade - v.12.0.0")
@@ -42,6 +51,7 @@ func CreateUpgradeHandlerV12(
 		}
 		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
 		Refund(ctx, bankKeeper, collectorKeeper)
+		ClearFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
 		return vm, err
 	}
 }
@@ -110,6 +120,59 @@ func InitializeStates(
 	auctionKeeper.SetAuctionID(ctx, 0)
 	auctionKeeper.SetUserBidID(ctx, 0)
 
+}
+
+func ClearFaultyAuctions(
+	ctx sdk.Context,
+	lendKeeper lendkeeper.Keeper,
+	auctionKeeper auctionkeeperold.Keeper,
+	liquidationKeeper liquidationkeeperold.Keeper,
+	bankKeeper bankkeeper.Keeper,
+) {
+	//Send Inflow_token_target_amount to the pool
+	//Subtract Inflow_token_target_amount from borrow Position
+	//Add the Borrowed amount in poolLBMapping
+	//Delete Auction
+	//Update BorrowPosition Is liquidated -> false
+
+	// get all the current auctions
+	dutchAuctions := auctionKeeper.GetDutchLendAuctions(ctx, 3)
+	for _, dutchAuction := range dutchAuctions {
+		cPoolModuleName := lendtypes.ModuleAcc1
+		reserveModuleName := lendtypes.ModuleName
+		//send debt from reserve to the pool
+		err := bankKeeper.SendCoinsFromModuleToModule(ctx, reserveModuleName, cPoolModuleName, sdk.NewCoins(dutchAuction.InflowTokenTargetAmount))
+		if err != nil {
+			fmt.Println(err)
+		}
+		//send collateral to the reserve from auction module outflow_token_current_amount
+		err = bankKeeper.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, reserveModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		borrowPos := lendKeeper.GetBorrowByUserAndAssetID(ctx, dutchAuction.VaultOwner.String(), dutchAuction.InflowTokenTargetAmount.Denom, dutchAuction.AssetOutId)
+		borrowPos.AmountOut.Amount = borrowPos.AmountOut.Amount.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
+		borrowPos.IsLiquidated = false
+		lendKeeper.SetBorrow(ctx, borrowPos)
+
+		poolAssetLBMappingData, _ := lendKeeper.GetAssetStatsByPoolIDAndAssetID(ctx, 1, dutchAuction.AssetInId)
+
+		poolAssetLBMappingData.TotalBorrowed = poolAssetLBMappingData.TotalBorrowed.Add(borrowPos.AmountOut.Amount)
+		lendKeeper.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+		lockedVault, found := liquidationKeeper.GetLockedVault(ctx, 3, dutchAuction.LockedVaultId)
+		if found {
+			liquidationKeeper.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+		}
+		err = auctionKeeper.SetHistoryDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = auctionKeeper.DeleteDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 func newDec(i string) sdk.Dec {
