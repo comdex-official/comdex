@@ -12,9 +12,9 @@ import (
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgLiquidateInternalKeeperRequest{}, "comdex/liquidation/MsgLiquidateInternalKeeperRequest", nil)
-	cdc.RegisterConcrete(&MsgAppReserveFundsRequest{}, "comdex/liquidation/MsgAppReserveFundsRequest", nil)
-	cdc.RegisterConcrete(&MsgLiquidateExternalKeeperRequest{}, "comdex/liquidation/MsgLiquidateExternalKeeperRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateInternalKeeperRequest{}, "comdex/liquidationsV2/MsgLiquidateInternalKeeperRequest", nil)
+	cdc.RegisterConcrete(&MsgAppReserveFundsRequest{}, "comdex/liquidationsV2/MsgAppReserveFundsRequest", nil)
+	cdc.RegisterConcrete(&MsgLiquidateExternalKeeperRequest{}, "comdex/liquidationsV2/MsgLiquidateExternalKeeperRequest", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
