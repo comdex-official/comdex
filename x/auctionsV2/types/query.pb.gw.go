@@ -222,7 +222,7 @@ func local_request_Query_Auctions_0(ctx context.Context, marshaler runtime.Marsh
 }
 
 var (
-	filter_Query_Bids_0 = &utilities.DoubleArray{Encoding: map[string]int{"bidder": 0, "history": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+	filter_Query_Bids_0 = &utilities.DoubleArray{Encoding: map[string]int{"bidder": 0, "bid_type": 1, "history": 2}, Base: []int{1, 1, 2, 3, 0, 0, 0}, Check: []int{0, 1, 1, 1, 2, 3, 4}}
 )
 
 func request_Query_Bids_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
@@ -245,6 +245,17 @@ func request_Query_Bids_0(ctx context.Context, marshaler runtime.Marshaler, clie
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "bidder", err)
+	}
+
+	val, ok = pathParams["bid_type"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "bid_type")
+	}
+
+	protoReq.BidType, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "bid_type", err)
 	}
 
 	val, ok = pathParams["history"]
@@ -290,6 +301,17 @@ func local_request_Query_Bids_0(ctx context.Context, marshaler runtime.Marshaler
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "bidder", err)
+	}
+
+	val, ok = pathParams["bid_type"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "bid_type")
+	}
+
+	protoReq.BidType, err = runtime.Uint64(val)
+
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "bid_type", err)
 	}
 
 	val, ok = pathParams["history"]
@@ -1174,7 +1196,7 @@ var (
 
 	pattern_Query_Auctions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 1, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "auctions", "v2", "auction_type", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Bids_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "auctions", "v2", "bids", "bidder", "history"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Bids_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5, 1, 0, 4, 1, 5, 6}, []string{"comdex", "auctions", "v2", "bids", "bidder", "bid_type", "history"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_AuctionParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "auctions", "v2", "auction_params"}, "", runtime.AssumeColonVerbOpt(false)))
 

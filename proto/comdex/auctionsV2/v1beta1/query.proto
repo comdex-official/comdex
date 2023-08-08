@@ -166,7 +166,7 @@ service Query {
     option (google.api.http).get = "/comdex/auctions/v2/auctions/{auction_type}/{history}";
   }
   rpc Bids(QueryBidsRequest) returns (QueryBidsResponse) {
-    option (google.api.http).get = "/comdex/auctions/v2/bids/{bidder}/{history}";
+    option (google.api.http).get = "/comdex/auctions/v2/bids/{bidder}/{bid_type}/{history}";
   }
   rpc AuctionParams(QueryAuctionParamsRequest) returns (QueryAuctionParamsResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/auction_params";
