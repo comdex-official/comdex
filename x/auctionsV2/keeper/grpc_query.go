@@ -78,12 +78,12 @@ func (q QueryServer) Auctions(c context.Context, req *types.QueryAuctionsRequest
 				}
 			} else if req.AuctionType == 2 {
 				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
-				if !item.AuctionType && lockedVault.InitiatorType == "surplus" {
+				if accumulate && !item.AuctionType && lockedVault.InitiatorType == "surplus" {
 					items = append(items, item)
 				}
 			} else if req.AuctionType == 3 {
 				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
-				if !item.AuctionType && lockedVault.InitiatorType == "debt" {
+				if accumulate && !item.AuctionType && lockedVault.InitiatorType == "debt" {
 					items = append(items, item)
 				}
 			}
@@ -124,9 +124,14 @@ func (q QueryServer) Bids(c context.Context, req *types.QueryBidsRequest) (*type
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
-
-			if accumulate {
-				items = append(items, item)
+			if req.BidType == 1 {
+				if accumulate && item.BidType == "dutch" {
+					items = append(items, item)
+				}
+			} else if req.BidType == 2 {
+				if accumulate && item.BidType == "english" {
+					items = append(items, item)
+				}
 			}
 
 			return true, nil

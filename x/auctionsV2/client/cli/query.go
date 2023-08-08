@@ -122,9 +122,9 @@ func queryAuctions() *cobra.Command {
 
 func queryBids() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "bids [bidder] [history]",
+		Use:   "bids [bidder] [bid-type] [history]",
 		Short: "Query bids by bidder address",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
@@ -135,8 +135,11 @@ func queryBids() *cobra.Command {
 				return err
 			}
 			bidder := args[0]
-
-			history, err := strconv.ParseBool(args[1])
+			bidType, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[2])
 			if err != nil {
 				return err
 			}
@@ -145,6 +148,7 @@ func queryBids() *cobra.Command {
 				context.Background(),
 				&types.QueryBidsRequest{
 					Bidder:     bidder,
+					BidType:    bidType,
 					History:    history,
 					Pagination: pagination,
 				},

@@ -44,8 +44,9 @@ message QueryAuctionsResponse {
 
 message QueryBidsRequest {
   string bidder = 1;
-  bool history = 2;
-  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  uint64 bid_type = 2;
+  bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
