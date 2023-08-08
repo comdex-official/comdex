@@ -12,4 +12,5 @@ var (
 	ErrorUnknownMsgType        = sdkerrors.Register(ModuleName, 1502, "Unknown msg type")
 	ErrorUnknownProposalType   = sdkerrors.Register(ModuleName, 1503, "unknown proposal type")
 	ErrorInvalidAppOrAssetData = sdkerrors.Register(ModuleName, 1504, "Invalid data of app , or asset has not been added to the app , or low funds")
+	ErrEnglishAuctionDisabled  = sdkerrors.Register(ModuleName, 1505, "English auction not enabled for the app")
 )
