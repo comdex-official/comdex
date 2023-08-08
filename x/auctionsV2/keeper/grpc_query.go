@@ -400,3 +400,51 @@ func (q QueryServer) LimitBidProtocolDataWithUser(c context.Context, req *types.
 		Pagination:                   pagination,
 	}, nil
 }
+
+func (q QueryServer) BidsFilter(c context.Context, req *types.QueryBidsFilterRequest) (*types.QueryBidsFilterResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.Bid
+	)
+	if req.History {
+		key = types.GetBidHistoricalKey(req.Bidder)
+	} else {
+		key = types.GetUserBidHistoricalKey(req.Bidder)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Bid
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+			if req.BidType == 1 {
+				if accumulate && item.BidType == "dutch" {
+					items = append(items, item)
+				}
+			} else if req.BidType == 2 {
+				if accumulate && item.BidType == "english" {
+					items = append(items, item)
+				}
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryBidsFilterResponse{
+		Bidder:     req.Bidder,
+		Bids:       items,
+		Pagination: pagination,
+	}, nil
+}

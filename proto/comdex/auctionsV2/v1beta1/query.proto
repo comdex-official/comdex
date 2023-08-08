@@ -155,6 +155,26 @@ message QueryLimitBidProtocolDataWithUserResponse {
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
+message QueryBidsFilterRequest {
+  string bidder = 1;
+  uint64 bid_type = 2;
+  bool history = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 4
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryBidsFilterResponse {
+  string bidder = 1 [
+    (gogoproto.moretags) = "yaml:\"bidder\""
+  ];
+  repeated Bid bids = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"bids\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/params";
@@ -185,5 +205,8 @@ service Query {
   }
   rpc LimitBidProtocolDataWithUser(QueryLimitBidProtocolDataWithUserRequest) returns (QueryLimitBidProtocolDataWithUserResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/limit_bid_protocol_data_with_user/{bidder}";
+  }
+  rpc BidsFilter(QueryBidsFilterRequest) returns (QueryBidsFilterResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/bids_filter/{bidder}/{bid_type}/{history}";
   }
 }

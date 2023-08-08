@@ -37,6 +37,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryLimitBidProtocolData(),
 		queryAuctionFeesCollectionData(),
 		queryLimitBidProtocolDataWithAddress(),
+		queryBidsFilter(),
 	)
 
 	return cmd
@@ -375,6 +376,51 @@ func queryLimitBidProtocolDataWithAddress() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "limit-bid-protocol-data-with-user")
+
+	return cmd
+}
+
+func queryBidsFilter() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bids-filter [bidder] [bid-type] [history]",
+		Short: "Query bids by bidder address",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			bidder := args[0]
+			bidType, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			history, err := strconv.ParseBool(args[2])
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.Bids(
+				context.Background(),
+				&types.QueryBidsRequest{
+					Bidder:     bidder,
+					BidType:    bidType,
+					History:    history,
+					Pagination: pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "bids")
 
 	return cmd
 }
