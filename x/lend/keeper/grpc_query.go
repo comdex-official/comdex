@@ -617,3 +617,38 @@ func (q QueryServer) QueryBorrowInterest(c context.Context, req *types.QueryBorr
 	borrowInterest, _ := q.IterateBorrowsForQuery(ctx)
 	return &types.QueryBorrowInterestResponse{PoolInterest: borrowInterest}, nil
 }
+
+func (q QueryServer) QueryAllBorrowByOwnerAndDebtPool(c context.Context, req *types.QueryAllBorrowByOwnerAndDebtPoolRequest) (*types.QueryAllBorrowByOwnerAndDebtPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+	var (
+		ctx       = sdk.UnwrapSDKContext(c)
+		borrowIds []uint64
+		borrows   []types.BorrowAsset
+	)
+
+	_, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "Address is not correct")
+	}
+
+	mappingData := q.GetUserTotalMappingData(ctx, req.Owner)
+	for _, data := range mappingData {
+		borrowIds = append(borrowIds, data.BorrowId...)
+	}
+	for _, borrowID := range borrowIds {
+		borrow, _ := q.GetBorrow(ctx, borrowID)
+		pair, _ := q.GetLendPair(ctx, borrow.PairID)
+		if req.PoolId == pair.AssetOutPoolID {
+			borrows = append(borrows, borrow)
+		}
+	}
+	if len(borrowIds) == 0 {
+		return &types.QueryAllBorrowByOwnerAndDebtPoolResponse{}, nil
+	}
+
+	return &types.QueryAllBorrowByOwnerAndDebtPoolResponse{
+		Borrows: borrows,
+	}, nil
+}
