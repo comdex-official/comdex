@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"time"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -380,6 +381,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 			return err
 		}
 
+		// send debt token to tokenMint module
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
+		if err != nil {
+			return err
+		}
+
 		err = k.tokenMint.BurnTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
 		if err != nil {
 			return err
@@ -407,6 +414,16 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		// send debt to collector to get added
 		//set net fees data
 		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, bidding.BidderAddress, englishAuction.CollateralToken.Amount)
+		if err != nil {
+			return err
+		}
+
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, tokenminttypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
+		if err != nil {
+			return err
+		}
+
+		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
 		if err != nil {
 			return err
 		}
@@ -451,6 +468,14 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		}
 	}
 
+	err = k.DeleteIndividualUserBid(ctx, bidding)
+	if err != nil {
+		return err
+	}
+	err = k.SetBidHistorical(ctx, bidding)
+	if err != nil {
+		return err
+	}
 	err = k.DeleteAuction(ctx, englishAuction)
 	if err != nil {
 		return err
