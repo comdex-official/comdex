@@ -413,27 +413,17 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		//send newly minted token((collateral)) to the user
 		// send debt to collector to get added
 		//set net fees data
-		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, bidding.BidderAddress, englishAuction.CollateralToken.Amount)
+		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, bidding.BidderAddress, englishAuction.DebtToken.Amount)
 		if err != nil {
 			return err
 		}
 
-		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, tokenminttypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
 		if err != nil {
 			return err
 		}
 
-		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidder, sdk.NewCoins(englishAuction.CollateralToken))
-		if err != nil {
-			return err
-		}
-
-		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
-		if err != nil {
-			return err
-		}
-
-		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
+		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
 			return auctiontypes.ErrorUnableToSetNetFees
 		}
@@ -468,18 +458,29 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		}
 	}
 
-	err = k.DeleteIndividualUserBid(ctx, bidding)
-	if err != nil {
-		return err
+	for _, v := range englishAuction.BiddingIds {
+		bid, _ := k.GetUserBid(ctx, v.BidId)
+		err = k.DeleteIndividualUserBid(ctx, bid)
+		if err != nil {
+			return err
+		}
+		err = k.SetBidHistorical(ctx, bid)
+		if err != nil {
+			return err
+		}
 	}
-	err = k.SetBidHistorical(ctx, bidding)
-	if err != nil {
-		return err
-	}
+
 	err = k.DeleteAuction(ctx, englishAuction)
 	if err != nil {
 		return err
 	}
+
+	auctionHistoricalData := auctionsV2types.AuctionHistorical{AuctionId: englishAuction.AuctionId, AuctionHistorical: &englishAuction, LockedVault: &liquidationData}
+	err = k.SetAuctionHistorical(ctx, auctionHistoricalData)
+	if err != nil {
+		return err
+	}
+	k.LiquidationsV2.DeleteLockedVault(ctx, englishAuction.AppId, liquidationData.LockedVaultId)
 
 	return nil
 
