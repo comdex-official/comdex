@@ -4,8 +4,6 @@ import (
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"time"
 
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
-
 	utils "github.com/comdex-official/comdex/types"
 
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
@@ -394,12 +392,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
-			return auctiontypes.ErrorUnableToSetNetFees
+			return types.ErrorUnableToSetNetFees
 		}
 
 		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId)
 		if !found {
-			return auctiontypes.ErrorInvalidAddress
+			return types.ErrAuctionLookupTableNotFound
 		}
 
 		auctionLookupTable.IsAuctionActive = false
@@ -425,12 +423,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
-			return auctiontypes.ErrorUnableToSetNetFees
+			return types.ErrorUnableToSetNetFees
 		}
 
-		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId)
+		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId)
 		if !found {
-			return auctiontypes.ErrorInvalidAddress
+			return types.ErrAuctionLookupTableNotFound
 		}
 
 		auctionLookupTable.IsAuctionActive = false

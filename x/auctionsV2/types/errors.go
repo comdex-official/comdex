@@ -21,4 +21,6 @@ var (
 	ErrorUnknownProposalType            = sdkerrors.Register(ModuleName, 711, "unknown proposal type")
 	ErrorUnknownDebtToken               = sdkerrors.Register(ModuleName, 712, "Bid token is not the debt token")
 	ErrorDiscountGreaterThanMaxDiscount = sdkerrors.Register(ModuleName, 713, "Premium discount entered is greater than max discount")
+	ErrAuctionLookupTableNotFound       = sdkerrors.Register(ModuleName, 714, "auctionLookupTable not found")
+	ErrorUnableToSetNetFees             = sdkerrors.Register(ModuleName, 715, "Unable To set net fees collected after auction closed")
 )
