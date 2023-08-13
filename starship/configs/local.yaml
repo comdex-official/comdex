@@ -36,7 +36,7 @@ registry:
   ports:
     rest: 8081
 
-explorers:
+explorer:
   enabled: true
   ports:
     rest: 8080
