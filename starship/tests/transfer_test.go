@@ -40,7 +40,7 @@ func (s *TestSuite) TestChainIBCTransfer() {
 	address, err := chain1.CreateRandWallet(keyName)
 	s.Require().NoError(err)
 
-	// Tranfer atom to okp4 chain
+	// Tranfer atom to comdex chain
 	s.IBCTransferTokens(chain2, chain1, address, 12345000)
 
 	// Verify the address recived the token
