@@ -38,6 +38,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		queryAuctionFeesCollectionData(),
 		queryLimitBidProtocolDataWithAddress(),
 		queryBidsFilter(),
+		queryAuctionsHistory(),
 	)
 
 	return cmd
@@ -422,5 +423,43 @@ func queryBidsFilter() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "bids")
 
+	return cmd
+}
+
+func queryAuctionsHistory() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auctions-history [type]",
+		Short: "Query all auctions history",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			auctionType, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(ctx)
+			res, err := queryClient.AuctionsHistory(
+				context.Background(),
+				&types.QueryAuctionsHistoryRequest{
+					AuctionType: auctionType,
+					Pagination:  pagination,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "auctions-history")
 	return cmd
 }

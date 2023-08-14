@@ -175,6 +175,21 @@ message QueryBidsFilterResponse {
   [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 
+message QueryAuctionsHistoryRequest {
+  uint64 auction_type = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAuctionsHistoryResponse {
+  repeated AuctionHistorical auctions = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"auctions\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/params";
@@ -208,5 +223,8 @@ service Query {
   }
   rpc BidsFilter(QueryBidsFilterRequest) returns (QueryBidsFilterResponse) {
     option (google.api.http).get = "/comdex/auctions/v2/bids_filter/{bidder}/{bid_type}/{history}";
+  }
+  rpc AuctionsHistory(QueryAuctionsHistoryRequest) returns (QueryAuctionsHistoryResponse) {
+    option (google.api.http).get = "/comdex/auctions/v2/auctions_history/{auction_type}";
   }
 }
