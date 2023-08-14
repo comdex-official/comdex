@@ -1,0 +1,78 @@
+syntax = "proto3";
+package comdex.liquidationsV2.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+service Msg {
+  rpc MsgLiquidateInternalKeeper(MsgLiquidateInternalKeeperRequest) returns (MsgLiquidateInternalKeeperResponse);
+  rpc MsgAppReserveFunds(MsgAppReserveFundsRequest) returns (MsgAppReserveFundsResponse);
+  rpc MsgLiquidateExternalKeeper(MsgLiquidateExternalKeeperRequest) returns (MsgLiquidateExternalKeeperResponse);
+}
+
+message MsgLiquidateInternalKeeperRequest {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+
+  uint64 liq_type = 2 [
+    (gogoproto.customname) = "LiqType",
+    (gogoproto.moretags) = "yaml:\"liq_type\""];
+
+  uint64 id = 3 [
+    (gogoproto.customname) = "Id",
+    (gogoproto.moretags) = "yaml:\"id\""];
+}
+message  MsgLiquidateInternalKeeperResponse{}
+
+message MsgAppReserveFundsRequest {
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""
+  ];
+  cosmos.base.v1beta1.Coin token_quantity = 3 [(gogoproto.nullable) = false];
+  string from = 4 [(gogoproto.moretags) = "yaml:\"from\""];
+
+}
+message  MsgAppReserveFundsResponse{}
+
+message MsgLiquidateExternalKeeperRequest {
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+
+  uint64 app_id = 2 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+
+  string owner = 3 [
+    (gogoproto.customname) = "Owner",
+    (gogoproto.moretags) = "yaml:\"owner\""];
+
+  cosmos.base.v1beta1.Coin collateral_token = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"collateral_token\""
+  ];
+
+  cosmos.base.v1beta1.Coin debt_token = 5 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"debt_token\"",
+    (gogoproto.nullable) = false];
+
+
+  uint64 collateral_asset_id = 6 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""];
+
+  uint64 debt_asset_id = 7 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""];
+
+    bool isDebtCmst=8[
+      (gogoproto.moretags) = "yaml:\"debt_asset_id\""];
+
+}
+message  MsgLiquidateExternalKeeperResponse{}

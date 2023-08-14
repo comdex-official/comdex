@@ -352,10 +352,7 @@ func (k Keeper) SetAuctionMappingForApp(ctx sdk.Context, record types.AppAssetId
 	if !found {
 		return types.ErrorAppDoesNotExist
 	}
-	_, found1 := k.auction.GetAuctionParams(ctx, record.AppId)
-	if !found1 {
-		return types.ErrorAuctionParamsNotSet
-	}
+
 	_, found2 := k.asset.GetAsset(ctx, record.AssetId)
 	if !found2 {
 		return types.ErrorAssetDoesNotExist

@@ -1,0 +1,116 @@
+syntax = "proto3";
+package comdex.liquidationsV2.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/liquidationsV2/v1beta1/params.proto";
+import "comdex/liquidationsV2/v1beta1/liquidate.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryLockedVaultRequest {
+  uint64 app_id = 1;
+  uint64 id = 2;
+}
+
+message QueryLockedVaultResponse {
+  LockedVault locked_vault = 1
+  [ (gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"locked_vault\"" ];
+}
+
+message QueryLockedVaultsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsResponse {
+  repeated LockedVault locked_vaults = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"locked_vaults\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLiquidationWhiteListingRequest {
+  uint64 app_id = 1;
+}
+
+message QueryLiquidationWhiteListingResponse {
+  LiquidationWhiteListing liquidation_whiteListing = 1 [
+    (gogoproto.moretags) = "yaml:\"liquidation_whiteListing\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryLiquidationWhiteListingsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLiquidationWhiteListingsResponse {
+  repeated LiquidationWhiteListing liquidation_whiteListings = 1 [
+    (gogoproto.moretags) = "yaml:\"liquidation_whiteListings\"",
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsHistoryRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+message QueryLockedVaultsHistoryResponse {
+  repeated LockedVault locked_vaults_history = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"locked_vaults_history\""
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [ (gogoproto.moretags) = "yaml:\"pagination\"" ];
+}
+
+
+message QueryAppReserveFundsTxDataRequest {
+  uint64 app_id = 1;
+}
+
+message QueryAppReserveFundsTxDataResponse {
+  AppReserveFundsTxData app_reserve_funds_tx_data = 1 [
+    (gogoproto.moretags) = "yaml:\"app_reserve_funds_tx_data\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/params";
+  }
+  rpc QueryLockedVault(QueryLockedVaultRequest) returns (QueryLockedVaultResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vault/{app_id}/{id}";
+  }
+  rpc QueryLockedVaults(QueryLockedVaultsRequest) returns (QueryLockedVaultsResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vaults";
+  }
+  rpc QueryLiquidationWhiteListing(QueryLiquidationWhiteListingRequest) returns (QueryLiquidationWhiteListingResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/liquidation_whiteListing/{app_id}";
+  }
+  rpc QueryLiquidationWhiteListings(QueryLiquidationWhiteListingsRequest) returns (QueryLiquidationWhiteListingsResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/liquidation_whiteListings";
+  }
+  rpc QueryLockedVaultsHistory(QueryLockedVaultsHistoryRequest) returns (QueryLockedVaultsHistoryResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vaults_history";
+  }
+  rpc QueryAppReserveFundsTxData(QueryAppReserveFundsTxDataRequest) returns (QueryAppReserveFundsTxDataResponse) {
+    option (google.api.http).get = "/comdex/liquidations/v2/app_reserve_funds_tx_data/{app_id}";
+  }
+}

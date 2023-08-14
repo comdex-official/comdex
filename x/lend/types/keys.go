@@ -9,13 +9,17 @@ const (
 	ModuleName = "lendV2"
 
 	// ModuleAcc1 , ModuleAcc2 & ModuleAcc3  defines different module accounts to store selected pairs of asset.
-	ModuleAcc1 = "cmdx"
-	ModuleAcc2 = "atom"
-	ModuleAcc3 = "osmo"
-	ModuleAcc4 = "axlusdc"
-	ModuleAcc5 = "statom"
-	ModuleAcc6 = "evmos"
-	ModuleAcc7 = "gusdc"
+	ModuleAcc1  = "cmdx"
+	ModuleAcc2  = "atom"
+	ModuleAcc3  = "osmo"
+	ModuleAcc4  = "axlusdc"
+	ModuleAcc5  = "statom"
+	ModuleAcc6  = "evmos"
+	ModuleAcc7  = "gusdc"
+	ModuleAcc8  = "dai"
+	ModuleAcc9  = "weth"
+	ModuleAcc10 = "stcmdx"
+	ModuleAcc11 = "cmdxnew"
 
 	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName

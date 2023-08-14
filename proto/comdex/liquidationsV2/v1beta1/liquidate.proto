@@ -1,0 +1,244 @@
+syntax = "proto3";
+package comdex.liquidationsV2.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+
+option go_package = "github.com/comdex-official/comdex/x/liquidationsV2/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+message LiquidationWhiteListing {
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+
+  //AuctionTriggerer
+  //External Apps                  -------------> If external triggerer , then some params will be used from Comdex base app // If internal app triggerrer then params to be used from base app 
+  //Comdex Apps
+  //bool param 
+  //true - comdex apps
+  //false external apps
+  bool initiator = 2 [
+    (gogoproto.customname) = "Initiator",
+    (gogoproto.moretags) = "yaml:\"initiator\""];
+  //Sets of Params for Dutch Auction
+  bool is_dutch_activated = 3  [
+    (gogoproto.customname) = "IsDutchActivated",
+    (gogoproto.moretags) = "yaml:\"is_dutch_activated\""];
+  DutchAuctionParam dutch_auction_param = 4[
+    (gogoproto.customname) = "DutchAuctionParam",
+    (gogoproto.moretags) = "yaml:\"dutch_auction_param\""];
+  //Sets of Params for English Auction
+  bool is_english_activated = 5  [
+    (gogoproto.customname) = "IsEnglishActivated",
+    (gogoproto.moretags) = "yaml:\"is_english_activated\""];
+
+  EnglishAuctionParam english_auction_param = 6[
+    (gogoproto.customname) = "EnglishAuctionParam",
+    (gogoproto.moretags) = "yaml:\"english_auction_param\""];
+  //One thing to keep in mind that somehow it should not happen that a void is created where something at level 2 gets triggerred and it has no data saved a level 1 for lookup and it fails .
+
+  string keeeper_incentive = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"keeper_incentive\""
+  ];
+}
+
+message AppReserveFunds{
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""];
+  uint64 asset_id = 2 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""];
+  cosmos.base.v1beta1.Coin token_quantity = 3 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"token_quantity\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AppReserveFundsTxData{
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"app_id\""
+  ];
+  repeated AssetTxData asset_tx_data = 2[
+    (gogoproto.customname) = "AssetTxData",
+    (gogoproto.moretags) = "yaml:\"asset_tx_data\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message AssetTxData{
+  uint64 asset_id = 1 [
+    (gogoproto.customname) = "AssetId",
+    (gogoproto.moretags) = "yaml:\"asset_id\""];
+  string tx_type = 2 [
+    (gogoproto.moretags) = "yaml:\"tx_type\""
+  ];
+  cosmos.base.v1beta1.Coin token_quantity = 3 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"token_quantity\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message DutchAuctionParam{
+  string premium = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"premium\""
+  ];
+  string discount = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"discount\""
+  ];
+  string decrement_factor = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"decrement_factor\""
+  ];
+
+}
+
+message EnglishAuctionParam{
+  string decrement_factor = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"decrement_factor\""
+  ];
+}
+
+message LiquidationOffsetHolder {
+  uint64 app_id = 1 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""];
+
+  uint64 current_offset = 2;
+}
+
+//Internal keepers are bots run by people to liquidate positions of comdex apps
+//They run tx function to liquidate the positions
+//External keeper function allows external projects to use comdex auction- 
+//market to liquidate their positions and take part in  auctions.
+
+message LockedVault {
+  uint64 id = 1 [
+    (gogoproto.customname) = "LockedVaultId",
+    (gogoproto.moretags) = "yaml:\"id\""];
+
+  uint64 app_id = 2 [
+    (gogoproto.customname) = "AppId",
+    (gogoproto.moretags) = "yaml:\"id\""];
+
+  uint64 original_vault_id = 3 [
+    (gogoproto.customname) = "OriginalVaultId",
+    (gogoproto.moretags) = "yaml:\"id\""];
+
+  uint64 extended_pair_vault_id = 4 [
+    (gogoproto.customname) = "ExtendedPairId",
+    (gogoproto.moretags) = "yaml:\"extended_pair_vault_id\""];
+
+  string owner = 5 [
+    (gogoproto.customname) = "Owner",
+    (gogoproto.moretags) = "yaml:\"owner\""];
+
+  cosmos.base.v1beta1.Coin collateral_token = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"collateral_token\""
+  ];
+
+  cosmos.base.v1beta1.Coin debt_token = 7 [
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin",
+    (gogoproto.moretags) = "yaml:\"debt_token\"",
+    (gogoproto.nullable) = false];
+
+  string current_collateralisation_ratio = 8 [
+    (gogoproto.customname) = "CurrentCollaterlisationRatio",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"current_collateralisation_ratio\""];
+
+  cosmos.base.v1beta1.Coin collateral_to_be_auctioned = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"CollateralToBeAuctioned\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  cosmos.base.v1beta1.Coin target_debt = 10 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"target_debt\"",
+    (gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+  google.protobuf.Timestamp liquidation_timestamp = 11 [
+    (gogoproto.customname) = "LiquidationTimestamp",
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"liquidation_timestamp\""];
+
+  // true for internal liquidator through bot , false if abci initiated liquidation
+  bool is_internal_keeper = 12 [
+    (gogoproto.customname) = "IsInternalKeeper",
+    (gogoproto.moretags) = "yaml:\"is_intenal_keeper\""];
+
+  string internal_keeper_address = 13 [
+    (gogoproto.customname) = "InternalKeeperAddress",
+    (gogoproto.moretags) = "yaml:\"internal_keeper_address\""];
+
+  // bool is_external_keeper = 14 [
+  //   (gogoproto.customname) = "IsExternalKeeper",
+  //   (gogoproto.moretags) = "yaml:\"is_external_keeper\""];
+
+  //To return funds to the external app back
+  string external_keeper_address = 15 [
+    (gogoproto.customname) = "ExternalKeeperAddress",
+    (gogoproto.moretags) = "yaml:\"external_keeper_address\""];
+  string fee_to_be_collected = 16 [
+    (gogoproto.customname) = "FeeToBeCollected",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"fee_to_be_collected\""];
+  string bonus_to_be_given = 17 [
+    (gogoproto.customname) = "BonusToBeGiven",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.moretags) = "yaml:\"bonus_to_be_given\""];
+
+  string initiator_type = 18 [
+    (gogoproto.customname) = "InitiatorType",
+    (gogoproto.moretags) = "yaml:\"initiator_type\""];
+  bool auction_type = 19 [
+    (gogoproto.customname) = "AuctionType",
+    (gogoproto.moretags) = "yaml:\"auction_type\""];
+  bool is_debt_cmst = 20 [
+    (gogoproto.customname) = "IsDebtCmst",
+    (gogoproto.moretags) = "yaml:\"is_debt_cmst\""];
+
+  // uint64 pair_id = 21 [
+  //   (gogoproto.customname) = "PairId",
+  //   (gogoproto.moretags) = "yaml:\"pair_id\""];
+  uint64 collateral_asset_id = 21 [
+    (gogoproto.moretags) = "yaml:\"collateral_asset_id\""
+  ];
+  uint64 debt_asset_id = 22 [
+    (gogoproto.moretags) = "yaml:\"debt_asset_id\""
+  ];
+}
+
+
+
+
+
+
+
+
+
+

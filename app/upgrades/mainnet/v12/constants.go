@@ -1,7 +1,7 @@
 package v12
 
 const (
-	UpgradeName   = "v12.0.0"
+	UpgradeName   = "v12.rc3"
 	UpgradeHeight = ""
 	UpgradeInfo   = `'{
 		"binaries": {

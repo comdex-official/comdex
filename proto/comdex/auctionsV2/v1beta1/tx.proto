@@ -1,0 +1,68 @@
+syntax = "proto3";
+package comdex.auctionsV2.v1beta1;
+
+option go_package = "github.com/comdex-official/comdex/x/auctionsV2/types";
+
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+
+message MsgPlaceMarketBidRequest {
+  uint64 auction_id = 1;
+  string bidder = 2;
+  cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgPlaceMarketBidResponse{}
+
+message MsgDepositLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  string bidder = 4;
+  cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
+}
+
+message MsgDepositLimitBidResponse{}
+
+message MsgCancelLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  string bidder = 4;
+}
+
+message MsgCancelLimitBidResponse{}
+
+message MsgWithdrawLimitBidRequest {
+  uint64 collateral_token_id = 1;
+  uint64 debt_token_id = 2;
+  string premium_discount = 3 [
+    (gogoproto.moretags) = "yaml:\"premium_discount\"",
+    (gogoproto.nullable) = false,
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+  ];
+  string bidder = 4;
+  cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
+}
+
+message MsgWithdrawLimitBidResponse{}
+
+service Msg {
+  rpc MsgPlaceMarketBid(MsgPlaceMarketBidRequest) returns (MsgPlaceMarketBidResponse);
+  rpc MsgDepositLimitBid(MsgDepositLimitBidRequest) returns (MsgDepositLimitBidResponse);
+  rpc MsgCancelLimitBid(MsgCancelLimitBidRequest) returns (MsgCancelLimitBidResponse);
+  rpc MsgWithdrawLimitBid(MsgWithdrawLimitBidRequest) returns (MsgWithdrawLimitBidResponse);
+}

@@ -317,6 +317,21 @@ message QueryBorrowInterestResponse {
   ];
 }
 
+message QueryAllBorrowByOwnerAndDebtPoolRequest {
+  string owner = 1 [(gogoproto.moretags) = "yaml:\"owner\""];
+  uint64 pool_id = 2 [(gogoproto.moretags) = "yaml:\"pool_id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 3
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryAllBorrowByOwnerAndDebtPoolResponse {
+  repeated BorrowAsset borrows = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"borrows\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
 service Query {
   rpc QueryLends(QueryLendsRequest) returns (QueryLendsResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/lends";
@@ -418,5 +433,9 @@ service Query {
   rpc QueryBorrowInterest(QueryBorrowInterestRequest) returns (QueryBorrowInterestResponse) {
     option (google.api.http).get = "/comdex/lend/v1beta1/borrow_interest";
   };
+
+  rpc QueryAllBorrowByOwnerAndDebtPool(QueryAllBorrowByOwnerAndDebtPoolRequest) returns (QueryAllBorrowByOwnerAndDebtPoolResponse) {
+    option (google.api.http).get = "/comdex/lend/v1beta1/borrows_by_owner_debt_pool/{owner}/{pool_id}";
+  }
 }
 
