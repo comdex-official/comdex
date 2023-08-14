@@ -7,7 +7,7 @@ require (
 	github.com/CosmWasm/wasmvm v1.3.0
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cosmos/cosmos-sdk v0.46.13
-	github.com/cosmos/ibc-apps/modules/async-icq/v4 v4.0.0-20230524151648-c02fa46c2860
+	github.com/cosmos/ibc-apps/modules/async-icq/v4 v4.1.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
