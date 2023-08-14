@@ -1,9 +1,8 @@
 package keeper
 
 import (
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"time"
-
-	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 
 	utils "github.com/comdex-official/comdex/types"
 
@@ -380,6 +379,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 			return err
 		}
 
+		// send debt token to tokenMint module
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, tokenminttypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
+		if err != nil {
+			return err
+		}
+
 		err = k.tokenMint.BurnTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
 		if err != nil {
 			return err
@@ -387,12 +392,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 
 		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
-			return auctiontypes.ErrorUnableToSetNetFees
+			return types.ErrorUnableToSetNetFees
 		}
 
 		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId)
 		if !found {
-			return auctiontypes.ErrorInvalidAddress
+			return types.ErrAuctionLookupTableNotFound
 		}
 
 		auctionLookupTable.IsAuctionActive = false
@@ -406,24 +411,24 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		//send newly minted token((collateral)) to the user
 		// send debt to collector to get added
 		//set net fees data
-		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, bidding.BidderAddress, englishAuction.CollateralToken.Amount)
+		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, bidding.BidderAddress, englishAuction.DebtToken.Amount)
 		if err != nil {
 			return err
 		}
 
-		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
 		if err != nil {
 			return err
 		}
 
-		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.DebtAssetId, englishAuction.DebtToken.Amount)
+		err = k.collector.SetNetFeeCollectedData(ctx, englishAuction.AppId, englishAuction.CollateralAssetId, englishAuction.CollateralToken.Amount)
 		if err != nil {
-			return auctiontypes.ErrorUnableToSetNetFees
+			return types.ErrorUnableToSetNetFees
 		}
 
-		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId)
+		auctionLookupTable, found := k.collector.GetAuctionMappingForApp(ctx, englishAuction.AppId, englishAuction.CollateralAssetId)
 		if !found {
-			return auctiontypes.ErrorInvalidAddress
+			return types.ErrAuctionLookupTableNotFound
 		}
 
 		auctionLookupTable.IsAuctionActive = false
@@ -451,10 +456,29 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		}
 	}
 
+	for _, v := range englishAuction.BiddingIds {
+		bid, _ := k.GetUserBid(ctx, v.BidId)
+		err = k.DeleteIndividualUserBid(ctx, bid)
+		if err != nil {
+			return err
+		}
+		err = k.SetBidHistorical(ctx, bid)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = k.DeleteAuction(ctx, englishAuction)
 	if err != nil {
 		return err
 	}
+
+	auctionHistoricalData := auctionsV2types.AuctionHistorical{AuctionId: englishAuction.AuctionId, AuctionHistorical: &englishAuction, LockedVault: &liquidationData}
+	err = k.SetAuctionHistorical(ctx, auctionHistoricalData)
+	if err != nil {
+		return err
+	}
+	k.LiquidationsV2.DeleteLockedVault(ctx, englishAuction.AppId, liquidationData.LockedVaultId)
 
 	return nil
 

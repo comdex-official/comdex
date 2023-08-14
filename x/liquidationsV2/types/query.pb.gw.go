@@ -695,19 +695,19 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex-official", "comdex", "liquidationsV2", "params"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidations", "v2", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockedVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidationsV2", "v1beta1", "locked_vault", "app_id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockedVault_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 1, 0, 4, 1, 5, 5}, []string{"comdex", "liquidations", "v2", "locked_vault", "app_id", "id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockedVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidationsV2", "v1beta1", "locked_vaults"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockedVaults_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidations", "v2", "locked_vaults"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLiquidationWhiteListing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidationsV2", "v1beta1", "liquidation_whiteListing", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLiquidationWhiteListing_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidations", "v2", "liquidation_whiteListing", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLiquidationWhiteListings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidationsV2", "v1beta1", "liquidation_whiteListings"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLiquidationWhiteListings_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidations", "v2", "liquidation_whiteListings"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryLockedVaultsHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidationsV2", "v1beta1", "locked_vaults_history"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryLockedVaultsHistory_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"comdex", "liquidations", "v2", "locked_vaults_history"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_QueryAppReserveFundsTxData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidationsV2", "v1beta1", "app_reserve_funds_tx_data", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_QueryAppReserveFundsTxData_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"comdex", "liquidations", "v2", "app_reserve_funds_tx_data", "app_id"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
