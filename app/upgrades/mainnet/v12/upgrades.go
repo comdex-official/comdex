@@ -70,6 +70,19 @@ func UpdateLendParams(
 	lendKeeper lendkeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
 ) {
+	STATOM := assettypes.Asset{
+		Name:                  "STATOM",
+		Denom:                 "ustatom",
+		Decimals:              sdk.NewInt(1000000),
+		IsOnChain:             true,
+		IsOraclePriceRequired: false,
+		IsCdpMintable:         true,
+	}
+	err := assetKeeper.AddAssetRecords(ctx, STATOM)
+	if err != nil {
+		fmt.Println(err)
+	}
+	assetIDStAtom := assetKeeper.GetAssetID(ctx)
 
 	cSTATOM := assettypes.Asset{
 		Name:                  "CSTATOM",
@@ -79,14 +92,14 @@ func UpdateLendParams(
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
 	}
-	err := assetKeeper.AddAssetRecords(ctx, cSTATOM)
+	err = assetKeeper.AddAssetRecords(ctx, cSTATOM)
 	if err != nil {
 		fmt.Println(err)
 	}
 	assetID := assetKeeper.GetAssetID(ctx)
 
 	assetRatesParamsSTAtom := lendtypes.AssetRatesParams{
-		AssetID:              14,
+		AssetID:              assetIDStAtom,
 		UOptimal:             dec("0.75"),
 		Base:                 dec("0.002"),
 		Slope1:               dec("0.07"),
@@ -124,6 +137,43 @@ func UpdateLendParams(
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	var poolsDep []lendtypes.IndividualPoolDepreciate
+	indPoolDep := lendtypes.IndividualPoolDepreciate{
+		PoolID:            1,
+		IsPoolDepreciated: true,
+	}
+	poolsDep = append(poolsDep, indPoolDep)
+	poolDep := lendtypes.PoolDepreciate{IndividualPoolDepreciate: poolsDep}
+	err = lendKeeper.AddPoolDepreciate(ctx, poolDep)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var assetData []*lendtypes.AssetDataPoolMapping
+	assetData = append(assetData, &lendtypes.AssetDataPoolMapping{
+		AssetID:          2,
+		AssetTransitType: 1,
+		SupplyCap:        dec("500000000000"),
+	}, &lendtypes.AssetDataPoolMapping{
+		AssetID:          3,
+		AssetTransitType: 2,
+		SupplyCap:        dec("500000000000"),
+	}, &lendtypes.AssetDataPoolMapping{
+		AssetID:          assetIDStAtom,
+		AssetTransitType: 3,
+		SupplyCap:        dec("500000000000"),
+	})
+	newPool := lendtypes.Pool{
+		ModuleName: "cmdxnew",
+		CPoolName:  "CMDX-CMST-STATOM",
+		AssetData:  assetData,
+	}
+
+	err = lendKeeper.AddPoolRecords(ctx, newPool)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func InitializeStates(
@@ -139,7 +189,7 @@ func InitializeStates(
 	englishAuctionParams := liquidationtypes.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
 
 	harborParams := liquidationtypes.LiquidationWhiteListing{
-		AppId:               2,
+		AppId:               1,
 		Initiator:           true,
 		IsDutchActivated:    true,
 		DutchAuctionParam:   &dutchAuctionParams,
@@ -163,7 +213,7 @@ func InitializeStates(
 
 	appReserveFundsTxDataHbr, found := liquidationKeeper.GetAppReserveFundsTxData(ctx, 2)
 	if !found {
-		appReserveFundsTxDataHbr.AppId = 2
+		appReserveFundsTxDataHbr.AppId = 1
 	}
 	appReserveFundsTxDataHbr.AssetTxData = append(appReserveFundsTxDataHbr.AssetTxData, liquidationtypes.AssetTxData{})
 	liquidationKeeper.SetAppReserveFundsTxData(ctx, appReserveFundsTxDataHbr)
