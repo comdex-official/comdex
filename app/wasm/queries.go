@@ -13,7 +13,6 @@ import (
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 type QueryPlugin struct {
@@ -208,13 +207,10 @@ func (qp QueryPlugin) WasmGetPools(ctx sdk.Context, appID uint64) (pools []uint6
 	return pools
 }
 
-func (qp QueryPlugin) WasmGetAssetPrice(ctx sdk.Context, assetID uint64) (assetPrice uint64, found bool) {
-	assetPrice, err := qp.marketKeeper.GetLatestPrice(ctx, assetID)
-	if !found {
-		if err != nil {
-			err = sdkerrors.Wrap(err, "WasmGetAssetPrice error")
-			return 0, false
-		}
+func (qp QueryPlugin) WasmGetAssetPrice(ctx sdk.Context, assetID uint64) (twa uint64, found bool) {
+	assetTwa, found := qp.marketKeeper.GetTwa(ctx, assetID)
+	if found && assetTwa.IsPriceActive{
+		return assetTwa.Twa, true
 	}
-	return assetPrice, true
+	return 0, false
 }
