@@ -224,7 +224,6 @@ require (
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/sashamelentyev/interfacebloat v1.1.0 // indirect
 	github.com/sashamelentyev/usestdlibvars v1.23.0 // indirect
-	github.com/scrtlabs/tm-secret-enclave v1.10.0 // indirect
 	github.com/securego/gosec/v2 v2.16.0 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -294,7 +293,7 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
 	// github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
-	// github.com/tendermint/tendermint => /Users/chandragupta/go/src/github.com/skip-mev/mev-tendermint
-	github.com/tendermint/tendermint => github.com/scrtlabs/tendermint v1.9.0-scrt
+	github.com/tendermint/tendermint => /Users/chandragupta/go/src/github.com/skip-mev/mev-tendermint
+	// github.com/tendermint/tendermint => github.com/scrtlabs/tendermint v1.9.0-scrt
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
