@@ -60,4 +60,5 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 			k.SetTwa(ctx, twa)
 		}
 	}
+	
 }
