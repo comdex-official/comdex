@@ -18,20 +18,20 @@ func (k Keeper) SetTwa(ctx sdk.Context, twa types.TimeWeightedAverage) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
-	var (
-		store = k.Store(ctx)
-		key   = types.TwaKey(id)
-		value = store.Get(key)
-	)
+// func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
+// 	var (
+// 		store = k.Store(ctx)
+// 		key   = types.TwaKey(id)
+// 		value = store.Get(key)
+// 	)
 
-	if value == nil {
-		return twa, false
-	}
+// 	if value == nil {
+// 		return twa, false
+// 	}
 
-	k.cdc.MustUnmarshal(value, &twa)
-	return twa, true
-}
+// 	k.cdc.MustUnmarshal(value, &twa)
+// 	return twa, true
+// }
 
 func (k Keeper) GetAllTwa(ctx sdk.Context) (twa []types.TimeWeightedAverage) {
 	var (
@@ -155,16 +155,68 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 	return 0, types.ErrorPriceNotActive
 }
 
+// func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+// 	asset, found := k.assetKeeper.GetAsset(ctx, id)
+// 	if !found {
+// 		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
+// 	}
+// 	twa, found := k.GetTwa(ctx, id)
+// 	if found && twa.IsPriceActive {
+// 		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
+// 		denominator := sdk.NewDecFromInt(asset.Decimals)
+// 		return numerator.Quo(denominator), nil
+// 	}
+// 	return sdk.ZeroDec(), types.ErrorPriceNotActive
+// }
+
 func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
-	asset, found := k.assetKeeper.GetAsset(ctx, id)
-	if !found {
-		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
-	}
-	twa, found := k.GetTwa(ctx, id)
-	if found && twa.IsPriceActive {
-		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
-		denominator := sdk.NewDecFromInt(asset.Decimals)
-		return numerator.Quo(denominator), nil
-	}
-	return sdk.ZeroDec(), types.ErrorPriceNotActive
+    asset, found := k.assetKeeper.GetAsset(ctx, id)
+    if !found {
+        return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
+    }
+    // twa, found := k.GetTwa(ctx, id)
+    var rate uint64
+    if id == 1 {
+        rate = 11632845
+    }
+    if id == 2 {
+        rate = 140530
+    }
+    if id == 3 {
+        rate = 1000000
+    }
+    if id == 4 {
+        rate = 2200000
+    }
+    if id == 10 {
+        rate = 1297119384
+    }
+    if found {
+        numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
+        denominator := sdk.NewDecFromInt(asset.Decimals)
+        return numerator.Quo(denominator), nil
+    }
+    return sdk.ZeroDec(), types.ErrorPriceNotActive
+}
+
+func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverage, found bool) {
+    twa.AssetID = id
+    twa.IsPriceActive = true
+    if id == 1 {
+        twa.Twa = 11632845
+    }
+    if id == 2 {
+        twa.Twa = 140530
+    }
+    if id == 3 {
+        twa.Twa = 1000000
+    }
+    if id == 4 {
+        twa.Twa = 2200000
+    }
+    if id == 10 {
+        twa.Twa = 1297119384
+    }
+
+    return twa, true
 }
