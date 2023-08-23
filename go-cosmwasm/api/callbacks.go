@@ -36,7 +36,7 @@ GoResult cQueryExternal_cgo(querier_t *ptr, uint64_t gas_limit, uint64_t *used_g
 import "C"
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"log"
 	"reflect"
@@ -44,7 +44,7 @@ import (
 
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/comdex-official/comdex/go-cosmwasm/types"
+	// "github.com/comdex-official/comdex/go-cosmwasm/types"
 )
 
 // Note: we have to include all exports in the same file (at least since they both import bindings.h),
@@ -158,149 +158,149 @@ func buildIterator(dbCounter uint64, it dbm.Iterator) C.iterator_t {
 }
 
 //export cGet
-func cGet(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *u64, key C.Buffer, val *C.Buffer, _ *C.Buffer) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if ptr == nil || gasMeter == nil || usedGas == nil || val == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// func cGet(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *u64, key C.Buffer, val *C.Buffer, _ *C.Buffer) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if ptr == nil || gasMeter == nil || usedGas == nil || val == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
-	kv := *(*KVStore)(unsafe.Pointer(ptr))
-	k := receiveSlice(key)
+// 	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
+// 	kv := *(*KVStore)(unsafe.Pointer(ptr))
+// 	k := receiveSlice(key)
 
-	gasBefore := gm.GasConsumed()
-	v := kv.Get(k)
-	gasAfter := gm.GasConsumed()
-	*usedGas = (u64)(gasAfter - gasBefore)
+// 	gasBefore := gm.GasConsumed()
+// 	v := kv.Get(k)
+// 	gasAfter := gm.GasConsumed()
+// 	*usedGas = (u64)(gasAfter - gasBefore)
 
-	// v will equal nil when the key is missing
-	// https://github.com/cosmos/cosmos-sdk/blob/1083fa948e347135861f88e07ec76b0314296832/store/types/store.go#L174
-	if v != nil {
-		*val = allocateRust(v)
-	}
-	// else: the Buffer on the rust side is initialised as a "null" buffer,
-	// so if we don't write a non-null address to it, it will understand that
-	// the key it requested does not exist in the kv store
+// 	// v will equal nil when the key is missing
+// 	// https://github.com/cosmos/cosmos-sdk/blob/1083fa948e347135861f88e07ec76b0314296832/store/types/store.go#L174
+// 	if v != nil {
+// 		*val = allocateRust(v)
+// 	}
+// 	// else: the Buffer on the rust side is initialised as a "null" buffer,
+// 	// so if we don't write a non-null address to it, it will understand that
+// 	// the key it requested does not exist in the kv store
 
-	return C.GoResult_Ok
-}
+// 	return C.GoResult_Ok
+// }
 
-//export cSet
-func cSet(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key C.Buffer, val C.Buffer, _ *C.Buffer) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if ptr == nil || gasMeter == nil || usedGas == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// //export cSet
+// func cSet(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key C.Buffer, val C.Buffer, _ *C.Buffer) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if ptr == nil || gasMeter == nil || usedGas == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
-	kv := *(*KVStore)(unsafe.Pointer(ptr))
-	k := receiveSlice(key)
-	v := receiveSlice(val)
+// 	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
+// 	kv := *(*KVStore)(unsafe.Pointer(ptr))
+// 	k := receiveSlice(key)
+// 	v := receiveSlice(val)
 
-	gasBefore := gm.GasConsumed()
-	kv.Set(k, v)
-	gasAfter := gm.GasConsumed()
-	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
+// 	gasBefore := gm.GasConsumed()
+// 	kv.Set(k, v)
+// 	gasAfter := gm.GasConsumed()
+// 	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
 
-	return C.GoResult_Ok
-}
+// 	return C.GoResult_Ok
+// }
 
-//export cDelete
-func cDelete(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key C.Buffer, _ *C.Buffer) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if ptr == nil || gasMeter == nil || usedGas == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// //export cDelete
+// func cDelete(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key C.Buffer, _ *C.Buffer) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if ptr == nil || gasMeter == nil || usedGas == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
-	kv := *(*KVStore)(unsafe.Pointer(ptr))
-	k := receiveSlice(key)
+// 	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
+// 	kv := *(*KVStore)(unsafe.Pointer(ptr))
+// 	k := receiveSlice(key)
 
-	gasBefore := gm.GasConsumed()
-	kv.Delete(k)
-	gasAfter := gm.GasConsumed()
-	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
+// 	gasBefore := gm.GasConsumed()
+// 	kv.Delete(k)
+// 	gasAfter := gm.GasConsumed()
+// 	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
 
-	return C.GoResult_Ok
-}
+// 	return C.GoResult_Ok
+// }
 
-//export cScan
-func cScan(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, start C.Buffer, end C.Buffer, order i32, out *C.GoIter, _ *C.Buffer) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if ptr == nil || gasMeter == nil || usedGas == nil || out == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// //export cScan
+// func cScan(ptr *C.db_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, start C.Buffer, end C.Buffer, order i32, out *C.GoIter, _ *C.Buffer) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if ptr == nil || gasMeter == nil || usedGas == nil || out == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
-	state := (*DBState)(unsafe.Pointer(ptr))
-	kv := state.Store
-	// handle null as well as data
-	var s, e []byte
-	if start.ptr != nil {
-		s = receiveSlice(start)
-	}
-	if end.ptr != nil {
-		e = receiveSlice(end)
-	}
+// 	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
+// 	state := (*DBState)(unsafe.Pointer(ptr))
+// 	kv := state.Store
+// 	// handle null as well as data
+// 	var s, e []byte
+// 	if start.ptr != nil {
+// 		s = receiveSlice(start)
+// 	}
+// 	if end.ptr != nil {
+// 		e = receiveSlice(end)
+// 	}
 
-	var iter dbm.Iterator
-	gasBefore := gm.GasConsumed()
-	switch order {
-	case 1: // Ascending
-		iter = kv.Iterator(s, e)
-	case 2: // Descending
-		iter = kv.ReverseIterator(s, e)
-	default:
-		return C.GoResult_BadArgument
-	}
-	gasAfter := gm.GasConsumed()
-	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
+// 	var iter dbm.Iterator
+// 	gasBefore := gm.GasConsumed()
+// 	switch order {
+// 	case 1: // Ascending
+// 		iter = kv.Iterator(s, e)
+// 	case 2: // Descending
+// 		iter = kv.ReverseIterator(s, e)
+// 	default:
+// 		return C.GoResult_BadArgument
+// 	}
+// 	gasAfter := gm.GasConsumed()
+// 	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
 
-	out.state = buildIterator(state.IteratorStackID, iter)
-	out.vtable = iterator_vtable
-	return C.GoResult_Ok
-}
+// 	out.state = buildIterator(state.IteratorStackID, iter)
+// 	out.vtable = iterator_vtable
+// 	return C.GoResult_Ok
+// }
 
-//export cNext
-func cNext(ref C.iterator_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key *C.Buffer, val *C.Buffer, _ *C.Buffer) (ret C.GoResult) {
-	// typical usage of iterator
-	// 	for ; itr.Valid(); itr.Next() {
-	// 		k, v := itr.Key(); itr.Value()
-	// 		...
-	// 	}
+// //export cNext
+// func cNext(ref C.iterator_t, gasMeter *C.gas_meter_t, usedGas *C.uint64_t, key *C.Buffer, val *C.Buffer, _ *C.Buffer) (ret C.GoResult) {
+// 	// typical usage of iterator
+// 	// 	for ; itr.Valid(); itr.Next() {
+// 	// 		k, v := itr.Key(); itr.Value()
+// 	// 		...
+// 	// 	}
 
-	defer recoverPanic(&ret)
-	if ref.db_counter == 0 || gasMeter == nil || usedGas == nil || key == nil || val == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// 	defer recoverPanic(&ret)
+// 	if ref.db_counter == 0 || gasMeter == nil || usedGas == nil || key == nil || val == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
-	iter := retrieveIterator(uint64(ref.db_counter), uint64(ref.iterator_index))
-	if !iter.Valid() {
-		// end of iterator, return as no-op, nil key is considered end
-		return C.GoResult_Ok
-	}
+// 	gm := *(*GasMeter)(unsafe.Pointer(gasMeter))
+// 	iter := retrieveIterator(uint64(ref.db_counter), uint64(ref.iterator_index))
+// 	if !iter.Valid() {
+// 		// end of iterator, return as no-op, nil key is considered end
+// 		return C.GoResult_Ok
+// 	}
 
-	gasBefore := gm.GasConsumed()
-	// call Next at the end, upon creation we have first data loaded
-	k := iter.Key()
-	v := iter.Value()
-	// check iter.Error() ????
-	iter.Next()
-	gasAfter := gm.GasConsumed()
-	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
+// 	gasBefore := gm.GasConsumed()
+// 	// call Next at the end, upon creation we have first data loaded
+// 	k := iter.Key()
+// 	v := iter.Value()
+// 	// check iter.Error() ????
+// 	iter.Next()
+// 	gasAfter := gm.GasConsumed()
+// 	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
 
-	if k != nil {
-		*key = allocateRust(k)
-		*val = allocateRust(v)
-	}
-	return C.GoResult_Ok
-}
+// 	if k != nil {
+// 		*key = allocateRust(k)
+// 		*val = allocateRust(v)
+// 	}
+// 	return C.GoResult_Ok
+// }
 
 /***** GoAPI *******/
 
@@ -352,31 +352,31 @@ func cHumanAddress(ptr *C.api_t, canon C.Buffer, human *C.Buffer, errOut *C.Buff
 }
 
 //export cCanonicalAddress
-func cCanonicalAddress(ptr *C.api_t, human C.Buffer, canon *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
-	defer recoverPanic(&ret)
+// func cCanonicalAddress(ptr *C.api_t, human C.Buffer, canon *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
 
-	if canon == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// 	if canon == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	api := (*GoAPI)(unsafe.Pointer(ptr))
-	h := string(receiveSlice(human))
-	c, cost, err := api.CanonicalAddress(h)
-	*used_gas = u64(cost)
-	if err != nil {
-		// store the actual error message in the return buffer
-		*errOut = allocateRust([]byte(err.Error()))
-		return C.GoResult_User
-	}
-	if len(c) == 0 {
-		panic(fmt.Sprintf("`api.CanonicalAddress()` returned an empty string for %q", h))
-	}
-	*canon = allocateRust(c)
+// 	api := (*GoAPI)(unsafe.Pointer(ptr))
+// 	h := string(receiveSlice(human))
+// 	c, cost, err := api.CanonicalAddress(h)
+// 	*used_gas = u64(cost)
+// 	if err != nil {
+// 		// store the actual error message in the return buffer
+// 		*errOut = allocateRust([]byte(err.Error()))
+// 		return C.GoResult_User
+// 	}
+// 	if len(c) == 0 {
+// 		panic(fmt.Sprintf("`api.CanonicalAddress()` returned an empty string for %q", h))
+// 	}
+// 	*canon = allocateRust(c)
 
-	// If we do not set canon to a meaningful value, then the other side will interpret that as an empty result.
-	return C.GoResult_Ok
-}
+// 	// If we do not set canon to a meaningful value, then the other side will interpret that as an empty result.
+// 	return C.GoResult_Ok
+// }
 
 /****** Go Querier ********/
 
@@ -394,28 +394,28 @@ func buildQuerier(q *Querier) C.GoQuerier {
 }
 
 //export cQueryExternal
-func cQueryExternal(ptr *C.querier_t, gasLimit C.uint64_t, usedGas *C.uint64_t, request C.Buffer, queryDepth C.uint32_t, result *C.Buffer, errOut *C.Buffer) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if ptr == nil || usedGas == nil || result == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
+// func cQueryExternal(ptr *C.querier_t, gasLimit C.uint64_t, usedGas *C.uint64_t, request C.Buffer, queryDepth C.uint32_t, result *C.Buffer, errOut *C.Buffer) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if ptr == nil || usedGas == nil || result == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
 
-	// query the data
-	querier := *(*Querier)(unsafe.Pointer(ptr))
-	req := receiveSlice(request)
+// 	// query the data
+// 	querier := *(*Querier)(unsafe.Pointer(ptr))
+// 	req := receiveSlice(request)
 
-	gasBefore := querier.GasConsumed()
-	res := types.RustQuery(querier, req, uint32(queryDepth), uint64(gasLimit))
-	gasAfter := querier.GasConsumed()
-	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
+// 	gasBefore := querier.GasConsumed()
+// 	res := types.RustQuery(querier, req, uint32(queryDepth), uint64(gasLimit))
+// 	gasAfter := querier.GasConsumed()
+// 	*usedGas = (C.uint64_t)(gasAfter - gasBefore)
 
-	// serialize the response
-	bz, err := json.Marshal(res)
-	if err != nil {
-		*errOut = allocateRust([]byte(err.Error()))
-		return C.GoResult_Other
-	}
-	*result = allocateRust(bz)
-	return C.GoResult_Ok
-}
+// 	// serialize the response
+// 	bz, err := json.Marshal(res)
+// 	if err != nil {
+// 		*errOut = allocateRust([]byte(err.Error()))
+// 		return C.GoResult_Other
+// 	}
+// 	*result = allocateRust(bz)
+// 	return C.GoResult_Ok
+// }
