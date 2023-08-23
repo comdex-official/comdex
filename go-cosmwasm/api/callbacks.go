@@ -37,10 +37,10 @@ import "C"
 
 import (
 	// "encoding/json"
-	"fmt"
+	// "fmt"
 	"log"
 	"reflect"
-	"unsafe"
+	// "unsafe"
 
 	dbm "github.com/tendermint/tm-db"
 
@@ -329,27 +329,27 @@ type GoAPI struct {
 // }
 
 //export cHumanAddress
-func cHumanAddress(ptr *C.api_t, canon C.Buffer, human *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
-	defer recoverPanic(&ret)
-	if human == nil {
-		// we received an invalid pointer
-		return C.GoResult_BadArgument
-	}
-	api := (*GoAPI)(unsafe.Pointer(ptr))
-	c := receiveSlice(canon)
-	h, cost, err := api.HumanAddress(c)
-	*used_gas = u64(cost)
-	if err != nil {
-		// store the actual error message in the return buffer
-		*errOut = allocateRust([]byte(err.Error()))
-		return C.GoResult_User
-	}
-	if len(h) == 0 {
-		panic(fmt.Sprintf("`api.HumanAddress()` returned an empty string for %q", c))
-	}
-	*human = allocateRust([]byte(h))
-	return C.GoResult_Ok
-}
+// func cHumanAddress(ptr *C.api_t, canon C.Buffer, human *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
+// 	defer recoverPanic(&ret)
+// 	if human == nil {
+// 		// we received an invalid pointer
+// 		return C.GoResult_BadArgument
+// 	}
+// 	api := (*GoAPI)(unsafe.Pointer(ptr))
+// 	c := receiveSlice(canon)
+// 	h, cost, err := api.HumanAddress(c)
+// 	*used_gas = u64(cost)
+// 	if err != nil {
+// 		// store the actual error message in the return buffer
+// 		*errOut = allocateRust([]byte(err.Error()))
+// 		return C.GoResult_User
+// 	}
+// 	if len(h) == 0 {
+// 		panic(fmt.Sprintf("`api.HumanAddress()` returned an empty string for %q", c))
+// 	}
+// 	*human = allocateRust([]byte(h))
+// 	return C.GoResult_Ok
+// }
 
 //export cCanonicalAddress
 // func cCanonicalAddress(ptr *C.api_t, human C.Buffer, canon *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
