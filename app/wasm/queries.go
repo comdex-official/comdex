@@ -10,6 +10,7 @@ import (
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
+	marketKeeper "github.com/comdex-official/comdex/x/market/keeper"
 	rewardsKeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	tokenMintKeeper "github.com/comdex-official/comdex/x/tokenmint/keeper"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
@@ -26,6 +27,7 @@ type QueryPlugin struct {
 	vaultKeeper       *vaultKeeper.Keeper
 	lendKeeper        *lendKeeper.Keeper
 	liquidityKeeper   *liquidityKeeper.Keeper
+	marketKeeper      *marketKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -39,6 +41,7 @@ func NewQueryPlugin(
 	vaultKeeper *vaultKeeper.Keeper,
 	lendKeeper *lendKeeper.Keeper,
 	liquidityKeeper *liquidityKeeper.Keeper,
+	marketKeeper *marketKeeper.Keeper,
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:       assetKeeper,
@@ -51,6 +54,7 @@ func NewQueryPlugin(
 		vaultKeeper:       vaultKeeper,
 		lendKeeper:        lendKeeper,
 		liquidityKeeper:   liquidityKeeper,
+		marketKeeper:      marketKeeper,
 	}
 }
 
@@ -202,4 +206,12 @@ func (qp QueryPlugin) WasmGetPools(ctx sdk.Context, appID uint64) (pools []uint6
 		pools = append(pools, pool.Id)
 	}
 	return pools
+}
+
+func (qp QueryPlugin) WasmGetAssetPrice(ctx sdk.Context, assetID uint64) (twa uint64, found bool) {
+	assetTwa, found := qp.marketKeeper.GetTwa(ctx, assetID)
+	if found && assetTwa.IsPriceActive{
+		return assetTwa.Twa, true
+	}
+	return 0, false
 }

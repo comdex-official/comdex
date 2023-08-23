@@ -765,7 +765,7 @@ func New(
 	}
 	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
