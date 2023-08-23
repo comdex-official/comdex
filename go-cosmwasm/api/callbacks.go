@@ -108,12 +108,12 @@ type KVStore interface {
 	ReverseIterator(start, end []byte) dbm.Iterator
 }
 
-var db_vtable = C.DB_vtable{
-	read_db:   (C.read_db_fn)(C.cGet_cgo),
-	write_db:  (C.write_db_fn)(C.cSet_cgo),
-	remove_db: (C.remove_db_fn)(C.cDelete_cgo),
-	scan_db:   (C.scan_db_fn)(C.cScan_cgo),
-}
+// var db_vtable = C.DB_vtable{
+// 	read_db:   (C.read_db_fn)(C.cGet_cgo),
+// 	write_db:  (C.write_db_fn)(C.cSet_cgo),
+// 	remove_db: (C.remove_db_fn)(C.cDelete_cgo),
+// 	scan_db:   (C.scan_db_fn)(C.cScan_cgo),
+// }
 
 type DBState struct {
 	Store KVStore
@@ -135,17 +135,17 @@ func buildDBState(kv KVStore, counter uint64) DBState {
 
 // contract: original pointer/struct referenced must live longer than C.DB struct
 // since this is only used internally, we can verify the code that this is the case
-func buildDB(state *DBState, gm *GasMeter) C.DB {
-	return C.DB{
-		gas_meter: (*C.gas_meter_t)(unsafe.Pointer(gm)),
-		state:     (*C.db_t)(unsafe.Pointer(state)),
-		vtable:    db_vtable,
-	}
-}
+// func buildDB(state *DBState, gm *GasMeter) C.DB {
+// 	return C.DB{
+// 		gas_meter: (*C.gas_meter_t)(unsafe.Pointer(gm)),
+// 		state:     (*C.db_t)(unsafe.Pointer(state)),
+// 		vtable:    db_vtable,
+// 	}
+// }
 
-var iterator_vtable = C.Iterator_vtable{
-	next_db: (C.next_db_fn)(C.cNext_cgo),
-}
+// var iterator_vtable = C.Iterator_vtable{
+// 	next_db: (C.next_db_fn)(C.cNext_cgo),
+// }
 
 // contract: original pointer/struct referenced must live longer than C.DB struct
 // since this is only used internally, we can verify the code that this is the case
@@ -314,19 +314,19 @@ type GoAPI struct {
 	CanonicalAddress CanonicalizeAddress
 }
 
-var api_vtable = C.GoApi_vtable{
-	humanize_address:     (C.humanize_address_fn)(C.cHumanAddress_cgo),
-	canonicalize_address: (C.canonicalize_address_fn)(C.cCanonicalAddress_cgo),
-}
+// var api_vtable = C.GoApi_vtable{
+// 	humanize_address:     (C.humanize_address_fn)(C.cHumanAddress_cgo),
+// 	canonicalize_address: (C.canonicalize_address_fn)(C.cCanonicalAddress_cgo),
+// }
 
 // contract: original pointer/struct referenced must live longer than C.GoApi struct
 // since this is only used internally, we can verify the code that this is the case
-func buildAPI(api *GoAPI) C.GoApi {
-	return C.GoApi{
-		state:  (*C.api_t)(unsafe.Pointer(api)),
-		vtable: api_vtable,
-	}
-}
+// func buildAPI(api *GoAPI) C.GoApi {
+// 	return C.GoApi{
+// 		state:  (*C.api_t)(unsafe.Pointer(api)),
+// 		vtable: api_vtable,
+// 	}
+// }
 
 //export cHumanAddress
 func cHumanAddress(ptr *C.api_t, canon C.Buffer, human *C.Buffer, errOut *C.Buffer, used_gas *u64) (ret C.GoResult) {
@@ -380,18 +380,18 @@ func cHumanAddress(ptr *C.api_t, canon C.Buffer, human *C.Buffer, errOut *C.Buff
 
 /****** Go Querier ********/
 
-var querier_vtable = C.Querier_vtable{
-	query_external: (C.query_external_fn)(C.cQueryExternal_cgo),
-}
+// var querier_vtable = C.Querier_vtable{
+// 	query_external: (C.query_external_fn)(C.cQueryExternal_cgo),
+// }
 
 // contract: original pointer/struct referenced must live longer than C.GoQuerier struct
 // since this is only used internally, we can verify the code that this is the case
-func buildQuerier(q *Querier) C.GoQuerier {
-	return C.GoQuerier{
-		state:  (*C.querier_t)(unsafe.Pointer(q)),
-		vtable: querier_vtable,
-	}
-}
+// func buildQuerier(q *Querier) C.GoQuerier {
+// 	return C.GoQuerier{
+// 		state:  (*C.querier_t)(unsafe.Pointer(q)),
+// 		vtable: querier_vtable,
+// 	}
+// }
 
 //export cQueryExternal
 // func cQueryExternal(ptr *C.querier_t, gasLimit C.uint64_t, usedGas *C.uint64_t, request C.Buffer, queryDepth C.uint32_t, result *C.Buffer, errOut *C.Buffer) (ret C.GoResult) {
