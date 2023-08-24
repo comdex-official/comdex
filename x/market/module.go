@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/comdex-official/comdex/go-cosmwasm/api"
+	// "github.com/comdex-official/comdex/go-cosmwasm/api"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -128,11 +128,11 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {
 	BeginBlocker(ctx, req, a.keeper, a.bandKeeper, a.assetKeeper)
 
-	header, err := req.Header.Marshal()
-	if err != nil {
-		ctx.Logger().Error("Failed to marshal header")
-		panic(err)
-	}
+	// header, err := req.Header.Marshal()
+	// if err != nil {
+	// 	ctx.Logger().Error("Failed to marshal header")
+	// 	panic(err)
+	// }
 
 	// There is a possibility, specifically was found on upgrade block, when there are no pre-commits at all (beginBlock.Commit == nil)
 	// In this case Marshal will fail with a Seg Fault.
@@ -155,14 +155,16 @@ func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) 
 	}
 
 	if req.Header.EncryptedRandom != nil {
-		randomAndProof := append(req.Header.EncryptedRandom.Random, req.Header.EncryptedRandom.Proof...) //nolint:all
-		random, err := api.SubmitBlockSignatures(header, commit, data, randomAndProof)
-		if err != nil {
-			ctx.Logger().Error("Failed to submit block signatures")
-			panic(err)
-		}
+		randomAndProof := append(req.Header.EncryptedRandom.Random, req.Header.EncryptedRandom.Proof...,) //nolint:all
+		ProofAppend := append(commit, data...)
+		// random, err := api.SubmitBlockSignatures(header, commit, data, randomAndProof)
+		// if err != nil {
+		// 	ctx.Logger().Error("Failed to submit block signatures")
+		// 	panic(err)
+		// }
 
-		a.keeper.SetRandomSeed(ctx, random)
+		// a.keeper.SetRandomSeed(ctx, random)
+		a.keeper.SetRandomSeed(ctx, append(randomAndProof, ProofAppend...))
 	} else {
 		println("No random got from TM header")
 	}
