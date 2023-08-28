@@ -191,6 +191,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
+	tv12_1 "github.com/comdex-official/comdex/app/upgrades/testnet/v12_1"
 )
 
 const (
@@ -1456,6 +1457,11 @@ func (a *App) registerUpgradeHandlers() {
 			mv12.UpgradeName,
 			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper, a.BankKeeper, a.CollectorKeeper, a.LendKeeper, a.AuctionKeeper, a.LiquidationKeeper, a.AssetKeeper),
 		)
+	case upgradeInfo.Name == tv12_1.UpgradeName:
+		a.UpgradeKeeper.SetUpgradeHandler(
+			tv12_1.UpgradeName,
+			tv12_1.CreateUpgradeHandlerV121(a.mm, a.configurator, a.WasmKeeper),
+		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
@@ -1478,6 +1484,10 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 				liquidationsV2types.ModuleName,
 				auctionsV2types.ModuleName,
 			},
+		}
+	case upgradeInfo.Name == tv12_1.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{},
 		}
 	}
 	return storeUpgrades
