@@ -1,8 +1,6 @@
 package market
 
 import (
-	"fmt"
-
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	bandkeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
@@ -62,10 +60,4 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 			k.SetTwa(ctx, twa)
 		}
 	}
-	fmt.Println("----------+++++++++++--------------")
-	fmt.Println("---------")
-	fmt.Println(k.GetRandomSeed(ctx, ctx.BlockHeight()))
-	fmt.Println("---------")
-	fmt.Println("----------+++++++++++--------------")
-	
 }

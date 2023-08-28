@@ -217,7 +217,7 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
-	github.com/rs/zerolog v1.29.1 // indirect
+	github.com/rs/zerolog v1.27.0 // indirect
 	github.com/ryancurrah/gomodguard v1.3.0 // indirect
 	github.com/ryanrolds/sqlclosecheck v0.4.0 // indirect
 	github.com/sanposhiho/wastedassign/v2 v2.0.7 // indirect
@@ -292,8 +292,6 @@ replace (
 	github.com/cosmos/iavl v0.19.5 => github.com/cosmos/iavl v0.19.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// Informal Tendermint fork to be replaced with skip-mev tendermint
-	// github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
-	github.com/tendermint/tendermint => /Users/chandragupta/go/src/github.com/skip-mev/mev-tendermint
-	// github.com/tendermint/tendermint => github.com/scrtlabs/tendermint v1.9.0-scrt
+	github.com/tendermint/tendermint => github.com/skip-mev/mev-tendermint v0.34.24-mev.18
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
