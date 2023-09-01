@@ -355,6 +355,17 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 				return nil, sdkerrors.Wrap(err, "GetPoolByApp query response")
 			}
 			return bz, nil
+		} else if comdexQuery.GetAssetPrice != nil {
+			assetID := comdexQuery.GetAssetPrice.AssetID
+			assetPrice, _ := queryPlugin.WasmGetAssetPrice(ctx, assetID)
+			res := bindings.GetAssetPriceResponse{
+				Price: assetPrice,
+			}
+			bz, err := json.Marshal(res)
+			if err != nil {
+				return nil, sdkerrors.Wrap(err, "GetAssetPrice query response")
+			}
+			return bz, nil
 		}
 		return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown App Data query variant"}
 	}
