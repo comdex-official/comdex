@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	// ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/bandoracle/types"
@@ -14,7 +14,7 @@ type ChannelKeeper interface {
 	ChanCloseInit(ctx sdk.Context, portID, channelID string, capability *capabilitytypes.Capability) error
 	GetChannel(ctx sdk.Context, srcPort, srcChannel string) (ibcchanneltypes.Channel, bool)
 	GetNextSequenceSend(ctx sdk.Context, portID, channelID string) (uint64, bool)
-	SendPacket(ctx sdk.Context, cap *capabilitytypes.Capability, packet ibcexported.PacketI) error
+	// SendPacket(ctx sdk.Context, cap *capabilitytypes.Capability, packet ibcexported.PacketI) error
 }
 
 type PortKeeper interface {

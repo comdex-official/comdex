@@ -13,6 +13,6 @@ var (
 
 var (
 	MinPoolPrice               = sdk.NewDecWithPrec(1, 15)            // 10^-15
-	MaxPoolPrice               = sdk.NewDec(sdkmath.NewIntWithDecimal(1, 20).Int64()) // 10^20
+	MaxPoolPrice               = sdk.NewDecFromInt(sdkmath.NewIntWithDecimal(1, 20)) // 10^20
 	MinRangedPoolPriceGapRatio = sdk.NewDecWithPrec(1, 3)             // 0.001, 0.1%
 )

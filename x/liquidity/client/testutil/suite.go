@@ -12,7 +12,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
+	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/comdex-official/comdex/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
@@ -32,8 +33,8 @@ type LiquidityIntegrationTestSuite struct {
 	msgServer types.MsgServer
 }
 
-func NewAppConstructor() network.AppConstructor {
-	return func(val network.ValidatorI) servertypes.Application {
+func NewAppConstructor() networkI.AppConstructor {
+	return func(val networkI.ValidatorI) servertypes.Application {
 		return chain.New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.GetWasmEnabledProposals(), chain.EmptyWasmOpts,
@@ -60,7 +61,7 @@ func (s *LiquidityIntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network, _ = network.New(s.T(), s.T().TempDir(), cfg)
+	s.network= network.New(s.T(), cfg)
 
 	s.val = s.network.Validators[0]
 

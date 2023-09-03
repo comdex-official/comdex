@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	// channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 	protobuftypes "github.com/gogo/protobuf/types"
 
@@ -50,18 +50,18 @@ func (k Keeper) SetLastFetchPriceID(ctx sdk.Context, id types.OracleRequestID) {
 
 func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types.MsgFetchPriceDataResponse, error) {
 	sourcePort := types.PortID
-	sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
-	if !found {
-		return nil, nil
-	}
-	destinationPort := sourceChannelEnd.GetCounterparty().GetPortID()
-	destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
+	// sourceChannelEnd, found := k.channelKeeper.GetChannel(ctx, sourcePort, msg.SourceChannel)
+	// if !found {
+	// 	return nil, nil
+	// }
+	// destinationPort := sourceChannelEnd.GetCounterparty().GetPortID()
+	// destinationChannel := sourceChannelEnd.GetCounterparty().GetChannelID()
 
-	// get the next sequence
-	sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
-	if !found {
-		return nil, nil
-	}
+	// // get the next sequence
+	// sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, sourcePort, msg.SourceChannel)
+	// if !found {
+	// 	return nil, nil
+	// }
 
 	channelCap, ok := k.scopedKeeper.GetCapability(ctx, host.ChannelCapabilityPath(sourcePort, msg.SourceChannel))
 	if !ok {
@@ -88,16 +88,24 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 		msg.PrepareGas,
 		msg.ExecuteGas,
 	)
-	err := k.channelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
-		packetData.GetBytes(),
-		sequence,
-		sourcePort,
-		msg.SourceChannel,
-		destinationPort,
-		destinationChannel,
-		clienttypes.NewHeight(0, 0),
+	// err := k.channelKeeper.SendPacket(ctx, channelCap, channeltypes.NewPacket(
+	// 	packetData.GetBytes(),
+	// 	sequence,
+	// 	sourcePort,
+	// 	msg.SourceChannel,
+	// 	destinationPort,
+	// 	destinationChannel,
+	// 	clienttypes.NewHeight(0, 0),
+	// 	uint64(ctx.BlockTime().UnixNano()+int64(10*time.Minute)), // Arbitrary timestamp timeout for now
+	// ))
+	_, err := k.channelKeeper.SendPacket(ctx, 
+		channelCap, 
+		sourcePort, 
+		msg.SourceChannel, 
+		clienttypes.NewHeight(0, 0), 
 		uint64(ctx.BlockTime().UnixNano()+int64(10*time.Minute)), // Arbitrary timestamp timeout for now
-	))
+		packetData.GetBytes(),
+	)
 	if err != nil {
 		return nil, nil
 	}

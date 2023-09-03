@@ -28,9 +28,9 @@ import (
 	// "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/ibcratelimitmodule"
 	// ibcratelimittypes "github.com/osmosis-labs/osmosis/v15/x/ibc-rate-limit/types"
 
-	ibcratelimit "github.com/comdex-official/comdex/x/ibcratelimit"
-	"github.com/comdex-official/comdex/x/ibcratelimit/ibcratelimitmodule"
-	ibcratelimittypes "github.com/comdex-official/comdex/x/ibcratelimit/types"
+	// ibcratelimit "github.com/comdex-official/comdex/x/ibcratelimit"
+	// "github.com/comdex-official/comdex/x/ibcratelimit/ibcratelimitmodule"
+	// ibcratelimittypes "github.com/comdex-official/comdex/x/ibcratelimit/types"
 
 	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
 	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
@@ -305,7 +305,7 @@ var (
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
-		ibcratelimitmodule.AppModuleBasic{},
+		// ibcratelimitmodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 	)
 )
@@ -389,7 +389,7 @@ type App struct {
 	// IBC modules
 	// transfer module
 	RawIcs20TransferAppModule ibctransfer.AppModule
-	RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
+	// RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
 	TransferStack             *ibchooks.IBCMiddleware
 	Ics20WasmHooks            *ibchooks.WasmHooks
 	HooksICS4Wrapper          ibchooks.ICS4Middleware
@@ -489,7 +489,7 @@ func New(
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquidationsV2types.ModuleName)
 	app.ParamsKeeper.Subspace(auctionsV2types.ModuleName)
-	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
+	// app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
@@ -889,9 +889,9 @@ func New(
 	)
 
 	// Pass the contract keeper to all the structs (generally ICS4Wrappers for ibc middlewares) that need it
-	app.ContractKeeper = wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)
-	app.RateLimitingICS4Wrapper.ContractKeeper = app.ContractKeeper
-	app.Ics20WasmHooks.ContractKeeper = &app.WasmKeeper
+	// app.ContractKeeper = wasmkeeper.NewDefaultPermissionKeeper(app.WasmKeeper)
+	// app.RateLimitingICS4Wrapper.ContractKeeper = app.ContractKeeper
+	// app.Ics20WasmHooks.ContractKeeper = &app.WasmKeeper
 
 	// register the proposal types
 	govRouter := govtypesv1beta1.NewRouter()
@@ -998,7 +998,7 @@ func New(
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
 		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
-		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
+		// ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -1044,7 +1044,7 @@ func New(
 		esmtypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
-		ibcratelimittypes.ModuleName,
+		// ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1086,7 +1086,7 @@ func New(
 		esmtypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
-		ibcratelimittypes.ModuleName,
+		// ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1132,7 +1132,7 @@ func New(
 		crisistypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
-		ibcratelimittypes.ModuleName,
+		// ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1239,15 +1239,15 @@ func (a *App) WireICS20PreWasmKeeper(
 	)
 
 	// ChannelKeeper wrapper for rate limiting SendPacket(). The wasmKeeper needs to be added after it's created
-	rateLimitingICS4Wrapper := ibcratelimit.NewICS4Middleware(
-		a.HooksICS4Wrapper,
-		&a.AccountKeeper,
-		// wasm keeper we set later.
-		nil,
-		a.BankBaseKeeper,
-		a.GetSubspace(ibcratelimittypes.ModuleName),
-	)
-	a.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
+	// rateLimitingICS4Wrapper := ibcratelimit.NewICS4Middleware(
+	// 	a.HooksICS4Wrapper,
+	// 	&a.AccountKeeper,
+	// 	// wasm keeper we set later.
+	// 	nil,
+	// 	a.BankBaseKeeper,
+	// 	a.GetSubspace(ibcratelimittypes.ModuleName),
+	// )
+	// a.RateLimitingICS4Wrapper = &rateLimitingICS4Wrapper
 
 	// Create Transfer Keepers
 	transferKeeper := ibctransferkeeper.NewKeeper(
@@ -1255,7 +1255,8 @@ func (a *App) WireICS20PreWasmKeeper(
 		a.keys[ibctransfertypes.StoreKey],
 		a.GetSubspace(ibctransfertypes.ModuleName),
 		// The ICS4Wrapper is replaced by the rateLimitingICS4Wrapper instead of the channel
-		a.RateLimitingICS4Wrapper,
+		// a.RateLimitingICS4Wrapper,
+		a.PacketForwardKeeper,
 		a.IbcKeeper.ChannelKeeper,
 		&a.IbcKeeper.PortKeeper,
 		a.AccountKeeper,
@@ -1287,10 +1288,10 @@ func (a *App) WireICS20PreWasmKeeper(
 	)
 
 	// RateLimiting IBC Middleware
-	rateLimitingTransferModule := ibcratelimit.NewIBCModule(packetForwardMiddleware, a.RateLimitingICS4Wrapper)
+	// rateLimitingTransferModule := ibcratelimit.NewIBCModule(packetForwardMiddleware, a.RateLimitingICS4Wrapper)
 
 	// Hooks Middleware
-	hooksTransferModule := ibchooks.NewIBCMiddleware(&rateLimitingTransferModule, &a.HooksICS4Wrapper)
+	hooksTransferModule := ibchooks.NewIBCMiddleware(&packetForwardMiddleware, &a.HooksICS4Wrapper)
 	a.TransferStack = &hooksTransferModule
 }
 
