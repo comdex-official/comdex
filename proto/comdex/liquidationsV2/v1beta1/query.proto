@@ -93,24 +93,24 @@ message QueryAppReserveFundsTxDataResponse {
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex-official/comdex/liquidationsV2/params";
+    option (google.api.http).get = "/comdex/liquidations/v2/params";
   }
   rpc QueryLockedVault(QueryLockedVaultRequest) returns (QueryLockedVaultResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/locked_vault/{app_id}/{id}";
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vault/{app_id}/{id}";
   }
   rpc QueryLockedVaults(QueryLockedVaultsRequest) returns (QueryLockedVaultsResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/locked_vaults";
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vaults";
   }
   rpc QueryLiquidationWhiteListing(QueryLiquidationWhiteListingRequest) returns (QueryLiquidationWhiteListingResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/liquidation_whiteListing/{app_id}";
+    option (google.api.http).get = "/comdex/liquidations/v2/liquidation_whiteListing/{app_id}";
   }
   rpc QueryLiquidationWhiteListings(QueryLiquidationWhiteListingsRequest) returns (QueryLiquidationWhiteListingsResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/liquidation_whiteListings";
+    option (google.api.http).get = "/comdex/liquidations/v2/liquidation_whiteListings";
   }
   rpc QueryLockedVaultsHistory(QueryLockedVaultsHistoryRequest) returns (QueryLockedVaultsHistoryResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/locked_vaults_history";
+    option (google.api.http).get = "/comdex/liquidations/v2/locked_vaults_history";
   }
   rpc QueryAppReserveFundsTxData(QueryAppReserveFundsTxDataRequest) returns (QueryAppReserveFundsTxDataResponse) {
-    option (google.api.http).get = "/comdex/liquidationsV2/v1beta1/app_reserve_funds_tx_data/{app_id}";
+    option (google.api.http).get = "/comdex/liquidations/v2/app_reserve_funds_tx_data/{app_id}";
   }
 }

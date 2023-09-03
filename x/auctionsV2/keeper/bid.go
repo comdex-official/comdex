@@ -730,3 +730,28 @@ func (k Keeper) GetUserLimitBidDataByAddress(ctx sdk.Context, address string) (m
 	k.cdc.MustUnmarshal(value, &mappingData)
 	return mappingData, true
 }
+
+func (k Keeper) GetUserLimitBidsByAssetID(ctx sdk.Context, address string, debtAssetId, collateralAssetId uint64) (sdk.Int, bool) {
+	var (
+		store  = k.Store(ctx)
+		key    = types.LimitBidKeyForAssetID(debtAssetId, collateralAssetId)
+		iter   = sdk.KVStorePrefixIterator(store, key)
+		amount = sdk.ZeroInt()
+	)
+
+	defer func(iter sdk.Iterator) {
+		err := iter.Close()
+		if err != nil {
+			return
+		}
+	}(iter)
+
+	for ; iter.Valid(); iter.Next() {
+		var item types.LimitOrderBid
+		k.cdc.MustUnmarshal(iter.Value(), &item)
+		if item.BidderAddress == address {
+			amount = amount.Add(item.DebtToken.Amount)
+		}
+	}
+	return amount, true
+}

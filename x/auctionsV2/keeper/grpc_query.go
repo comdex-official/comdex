@@ -78,12 +78,12 @@ func (q QueryServer) Auctions(c context.Context, req *types.QueryAuctionsRequest
 				}
 			} else if req.AuctionType == 2 {
 				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
-				if !item.AuctionType && lockedVault.InitiatorType == "surplus" {
+				if accumulate && !item.AuctionType && lockedVault.InitiatorType == "surplus" {
 					items = append(items, item)
 				}
 			} else if req.AuctionType == 3 {
 				lockedVault, _ := q.LiquidationsV2.GetLockedVault(ctx, item.AppId, item.LockedVaultId)
-				if !item.AuctionType && lockedVault.InitiatorType == "debt" {
+				if accumulate && !item.AuctionType && lockedVault.InitiatorType == "debt" {
 					items = append(items, item)
 				}
 			}
@@ -124,9 +124,14 @@ func (q QueryServer) Bids(c context.Context, req *types.QueryBidsRequest) (*type
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
-
-			if accumulate {
-				items = append(items, item)
+			if req.BidType == 1 {
+				if accumulate && item.BidType == "dutch" {
+					items = append(items, item)
+				}
+			} else if req.BidType == 2 {
+				if accumulate && item.BidType == "english" {
+					items = append(items, item)
+				}
 			}
 
 			return true, nil
@@ -261,7 +266,7 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 	}
 
 	var (
-		items []types.LimitBidProtocolData
+		items []types.LimitBidProtocolDataForQuery
 		ctx   = sdk.UnwrapSDKContext(c)
 		key   []byte
 	)
@@ -272,12 +277,23 @@ func (q QueryServer) LimitBidProtocolData(c context.Context, req *types.QueryLim
 		req.Pagination,
 		func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.LimitBidProtocolData
+			var data types.LimitBidProtocolDataForQuery
 			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 
 			if accumulate {
-				items = append(items, item)
+				collateralAsset, _ := q.asset.GetAsset(ctx, item.CollateralAssetId)
+				debtAsset, _ := q.asset.GetAsset(ctx, item.DebtAssetId)
+				data = types.LimitBidProtocolDataForQuery{
+					CollateralAssetId:    item.CollateralAssetId,
+					DebtAssetId:          item.DebtAssetId,
+					BidValue:             item.BidValue,
+					MaxDiscount:          item.MaxDiscount,
+					CollateralAssetDenom: collateralAsset.Denom,
+					DebtAssetDenom:       debtAsset.Denom,
+				}
+				items = append(items, data)
 			}
 
 			return true, nil
@@ -328,5 +344,156 @@ func (q QueryServer) AuctionFeesCollectionData(c context.Context, req *types.Que
 	return &types.QueryAuctionFeesCollectionFromLimitBidTxResponse{
 		AuctionFeesCollectionFromLimitBidTx: items,
 		Pagination:                          pagination,
+	}, nil
+}
+
+func (q QueryServer) LimitBidProtocolDataWithUser(c context.Context, req *types.QueryLimitBidProtocolDataWithUserRequest) (*types.QueryLimitBidProtocolDataWithUserResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.LimitBidProtocolDataWithUserForQuery
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.MarketBidProtocolKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.LimitBidProtocolData
+			var data types.LimitBidProtocolDataWithUserForQuery
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if accumulate {
+				collateralAsset, _ := q.asset.GetAsset(ctx, item.CollateralAssetId)
+				debtAsset, _ := q.asset.GetAsset(ctx, item.DebtAssetId)
+				userBidValue, found := q.GetUserLimitBidsByAssetID(ctx, req.Bidder, item.DebtAssetId, item.CollateralAssetId)
+				if !found {
+					userBidValue = sdk.ZeroInt()
+				}
+				data = types.LimitBidProtocolDataWithUserForQuery{
+					CollateralAssetId:    item.CollateralAssetId,
+					DebtAssetId:          item.DebtAssetId,
+					BidValue:             item.BidValue,
+					MaxDiscount:          item.MaxDiscount,
+					CollateralAssetDenom: collateralAsset.Denom,
+					DebtAssetDenom:       debtAsset.Denom,
+					UserBidValue:         userBidValue,
+				}
+				items = append(items, data)
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLimitBidProtocolDataWithUserResponse{
+		LimitBidProtocolDataWithUser: items,
+		Pagination:                   pagination,
+	}, nil
+}
+
+func (q QueryServer) BidsFilter(c context.Context, req *types.QueryBidsFilterRequest) (*types.QueryBidsFilterResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+		items []types.Bid
+	)
+	if req.History {
+		key = types.GetBidHistoricalKey(req.Bidder)
+	} else {
+		key = types.GetUserBidHistoricalKey(req.Bidder)
+	}
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Bid
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+			if req.BidType == 1 {
+				if accumulate && item.BidType == "dutch" {
+					items = append(items, item)
+				}
+			} else if req.BidType == 2 {
+				if accumulate && item.BidType == "english" {
+					items = append(items, item)
+				}
+			}
+
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryBidsFilterResponse{
+		Bidder:     req.Bidder,
+		Bids:       items,
+		Pagination: pagination,
+	}, nil
+}
+
+func (q QueryServer) AuctionsHistory(c context.Context, req *types.QueryAuctionsHistoryRequest) (*types.QueryAuctionsHistoryResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request cannot be empty")
+	}
+
+	var (
+		items []types.AuctionHistorical
+		ctx   = sdk.UnwrapSDKContext(c)
+		key   []byte
+	)
+	key = types.AuctionHistoricalKeyPrefix
+
+	pagination, err := query.FilteredPaginate(
+		prefix.NewStore(q.Store(ctx), key),
+		req.Pagination,
+		func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.AuctionHistorical
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
+			if req.AuctionType == 1 {
+				if accumulate {
+					if item.AuctionHistorical.AuctionType {
+						items = append(items, item)
+					}
+				}
+			} else if req.AuctionType == 2 {
+				if accumulate && !item.AuctionHistorical.AuctionType && item.LockedVault.InitiatorType == "surplus" {
+					items = append(items, item)
+				}
+			} else if req.AuctionType == 3 {
+				if accumulate && !item.AuctionHistorical.AuctionType && item.LockedVault.InitiatorType == "debt" {
+					items = append(items, item)
+				}
+			}
+			return true, nil
+		},
+	)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAuctionsHistoryResponse{
+		Auctions:   items,
+		Pagination: pagination,
 	}, nil
 }

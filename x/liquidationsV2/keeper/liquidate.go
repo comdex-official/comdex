@@ -206,6 +206,14 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPair
 	//will this be enough to make sure auction does not get bid due to collateral not being able to cover the debt?
 	//can a case occur in which liquidation penalty and auction bonus are still not enough?
 
+	// if english auction check if it is enabled or not
+	if !value.AuctionType {
+		liquidationWhitelistingAppData, found := k.GetLiquidationWhiteListing(ctx, appID)
+		if !found || !liquidationWhitelistingAppData.IsEnglishActivated {
+			return fmt.Errorf("Auction could not be initiated for %s ", types.ErrEnglishAuctionDisabled)
+		}
+	}
+
 	k.SetLockedVault(ctx, value)
 	k.SetLockedVaultID(ctx, value.LockedVaultId)
 	//Call auction activator

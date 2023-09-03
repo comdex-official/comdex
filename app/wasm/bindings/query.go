@@ -30,6 +30,7 @@ type ComdexQuery struct {
 	CheckBorrowed                          *CheckBorrowed                          `json:"check_borrowed,omitempty"`
 	CheckLiquidityProvided                 *CheckLiquidityProvided                 `json:"check_liquidity_provided,omitempty"`
 	GetPoolByApp                           *GetPoolByApp                           `json:"get_pool_by_app,omitempty"`
+	GetAssetPrice                          *GetAssetPrice                          `json:"get_asset_price,omitempty"`
 }
 
 type AppData struct {
@@ -290,4 +291,12 @@ type GetPoolByApp struct {
 
 type GetPoolByAppResponse struct {
 	Pools []uint64 `json:"pools"`
+}
+
+type GetAssetPrice struct {
+	AssetID uint64 `json:"asset_id"`
+}
+
+type GetAssetPriceResponse struct {
+	Price uint64 `json:"price"`
 }

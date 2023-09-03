@@ -200,6 +200,7 @@ import (
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
+	tv12_1 "github.com/comdex-official/comdex/app/upgrades/testnet/v12_1"
 )
 
 const (
@@ -864,7 +865,7 @@ func New(
 	}
 	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1,cosmwasm_1_2"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -1485,7 +1486,12 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == mv12.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			mv12.UpgradeName,
-			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper,a.BankKeeper,a.CollectorKeeper),
+			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper, a.BankKeeper, a.CollectorKeeper, a.LendKeeper, a.AuctionKeeper, a.LiquidationKeeper, a.AssetKeeper),
+		)
+	case upgradeInfo.Name == tv12_1.UpgradeName:
+		a.UpgradeKeeper.SetUpgradeHandler(
+			tv12_1.UpgradeName,
+			tv12_1.CreateUpgradeHandlerV121(a.mm, a.configurator, a.WasmKeeper),
 		)
 	}
 
@@ -1509,6 +1515,10 @@ func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *store
 				liquidationsV2types.ModuleName,
 				auctionsV2types.ModuleName,
 			},
+		}
+	case upgradeInfo.Name == tv12_1.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{},
 		}
 	}
 	return storeUpgrades
