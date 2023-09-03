@@ -10,7 +10,7 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -338,7 +338,7 @@ func (m *Pool) GetAssetData() []*AssetDataPoolMapping {
 
 type UserAssetLendBorrowMapping struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	//to check if poool id is needed
+	// to check if poool id is needed
 	LendId   uint64   `protobuf:"varint,2,opt,name=lend_id,json=lendId,proto3" json:"lend_id,omitempty" yaml:"lend_id"`
 	PoolId   uint64   `protobuf:"varint,3,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
 	BorrowId []uint64 `protobuf:"varint,4,rep,packed,name=borrow_id,json=borrowId,proto3" json:"borrow_id,omitempty" yaml:"borrow_id"`
