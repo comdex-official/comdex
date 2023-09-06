@@ -8,7 +8,7 @@ import (
 
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
-	Msg := []byte(`{"increment":{}}`)
+	Msg := []byte(`{"resolve_bet":{}}`)
 
 	allContracts := k.GetAllContract(ctx)
 	logger := k.Logger(ctx)
