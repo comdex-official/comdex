@@ -7,7 +7,7 @@ require (
 	github.com/CosmWasm/wasmvm v1.3.0
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cosmos/cosmos-sdk v0.46.13
-	github.com/cosmos/ibc-apps/modules/async-icq/v4 v4.0.0-20230524151648-c02fa46c2860
+	github.com/cosmos/ibc-apps/modules/async-icq/v4 v4.1.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
@@ -19,8 +19,8 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.8-0.20220506192307-f628bb5dc95b
-	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
-	google.golang.org/grpc v1.53.0
+	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5 // indirect
+	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -32,6 +32,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
 	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4
+	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
 	gopkg.in/yaml.v2 v2.4.0
 	mvdan.cc/gofumpt v0.5.0
 )
@@ -121,7 +122,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
-	github.com/golang/glog v1.0.0 // indirect
+	github.com/golang/glog v1.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/golangci/check v0.0.0-20180506172741-cfe4005ccda2 // indirect
@@ -266,16 +267,17 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
 	golang.org/x/exp/typeparams v0.0.0-20230224173230-c95f2b4c22f2 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/term v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/term v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/tools v0.4.3 // indirect
