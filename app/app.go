@@ -831,6 +831,7 @@ func New(
 		app.keys[commontypes.StoreKey],
 		app.keys[commontypes.MemStoreKey],
 		app.GetSubspace(commontypes.ModuleName),
+		&app.WasmKeeper,
 	)
 
 	// ICQ Keeper
@@ -983,7 +984,7 @@ func New(
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
 		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
-		common.NewAppModule(app.cdc, app.CommonKeeper, app.AccountKeeper, app.BankKeeper),
+		common.NewAppModule(app.cdc, app.CommonKeeper, app.AccountKeeper, app.BankKeeper, app.WasmKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),

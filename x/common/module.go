@@ -12,6 +12,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/comdex-official/comdex/x/common/client/cli"
+	"github.com/comdex-official/comdex/x/common/expected"
 	"github.com/comdex-official/comdex/x/common/keeper"
 	"github.com/comdex-official/comdex/x/common/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -101,6 +102,7 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	conOps        expected.ContractOpsKeeper
 }
 
 func NewAppModule(
@@ -108,12 +110,14 @@ func NewAppModule(
 	keeper keeper.Keeper,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
+	conOps expected.ContractOpsKeeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
 		keeper:         keeper,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
+		conOps:         conOps,
 	}
 }
 

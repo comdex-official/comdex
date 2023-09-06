@@ -1,5 +1,9 @@
 package types
 
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "common"
@@ -18,9 +22,15 @@ const (
 
     
 )
-
+var (
+	SetContractKeyPrefix      = []byte{0x11}
+)
 
 
 func KeyPrefix(p string) []byte {
     return []byte(p)
+}
+
+func ContractKey(gameId uint64) []byte {
+	return append(SetContractKeyPrefix,  sdk.Uint64ToBigEndian(gameId)...)
 }
