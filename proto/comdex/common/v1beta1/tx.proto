@@ -1,0 +1,19 @@
+syntax = "proto3";
+package comdex.common.v1beta1;
+
+
+option go_package = "github.com/comdex-official/comdex/x/common/types";
+
+// Msg defines the Msg service.
+service Msg {
+    rpc RegisterContract(MsgRegisterContract) returns(MsgRegisterContractResponse);
+}
+
+message MsgRegisterContract {
+    string creator = 1;
+    string game_name = 2;
+    uint64 game_id = 3;
+    string contractAddr = 4;
+  }
+  
+message MsgRegisterContractResponse {}

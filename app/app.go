@@ -175,10 +175,15 @@ import (
 	liquiditykeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
 
+	"github.com/comdex-official/comdex/x/common"
+	commonkeeper "github.com/comdex-official/comdex/x/common/keeper"
+	commontypes "github.com/comdex-official/comdex/x/common/types"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv11 "github.com/comdex-official/comdex/app/upgrades/mainnet/v11"
 	tv11_4 "github.com/comdex-official/comdex/app/upgrades/testnet/v11_4"
+	nova_3 "github.com/comdex-official/comdex/app/upgrades/novanet/v3"
 )
 
 const (
@@ -277,6 +282,7 @@ var (
 		liquidity.AppModuleBasic{},
 		rewards.AppModuleBasic{},
 		ica.AppModuleBasic{},
+		common.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		ibcratelimitmodule.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -355,6 +361,7 @@ type App struct {
 	TokenmintKeeper   tokenmintkeeper.Keeper
 	LiquidityKeeper   liquiditykeeper.Keeper
 	Rewardskeeper     rewardskeeper.Keeper
+	CommonKeeper      commonkeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -400,7 +407,7 @@ func New(
 			vaulttypes.StoreKey, assettypes.StoreKey, collectortypes.StoreKey, liquidationtypes.StoreKey,
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
-			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
+			rewardstypes.StoreKey, commontypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
 			ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
 		)
 	)
@@ -455,6 +462,7 @@ func New(
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
+	app.ParamsKeeper.Subspace(commontypes.ModuleName)
 	app.ParamsKeeper.Subspace(ibcratelimittypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
@@ -758,6 +766,14 @@ func New(
 		&app.LendKeeper,
 	)
 
+	app.CommonKeeper = commonkeeper.NewKeeper(
+		app.cdc,
+		app.keys[commontypes.StoreKey],
+		app.keys[commontypes.MemStoreKey],
+		app.GetSubspace(commontypes.ModuleName),
+		&app.WasmKeeper,
+	)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOptions)
 	if err != nil {
@@ -885,6 +901,7 @@ func New(
 		tokenmint.NewAppModule(app.cdc, app.TokenmintKeeper, app.AccountKeeper, app.BankKeeper),
 		liquidity.NewAppModule(app.cdc, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.AssetKeeper),
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
+		common.NewAppModule(app.cdc, app.CommonKeeper, app.AccountKeeper, app.BankKeeper, app.WasmKeeper),
 		ibcratelimitmodule.NewAppModule(*app.RateLimitingICS4Wrapper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -925,6 +942,7 @@ func New(
 		wasmtypes.ModuleName,
 		banktypes.ModuleName,
 		rewardstypes.ModuleName,
+		commontypes.ModuleName,
 		liquiditytypes.ModuleName,
 		lendtypes.ModuleName,
 		esmtypes.ModuleName,
@@ -965,6 +983,7 @@ func New(
 		collectortypes.ModuleName,
 		banktypes.ModuleName,
 		rewardstypes.ModuleName,
+		commontypes.ModuleName,
 		liquiditytypes.ModuleName,
 		esmtypes.ModuleName,
 		ibcratelimittypes.ModuleName,
@@ -1009,6 +1028,7 @@ func New(
 		lockertypes.StoreKey,
 		liquiditytypes.ModuleName,
 		rewardstypes.ModuleName,
+		commontypes.ModuleName,
 		crisistypes.ModuleName,
 		ibcratelimittypes.ModuleName,
 		ibchookstypes.ModuleName,
@@ -1336,6 +1356,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		wasm.ModuleName:                {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		commontypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 		icatypes.ModuleName:            nil,
 		assettypes.ModuleName:          nil,
 	}
@@ -1361,6 +1382,11 @@ func (a *App) registerUpgradeHandlers() {
 			mv11.UpgradeName,
 			mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
 		)
+	case upgradeInfo.Name == nova_3.UpgradeName:
+		a.UpgradeKeeper.SetUpgradeHandler(
+			nova_3.UpgradeName,
+			nova_3.CreateUpgradeHandlerV3(a.mm, a.configurator),
+		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
@@ -1382,6 +1408,10 @@ func upgradeHandlers(upgradeInfo storetypes.UpgradeInfo, a *App, storeUpgrades *
 	case upgradeInfo.Name == mv11.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{ibchookstypes.StoreKey, packetforwardtypes.StoreKey},
+		}
+	case upgradeInfo.Name == nova_3.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+		storeUpgrades = &storetypes.StoreUpgrades{
+			Added: []string{commontypes.StoreKey},
 		}
 	}
 	return storeUpgrades
