@@ -5,7 +5,7 @@ import (
 	"github.com/comdex-official/comdex/x/common/types"
 )
 
-func (k Keeper) SetContract(ctx sdk.Context, msg types.MsgRegisterContract) error {
+func (k Keeper) SetContract(ctx sdk.Context, msg types.WhilistedContract) error {
 	var (
 		store = k.Store(ctx)
 		key   = types.ContractKey(msg.GameId)
@@ -16,7 +16,7 @@ func (k Keeper) SetContract(ctx sdk.Context, msg types.MsgRegisterContract) erro
 	return nil
 }
 
-func (k Keeper) GetContract(ctx sdk.Context, gameID uint64) (contract types.MsgRegisterContract, found bool) {
+func (k Keeper) GetContract(ctx sdk.Context, gameID uint64) (contract types.WhilistedContract, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ContractKey(gameID)
@@ -31,7 +31,7 @@ func (k Keeper) GetContract(ctx sdk.Context, gameID uint64) (contract types.MsgR
 	return contract, true
 }
 
-func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.MsgRegisterContract) {
+func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.WhilistedContract) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.SetContractKeyPrefix)
@@ -45,7 +45,7 @@ func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.MsgRegisterCo
 	}(iter)
 
 	for ; iter.Valid(); iter.Next() {
-		var contract types.MsgRegisterContract
+		var contract types.WhilistedContract
 		k.cdc.MustUnmarshal(iter.Value(), &contract)
 		contracts = append(contracts, contract)
 	}

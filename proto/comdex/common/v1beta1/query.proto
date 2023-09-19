@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "comdex/common/v1beta1/params.proto";
+import "comdex/common/v1beta1/common.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/common/types";
 
@@ -13,6 +14,9 @@ service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex-official/comdex/common/params";
+  }
+  rpc QueryWhitelistedContracts(QueryWhitelistedContractsRequest) returns (QueryWhitelistedContractsResponse) {
+    option (google.api.http).get = "/comdex-official/comdex/common/whitelisted_contracts";
   }
 }
 
@@ -23,5 +27,16 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryWhitelistedContractsRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message QueryWhitelistedContractsResponse {
+  repeated WhilistedContract whilisted_contracts = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
 }
 

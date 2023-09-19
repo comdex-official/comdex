@@ -1,0 +1,13 @@
+syntax = "proto3";
+package comdex.common.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/common/types";
+
+message WhilistedContract {
+    string creator = 1;
+    string game_name = 2;
+    uint64 game_id = 3;
+    string contractAddr = 4;
+}

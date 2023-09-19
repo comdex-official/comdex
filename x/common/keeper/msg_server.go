@@ -45,8 +45,14 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 			return &types.MsgRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "contract already registered for this game ID")
 		}
 	}
+	contract := types.WhilistedContract {
+		Creator: msg.Creator,
+		GameName: msg.GameName,
+		GameId: msg.GameId,
+		ContractAddr: msg.ContractAddr,
+	}
 
-	err := k.SetContract(ctx, *msg)
+	err := k.SetContract(ctx, contract)
 	if err != nil {
 		ctx.Logger().Error("failed to set new contract")
 		return &types.MsgRegisterContractResponse{}, err
