@@ -51,7 +51,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
-		WithBroadcastMode(flags.FlagBroadcastMode).
+		// WithBroadcastMode(flags.FlagBroadcastMode).
 		WithHomeDir(comdex.DefaultNodeHome).
 		WithViper("")
 
@@ -95,6 +95,9 @@ func initTendermintConfig() *tmcfg.Config {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
+	cfg := sdk.GetConfig()
+	cfg.Seal()
+	
 	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
@@ -261,5 +264,5 @@ func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64
 		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
 	}
 
-	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }

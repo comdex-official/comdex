@@ -3,8 +3,8 @@ package app
 import (
 	"encoding/json"
 	"time"
-	simappparams "cosmossdk.io/simapp/params"
-
+	// simappparams "cosmossdk.io/simapp/params"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -33,8 +33,8 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func MakeTestEncodingConfig() simappparams.EncodingConfig {
-	encodingConfig := simappparams.MakeTestEncodingConfig()
+func MakeTestEncodingConfig() moduletestutil.TestEncodingConfig {
+	encodingConfig := moduletestutil.MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)

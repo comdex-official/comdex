@@ -11,9 +11,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgFetchPriceData{},
-	)
+	registry.RegisterImplementations((*sdk.Msg)(nil))
 
 	registry.RegisterImplementations(
 		(*govtypes.Content)(nil),
@@ -23,5 +21,5 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 var (
 	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewProtoCodec(cdctypes.NewInterfaceRegistry())
+	ModuleCdc = codec.NewAminoCodec(Amino)
 )
