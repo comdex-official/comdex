@@ -1497,7 +1497,7 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == tv12_1.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			tv12_1.UpgradeName,
-			tv12_1.CreateUpgradeHandlerV121(a.mm, a.configurator, a.WasmKeeper),
+			tv12_1.CreateUpgradeHandlerV121(a.mm, a.configurator, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper),
 		)
 	}
 
@@ -1524,7 +1524,10 @@ func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *store
 		}
 	case upgradeInfo.Name == tv12_1.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
-			Added: []string{},
+			Added: []string{
+				crisistypes.StoreKey,
+				consensusparamtypes.StoreKey,
+			},
 		}
 	}
 	return storeUpgrades
