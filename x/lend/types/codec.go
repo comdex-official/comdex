@@ -81,6 +81,6 @@ var (
 func init() {
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
-	sdk.RegisterLegacyAminoCodec(amino)
+	// sdk.RegisterLegacyAminoCodec(amino)
 	amino.Seal()
 }
