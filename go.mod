@@ -9,7 +9,7 @@ require (
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
-	github.com/cosmos/cosmos-sdk v0.47.4
+	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230726182236-3a9d46a7c2a4
 	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230726182236-3a9d46a7c2a4
