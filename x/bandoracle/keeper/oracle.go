@@ -8,9 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+
 	// channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	protobuftypes "github.com/cosmos/gogoproto/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
-	protobuftypes "github.com/gogo/protobuf/types"
 
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
@@ -98,11 +99,11 @@ func (k Keeper) FetchPrice(ctx sdk.Context, msg types.MsgFetchPriceData) (*types
 	// 	clienttypes.NewHeight(0, 0),
 	// 	uint64(ctx.BlockTime().UnixNano()+int64(10*time.Minute)), // Arbitrary timestamp timeout for now
 	// ))
-	_, err := k.channelKeeper.SendPacket(ctx, 
-		channelCap, 
-		sourcePort, 
-		msg.SourceChannel, 
-		clienttypes.NewHeight(0, 0), 
+	_, err := k.channelKeeper.SendPacket(ctx,
+		channelCap,
+		sourcePort,
+		msg.SourceChannel,
+		clienttypes.NewHeight(0, 0),
 		uint64(ctx.BlockTime().UnixNano()+int64(10*time.Minute)), // Arbitrary timestamp timeout for now
 		packetData.GetBytes(),
 	)
