@@ -1,4 +1,4 @@
-package v12_1
+package v13
 
 import (
 	"fmt"
@@ -17,19 +17,21 @@ import (
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 )
 
-func CreateUpgradeHandlerV121(
+func CreateUpgradeHandlerV13(
 	mm *module.Manager,
 	configurator module.Configurator,
 	wasmKeeper wasmkeeper.Keeper,
@@ -38,9 +40,11 @@ func CreateUpgradeHandlerV121(
 	IBCKeeper ibckeeper.Keeper,
 	GovKeeper govkeeper.Keeper,
 	StakingKeeper stakingkeeper.Keeper,
+	MintKeeper mintkeeper.Keeper,
+	SlashingKeeper slashingkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying test net upgrade - v.12.1.0")
+		ctx.Logger().Info("Applying test net upgrade - v.13.0.0")
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
 		// https://github.com/cosmos/cosmos-sdk/pull/12363/files
@@ -80,8 +84,8 @@ func CreateUpgradeHandlerV121(
 			case wasmtypes.ModuleName:
 				keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 
-			// TODO: comdex modules
-			
+				// TODO: comdex modules
+
 			}
 
 			if !subspace.HasKeyTable() {
@@ -125,6 +129,24 @@ func CreateUpgradeHandlerV121(
 		if err != nil {
 			return nil, err
 		}
+
+		// x/Mint
+		// Double blocks per year (from 6 seconds to 3 = 2x blocks per year)
+		mintParams := MintKeeper.GetParams(ctx)
+		mintParams.BlocksPerYear *= 2
+		if err = MintKeeper.SetParams(ctx, mintParams); err != nil {
+			return nil, err
+		}
+		logger.Info(fmt.Sprintf("updated minted blocks per year logic to %v", mintParams))
+
+		// x/Slashing
+		// Double slashing window due to double blocks per year
+		slashingParams := SlashingKeeper.GetParams(ctx)
+		slashingParams.SignedBlocksWindow *= 2
+		if err := SlashingKeeper.SetParams(ctx, slashingParams); err != nil {
+			return nil, err
+		}
+		logger.Info(fmt.Sprintf("updated slashing params to %v", slashingParams))
 
 		// update wasm to permissionless
 		wasmParams := wasmKeeper.GetParams(ctx)
