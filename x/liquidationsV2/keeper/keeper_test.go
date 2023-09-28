@@ -15,9 +15,9 @@ import (
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"testing"
 )
 
@@ -46,7 +46,7 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.vaultKeeper = s.app.VaultKeeper
 	s.liquidationKeeper = s.app.NewliqKeeper

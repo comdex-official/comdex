@@ -392,11 +392,11 @@ type App struct {
 	// transfer module
 	RawIcs20TransferAppModule ibctransfer.AppModule
 	// RateLimitingICS4Wrapper   *ibcratelimit.ICS4Wrapper
-	TransferStack             *ibchooks.IBCMiddleware
-	Ics20WasmHooks            *ibchooks.WasmHooks
-	HooksICS4Wrapper          ibchooks.ICS4Middleware
-	PacketForwardKeeper       *packetforwardkeeper.Keeper
-	ICQKeeper                 *icqkeeper.Keeper
+	TransferStack       *ibchooks.IBCMiddleware
+	Ics20WasmHooks      *ibchooks.WasmHooks
+	HooksICS4Wrapper    ibchooks.ICS4Middleware
+	PacketForwardKeeper *packetforwardkeeper.Keeper
+	ICQKeeper           *icqkeeper.Keeper
 
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
@@ -1320,7 +1320,7 @@ func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcit
 		panic(err)
 	}
 	a.UpgradeKeeper.SetModuleVersionMap(ctx, a.mm.GetVersionMap())
-	return a.mm.InitGenesis(ctx, a.cdc, state)
+	return a.mm.InitGenesis(ctx, a.AppCodec(), state)
 }
 
 // LoadHeight loads a particular height.
@@ -1356,7 +1356,7 @@ func (a *App) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (a *App) AppCodec() codec.BinaryCodec {
+func (a *App) AppCodec() codec.Codec {
 	return a.cdc
 }
 

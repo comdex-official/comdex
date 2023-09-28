@@ -28,7 +28,7 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.keeper = s.app.EsmKeeper
 	s.querier = keeper.QueryServer{Keeper: s.keeper}

@@ -41,7 +41,7 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.collectorKeeper = s.app.CollectorKeeper
 	s.assetKeeper = s.app.AssetKeeper
