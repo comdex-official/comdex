@@ -21,4 +21,6 @@ var (
 	SendCoinFromModuleToModuleIsZero     = sdkerrors.Register(ModuleName, 413, "Send coin from module to module is zero")
 	ErrorSurplusDistributerCantbeTrue    = sdkerrors.Register(ModuleName, 414, "Surplus and distributer can't be true at same time")
 	ErrorSurplusDebtrCantbeTrueSameTime  = sdkerrors.Register(ModuleName, 415, "Surplus and debt can't be true at same time")
+	ErrorInsufficientBalance             = sdkerrors.Register(ModuleName, 416, "collector module account does not have enough balance to refund")
+	ErrorRefundCompleted                 = sdkerrors.Register(ModuleName, 417, "refund already processed")
 )

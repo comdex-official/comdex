@@ -54,7 +54,7 @@ func CreateUpgradeHandlerV12(
 		}
 		UpdateLendParams(ctx, lendKeeper, assetKeeper)
 		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
-		Refund(ctx, bankKeeper, collectorKeeper)
+		//Refund(ctx, bankKeeper, collectorKeeper)
 		RemoveFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
 		return vm, err
 	}
