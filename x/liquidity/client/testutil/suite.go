@@ -10,13 +10,13 @@ import (
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 
+	"github.com/comdex-official/comdex/testutil/network"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/comdex-official/comdex/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 
 	dbm "github.com/cometbft/cometbft-db"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -51,7 +51,7 @@ func (s *LiquidityIntegrationTestSuite) SetupSuite() {
 		s.T().Skip("skipping test in unit-tests mode.")
 	}
 
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.msgServer = liquidityKeeper.NewMsgServerImpl(s.app.LiquidityKeeper)
 
@@ -61,7 +61,7 @@ func (s *LiquidityIntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network= network.New(s.T(), cfg)
+	s.network = network.New(s.T(), cfg)
 
 	s.val = s.network.Validators[0]
 

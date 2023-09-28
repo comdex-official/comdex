@@ -11,15 +11,15 @@ import (
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/comdex-official/comdex/x/vault/types"
 
+	"github.com/comdex-official/comdex/testutil/network"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	// store "github.com/cosmos/cosmos-sdk/store/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/comdex-official/comdex/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 
 	dbm "github.com/cometbft/cometbft-db"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
@@ -55,7 +55,7 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 		s.T().Skip("skipping test in unit-tests mode.")
 	}
 
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.msgServer = vaultKeeper.NewMsgServer(s.app.VaultKeeper)
 
@@ -65,7 +65,7 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(),cfg)
+	s.network = network.New(s.T(), cfg)
 
 	s.val = s.network.Validators[0]
 

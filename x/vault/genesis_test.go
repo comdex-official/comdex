@@ -11,7 +11,7 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
-	comdexApp := app.Setup(false)
+	comdexApp := app.Setup(t, false)
 	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 
 	genesisState := types.GenesisState{

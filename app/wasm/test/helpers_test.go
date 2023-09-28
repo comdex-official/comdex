@@ -23,13 +23,13 @@ import (
 	"github.com/comdex-official/comdex/x/tokenmint/keeper"
 )
 
-func SetupCustomApp() (*app.App, *sdk.Context) {
-	comdex, ctx := CreateTestInput()
+func SetupCustomApp(t *testing.T) (*app.App, *sdk.Context) {
+	comdex, ctx := CreateTestInput(t)
 	return comdex, ctx
 }
 
-func CreateTestInput() (*app.App, *sdk.Context) {
-	comdex := app.Setup(false)
+func CreateTestInput(t *testing.T) (*app.App, *sdk.Context) {
+	comdex := app.Setup(t, false)
 	ctx := comdex.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: "comdex-1", Time: time.Now().UTC()})
 	return comdex, &ctx
 }

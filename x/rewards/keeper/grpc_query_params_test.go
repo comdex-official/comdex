@@ -12,7 +12,7 @@ import (
 )
 
 func TestParamsQuery(t *testing.T) {
-	comdexApp := app.Setup(false)
+	comdexApp := app.Setup(t, false)
 	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 
 	wctx := sdk.WrapSDKContext(ctx)

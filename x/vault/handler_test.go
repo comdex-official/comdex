@@ -18,7 +18,7 @@ import (
 )
 
 func TestInvalidMsg(t *testing.T) {
-	app1 := app.Setup(false)
+	app1 := app.Setup(t, false)
 
 	app1.VaultKeeper = keeper.NewKeeper(
 		app1.AppCodec(), app1.GetKey(types.StoreKey), app1.BankKeeper, &app1.AssetKeeper, &app1.MarketKeeper, &app1.CollectorKeeper, &app1.EsmKeeper,

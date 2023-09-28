@@ -32,7 +32,7 @@ func TestModuleTestSuite(t *testing.T) {
 }
 
 func (suite *ModuleTestSuite) SetupTest() {
-	app := chain.Setup(false)
+	app := chain.Setup(suite.T(), false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	suite.app = app

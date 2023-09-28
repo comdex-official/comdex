@@ -20,7 +20,7 @@ import (
 )
 
 func TestInvalidMsg(t *testing.T) {
-	app := app.Setup(false)
+	app := app.Setup(t, false)
 
 	app.LiquidityKeeper = keeper.NewKeeper(
 		app.AppCodec(),
