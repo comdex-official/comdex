@@ -73,7 +73,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, asset1.Denom, asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0ucmdx is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,

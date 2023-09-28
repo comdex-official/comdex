@@ -122,7 +122,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 			Msg: *types.NewMsgCreatePool(
 				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdk.NewInt(1000000000000))),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom, dummyPair1.QuoteCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 			Msg: *types.NewMsgCreatePool(
 				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))),
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than %s", params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than %s", params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -450,7 +450,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 			Msg: *types.NewMsgDeposit(
 				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 100000000%s", app1Pair.BaseCoinDenom, app1Pair.BaseCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 100000000%s", app1Pair.BaseCoinDenom),
 			ExpResp:            &types.DepositRequest{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -734,7 +734,7 @@ func (s *KeeperTestSuite) TestWithdraw() {
 			Msg: *types.NewMsgWithdraw(
 				appID1, addr1, pool.Id, availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))),
 			),
-			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s is smaller than %s", availablePoolBalance.String(), availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))).String()),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance %s is smaller than %s", availablePoolBalance.String(), availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))).String()),
 			ExpResp:          &types.WithdrawRequest{},
 			AvailableBalance: sdk.NewCoins(),
 		},
@@ -1055,7 +1055,7 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdk.NewInt(1000000000000))),
 				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom, dummyPair1.QuoteCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1069,7 +1069,7 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))),
 				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than %s", params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than %s", params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,

@@ -138,7 +138,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			Msg: *types.NewMsgCreateRequest(
 				addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000),
 			),
-			ExpErr:             fmt.Errorf(fmt.Sprintf("0uasset1 is smaller than %duasset1: insufficient funds", 1000000000)),
+			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance  is smaller than %duasset1: insufficient funds", 1000000000)),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -399,7 +399,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 			Msg: *types.NewMsgDepositRequest(
 				addr1, appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
-			ExpErr:             fmt.Errorf(fmt.Sprintf("0uasset1 is smaller than %duasset1: insufficient funds", 69000000)),
+			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance  is smaller than %duasset1: insufficient funds", 69000000)),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,

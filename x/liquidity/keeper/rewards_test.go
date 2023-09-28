@@ -77,7 +77,7 @@ func (s *KeeperTestSuite) TestFarm() {
 		{
 			Name:             "error insufficient pool denoms",
 			Msg:              *types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("100000000000pool1-1")),
-			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "10000000000pool1-1 is smaller than 100000000000pool1-1"),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance 10000000000pool1-1 is smaller than 100000000000pool1-1"),
 			AvailableBalance: utils.ParseCoins("10000000000pool1-1,10000000000pool2-1"),
 		},
 		{
