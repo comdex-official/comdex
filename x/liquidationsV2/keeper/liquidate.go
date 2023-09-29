@@ -527,7 +527,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 //
 // --Collateral 		cmst		harbor
 // debt				harbor		cmst
-func (k Keeper) DebtTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAssetID uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
+func (k Keeper) DebtTokenAmount(ctx sdk.Context, DebtAssetID, CollateralAssetId uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
 	collateralAsset, found1 := k.asset.GetAsset(ctx, CollateralAssetId)
 	debtAsset, found2 := k.asset.GetAsset(ctx, DebtAssetID)
 	if !found1 || !found2 {
