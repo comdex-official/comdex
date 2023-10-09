@@ -2,28 +2,24 @@
 
 set -eo pipefail
 
-protoc_gen_gocosmos() {
-  if ! grep "github.com/gogo/protobuf => github.com/regen-network/protobuf" go.mod &>/dev/null ; then
-    echo -e "\tPlease run this command from somewhere inside the cosmos-sdk folder."
-    return 1
-  fi
-
-  go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos@latest 2>/dev/null
+generate_protos() {
+  package="$1"
+  proto_dirs=$(find $package -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
+  for dir in $proto_dirs; do
+    for file in $(find "${dir}" -maxdepth 1 -name '*.proto'); do
+      if grep go_package "$file" &>/dev/null; then
+        buf generate --template buf.gen.gogo.yaml "$file"
+      fi
+    done
+  done
 }
 
-# protoc_gen_gocosmos
+echo "Generating gogo proto code"
+cd proto
 
-proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
-for dir in $proto_dirs; do
-  buf protoc \
-    -I "proto" \
-    -I "third_party/proto" \
-    --gocosmos_out=plugins=interfacetype+grpc,\
-Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
-    --grpc-gateway_out=logtostderr=true,allow_colon_final_segments=true:. \
-  $(find "${dir}" -maxdepth 1 -name '*.proto')
+generate_protos "./comdex"
 
-done
+cd ..
 
 # move proto files to the right places
 cp -r github.com/comdex-official/comdex/* ./

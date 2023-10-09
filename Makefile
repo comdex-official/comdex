@@ -186,8 +186,19 @@ endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
-protoVer=v0.1
-containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+protoVer=v0.13.1
+containerProtoGenSwagger=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(containerProtoGenSwagger)
+
+proto-gen:
+	@echo "============ Generating Protobuf files ============"
+	@$(protoImage) sh ./scripts/proto-gen.sh
+	@echo "============ Generating Protobuf files complete ============"
+.PHONY: proto-gen
 
 proto-swagger-gen:
 	@echo
@@ -204,7 +215,6 @@ proto-swagger-gen:
 	@echo
 	@echo "=========== Docs Generation Complete ============"
 	@echo
-.PHONY: docs
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
