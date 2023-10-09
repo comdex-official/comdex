@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"sort"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	utils "github.com/comdex-official/comdex/types"
 )
 
 var (
-	zeroInt = sdk.ZeroInt()
-	oneDec  = sdk.OneDec()
-	fourDec = sdk.NewDec(4)
+	zeroInt = sdkmath.ZeroInt()
+	oneDec  = sdkmath.LegacyOneDec()
+	fourDec = sdkmath.LegacyNewDec(4)
 )
 
 // OfferCoinAmount returns the minimum offer coin amount for
 // given order direction, price and order amount.
-func OfferCoinAmount(dir OrderDirection, price sdk.Dec, amt sdk.Int) sdk.Int {
+func OfferCoinAmount(dir OrderDirection, price sdkmath.LegacyDec, amt sdkmath.Int) sdkmath.Int {
 	switch dir {
 	case Buy:
 		return price.MulInt(amt).Ceil().TruncateInt()
@@ -30,13 +30,13 @@ func OfferCoinAmount(dir OrderDirection, price sdk.Dec, amt sdk.Int) sdk.Int {
 
 // MatchableAmount returns matchable amount of an order considering
 // remaining offer coin and price.
-func MatchableAmount(order Order, price sdk.Dec) (matchableAmt sdk.Int) {
+func MatchableAmount(order Order, price sdkmath.LegacyDec) (matchableAmt sdkmath.Int) {
 	switch order.GetDirection() {
 	case Buy:
 		remainingOfferCoinAmt := order.GetOfferCoinAmount().Sub(order.GetPaidOfferCoinAmount())
-		matchableAmt = sdk.MinInt(
+		matchableAmt = sdkmath.MinInt(
 			order.GetOpenAmount(),
-			sdk.NewDec(remainingOfferCoinAmt.Int64()).QuoTruncate(price).TruncateInt(),
+			sdkmath.LegacyNewDec(remainingOfferCoinAmt.Int64()).QuoTruncate(price).TruncateInt(),
 		)
 	case Sell:
 		matchableAmt = order.GetOpenAmount()
@@ -48,8 +48,8 @@ func MatchableAmount(order Order, price sdk.Dec) (matchableAmt sdk.Int) {
 }
 
 // TotalAmount returns total amount of orders.
-func TotalAmount(orders []Order) sdk.Int {
-	amt := sdk.ZeroInt()
+func TotalAmount(orders []Order) sdkmath.Int {
+	amt := sdkmath.ZeroInt()
 	for _, order := range orders {
 		amt = amt.Add(order.GetAmount())
 	}
@@ -57,8 +57,8 @@ func TotalAmount(orders []Order) sdk.Int {
 }
 
 // TotalMatchableAmount returns total matchable amount of orders.
-func TotalMatchableAmount(orders []Order, price sdk.Dec) (amt sdk.Int) {
-	amt = sdk.ZeroInt()
+func TotalMatchableAmount(orders []Order, price sdkmath.LegacyDec) (amt sdkmath.Int) {
+	amt = sdkmath.ZeroInt()
 	for _, order := range orders {
 		amt = amt.Add(MatchableAmount(order, price))
 	}
@@ -127,7 +127,7 @@ func findFirstTrueCondition(start, end int, f func(i int) bool) (i int, found bo
 }
 
 // inv returns the inverse of x.
-func inv(x sdk.Dec) (r sdk.Dec) {
+func inv(x sdkmath.LegacyDec) (r sdkmath.LegacyDec) {
 	r = oneDec.Quo(x)
 	return
 }
@@ -145,9 +145,9 @@ var (
 	b4     = utils.ParseDec("0.005")
 )
 
-func poolOrderPriceGapRatio(poolPrice, currentPrice sdk.Dec) (r sdk.Dec) {
+func poolOrderPriceGapRatio(poolPrice, currentPrice sdkmath.LegacyDec) (r sdkmath.LegacyDec) {
 	if poolPrice.IsZero() {
-		poolPrice = sdk.NewDecWithPrec(1, sdk.Precision) // lowest possible sdk.Dec
+		poolPrice = sdkmath.LegacyNewDecWithPrec(1, sdkmath.LegacyPrecision) // lowest possible sdkmath.LegacyDec
 	}
 	x := currentPrice.Sub(poolPrice).Abs().Quo(poolPrice)
 	switch {

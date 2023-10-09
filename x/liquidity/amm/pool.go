@@ -5,7 +5,6 @@ import (
 	"math/big"
 
 	sdkmath "cosmossdk.io/math"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
 
 	utils "github.com/comdex-official/comdex/types"
 )
