@@ -119,9 +119,12 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"github.com/comdex-official/comdex/x/liquidation"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
 	tmdb "github.com/cometbft/cometbft-db"
 	abcitypes "github.com/cometbft/cometbft/abci/types"
@@ -1151,6 +1154,14 @@ func New(
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
 	app.MountMemoryStores(app.mkeys)
+
+	// SDK v47 - since we do not use dep inject, this gives us access to newer gRPC services.
+	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.mm.Modules))
+	reflectionSvc, err := runtimeservices.NewReflectionService()
+	if err != nil {
+		panic(err)
+	}
+	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)

@@ -51,7 +51,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
-		// WithBroadcastMode(flags.FlagBroadcastMode).
+		WithBroadcastMode(flags.FlagBroadcastMode).
 		WithHomeDir(comdex.DefaultNodeHome).
 		WithViper("")
 
