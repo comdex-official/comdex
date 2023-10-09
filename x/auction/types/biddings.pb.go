@@ -9,8 +9,8 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -261,7 +261,7 @@ func (m *SurplusBiddings) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x42
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -353,7 +353,7 @@ func (m *DebtBiddings) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x42
 	}
-	n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp):])
+	n4, err4 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp):])
 	if err4 != nil {
 		return 0, err4
 	}
@@ -445,7 +445,7 @@ func (m *DutchBiddings) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x42
 	}
-	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp):])
+	n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp):])
 	if err7 != nil {
 		return 0, err7
 	}
@@ -535,7 +535,7 @@ func (m *SurplusBiddings) Size() (n int) {
 	}
 	l = m.Bid.Size()
 	n += 1 + l + sovBiddings(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp)
 	n += 1 + l + sovBiddings(uint64(l))
 	l = len(m.BiddingStatus)
 	if l > 0 {
@@ -574,7 +574,7 @@ func (m *DebtBiddings) Size() (n int) {
 	}
 	l = m.Bid.Size()
 	n += 1 + l + sovBiddings(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp)
 	n += 1 + l + sovBiddings(uint64(l))
 	l = len(m.BiddingStatus)
 	if l > 0 {
@@ -613,7 +613,7 @@ func (m *DutchBiddings) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovBiddings(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp)
 	n += 1 + l + sovBiddings(uint64(l))
 	l = len(m.BiddingStatus)
 	if l > 0 {
@@ -860,7 +860,7 @@ func (m *SurplusBiddings) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1181,7 +1181,7 @@ func (m *DebtBiddings) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1502,7 +1502,7 @@ func (m *DutchBiddings) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

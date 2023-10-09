@@ -190,9 +190,9 @@ endif
 ###                                Protobuf                                 ###
 ###############################################################################
 
-protoVer=v0.13.1
-containerProtoGenSwagger=ghcr.io/cosmos/proto-builder:$(protoVer)
-protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(containerProtoGenSwagger)
+protoVer=0.13.0
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto-gen:
 	@echo "============ Generating Protobuf files ============"

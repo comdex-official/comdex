@@ -9,8 +9,8 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1114,7 +1114,7 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x58
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -1122,7 +1122,7 @@ func (m *LockerExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintRewards(dAtA, i, uint64(n1))
 	i--
 	dAtA[i] = 0x52
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -1220,7 +1220,7 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x58
 	}
-	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
+	n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp):])
 	if err5 != nil {
 		return 0, err5
 	}
@@ -1228,7 +1228,7 @@ func (m *VaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintRewards(dAtA, i, uint64(n5))
 	i--
 	dAtA[i] = 0x52
-	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -1369,7 +1369,7 @@ func (m *LendExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x60
 	}
-	n9, err9 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
+	n9, err9 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp):])
 	if err9 != nil {
 		return 0, err9
 	}
@@ -1377,7 +1377,7 @@ func (m *LendExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintRewards(dAtA, i, uint64(n9))
 	i--
 	dAtA[i] = 0x5a
-	n10, err10 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	n10, err10 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp):])
 	if err10 != nil {
 		return 0, err10
 	}
@@ -1543,7 +1543,7 @@ func (m *StableVaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x60
 	}
-	n16, err16 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp):])
+	n16, err16 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp):])
 	if err16 != nil {
 		return 0, err16
 	}
@@ -1551,7 +1551,7 @@ func (m *StableVaultExternalRewards) MarshalToSizedBuffer(dAtA []byte) (int, err
 	i = encodeVarintRewards(dAtA, i, uint64(n16))
 	i--
 	dAtA[i] = 0x5a
-	n17, err17 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp):])
+	n17, err17 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp):])
 	if err17 != nil {
 		return 0, err17
 	}
@@ -1713,9 +1713,9 @@ func (m *LockerExternalRewards) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRewards(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
 	if m.MinLockupTimeSeconds != 0 {
 		n += 1 + sovRewards(uint64(m.MinLockupTimeSeconds))
@@ -1755,9 +1755,9 @@ func (m *VaultExternalRewards) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRewards(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
 	if m.MinLockupTimeSeconds != 0 {
 		n += 1 + sovRewards(uint64(m.MinLockupTimeSeconds))
@@ -1822,9 +1822,9 @@ func (m *LendExternalRewards) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRewards(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
 	if m.MinLockupTimeSeconds != 0 {
 		n += 1 + sovRewards(uint64(m.MinLockupTimeSeconds))
@@ -1892,9 +1892,9 @@ func (m *StableVaultExternalRewards) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovRewards(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTimestamp)
 	n += 1 + l + sovRewards(uint64(l))
 	if m.AcceptedBlockHeight != 0 {
 		n += 1 + sovRewards(uint64(m.AcceptedBlockHeight))
@@ -2495,7 +2495,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2528,7 +2528,7 @@ func (m *LockerExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2843,7 +2843,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2876,7 +2876,7 @@ func (m *VaultExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3353,7 +3353,7 @@ func (m *LendExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3386,7 +3386,7 @@ func (m *LendExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3903,7 +3903,7 @@ func (m *StableVaultExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3936,7 +3936,7 @@ func (m *StableVaultExternalRewards) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

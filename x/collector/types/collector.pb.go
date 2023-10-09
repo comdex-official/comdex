@@ -8,8 +8,8 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -669,7 +669,7 @@ func (m *CollectorLookupTableData) MarshalToSizedBuffer(dAtA []byte) (int, error
 	_ = i
 	var l int
 	_ = l
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BlockTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BlockTime):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BlockTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BlockTime):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -988,7 +988,7 @@ func (m *CollectorLookupTableData) Size() (n int) {
 	if m.BlockHeight != 0 {
 		n += 1 + sovCollector(uint64(m.BlockHeight))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BlockTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BlockTime)
 	n += 1 + l + sovCollector(uint64(l))
 	return n
 }
@@ -1821,7 +1821,7 @@ func (m *CollectorLookupTableData) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BlockTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BlockTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -9,8 +9,8 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -295,7 +295,7 @@ func (m *LockedVault) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x82
 		}
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LiquidationTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LiquidationTimestamp):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LiquidationTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LiquidationTimestamp):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -556,7 +556,7 @@ func (m *LockedVault) Size() (n int) {
 	n += 1 + l + sovLockedVault(uint64(l))
 	l = m.CollateralToBeAuctioned.Size()
 	n += 1 + l + sovLockedVault(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LiquidationTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LiquidationTimestamp)
 	n += 1 + l + sovLockedVault(uint64(l))
 	if len(m.SellOffHistory) > 0 {
 		for _, s := range m.SellOffHistory {
@@ -1051,7 +1051,7 @@ func (m *LockedVault) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LiquidationTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LiquidationTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -9,9 +9,9 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/duration"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/durationpb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -104,6 +104,7 @@ type Gauge struct {
 	IsActive          bool                                    `protobuf:"varint,11,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
 	ForSwapFee        bool                                    `protobuf:"varint,12,opt,name=for_swap_fee,json=forSwapFee,proto3" json:"for_swap_fee,omitempty"`
 	// Types that are valid to be assigned to Kind:
+	//
 	//	*Gauge_LiquidityMetaData
 	Kind  isGauge_Kind `protobuf_oneof:"kind"`
 	AppId uint64       `protobuf:"varint,14,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
@@ -519,7 +520,7 @@ func (m *Gauge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x3a
-	n5, err5 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration):])
+	n5, err5 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.TriggerDuration):])
 	if err5 != nil {
 		return 0, err5
 	}
@@ -532,7 +533,7 @@ func (m *Gauge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x28
 	}
-	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTime):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -540,7 +541,7 @@ func (m *Gauge) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintGauge(dAtA, i, uint64(n6))
 	i--
 	dAtA[i] = 0x22
-	n7, err7 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt):])
+	n7, err7 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.CreatedAt):])
 	if err7 != nil {
 		return 0, err7
 	}
@@ -622,7 +623,7 @@ func (m *GaugeByTriggerDuration) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x12
 	}
-	n11, err11 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration):])
+	n11, err11 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.TriggerDuration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.TriggerDuration):])
 	if err11 != nil {
 		return 0, err11
 	}
@@ -679,14 +680,14 @@ func (m *Gauge) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGauge(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.CreatedAt)
 	n += 1 + l + sovGauge(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTime)
 	n += 1 + l + sovGauge(uint64(l))
 	if m.GaugeTypeId != 0 {
 		n += 1 + sovGauge(uint64(m.GaugeTypeId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.TriggerDuration)
 	n += 1 + l + sovGauge(uint64(l))
 	l = m.DepositAmount.Size()
 	n += 1 + l + sovGauge(uint64(l))
@@ -731,7 +732,7 @@ func (m *GaugeByTriggerDuration) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.TriggerDuration)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.TriggerDuration)
 	n += 1 + l + sovGauge(uint64(l))
 	if len(m.GaugeIds) > 0 {
 		l = 0
@@ -1023,7 +1024,7 @@ func (m *Gauge) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1056,7 +1057,7 @@ func (m *Gauge) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1108,7 +1109,7 @@ func (m *Gauge) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1389,7 +1390,7 @@ func (m *GaugeByTriggerDuration) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.TriggerDuration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

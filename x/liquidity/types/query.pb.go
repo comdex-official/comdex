@@ -12,13 +12,13 @@ import (
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/duration"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/durationpb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -5032,7 +5032,7 @@ func (m *QueuedPoolCoin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n22, err22 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.DequeAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.DequeAt):])
+	n22, err22 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.DequeAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DequeAt):])
 	if err22 != nil {
 		return 0, err22
 	}
@@ -5238,7 +5238,7 @@ func (m *PoolIncentive) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x50
 	}
-	n25, err25 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.NextDistribution, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.NextDistribution):])
+	n25, err25 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.NextDistribution, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.NextDistribution):])
 	if err25 != nil {
 		return 0, err25
 	}
@@ -5246,7 +5246,7 @@ func (m *PoolIncentive) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i = encodeVarintQuery(dAtA, i, uint64(n25))
 	i--
 	dAtA[i] = 0x4a
-	n26, err26 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.EpochDuration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.EpochDuration):])
+	n26, err26 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.EpochDuration, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.EpochDuration):])
 	if err26 != nil {
 		return 0, err26
 	}
@@ -6356,7 +6356,7 @@ func (m *QueuedPoolCoin) Size() (n int) {
 	_ = l
 	l = m.PoolCoin.Size()
 	n += 1 + l + sovQuery(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.DequeAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DequeAt)
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -6452,9 +6452,9 @@ func (m *PoolIncentive) Size() (n int) {
 	if m.FilledEpochs != 0 {
 		n += 1 + sovQuery(uint64(m.FilledEpochs))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.EpochDuration)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.EpochDuration)
 	n += 1 + l + sovQuery(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.NextDistribution)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.NextDistribution)
 	n += 1 + l + sovQuery(uint64(l))
 	if m.IsSwapFee {
 		n += 2
@@ -10262,7 +10262,7 @@ func (m *QueuedPoolCoin) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.DequeAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.DequeAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -10941,7 +10941,7 @@ func (m *PoolIncentive) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.EpochDuration, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.EpochDuration, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -10974,7 +10974,7 @@ func (m *PoolIncentive) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.NextDistribution, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.NextDistribution, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

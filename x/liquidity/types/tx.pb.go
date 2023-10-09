@@ -11,11 +11,11 @@ import (
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/duration"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -2440,7 +2440,7 @@ func (m *MsgLimitOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x48
 	}
-	n2, err2 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -2553,7 +2553,7 @@ func (m *MsgMarketOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x40
 	}
-	n4, err4 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan):])
+	n4, err4 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan):])
 	if err4 != nil {
 		return 0, err4
 	}
@@ -2651,7 +2651,7 @@ func (m *MsgMMOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n6, err6 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.OrderLifespan, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -3473,7 +3473,7 @@ func (m *MsgLimitOrder) Size() (n int) {
 	n += 1 + l + sovTx(uint64(l))
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan)
 	n += 1 + l + sovTx(uint64(l))
 	if m.AppId != 0 {
 		n += 1 + sovTx(uint64(m.AppId))
@@ -3514,7 +3514,7 @@ func (m *MsgMarketOrder) Size() (n int) {
 	}
 	l = m.Amount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan)
 	n += 1 + l + sovTx(uint64(l))
 	if m.AppId != 0 {
 		n += 1 + sovTx(uint64(m.AppId))
@@ -3559,7 +3559,7 @@ func (m *MsgMMOrder) Size() (n int) {
 	n += 1 + l + sovTx(uint64(l))
 	l = m.BuyAmount.Size()
 	n += 1 + l + sovTx(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.OrderLifespan)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.OrderLifespan)
 	n += 1 + l + sovTx(uint64(l))
 	return n
 }
@@ -5187,7 +5187,7 @@ func (m *MsgLimitOrder) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5508,7 +5508,7 @@ func (m *MsgMarketOrder) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5934,7 +5934,7 @@ func (m *MsgMMOrder) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.OrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

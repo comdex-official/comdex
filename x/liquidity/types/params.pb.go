@@ -9,8 +9,8 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/duration"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -308,7 +308,7 @@ func (m *GenericParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x5a
-	n1, err1 := github_com_gogo_protobuf_types.StdDurationMarshalTo(m.MaxOrderLifespan, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdDuration(m.MaxOrderLifespan):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdDurationMarshalTo(m.MaxOrderLifespan, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.MaxOrderLifespan):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -459,7 +459,7 @@ func (m *GenericParams) Size() (n int) {
 	n += 1 + l + sovParams(uint64(l))
 	l = m.MaxPriceLimitRatio.Size()
 	n += 1 + l + sovParams(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdDuration(m.MaxOrderLifespan)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdDuration(m.MaxOrderLifespan)
 	n += 1 + l + sovParams(uint64(l))
 	l = m.SwapFeeRate.Size()
 	n += 1 + l + sovParams(uint64(l))
@@ -878,7 +878,7 @@ func (m *GenericParams) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdDurationUnmarshal(&m.MaxOrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdDurationUnmarshal(&m.MaxOrderLifespan, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

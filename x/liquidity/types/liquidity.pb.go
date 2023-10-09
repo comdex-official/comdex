@@ -9,8 +9,8 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
-	github_com_gogo_protobuf_types "github.com/cosmos/gogoproto/types"
-	_ "github.com/golang/protobuf/ptypes/timestamp"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1204,7 +1204,7 @@ func (m *Order) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x70
 	}
-	n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.ExpireAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpireAt):])
+	n3, err3 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.ExpireAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpireAt):])
 	if err3 != nil {
 		return 0, err3
 	}
@@ -1435,7 +1435,7 @@ func (m *QueuedCoin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n10, err10 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt):])
+	n10, err10 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.CreatedAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.CreatedAt):])
 	if err10 != nil {
 		return 0, err10
 	}
@@ -1727,7 +1727,7 @@ func (m *Order) Size() (n int) {
 	if m.BatchId != 0 {
 		n += 1 + sovLiquidity(uint64(m.BatchId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.ExpireAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.ExpireAt)
 	n += 1 + l + sovLiquidity(uint64(l))
 	if m.Status != 0 {
 		n += 1 + sovLiquidity(uint64(m.Status))
@@ -1796,7 +1796,7 @@ func (m *QueuedCoin) Size() (n int) {
 	_ = l
 	l = m.FarmedPoolCoin.Size()
 	n += 1 + l + sovLiquidity(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.CreatedAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.CreatedAt)
 	n += 1 + l + sovLiquidity(uint64(l))
 	return n
 }
@@ -3382,7 +3382,7 @@ func (m *Order) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.ExpireAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.ExpireAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3904,7 +3904,7 @@ func (m *QueuedCoin) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.CreatedAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
