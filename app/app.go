@@ -487,7 +487,7 @@ func New(
 	app.ParamsKeeper.Subspace(liquidationtypes.ModuleName)
 	app.ParamsKeeper.Subspace(lockertypes.ModuleName)
 	app.ParamsKeeper.Subspace(bandoraclemoduletypes.ModuleName)
-	app.ParamsKeeper.Subspace(wasmtypes.ModuleName)
+	app.ParamsKeeper.Subspace(wasmtypes.ModuleName).WithKeyTable(wasmtypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(auctiontypes.ModuleName)
 	app.ParamsKeeper.Subspace(tokenminttypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
