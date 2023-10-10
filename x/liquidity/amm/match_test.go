@@ -1,7 +1,6 @@
 package amm_test
 
 import (
-	"fmt"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
@@ -210,10 +209,4 @@ func TestMatch_edgecase1(t *testing.T) {
 	ob := amm.NewOrderBook(orders...)
 	_, _, matched := ob.Match(utils.ParseDec("0.098"))
 	require.True(t, matched)
-	for _, order := range orders {
-		fmt.Printf(
-			"%s %s (%s/%s) paid=%s, received=%s\n",
-			order.GetDirection(), order.GetPrice(), order.GetOpenAmount(), order.GetAmount(),
-			order.GetPaidOfferCoinAmount(), order.GetReceivedDemandCoinAmount())
-	}
 }
