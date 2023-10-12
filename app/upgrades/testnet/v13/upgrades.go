@@ -4,9 +4,13 @@ import (
 	"fmt"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -15,6 +19,7 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	icacontrollermigrations "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/migrations/v6"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 )
@@ -22,6 +27,9 @@ import (
 func CreateUpgradeHandlerV13(
 	mm *module.Manager,
 	configurator module.Configurator,
+	cdc codec.Codec,
+	capabilityStoreKey *storetypes.KVStoreKey,
+	capabilityKeeper *capabilitykeeper.Keeper,
 	wasmKeeper wasmkeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
 	consensusParamsKeeper consensusparamkeeper.Keeper,
@@ -41,6 +49,25 @@ func CreateUpgradeHandlerV13(
 		legacyParamSubspace := paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 		baseapp.MigrateParams(ctx, legacyParamSubspace, &consensusParamsKeeper)
 
+		// TODO: check if v5-v6 is required ??
+		ctx.Logger().Info("Migrating ICA channel capabilities for ibc-go v5 to v6 migration...")
+		if err := icacontrollermigrations.MigrateICS27ChannelCapability(
+			ctx,
+			cdc,
+			capabilityStoreKey,
+			capabilityKeeper,
+			bandoraclemoduletypes.ModuleName,
+		); err != nil {
+			return nil, err
+		}
+
+		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md
+		// explicitly update the IBC 02-client params, adding the localhost client type
+		params := IBCKeeper.ClientKeeper.GetParams(ctx)
+		params.AllowedClients = append(params.AllowedClients, exported.Localhost)
+		IBCKeeper.ClientKeeper.SetParams(ctx, params)
+		logger.Info(fmt.Sprintf("updated ibc client params %v", params))
+
 		// Run migrations
 		logger.Info(fmt.Sprintf("pre migrate version map: %v", fromVM))
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
@@ -49,12 +76,6 @@ func CreateUpgradeHandlerV13(
 		}
 		logger.Info(fmt.Sprintf("post migrate version map: %v", vm))
 
-		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md
-		// explicitly update the IBC 02-client params, adding the localhost client type
-		params := IBCKeeper.ClientKeeper.GetParams(ctx)
-		params.AllowedClients = append(params.AllowedClients, exported.Localhost)
-		IBCKeeper.ClientKeeper.SetParams(ctx, params)
-
 		//TODO: confirm the initial deposit
 		// update gov params to use a 20% initial deposit ratio, allowing us to remote the ante handler
 		govParams := GovKeeper.GetParams(ctx)
@@ -62,15 +83,7 @@ func CreateUpgradeHandlerV13(
 		if err := GovKeeper.SetParams(ctx, govParams); err != nil {
 			return nil, err
 		}
-
-		//TODO: confirm the minimum commission
-		// x/Staking - set minimum commission to 0.050000000000000000
-		stakingParams := StakingKeeper.GetParams(ctx)
-		stakingParams.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-		err = StakingKeeper.SetParams(ctx, stakingParams)
-		if err != nil {
-			return nil, err
-		}
+		logger.Info(fmt.Sprintf("updated gov params to %v", govParams))
 
 		// x/Mint
 		// Double blocks per year (from 6 seconds to 3 = 2x blocks per year)
@@ -94,6 +107,8 @@ func CreateUpgradeHandlerV13(
 		wasmParams := wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowEverybody
 		wasmKeeper.SetParams(ctx, wasmParams)
+		logger.Info(fmt.Sprintf("updated wasm params to %v", wasmParams))
+
 		return vm, err
 	}
 }
