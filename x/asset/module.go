@@ -107,6 +107,7 @@ func (a AppModule) QuerierRoute() string {
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
+	types.RegisterMsgServer(configurator.MsgServer(), keeper.NewMsgServerImpl(a.keeper))
 	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(a.keeper))
 }
 
