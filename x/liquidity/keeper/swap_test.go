@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -444,7 +445,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("1003000uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -457,7 +458,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("1000000uasset2"),
 				RemainingOfferCoin: utils.ParseCoin("1000000uasset2"),
 				ReceivedCoin:       utils.ParseCoin("0uasset1"),
-				Price:              sdk.MustNewDecFromStr("0.5"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.5"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            1,
@@ -478,7 +479,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("1005006uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.501"),
+				sdkmath.LegacyMustNewDecFromStr("0.501"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -491,7 +492,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("1002000uasset2"),
 				RemainingOfferCoin: utils.ParseCoin("1002000uasset2"),
 				ReceivedCoin:       utils.ParseCoin("0uasset1"),
-				Price:              sdk.MustNewDecFromStr("0.501"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.501"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            3,
@@ -512,7 +513,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("1000994uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.499"),
+				sdkmath.LegacyMustNewDecFromStr("0.499"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -525,7 +526,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("998000uasset2"),
 				RemainingOfferCoin: utils.ParseCoin("998000uasset2"),
 				ReceivedCoin:       utils.ParseCoin("0uasset1"),
-				Price:              sdk.MustNewDecFromStr("0.499"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.499"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            4,
@@ -546,7 +547,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("2006000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.501"),
+				sdkmath.LegacyMustNewDecFromStr("0.501"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -559,7 +560,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("2000000uasset1"),
 				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
 				ReceivedCoin:       utils.ParseCoin("0uasset2"),
-				Price:              sdk.MustNewDecFromStr("0.501"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.501"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            6,
@@ -580,7 +581,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("2006000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.51"),
+				sdkmath.LegacyMustNewDecFromStr("0.51"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -593,7 +594,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("2000000uasset1"),
 				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
 				ReceivedCoin:       utils.ParseCoin("0uasset2"),
-				Price:              sdk.MustNewDecFromStr("0.51"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.51"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            8,
@@ -614,7 +615,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("2006000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.499980"),
+				sdkmath.LegacyMustNewDecFromStr("0.499980"),
 				newInt(2000000),
 				time.Minute*1,
 			),
@@ -627,7 +628,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithPoolSwap() {
 				OfferCoin:          utils.ParseCoin("2000000uasset1"),
 				RemainingOfferCoin: utils.ParseCoin("2000000uasset1"),
 				ReceivedCoin:       utils.ParseCoin("0uasset2"),
-				Price:              sdk.MustNewDecFromStr("0.499980"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.499980"),
 				Amount:             newInt(2000000),
 				OpenAmount:         newInt(2000000),
 				BatchId:            10,
@@ -711,7 +712,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("17552500uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(35000000),
 				time.Minute*1,
 			),
@@ -725,7 +726,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("35105000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(35000000),
 				time.Minute*1,
 			),
@@ -742,7 +743,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("17552500uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(35000000),
 				time.Minute*1,
 			),
@@ -756,7 +757,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("20060000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(20000000),
 				time.Minute*1,
 			),
@@ -773,7 +774,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("15045000uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(30000000),
 				time.Minute*1,
 			),
@@ -787,7 +788,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("70210000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.5"),
+				sdkmath.LegacyMustNewDecFromStr("0.5"),
 				newInt(70000000),
 				time.Minute*1,
 			),
@@ -804,7 +805,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("15045000uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.45"),
+				sdkmath.LegacyMustNewDecFromStr("0.45"),
 				newInt(30000000),
 				time.Minute*1,
 			),
@@ -818,7 +819,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("70210000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.55"),
+				sdkmath.LegacyMustNewDecFromStr("0.55"),
 				newInt(70000000),
 				time.Minute*1,
 			),
@@ -835,7 +836,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionBuy,
 				utils.ParseCoin("16549500uasset2"),
 				asset1.Denom,
-				sdk.MustNewDecFromStr("0.55"),
+				sdkmath.LegacyMustNewDecFromStr("0.55"),
 				newInt(30000000),
 				time.Minute*1,
 			),
@@ -849,7 +850,7 @@ func (s *KeeperTestSuite) TestLimitOrderWithoutPool() {
 				types.OrderDirectionSell,
 				utils.ParseCoin("30090000uasset1"),
 				asset2.Denom,
-				sdk.MustNewDecFromStr("0.50"),
+				sdkmath.LegacyMustNewDecFromStr("0.50"),
 				newInt(30000000),
 				time.Minute*1,
 			),
@@ -930,8 +931,8 @@ func (s *KeeperTestSuite) TestDustCollector() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.9005"), sdk.NewInt(1000), 0)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.9005"), sdk.NewInt(1000), 0)
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.9005"), sdkmath.NewInt(1000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.9005"), sdkmath.NewInt(1000), 0)
 	s.nextBlock()
 
 	s.Require().True(coinsEq(utils.ParseCoins("1000denom1,1denom2"), s.getBalances(s.addr(1))))
@@ -951,16 +952,16 @@ func (s *KeeperTestSuite) TestInsufficientRemainingOfferCoin() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.5"), sdk.NewInt(10000), time.Minute)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.5"), sdk.NewInt(1001), 0)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.5"), sdkmath.NewInt(10000), time.Minute)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.5"), sdkmath.NewInt(1001), 0)
 	s.nextBlock()
 
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.5"), sdk.NewInt(8999), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.5"), sdkmath.NewInt(8999), 0)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusExpired, order.Status)
-	s.Require().True(intEq(sdk.OneInt(), order.OpenAmount))
+	s.Require().True(intEq(sdkmath.OneInt(), order.OpenAmount))
 }
 
 func (s *KeeperTestSuite) TestNegativeOpenAmount() {
@@ -973,8 +974,8 @@ func (s *KeeperTestSuite) TestNegativeOpenAmount() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.82"), sdk.NewInt(648744), 0)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.82"), sdk.NewInt(648745), 0)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.82"), sdkmath.NewInt(648744), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.82"), sdkmath.NewInt(648745), 0)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
@@ -994,21 +995,21 @@ func (s *KeeperTestSuite) TestExpireSmallOrders() {
 	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
-	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000018"), sdk.NewInt(10000000), 0)
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000018"), sdkmath.NewInt(10000000), 0)
 
 	// This order should have 10000 open amount after matching.
 	// If this order would be matched after that, then the orderer will receive
 	// floor(10000*0.000018) demand coin, which is zero.
 	// So the order must have been expired after matching.
-	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000018"), sdk.NewInt(10010000), time.Minute)
+	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000018"), sdkmath.NewInt(10010000), time.Minute)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusExpired, order.Status)
 	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper) // Delete outdated states.
 
-	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000019"), sdk.NewInt(100000000), time.Minute)
-	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000019"), sdk.NewInt(100000000), time.Minute)
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000019"), sdkmath.NewInt(100000000), time.Minute)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000019"), sdkmath.NewInt(100000000), time.Minute)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 }
 
@@ -1025,26 +1026,26 @@ func (s *KeeperTestSuite) TestRejectSmallOrders() {
 	// Too small offer coin amount.
 	msg := types.NewMsgLimitOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseCoin("99denom2"),
-		"denom1", utils.ParseDec("0.1"), sdk.NewInt(990), 0)
+		"denom1", utils.ParseDec("0.1"), sdkmath.NewInt(990), 0)
 	s.Require().EqualError(msg.ValidateBasic(), "offer coin 99denom2 is smaller than the min amount 100: invalid request")
 
 	// Too small order amount.
 	msg = types.NewMsgLimitOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseCoin("990denom2"),
-		"denom1", utils.ParseDec("10.0"), sdk.NewInt(99), 0)
+		"denom1", utils.ParseDec("10.0"), sdkmath.NewInt(99), 0)
 	s.Require().EqualError(msg.ValidateBasic(), "order amount 99 is smaller than the min amount 100: invalid request")
 
 	// Too small orders.
 	msg = types.NewMsgLimitOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseCoin("101denom2"),
-		"denom1", utils.ParseDec("0.00010001"), sdk.NewInt(999000), 0)
+		"denom1", utils.ParseDec("0.00010001"), sdkmath.NewInt(999000), 0)
 	s.Require().NoError(msg.ValidateBasic())
 	_, err := s.keeper.LimitOrder(s.ctx, msg)
 	s.Require().ErrorIs(err, types.ErrTooSmallOrder)
 
 	msg = types.NewMsgLimitOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseCoin("1002999denom1"),
-		"denom2", utils.ParseDec("0.0001"), sdk.NewInt(999999), 0)
+		"denom2", utils.ParseDec("0.0001"), sdkmath.NewInt(999999), 0)
 	s.Require().NoError(msg.ValidateBasic())
 	_, err = s.keeper.LimitOrder(s.ctx, msg)
 	s.Require().ErrorIs(err, types.ErrTooSmallOrder)
@@ -1052,13 +1053,13 @@ func (s *KeeperTestSuite) TestRejectSmallOrders() {
 	// Too small offer coin amount.
 	msg2 := types.NewMsgMarketOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseCoin("99denom1"),
-		"denom2", sdk.NewInt(99), 0)
+		"denom2", sdkmath.NewInt(99), 0)
 	s.Require().EqualError(msg2.ValidateBasic(), "offer coin 99denom1 is smaller than the min amount 100: invalid request")
 
 	// Too small order amount.
 	msg2 = types.NewMsgMarketOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseCoin("100denom1"),
-		"denom2", sdk.NewInt(99), 0)
+		"denom2", sdkmath.NewInt(99), 0)
 	s.Require().EqualError(msg2.ValidateBasic(), "order amount 99 is smaller than the min amount 100: invalid request")
 
 	p := utils.ParseDec("0.0001")
@@ -1068,14 +1069,14 @@ func (s *KeeperTestSuite) TestRejectSmallOrders() {
 	// Too small orders.
 	msg2 = types.NewMsgMarketOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseCoin("100denom2"),
-		"denom1", sdk.NewInt(909090), 0)
+		"denom1", sdkmath.NewInt(909090), 0)
 	s.Require().NoError(msg2.ValidateBasic())
 	_, err = s.keeper.MarketOrder(s.ctx, msg2)
 	s.Require().ErrorIs(err, types.ErrTooSmallOrder)
 
 	msg2 = types.NewMsgMarketOrder(
 		appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseCoin("1003denom1"),
-		"denom2", sdk.NewInt(1000), 0)
+		"denom2", sdkmath.NewInt(1000), 0)
 	s.Require().NoError(msg2.ValidateBasic())
 	_, err = s.keeper.MarketOrder(s.ctx, msg2)
 	s.Require().ErrorIs(err, types.ErrTooSmallOrder)
@@ -1303,7 +1304,7 @@ func (s *KeeperTestSuite) TestMarketOrder() {
 				OfferCoin:          utils.ParseCoin("1100000uasset2"),
 				RemainingOfferCoin: utils.ParseCoin("1100000uasset2"),
 				ReceivedCoin:       utils.ParseCoin("0uasset1"),
-				Price:              sdk.MustNewDecFromStr("1.1"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("1.1"),
 				Amount:             newInt(1000000),
 				OpenAmount:         newInt(1000000),
 				BatchId:            2,
@@ -1336,7 +1337,7 @@ func (s *KeeperTestSuite) TestMarketOrder() {
 				OfferCoin:          utils.ParseCoin("1000000uasset1"),
 				RemainingOfferCoin: utils.ParseCoin("1000000uasset1"),
 				ReceivedCoin:       utils.ParseCoin("0uasset2"),
-				Price:              sdk.MustNewDecFromStr("0.9"),
+				Price:              sdkmath.LegacyMustNewDecFromStr("0.9"),
 				Amount:             newInt(1000000),
 				OpenAmount:         newInt(1000000),
 				BatchId:            2,
@@ -1373,8 +1374,8 @@ func (s *KeeperTestSuite) TestMarketOrder() {
 			if tc.ExpErr == types.ErrNoLastPrice {
 				// When there is no last price in the pair, only limit orders can be made.
 				// These two orders will be matched.
-				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionBuy, utils.ParseDec("1"), sdk.NewInt(10000), 0)
-				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionSell, utils.ParseDec("1"), sdk.NewInt(10000), 0)
+				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionBuy, utils.ParseDec("1"), sdkmath.NewInt(10000), 0)
+				s.LimitOrder(tc.Msg.AppId, creator, tc.Msg.PairId, types.OrderDirectionSell, utils.ParseDec("1"), sdkmath.NewInt(10000), 0)
 				s.nextBlock()
 			}
 			s.sendCoins(tc.Msg.GetOrderer(), dummyAcc, s.getBalances(tc.Msg.GetOrderer()))
@@ -1392,16 +1393,16 @@ func (s *KeeperTestSuite) TestMarketOrderTwo() {
 
 	// When there is no last price in the pair, only limit orders can be made.
 	// These two orders will be matched.
-	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 
 	// Now users can make market orders.
 	// In this case, addr(3) user's order takes higher priority than addr(4) user's,
 	// because market buy orders have 10% higher price than the last price(1.0).
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.08"), sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.07"), sdk.NewInt(10000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.08"), sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.07"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 
 	// Check the result.
@@ -1472,7 +1473,7 @@ func (s *KeeperTestSuite) TestMarketOrderWithNoLastPrice() {
 	offerCoin := utils.ParseCoin("10000denom2")
 	s.fundAddr(s.addr(1), sdk.NewCoins(offerCoin))
 	msg := types.NewMsgMarketOrder(
-		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, offerCoin, "denom1", sdk.NewInt(10000), 0)
+		appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, offerCoin, "denom1", sdkmath.NewInt(10000), 0)
 	_, err := s.keeper.MarketOrder(s.ctx, msg)
 	s.Require().ErrorIs(err, types.ErrNoLastPrice)
 }
@@ -1487,7 +1488,7 @@ func (s *KeeperTestSuite) TestSingleOrderNoMatch() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(1000000), 10*time.Second)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(1000000), 10*time.Second)
 	// Execute matching
 	liquidity.EndBlocker(ctx, k, s.app.AssetKeeper)
 
@@ -1541,8 +1542,8 @@ func (s *KeeperTestSuite) TestPartialMatch() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(5000), 0)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(5000), 0)
 	s.nextBlock()
 
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
@@ -1550,9 +1551,9 @@ func (s *KeeperTestSuite) TestPartialMatch() {
 	s.Require().Equal(types.OrderStatusPartiallyMatched, order.Status)
 	s.Require().True(utils.ParseCoin("5000denom2").IsEqual(order.RemainingOfferCoin))
 	s.Require().True(utils.ParseCoin("5000denom1").IsEqual(order.ReceivedCoin))
-	s.Require().True(sdk.NewInt(5000).Equal(order.OpenAmount))
+	s.Require().True(sdkmath.NewInt(5000).Equal(order.OpenAmount))
 
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, sdk.NewInt(5000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(5000), 0)
 	s.nextBlock()
 
 	// Now completely matched.
@@ -1570,7 +1571,7 @@ func (s *KeeperTestSuite) TestMatchWithLowPricePool() {
 
 	// Create a pool with very low price.
 	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000000000000000000denom1,1000000denom2")
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000000000001000000"), sdk.NewInt(100000000000000000), 10*time.Second)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.000000000001000000"), sdkmath.NewInt(100000000000000000), 10*time.Second)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	order, found := s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
 	s.Require().True(found)
@@ -1592,8 +1593,8 @@ func (s *KeeperTestSuite) TestMMOrder() {
 
 	orders := s.MarketMakingOrder(
 		s.addr(1), appID1, pair.Id,
-		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
-		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdkmath.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdkmath.NewInt(1000_000000),
 		10*time.Second, true)
 	maxNumTicks := int(params.MaxNumMarketMakingOrderTicks)
 	s.Require().Len(orders, 2*maxNumTicks)
@@ -1634,8 +1635,8 @@ func (s *KeeperTestSuite) TestMMOrderCancelPreviousOrders() {
 
 	s.MarketMakingOrder(
 		s.addr(1), appID1, pair.Id,
-		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
-		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdkmath.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdkmath.NewInt(1000_000000),
 		10*time.Second, true)
 
 	// Cannot place MM orders again because it's not allowed to cancel previous
@@ -1643,8 +1644,8 @@ func (s *KeeperTestSuite) TestMMOrderCancelPreviousOrders() {
 	s.fundAddr(s.addr(1), utils.ParseCoins("1000000000denom1,1000000000denom2"))
 	_, err := s.keeper.MMOrder(s.ctx, types.NewMsgMMOrder(
 		appID1, s.addr(1), pair.Id,
-		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
-		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdkmath.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdkmath.NewInt(1000_000000),
 		10*time.Second))
 	s.Require().ErrorIs(err, types.ErrSameBatch)
 
@@ -1652,8 +1653,8 @@ func (s *KeeperTestSuite) TestMMOrderCancelPreviousOrders() {
 	s.nextBlock()
 	s.MarketMakingOrder(
 		s.addr(1), appID1, pair.Id,
-		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdk.NewInt(1000_000000),
-		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdk.NewInt(1000_000000),
+		utils.ParseDec("1.1"), utils.ParseDec("1.03"), sdkmath.NewInt(1000_000000),
+		utils.ParseDec("0.97"), utils.ParseDec("0.9"), sdkmath.NewInt(1000_000000),
 		10*time.Second, true)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
@@ -1802,7 +1803,7 @@ func (s *KeeperTestSuite) TestCancelAllOrders() {
 
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 
-	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	order := s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Hour)
 	msg := types.NewMsgCancelAllOrders(appID1, s.addr(1), nil)
 	s.keeper.CancelAllOrders(s.ctx, msg) // CancelAllOrders doesn't cancel orders within in same batch
 	s.nextBlock()
@@ -1820,14 +1821,14 @@ func (s *KeeperTestSuite) TestCancelAllOrders() {
 
 	// The order won't be matched with this market order, since the order is
 	// already canceled.
-	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("10030denom2").IsEqual(s.getBalances(s.addr(1))))
 
 	pair2 := s.CreateNewLiquidityPair(appID1, s.addr(0), asset2.Denom, asset3.Denom)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.5"), sdk.NewInt(10000), time.Hour)
-	s.LimitOrder(appID1, s.addr(2), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.5"), sdkmath.NewInt(10000), time.Hour)
+	s.LimitOrder(appID1, s.addr(2), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Hour)
 	s.nextBlock()
 
 	msg = types.NewMsgCancelAllOrders(appID1, s.addr(2), []uint64{pair.Id})
@@ -2017,17 +2018,17 @@ func (s *KeeperTestSuite) TestConvertAccumulatedSwapFeesWithSwapDistrToken_1() {
 	s.keeper.SetPair(s.ctx, pair)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
 	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.90"), sdk.MustNewDecFromStr("1.1"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.90"), sdkmath.LegacyMustNewDecFromStr("1.1"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"))
 
-	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
 
 	_, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -2077,15 +2078,15 @@ func (s *KeeperTestSuite) TestConvertAccumulatedSwapFeesWithSwapDistrToken_2() {
 	_ = s.CreateNewLiquidityPool(appID1, pair4.Id, addr1, "100000000stake,100000000ucmdx")
 	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
 
-	s.MarketOrder(appID1, s.addr(2), pair1.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair2.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair3.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair4.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair1.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair2.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair3.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair4.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
-	s.MarketOrder(appID1, s.addr(5), pair3.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(5), pair4.Id, types.OrderDirectionSell, sdk.NewInt(32_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair3.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair4.Id, types.OrderDirectionSell, sdkmath.NewInt(32_000000), 0)
 
 	_, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -2138,24 +2139,24 @@ func (s *KeeperTestSuite) TestPoolPreserveK() {
 	}
 	pools := s.keeper.GetAllPools(s.ctx, appID1)
 
-	ks := map[uint64]sdk.Dec{}
+	ks := map[uint64]sdkmath.LegacyDec{}
 	for _, pool := range pools {
 		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{}).(*amm.RangedPool)
 		transX, transY := ammPool.Translation()
-		ks[pool.Id] = sdk.NewDec(rx.Amount.Int64()).Add(transX).Mul(sdk.NewDec(ry.Amount.Int64()).Add(transY))
+		ks[pool.Id] = sdkmath.LegacyNewDec(rx.Amount.Int64()).Add(transX).Mul(sdkmath.LegacyNewDec(ry.Amount.Int64()).Add(transY))
 	}
 
 	for i := 0; i < 20; i++ {
 		pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
 		for j := 0; j < 50; j++ {
-			var price sdk.Dec
+			var price sdkmath.LegacyDec
 			if pair.LastPrice == nil {
 				price = utils.RandomDec(r, utils.ParseDec("0.001"), utils.ParseDec("100.0"))
 			} else {
 				price = utils.RandomDec(r, utils.ParseDec("0.91"), utils.ParseDec("1.09")).Mul(*pair.LastPrice)
 			}
-			amt := utils.RandomInt(r, sdk.NewInt(10000), sdk.NewInt(1000000))
+			amt := utils.RandomInt(r, sdkmath.NewInt(10000), sdkmath.NewInt(1000000))
 			lifespan := time.Duration(r.Intn(60)) * time.Second
 			if r.Intn(2) == 0 {
 				s.LimitOrder(appID1, s.addr(j+2), pair.Id, types.OrderDirectionBuy, price, amt, lifespan)
@@ -2170,9 +2171,9 @@ func (s *KeeperTestSuite) TestPoolPreserveK() {
 
 		for _, pool := range pools {
 			rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).(*amm.RangedPool)
+			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{}).(*amm.RangedPool)
 			transX, transY := ammPool.Translation()
-			k := sdk.NewDec(rx.Amount.Int64()).Add(transX).Mul(sdk.NewDec(ry.Amount.Int64()).Add(transY))
+			k := sdkmath.LegacyNewDec(rx.Amount.Int64()).Add(transX).Mul(sdkmath.LegacyNewDec(ry.Amount.Int64()).Add(transY))
 			s.Require().True(k.GTE(ks[pool.Id].Mul(utils.ParseDec("0.99999")))) // there may be a small error
 			ks[pool.Id] = k
 		}
@@ -2188,7 +2189,7 @@ func (s *KeeperTestSuite) TestPoolOrderOverflow() {
 	pair := s.CreateNewLiquidityPair(appID1, s.addr(0), asset1.Denom, asset2.Denom)
 	s.CreateNewLiquidityPool(appID1, pair.Id, s.addr(0), "1000000denom1,10000000000000000000000000denom2")
 
-	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000000000000010000"), sdk.NewInt(1e17), 0)
+	s.LimitOrder(appID1, s.addr(1), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.000000000000010000"), sdkmath.NewInt(1e17), 0)
 	s.Require().NotPanics(func() {
 		liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	})
@@ -2196,7 +2197,7 @@ func (s *KeeperTestSuite) TestPoolOrderOverflow() {
 
 func (s *KeeperTestSuite) TestRangedLiquidity() {
 	orderPrice := utils.ParseDec("1.05")
-	orderAmt := sdk.NewInt(100000)
+	orderAmt := sdkmath.NewInt(100000)
 
 	appID1 := s.CreateNewApp("appone")
 
@@ -2217,7 +2218,7 @@ func (s *KeeperTestSuite) TestRangedLiquidity() {
 	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received := order.ReceivedCoin.Amount
 	s.Require().True(received.LT(orderAmt))
-	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdkmath.LegacyNewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 	liquidity.BeginBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 
 	pair = s.CreateNewLiquidityPair(appID1, s.addr(0), asset3.Denom, asset4.Denom)
@@ -2231,7 +2232,7 @@ func (s *KeeperTestSuite) TestRangedLiquidity() {
 	paid = order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received = order.ReceivedCoin.Amount
 	s.Require().True(intEq(orderAmt, received))
-	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdkmath.LegacyNewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 }
 
 func (s *KeeperTestSuite) TestOneSidedRangedPool() {
@@ -2246,20 +2247,20 @@ func (s *KeeperTestSuite) TestOneSidedRangedPool() {
 
 	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2", utils.ParseDec("1.0"), utils.ParseDec("1.2"), utils.ParseDec("1.0"))
 	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(utils.DecApproxEqual(utils.ParseDec("1.0"), ammPool.Price()))
-	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
-	s.Require().True(intEq(sdk.NewInt(1000000), ry.Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1000000), ry.Amount))
 
 	orderPrice := utils.ParseDec("1.1")
-	orderAmt := sdk.NewInt(100000)
-	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.1"), sdk.NewInt(100000), 0)
+	orderAmt := sdkmath.NewInt(100000)
+	order := s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.1"), sdkmath.NewInt(100000), 0)
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	order, _ = s.keeper.GetOrder(s.ctx, appID1, order.PairId, order.Id)
 	paid := order.OfferCoin.Sub(order.RemainingOfferCoin).Amount
 	received := order.ReceivedCoin.Amount
 	s.Require().True(intEq(orderAmt, received))
-	s.Require().True(sdk.NewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
+	s.Require().True(sdkmath.LegacyNewDec(paid.Int64()).QuoInt(received).LTE(orderPrice))
 
 	rx, _ = s.keeper.GetPoolBalances(s.ctx, pool)
 	s.Require().True(rx.IsPositive())
@@ -2285,14 +2286,14 @@ func (s *KeeperTestSuite) TestExhaustRangedPool() {
 	// Buy
 	for {
 		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 		poolPrice := ammPool.Price()
-		if ry.Amount.LT(sdk.NewInt(100)) {
+		if ry.Amount.LT(sdkmath.NewInt(100)) {
 			s.Require().True(utils.DecApproxEqual(maxPrice, poolPrice))
 			break
 		}
-		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdk.NewDecWithPrec(105, 2)))
-		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdkmath.LegacyNewDecWithPrec(105, 2)))
+		amt := utils.RandomInt(r, sdkmath.NewInt(5000), sdkmath.NewInt(15000))
 		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionBuy, orderPrice, amt, 0)
 		s.nextBlock()
 	}
@@ -2300,14 +2301,14 @@ func (s *KeeperTestSuite) TestExhaustRangedPool() {
 	// Sell
 	for {
 		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 		poolPrice := ammPool.Price()
-		if rx.Amount.LT(sdk.NewInt(100)) {
+		if rx.Amount.LT(sdkmath.NewInt(100)) {
 			s.Require().True(utils.DecApproxEqual(minPrice, poolPrice))
 			break
 		}
-		orderPrice := utils.RandomDec(r, poolPrice.Mul(sdk.NewDecWithPrec(95, 2)), poolPrice)
-		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		orderPrice := utils.RandomDec(r, poolPrice.Mul(sdkmath.LegacyNewDecWithPrec(95, 2)), poolPrice)
+		amt := utils.RandomInt(r, sdkmath.NewInt(5000), sdkmath.NewInt(15000))
 		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionSell, orderPrice, amt, 0)
 		s.nextBlock()
 	}
@@ -2315,13 +2316,13 @@ func (s *KeeperTestSuite) TestExhaustRangedPool() {
 	// Buy again
 	for {
 		rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+		ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 		poolPrice := ammPool.Price()
 		if poolPrice.GTE(initialPrice) {
 			break
 		}
-		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdk.NewDecWithPrec(105, 2)))
-		amt := utils.RandomInt(r, sdk.NewInt(5000), sdk.NewInt(15000))
+		orderPrice := utils.RandomDec(r, poolPrice, poolPrice.Mul(sdkmath.LegacyNewDecWithPrec(105, 2)))
+		amt := utils.RandomInt(r, sdkmath.NewInt(5000), sdkmath.NewInt(15000))
 		s.LimitOrder(appID1, orderer, pair.Id, types.OrderDirectionBuy, orderPrice, amt, 0)
 		s.nextBlock()
 	}
@@ -2330,7 +2331,7 @@ func (s *KeeperTestSuite) TestExhaustRangedPool() {
 	s.Require().NoError(err)
 
 	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(coinEq(rx, utils.ParseCoin("997231denom2")))
 	s.Require().True(coinEq(ry, utils.ParseCoin("984671denom1")))
 	s.Require().True(decEq(ammPool.Price(), utils.ParseDec("1.003719250732340754")))
@@ -2366,9 +2367,9 @@ func (s *KeeperTestSuite) TestOrderBooks_edgecase1() {
 
 	s.Require().Len(resp.Pairs[0].OrderBooks[0].Buys, 2)
 	s.Require().True(decEq(utils.ParseDec("0.63219"), resp.Pairs[0].OrderBooks[0].Buys[0].Price))
-	s.Require().True(intEq(sdk.NewInt(1178846737645), resp.Pairs[0].OrderBooks[0].Buys[0].UserOrderAmount))
+	s.Require().True(intEq(sdkmath.NewInt(1178846737645), resp.Pairs[0].OrderBooks[0].Buys[0].UserOrderAmount))
 	s.Require().True(decEq(utils.ParseDec("0.5187"), resp.Pairs[0].OrderBooks[0].Buys[1].Price))
-	s.Require().True(intEq(sdk.NewInt(13340086), resp.Pairs[0].OrderBooks[0].Buys[1].UserOrderAmount))
+	s.Require().True(intEq(sdkmath.NewInt(13340086), resp.Pairs[0].OrderBooks[0].Buys[1].UserOrderAmount))
 	s.Require().Len(resp.Pairs[0].OrderBooks[0].Sells, 0)
 }
 
@@ -2381,17 +2382,17 @@ func (s *KeeperTestSuite) TestSwap_edgecase1() {
 	asset2 := s.CreateNewAsset("ASSETTWO", "denom2", 1000000)
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdk.NewInt(9995), 0)
-	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdkmath.NewInt(9995), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdkmath.NewInt(10000), 0)
 
 	s.nextBlock()
 	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
 	s.Require().True(decEq(utils.ParseDec("0.102"), *pair.LastPrice))
 
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdk.NewInt(9995), 0)
-	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.102"), sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("0.101"), sdkmath.NewInt(9995), 0)
+	s.LimitOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.102"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 }
 
@@ -2412,7 +2413,7 @@ func (s *KeeperTestSuite) TestSwap_edgecase2() {
 	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "17335058855denom2", utils.ParseDec("1.15"), utils.ParseDec("1.55"), utils.ParseDec("1.55"))
 	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "217771046279denom2", utils.ParseDec("1.25"), utils.ParseDec("1.45"), utils.ParseDec("1.45"))
 
-	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdk.NewInt(4336_000000), 0)
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdkmath.NewInt(4336_000000), 0)
 	s.nextBlock()
 
 	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
@@ -2422,7 +2423,7 @@ func (s *KeeperTestSuite) TestSwap_edgecase2() {
 	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
 	s.Require().True(decEq(utils.ParseDec("1.6484"), *pair.LastPrice))
 
-	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdk.NewInt(4450_000000), 0)
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, sdkmath.NewInt(4450_000000), 0)
 	s.nextBlock()
 
 	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
@@ -2445,7 +2446,7 @@ func (s *KeeperTestSuite) TestSwap_edgecase3() {
 	s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "110001546090denom2,110013588106denom1")
 	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "140913832254denom2,130634675302denom1", utils.ParseDec("0.92"), utils.ParseDec("1.08"), utils.ParseDec("0.99989"))
 
-	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
 	s.nextBlock()
 
 	pair, _ = s.keeper.GetPair(s.ctx, appID1, pair.Id)
@@ -2469,8 +2470,8 @@ func (s *KeeperTestSuite) TestSwap_edgecase4() {
 	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000_000000denom1,1000_000000denom2", utils.ParseDec("0.95"), utils.ParseDec("1.05"), utils.ParseDec("1.02"))
 	s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000_000000denom1,1000_000000denom2", utils.ParseDec("0.9"), utils.ParseDec("1.2"), utils.ParseDec("0.98"))
 
-	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.05"), sdk.NewInt(50_000000), 0)
-	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.97"), sdk.NewInt(100_000000), 0)
+	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.05"), sdkmath.NewInt(50_000000), 0)
+	s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionBuy, utils.ParseDec("0.97"), sdkmath.NewInt(100_000000), 0)
 	s.nextBlock()
 	s.Require().True(utils.ParseCoins("50150000denom1,97291000denom2").IsEqual(s.getBalances(addr2)))
 

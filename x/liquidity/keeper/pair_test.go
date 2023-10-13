@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -233,7 +234,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
 				s.Require().NoError(err)
 				collectedPairCreationFee := s.getBalances(sdk.MustAccAddressFromBech32(params.FeeCollectorAddress))
-				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex+1))))).IsEqual(collectedPairCreationFee))
+				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))).IsEqual(collectedPairCreationFee))
 
 				pairs := s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId)
 				s.Require().Len(pairs, int(tc.QueryResponseIndex)+1)

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -15,18 +16,18 @@ import (
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error) {
 	asset, found := k.assetKeeper.GetAsset(ctx, id)
 	if !found {
-		return sdk.ZeroDec(), assettypes.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), assettypes.ErrorAssetDoesNotExist
 	}
 	twa, found := k.marketKeeper.GetTwa(ctx, id)
 	if found && twa.Twa > 0 {
-		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
-		denominator := sdk.NewDecFromInt(asset.Decimals)
+		numerator := sdkmath.LegacyNewDecFromInt(amt).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(twa.Twa)))
+		denominator := sdkmath.LegacyNewDecFromInt(asset.Decimals)
 		return numerator.Quo(denominator), nil
 	}
-	return sdk.ZeroDec(), markettypes.ErrorPriceNotActive
+	return sdkmath.LegacyZeroDec(), markettypes.ErrorPriceNotActive
 }
 
 func (k Keeper) GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (types.PoolTokenDeserializerKit, error) {
@@ -57,11 +58,11 @@ func (k Keeper) GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64
 	return deserializerKit, nil
 }
 
-func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit types.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error) {
+func (k Keeper) CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit types.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdkmath.Int, sdkmath.Int, error) {
 	// amm.Withdraw implemets the actual logic for pool token ratio calculation
-	x, y := amm.Withdraw(deserializerKit.QuoteCoinPoolBalance.Amount, deserializerKit.BaseCoinPoolBalance.Amount, deserializerKit.PoolCoinSupply, poolCoin.Amount, sdk.ZeroDec())
+	x, y := amm.Withdraw(deserializerKit.QuoteCoinPoolBalance.Amount, deserializerKit.BaseCoinPoolBalance.Amount, deserializerKit.PoolCoinSupply, poolCoin.Amount, sdkmath.LegacyZeroDec())
 	if x.IsZero() && y.IsZero() {
-		return sdk.NewInt(0), sdk.NewInt(0), types.ErrCalculatedPoolAmountIsZero
+		return sdkmath.NewInt(0), sdkmath.NewInt(0), types.ErrCalculatedPoolAmountIsZero
 	}
 	return x, y, nil
 }
@@ -72,10 +73,10 @@ func (k Keeper) DeserializePoolCoinHelper(ctx sdk.Context, appID, poolID, poolCo
 		return nil, err
 	}
 
-	poolCoin := sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, sdk.NewInt(int64(poolCoinAmount)))
+	poolCoin := sdk.NewCoin(deserializerKit.Pool.PoolCoinDenom, sdkmath.NewInt(int64(poolCoinAmount)))
 	x, y, err := k.CalculateXYFromPoolCoin(ctx, deserializerKit, poolCoin)
 	if err != nil {
-		return []sdk.Coin{sdk.NewCoin(deserializerKit.Pair.QuoteCoinDenom, sdk.NewInt(0)), sdk.NewCoin(deserializerKit.Pair.BaseCoinDenom, sdk.NewInt(0))}, nil
+		return []sdk.Coin{sdk.NewCoin(deserializerKit.Pair.QuoteCoinDenom, sdkmath.NewInt(0)), sdk.NewCoin(deserializerKit.Pair.BaseCoinDenom, sdkmath.NewInt(0))}, nil
 	}
 	quoteCoin := sdk.NewCoin(deserializerKit.Pair.QuoteCoinDenom, x)
 	baseCoin := sdk.NewCoin(deserializerKit.Pair.BaseCoinDenom, y)
@@ -112,8 +113,8 @@ func (k Keeper) GetAssetWhoseOraclePriceExists(ctx sdk.Context, quoteCoinDenom, 
 	return asset, nil
 }
 
-func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint64, poolIds []uint64, masterPoolSupplyAddresses []sdk.AccAddress) map[string]sdk.Dec {
-	poolSupplyData := make(map[string]sdk.Dec)
+func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint64, poolIds []uint64, masterPoolSupplyAddresses []sdk.AccAddress) map[string]sdkmath.LegacyDec {
+	poolSupplyData := make(map[string]sdkmath.LegacyDec)
 
 	for _, poolID := range poolIds {
 		deserializerKit, err := k.GetPoolTokenDesrializerKit(ctx, appID, poolID)
@@ -139,7 +140,7 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 			quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
 			baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
 
-			var assetAmount sdk.Int
+			var assetAmount sdkmath.Int
 
 			if pair.QuoteCoinDenom == asset.Denom {
 				assetAmount = quoteCoin.Amount
@@ -147,7 +148,7 @@ func (k Keeper) GetAggregatedChildPoolContributions(ctx sdk.Context, appID uint6
 				assetAmount = baseCoin.Amount
 			}
 			value, _ := k.CalcAssetPrice(ctx, asset.Id, assetAmount)
-			value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
+			value = value.Mul(sdkmath.LegacyNewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 			_, found = poolSupplyData[address.String()]
 			if !found {
 				poolSupplyData[address.String()] = value
@@ -174,7 +175,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	}
 
 	var lpAddresses []sdk.AccAddress
-	var lpSupplies []sdk.Dec
+	var lpSupplies []sdkmath.LegacyDec
 
 	activeFarmers := k.GetAllActiveFarmers(ctx, appID, pool.Id)
 	for _, activeFarmer := range activeFarmers {
@@ -189,7 +190,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 		quoteCoin := sdk.NewCoin(pair.QuoteCoinDenom, x)
 		baseCoin := sdk.NewCoin(pair.BaseCoinDenom, y)
 
-		var assetAmount sdk.Int
+		var assetAmount sdkmath.Int
 
 		if pair.QuoteCoinDenom == asset.Denom {
 			assetAmount = quoteCoin.Amount
@@ -197,15 +198,15 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 			assetAmount = baseCoin.Amount
 		}
 		value, _ := k.CalcAssetPrice(ctx, asset.Id, assetAmount)
-		value = value.Mul(sdk.NewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
+		value = value.Mul(sdkmath.LegacyNewDec(2)) // multiplying the calculated value of sigle asset with 2, since we have 50-50 pools.
 		lpAddresses = append(lpAddresses, addr)
 		lpSupplies = append(lpSupplies, value)
 	}
 
 	// Logic for master pool mechanism
 	if liquidityGaugeData.IsMasterPool {
-		var childPoolSupplies []sdk.Dec
-		var minMasterChildPoolSupplies []sdk.Dec
+		var childPoolSupplies []sdkmath.LegacyDec
+		var minMasterChildPoolSupplies []sdkmath.LegacyDec
 
 		var childPoolIds []uint64
 		if len(liquidityGaugeData.ChildPoolIds) == 0 {
@@ -231,7 +232,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 			for _, accAddress := range lpAddresses {
 				aggregatedSupplyValue, found := chilPoolSuppliesData[accAddress.String()]
 				if !found {
-					childPoolSupplies = append(childPoolSupplies, sdk.NewDec(0))
+					childPoolSupplies = append(childPoolSupplies, sdkmath.LegacyNewDec(0))
 				} else {
 					childPoolSupplies = append(childPoolSupplies, aggregatedSupplyValue)
 				}
@@ -241,9 +242,9 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 				return nil, types.ErrSupplyValueCalculationInvalid
 			}
 
-			totalRewardEligibleSupply := sdk.NewDec(0)
+			totalRewardEligibleSupply := sdkmath.LegacyNewDec(0)
 			for i := 0; i < len(lpAddresses); i++ {
-				var minSupply sdk.Dec
+				var minSupply sdkmath.LegacyDec
 				if lpSupplies[i].LTE(childPoolSupplies[i]) {
 					minSupply = lpSupplies[i]
 				} else {
@@ -255,13 +256,13 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 
 			var rewardData []rewardstypes.RewardDistributionDataCollector
 			if !totalRewardEligibleSupply.IsZero() {
-				multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+				multiplier := sdkmath.LegacyNewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 				for index, address := range lpAddresses {
 					if !minMasterChildPoolSupplies[index].IsZero() {
 						calculatedReward := int64(math.Floor(minMasterChildPoolSupplies[index].Mul(multiplier).MustFloat64()))
 						newData := new(rewardstypes.RewardDistributionDataCollector)
 						newData.RewardReceiver = address
-						newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+						newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdkmath.NewInt(calculatedReward))
 						rewardData = append(rewardData, *newData)
 					}
 				}
@@ -272,19 +273,19 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	}
 
 	// Logic for non master pool gauges (external rewards), (also used for masterpool if no child pool exists)
-	totalRewardEligibleSupply := sdk.NewDec(0)
+	totalRewardEligibleSupply := sdkmath.LegacyNewDec(0)
 	for _, supply := range lpSupplies {
 		totalRewardEligibleSupply = totalRewardEligibleSupply.Add(supply)
 	}
 
 	var rewardData []rewardstypes.RewardDistributionDataCollector
 	if !totalRewardEligibleSupply.IsZero() {
-		multiplier := sdk.NewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
+		multiplier := sdkmath.LegacyNewDecFromInt(coinsToDistribute.Amount).Quo(totalRewardEligibleSupply)
 		for index, address := range lpAddresses {
 			calculatedReward := int64(math.Floor(lpSupplies[index].Mul(multiplier).MustFloat64()))
 			newData := new(rewardstypes.RewardDistributionDataCollector)
 			newData.RewardReceiver = address
-			newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdk.NewInt(calculatedReward))
+			newData.RewardCoin = sdk.NewCoin(coinsToDistribute.Denom, sdkmath.NewInt(calculatedReward))
 			rewardData = append(rewardData, *newData)
 		}
 	}
@@ -397,7 +398,7 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 		return sdkerrors.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", msg.PoolId)
 	}
 
-	farmedCoinAmount := sdk.NewInt(0)
+	farmedCoinAmount := sdkmath.NewInt(0)
 
 	if qfound {
 		for _, qCoin := range queuedFarmer.QueudCoins {
@@ -419,11 +420,11 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 		for i := len(queuedCoins) - 1; i >= 0; i-- {
 			if queuedCoins[i].FarmedPoolCoin.Amount.GTE(msg.UnfarmingPoolCoin.Amount) {
 				queuedCoins[i].FarmedPoolCoin.Amount = queuedCoins[i].FarmedPoolCoin.Amount.Sub(msg.UnfarmingPoolCoin.Amount)
-				msg.UnfarmingPoolCoin.Amount = sdk.NewInt(0)
+				msg.UnfarmingPoolCoin.Amount = sdkmath.NewInt(0)
 				break
 			} else {
 				msg.UnfarmingPoolCoin.Amount = msg.UnfarmingPoolCoin.Amount.Sub(queuedCoins[i].FarmedPoolCoin.Amount)
-				queuedCoins[i].FarmedPoolCoin.Amount = sdk.NewInt(0)
+				queuedCoins[i].FarmedPoolCoin.Amount = sdkmath.NewInt(0)
 			}
 		}
 	}
@@ -506,7 +507,7 @@ func (k Keeper) ProcessQueuedFarmers(ctx sdk.Context, appID uint64) {
 		for _, queuedFarmer := range queuedFarmers {
 			activeFarmer, found := k.GetActiveFarmer(ctx, queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer))
 			if !found {
-				activeFarmer = types.NewActivefarmer(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer), sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)))
+				activeFarmer = types.NewActivefarmer(queuedFarmer.AppId, queuedFarmer.PoolId, sdk.MustAccAddressFromBech32(queuedFarmer.Farmer), sdk.NewCoin(pool.PoolCoinDenom, sdkmath.NewInt(0)))
 			}
 
 			updatedQueue := []*types.QueuedCoin{}
@@ -529,8 +530,8 @@ func (k Keeper) ProcessQueuedFarmers(ctx sdk.Context, appID uint64) {
 	}
 }
 
-func (k Keeper) GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error) {
-	totalAmountFarmed := sdk.ZeroInt()
+func (k Keeper) GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdkmath.Int, error) {
+	totalAmountFarmed := sdkmath.ZeroInt()
 	asset, found := k.assetKeeper.GetAsset(ctx, assetID)
 	if !found {
 		return totalAmountFarmed, assettypes.ErrorAssetDoesNotExist

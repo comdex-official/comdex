@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	sdkmath "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -79,12 +80,12 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
 	s.Require().NoError(err)
 }
 
-func newInt(i int64) sdk.Int {
-	return sdk.NewInt(i)
+func newInt(i int64) sdkmath.Int {
+	return sdkmath.NewInt(i)
 }
 
-func newDec(i int64) sdk.Dec {
-	return sdk.NewDec(i)
+func newDec(i int64) sdkmath.LegacyDec {
+	return sdkmath.LegacyNewDec(i)
 }
 
 func coinEq(exp, got sdk.Coin) (bool, string, string, string) {
@@ -95,11 +96,11 @@ func coinsEq(exp, got sdk.Coins) (bool, string, string, string) {
 	return exp.IsEqual(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
 }
 
-func intEq(exp, got sdk.Int) (bool, string, string, string) {
+func intEq(exp, got sdkmath.Int) (bool, string, string, string) {
 	return exp.Equal(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
 }
 
-func decEq(exp, got sdk.Dec) (bool, string, string, string) {
+func decEq(exp, got sdkmath.LegacyDec) (bool, string, string, string) {
 	return exp.Equal(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
 }
 
@@ -107,7 +108,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             strings.ToLower(appName),
 		ShortName:        strings.ToLower(appName),
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -132,7 +133,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})
@@ -193,7 +194,7 @@ func (s *KeeperTestSuite) CreateNewLiquidityPool(appID, pairID uint64, creator s
 	return pool
 }
 
-func (s *KeeperTestSuite) CreateNewLiquidityRangedPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string, minPrice, maxPrice, initialPrice sdk.Dec) types.Pool {
+func (s *KeeperTestSuite) CreateNewLiquidityRangedPool(appID, pairID uint64, creator sdk.AccAddress, depositCoins string, minPrice, maxPrice, initialPrice sdkmath.LegacyDec) types.Pool {
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
@@ -235,8 +236,8 @@ func (s *KeeperTestSuite) LimitOrder(
 	orderer sdk.AccAddress,
 	pairId uint64,
 	dir types.OrderDirection,
-	price sdk.Dec,
-	amt sdk.Int,
+	price sdkmath.LegacyDec,
+	amt sdkmath.Int,
 	orderLifespan time.Duration,
 ) types.Order {
 	s.T().Helper()
@@ -258,7 +259,7 @@ func (s *KeeperTestSuite) LimitOrder(
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdkmath.LegacyNewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgLimitOrder(
@@ -275,7 +276,7 @@ func (s *KeeperTestSuite) MarketOrder(
 	orderer sdk.AccAddress,
 	pairId uint64,
 	dir types.OrderDirection,
-	amt sdk.Int,
+	amt sdkmath.Int,
 	orderLifespan time.Duration,
 ) types.Order {
 	s.T().Helper()
@@ -289,7 +290,7 @@ func (s *KeeperTestSuite) MarketOrder(
 	var demandCoinDenom string
 	switch dir {
 	case types.OrderDirectionBuy:
-		maxPrice := lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
+		maxPrice := lastPrice.Mul(sdkmath.LegacyOneDec().Add(params.MaxPriceLimitRatio))
 		offerCoin = sdk.NewCoin(pair.QuoteCoinDenom, amm.OfferCoinAmount(amm.Buy, maxPrice, amt))
 		demandCoinDenom = pair.BaseCoinDenom
 	case types.OrderDirectionSell:
@@ -297,7 +298,7 @@ func (s *KeeperTestSuite) MarketOrder(
 		demandCoinDenom = pair.QuoteCoinDenom
 	}
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdkmath.LegacyNewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgMarketOrder(
@@ -311,8 +312,8 @@ func (s *KeeperTestSuite) MarketOrder(
 
 func (s *KeeperTestSuite) MarketMakingOrder(
 	orderer sdk.AccAddress, appID, pairId uint64,
-	maxSellPrice, minSellPrice sdk.Dec, sellAmt sdk.Int,
-	maxBuyPrice, minBuyPrice sdk.Dec, buyAmt sdk.Int,
+	maxSellPrice, minSellPrice sdkmath.LegacyDec, sellAmt sdkmath.Int,
+	maxBuyPrice, minBuyPrice sdkmath.LegacyDec, buyAmt sdkmath.Int,
 	orderLifespan time.Duration, fund bool) []types.Order {
 	s.T().Helper()
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
