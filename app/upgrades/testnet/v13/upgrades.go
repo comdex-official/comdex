@@ -4,7 +4,6 @@ import (
 	"fmt"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -19,9 +18,9 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icacontrollermigrations "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/migrations/v6"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 )
 
 func CreateUpgradeHandlerV13(
@@ -49,19 +48,23 @@ func CreateUpgradeHandlerV13(
 		legacyParamSubspace := paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 		baseapp.MigrateParams(ctx, legacyParamSubspace, &consensusParamsKeeper)
 
+		// ibc v4-to-v5
+		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v4-to-v5.md
+		// -- nothing --
+
 		// TODO: check if v5-v6 is required ??
-		ctx.Logger().Info("Migrating ICA channel capabilities for ibc-go v5 to v6 migration...")
-		if err := icacontrollermigrations.MigrateICS27ChannelCapability(
-			ctx,
-			cdc,
-			capabilityStoreKey,
-			capabilityKeeper,
-			bandoraclemoduletypes.ModuleName,
-		); err != nil {
+		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v5-to-v6.md
+
+		// ibc v6-to-v7
+		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v6-to-v7.md#chains
+		// (optional) prune expired tendermint consensus states to save storage space
+		ctx.Logger().Info("Pruning expired tendermint consensus states...")
+		if _, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, IBCKeeper.ClientKeeper); err != nil {
 			return nil, err
 		}
 
-		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md
+		// ibc v7-to-v7.1
+		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md#09-localhost-migration
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := IBCKeeper.ClientKeeper.GetParams(ctx)
 		params.AllowedClients = append(params.AllowedClients, exported.Localhost)
