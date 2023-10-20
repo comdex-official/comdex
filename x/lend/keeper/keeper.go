@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"strconv"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -1609,7 +1610,59 @@ func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lender string, p
 	}
 	resBals.FundReserveBalance = append(resBals.FundReserveBalance, resBal)
 	k.SetFundReserveBal(ctx, resBals)
+	err = k.RemoveFaultyAuctions(ctx)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+func (k Keeper) RemoveFaultyAuctions(ctx sdk.Context) error {
+	//Send Inflow_token_target_amount to the pool
+	//Subtract Inflow_token_target_amount from borrow Position
+	//Add the Borrowed amount in poolLBMapping
+	//Delete Auction
+	//Update BorrowPosition Is liquidated -> false
+
+	// get all the current auctions
+	dutchAuctions := k.Auction.GetDutchLendAuctions(ctx, 3)
+	for _, dutchAuction := range dutchAuctions {
+		cPoolModuleName := types.ModuleAcc1
+		reserveModuleName := types.ModuleName
+		//send debt from reserve to the pool
+		err := k.bank.SendCoinsFromModuleToModule(ctx, reserveModuleName, cPoolModuleName, sdk.NewCoins(dutchAuction.InflowTokenTargetAmount))
+		if err != nil {
+			return err
+		}
+		//send collateral to the reserve from auction module outflow_token_current_amount
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, reserveModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+		if err != nil {
+			return err
+		}
+
+		borrowPos := k.GetBorrowByUserAndAssetID(ctx, dutchAuction.VaultOwner.String(), dutchAuction.InflowTokenTargetAmount.Denom, dutchAuction.AssetOutId)
+		borrowPos.AmountOut.Amount = borrowPos.AmountOut.Amount.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
+		borrowPos.IsLiquidated = false
+		k.SetBorrow(ctx, borrowPos)
+
+		poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, 1, dutchAuction.AssetInId)
+
+		poolAssetLBMappingData.TotalBorrowed = poolAssetLBMappingData.TotalBorrowed.Add(borrowPos.AmountOut.Amount)
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+		lockedVault, found := k.Liquidation.GetLockedVault(ctx, 3, dutchAuction.LockedVaultId)
+		if found {
+			k.Liquidation.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+		}
+		err = k.Auction.SetHistoryDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			return err
+		}
+		err = k.Auction.DeleteDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

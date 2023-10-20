@@ -1,6 +1,7 @@
 package expected
 
 import (
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -51,6 +52,12 @@ type EsmKeeper interface {
 
 type LiquidationKeeper interface {
 	GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault []types.LockedVault)
+	GetLockedVault(ctx sdk.Context, appID, id uint64) (lockedVault types.LockedVault, found bool)
+	DeleteLockedVault(ctx sdk.Context, appID, id uint64)
 }
 
-type AuctionKeeper interface{}
+type AuctionKeeper interface {
+	GetDutchLendAuctions(ctx sdk.Context, appID uint64) (auctions []auctiontypes.DutchAuction)
+	SetHistoryDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error
+	DeleteDutchLendAuction(ctx sdk.Context, auction auctiontypes.DutchAuction) error
+}
