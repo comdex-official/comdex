@@ -21,6 +21,7 @@ import (
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
+	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 )
 
 func CreateUpgradeHandlerV13(
@@ -37,6 +38,7 @@ func CreateUpgradeHandlerV13(
 	StakingKeeper stakingkeeper.Keeper,
 	MintKeeper mintkeeper.Keeper,
 	SlashingKeeper slashingkeeper.Keeper,
+	bandoracleKeeper bandoraclemodulekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying test net upgrade - v.13.0.0")
@@ -112,6 +114,13 @@ func CreateUpgradeHandlerV13(
 		wasmKeeper.SetParams(ctx, wasmParams)
 		logger.Info(fmt.Sprintf("updated wasm params to %v", wasmParams))
 
+		// update discard BH of oracle
+		bandData := bandoracleKeeper.GetFetchPriceMsg(ctx)
+		if bandData.Size() > 0 {
+			bandData.AcceptedHeightDiff = 6000
+			bandoracleKeeper.SetFetchPriceMsg(ctx, bandData)
+			logger.Info(fmt.Sprintf("updated bandData to %v", bandData))
+		}
 		return vm, err
 	}
 }

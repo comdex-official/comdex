@@ -1471,7 +1471,7 @@ func (a *App) registerUpgradeHandlers() {
 	case upgradeInfo.Name == tv13.UpgradeName:
 		a.UpgradeKeeper.SetUpgradeHandler(
 			tv13.UpgradeName,
-			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper),
+			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper),
 		)
 	}
 
