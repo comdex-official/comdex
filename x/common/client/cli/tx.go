@@ -2,15 +2,15 @@ package cli
 
 import (
 	"fmt"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/spf13/cobra"
 
+	"github.com/comdex-official/comdex/x/common/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/comdex-official/comdex/x/common/types"
 )
 
 var (
@@ -32,18 +32,19 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdRegisterContract())
+	cmd.AddCommand(CmdRegisterContract(),
+		CmdDeRegisterContract())
 
 	// this line is used by starport scaffolding # 1
 
-	return cmd 
+	return cmd
 }
 
 func CmdRegisterContract() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register-contract [game name] [game id] [contract address]",
 		Short: "Register game contract",
-		Args: cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -60,6 +61,38 @@ func CmdRegisterContract() *cobra.Command {
 				args[0],
 				gameId,
 				args[2],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdDeRegisterContract() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "de-register-contract [game id]",
+		Short: "De Register game contract",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			gameId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("game-id '%s' not a valid uint", args[1])
+			}
+
+			msg := types.NewMsgDeRegisterContract(
+				clientCtx.GetFromAddress().String(),
+				gameId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -31,6 +31,15 @@ func (k Keeper) GetContract(ctx sdk.Context, gameID uint64) (contract types.Whil
 	return contract, true
 }
 
+func (k Keeper) DeleteContract(ctx sdk.Context, gameID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ContractKey(gameID)
+	)
+
+	store.Delete(key)
+}
+
 func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.WhilistedContract) {
 	var (
 		store = k.Store(ctx)

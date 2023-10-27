@@ -7,6 +7,7 @@ option go_package = "github.com/comdex-official/comdex/x/common/types";
 // Msg defines the Msg service.
 service Msg {
     rpc RegisterContract(MsgRegisterContract) returns(MsgRegisterContractResponse);
+    rpc DeRegisterContract(MsgDeRegisterContract) returns(MsgDeRegisterContractResponse);
 }
 
 message MsgRegisterContract {
@@ -17,3 +18,10 @@ message MsgRegisterContract {
   }
   
 message MsgRegisterContractResponse {}
+
+message MsgDeRegisterContract {
+  string creator = 1;
+  uint64 game_id = 2;
+}
+
+message MsgDeRegisterContractResponse {}

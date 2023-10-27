@@ -13,10 +13,10 @@ option go_package = "github.com/comdex-official/comdex/x/common/types";
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/comdex-official/comdex/common/params";
+    option (google.api.http).get = "/comdex/common/v1beta1/params";
   }
   rpc QueryWhitelistedContracts(QueryWhitelistedContractsRequest) returns (QueryWhitelistedContractsResponse) {
-    option (google.api.http).get = "/comdex-official/comdex/common/whitelisted_contracts";
+    option (google.api.http).get = "/comdex/common/v1beta1/whitelisted_contracts";
   }
 }
 

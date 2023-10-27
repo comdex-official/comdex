@@ -26,7 +26,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 
 	if err := msg.ValidateBasic(); err != nil {
 		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
-		return nil, err
+		return &types.MsgRegisterContractResponse{}, err
 	}
 
 	// Validation such that only the user who instantiated the contract can register contract
@@ -35,7 +35,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 
 	// TODO: Add wasm fixture to write unit tests to verify this behavior
 	if contractInfo.Creator != msg.Creator {
-		return nil, sdkerrors.ErrUnauthorized
+		return &types.MsgRegisterContractResponse{}, sdkerrors.ErrUnauthorized
 	}
 
 	allContracts := k.GetAllContract(ctx)
@@ -59,4 +59,32 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 	}
 	
 	return &types.MsgRegisterContractResponse{}, nil
+}
+
+func (k msgServer) DeRegisterContract(goCtx context.Context, msg *types.MsgDeRegisterContract) (*types.MsgDeRegisterContractResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := msg.ValidateBasic(); err != nil {
+		ctx.Logger().Error(fmt.Sprintf("request invalid: %s", err))
+		return &types.MsgDeRegisterContractResponse{}, err
+	}
+
+	// Get Game info from Game Id
+	gameInfo, found := k.GetContract(ctx, msg.GameId)
+	if !found {
+		return &types.MsgDeRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no contract found for this game ID")
+	}
+
+	// Validation such that only the user who instantiated the contract can register contract
+	contractAddr, _ := sdk.AccAddressFromBech32(gameInfo.ContractAddr)
+	contractInfo := k.conOps.GetContractInfo(ctx, contractAddr)
+
+	// TODO: Add wasm fixture to write unit tests to verify this behavior
+	if contractInfo.Creator != msg.Creator {
+		return nil, sdkerrors.ErrUnauthorized
+	}
+
+	k.DeleteContract(ctx, msg.GameId)
+	
+	return &types.MsgDeRegisterContractResponse{}, nil
 }
