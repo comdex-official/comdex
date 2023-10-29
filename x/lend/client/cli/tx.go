@@ -1403,6 +1403,9 @@ func CmdDepreciatePoolsProposal() *cobra.Command {
 				return err
 			}
 			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 			txf =txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewDepreciatePools(clientCtx, txf, cmd.Flags())
@@ -1462,6 +1465,9 @@ func CmdAddEModePairsProposal() *cobra.Command {
 				return err
 			}
 			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
 			txf =txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewAddEModePairs(clientCtx, txf, cmd.Flags())
