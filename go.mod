@@ -5,7 +5,7 @@ go 1.20
 require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/math v1.1.2
-	github.com/CosmWasm/wasmd v0.40.2
+	github.com/CosmWasm/wasmd v0.41.0
 	github.com/CosmWasm/wasmvm v1.3.0
 	github.com/bandprotocol/bandchain-packet v0.0.3
 	github.com/cometbft/cometbft v0.37.2
