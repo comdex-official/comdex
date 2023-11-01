@@ -12,21 +12,22 @@ import (
 	"strings"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
-func GetShareValue(amount sdk.Int, ratio sdk.Dec) sdk.Int {
-	return sdk.NewDec(amount.Int64()).MulTruncate(ratio).TruncateInt()
+func GetShareValue(amount sdkmath.Int, ratio sdkmath.LegacyDec) sdkmath.Int {
+	return sdkmath.LegacyNewDec(amount.Int64()).MulTruncate(ratio).TruncateInt()
 }
 
-type StrIntMap map[string]sdk.Int
+type StrIntMap map[string]sdkmath.Int
 
 // AddOrSet Set when the key not existed on the map or add existed value of the key.
-func (m StrIntMap) AddOrSet(key string, value sdk.Int) {
+func (m StrIntMap) AddOrSet(key string, value sdkmath.Int) {
 	if _, ok := m[key]; !ok {
 		m[key] = value
 	} else {
@@ -57,12 +58,12 @@ func DateRangeIncludes(startTime, endTime, targetTime time.Time) bool {
 }
 
 // ParseDec is a shortcut for sdk.MustNewDecFromStr.
-func ParseDec(s string) sdk.Dec {
-	return sdk.MustNewDecFromStr(strings.ReplaceAll(s, "_", ""))
+func ParseDec(s string) sdkmath.LegacyDec {
+	return sdkmath.LegacyMustNewDecFromStr(strings.ReplaceAll(s, "_", ""))
 }
 
 // ParseDecP is like ParseDec, but it returns a pointer to sdk.Dec.
-func ParseDecP(s string) *sdk.Dec {
+func ParseDecP(s string) *sdkmath.LegacyDec {
 	d := ParseDec(s)
 	return &d
 }
@@ -114,15 +115,15 @@ func ParseTime(s string) time.Time {
 
 // DecApproxEqual returns true if a and b are approximately equal,
 // which means the diff ratio is equal or less than 0.1%.
-func DecApproxEqual(a, b sdk.Dec) bool {
+func DecApproxEqual(a, b sdkmath.LegacyDec) bool {
 	if b.GT(a) {
 		a, b = b, a
 	}
-	return a.Sub(b).Quo(a).LTE(sdk.NewDecWithPrec(1, 3))
+	return a.Sub(b).Quo(a).LTE(sdkmath.LegacyNewDecWithPrec(1, 3))
 }
 
 // DecApproxSqrt returns an approximate estimation of x's square root.
-func DecApproxSqrt(x sdk.Dec) (r sdk.Dec) {
+func DecApproxSqrt(x sdkmath.LegacyDec) (r sdkmath.LegacyDec) {
 	var err error
 	r, err = x.ApproxSqrt()
 	if err != nil {
@@ -132,13 +133,13 @@ func DecApproxSqrt(x sdk.Dec) (r sdk.Dec) {
 }
 
 // RandomInt returns a random integer in the half-open interval [min, max).
-func RandomInt(r *rand.Rand, min, max sdk.Int) sdk.Int {
-	return min.Add(sdk.NewIntFromBigInt(new(big.Int).Rand(r, max.Sub(min).BigInt())))
+func RandomInt(r *rand.Rand, min, max sdkmath.Int) sdkmath.Int {
+	return min.Add(sdkmath.NewIntFromBigInt(new(big.Int).Rand(r, max.Sub(min).BigInt())))
 }
 
 // RandomDec returns a random decimal in the half-open interval [min, max).
-func RandomDec(r *rand.Rand, min, max sdk.Dec) sdk.Dec {
-	return min.Add(sdk.NewDecFromBigIntWithPrec(new(big.Int).Rand(r, max.Sub(min).BigInt()), sdk.Precision))
+func RandomDec(r *rand.Rand, min, max sdkmath.LegacyDec) sdkmath.LegacyDec {
+	return min.Add(sdkmath.LegacyNewDecFromBigIntWithPrec(new(big.Int).Rand(r, max.Sub(min).BigInt()), sdkmath.LegacyPrecision))
 }
 
 // GenAndDeliverTx generates a transactions and delivers it.
