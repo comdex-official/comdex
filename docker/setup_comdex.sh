@@ -14,7 +14,6 @@ echo "Configured Block Gas Limit: $BLOCK_GAS_LIMIT"
 
 # check the genesis file
 GENESIS_FILE="$HOME"/.comdex/config/genesis.json
-GENESIS_FILE="$HOME"/.comdex/config/genesis.json
 if [ -f "$GENESIS_FILE" ]; then
   echo "$GENESIS_FILE exists..."
 else

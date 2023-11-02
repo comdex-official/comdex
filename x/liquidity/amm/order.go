@@ -3,7 +3,7 @@ package amm
 import (
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 )
 
 var (
@@ -34,14 +34,14 @@ func (dir OrderDirection) String() string {
 }
 
 type Orderer interface {
-	Order(dir OrderDirection, price sdk.Dec, amt sdk.Int) Order
+	Order(dir OrderDirection, price sdkmath.LegacyDec, amt sdkmath.Int) Order
 }
 
 // BaseOrderer creates new BaseOrder with sufficient offer coin amount
 // considering price and amount.
 type BaseOrderer struct{}
 
-func (orderer BaseOrderer) Order(dir OrderDirection, price sdk.Dec, amt sdk.Int) Order {
+func (orderer BaseOrderer) Order(dir OrderDirection, price sdkmath.LegacyDec, amt sdkmath.Int) Order {
 	return NewBaseOrder(dir, price, amt, OfferCoinAmount(dir, price, amt))
 }
 
@@ -51,15 +51,15 @@ type Order interface {
 	// GetBatchId returns the batch id where the order was created.
 	// Batch id of 0 means the current batch.
 	GetBatchID() uint64
-	GetPrice() sdk.Dec
-	GetAmount() sdk.Int // The original order amount
-	GetOfferCoinAmount() sdk.Int
-	GetPaidOfferCoinAmount() sdk.Int
-	SetPaidOfferCoinAmount(amt sdk.Int)
-	GetReceivedDemandCoinAmount() sdk.Int
-	SetReceivedDemandCoinAmount(amt sdk.Int)
-	GetOpenAmount() sdk.Int
-	SetOpenAmount(amt sdk.Int)
+	GetPrice() sdkmath.LegacyDec
+	GetAmount() sdkmath.Int // The original order amount
+	GetOfferCoinAmount() sdkmath.Int
+	GetPaidOfferCoinAmount() sdkmath.Int
+	SetPaidOfferCoinAmount(amt sdkmath.Int)
+	GetReceivedDemandCoinAmount() sdkmath.Int
+	SetReceivedDemandCoinAmount(amt sdkmath.Int)
+	GetOpenAmount() sdkmath.Int
+	SetOpenAmount(amt sdkmath.Int)
 	IsMatched() bool
 	// HasPriority returns true if the order has higher priority
 	// than the other order.
@@ -70,26 +70,26 @@ type Order interface {
 // BaseOrder is the base struct for an Order.
 type BaseOrder struct {
 	Direction       OrderDirection
-	Price           sdk.Dec
-	Amount          sdk.Int
-	OfferCoinAmount sdk.Int
+	Price           sdkmath.LegacyDec
+	Amount          sdkmath.Int
+	OfferCoinAmount sdkmath.Int
 
 	// Match info
-	OpenAmount               sdk.Int
-	PaidOfferCoinAmount      sdk.Int
-	ReceivedDemandCoinAmount sdk.Int
+	OpenAmount               sdkmath.Int
+	PaidOfferCoinAmount      sdkmath.Int
+	ReceivedDemandCoinAmount sdkmath.Int
 }
 
 // NewBaseOrder returns a new BaseOrder.
-func NewBaseOrder(dir OrderDirection, price sdk.Dec, amt, offerCoinAmt sdk.Int) *BaseOrder {
+func NewBaseOrder(dir OrderDirection, price sdkmath.LegacyDec, amt, offerCoinAmt sdkmath.Int) *BaseOrder {
 	return &BaseOrder{
 		Direction:                dir,
 		Price:                    price,
 		Amount:                   amt,
 		OfferCoinAmount:          offerCoinAmt,
 		OpenAmount:               amt,
-		PaidOfferCoinAmount:      sdk.ZeroInt(),
-		ReceivedDemandCoinAmount: sdk.ZeroInt(),
+		PaidOfferCoinAmount:      sdkmath.ZeroInt(),
+		ReceivedDemandCoinAmount: sdkmath.ZeroInt(),
 	}
 }
 
@@ -103,40 +103,40 @@ func (order *BaseOrder) GetBatchID() uint64 {
 }
 
 // GetPrice returns the order price.
-func (order *BaseOrder) GetPrice() sdk.Dec {
+func (order *BaseOrder) GetPrice() sdkmath.LegacyDec {
 	return order.Price
 }
 
 // GetAmount returns the order amount.
-func (order *BaseOrder) GetAmount() sdk.Int {
+func (order *BaseOrder) GetAmount() sdkmath.Int {
 	return order.Amount
 }
 
-func (order *BaseOrder) GetOfferCoinAmount() sdk.Int {
+func (order *BaseOrder) GetOfferCoinAmount() sdkmath.Int {
 	return order.OfferCoinAmount
 }
 
-func (order *BaseOrder) GetPaidOfferCoinAmount() sdk.Int {
+func (order *BaseOrder) GetPaidOfferCoinAmount() sdkmath.Int {
 	return order.PaidOfferCoinAmount
 }
 
-func (order *BaseOrder) SetPaidOfferCoinAmount(amt sdk.Int) {
+func (order *BaseOrder) SetPaidOfferCoinAmount(amt sdkmath.Int) {
 	order.PaidOfferCoinAmount = amt
 }
 
-func (order *BaseOrder) GetReceivedDemandCoinAmount() sdk.Int {
+func (order *BaseOrder) GetReceivedDemandCoinAmount() sdkmath.Int {
 	return order.ReceivedDemandCoinAmount
 }
 
-func (order *BaseOrder) SetReceivedDemandCoinAmount(amt sdk.Int) {
+func (order *BaseOrder) SetReceivedDemandCoinAmount(amt sdkmath.Int) {
 	order.ReceivedDemandCoinAmount = amt
 }
 
-func (order *BaseOrder) GetOpenAmount() sdk.Int {
+func (order *BaseOrder) GetOpenAmount() sdkmath.Int {
 	return order.OpenAmount
 }
 
-func (order *BaseOrder) SetOpenAmount(amt sdk.Int) {
+func (order *BaseOrder) SetOpenAmount(amt sdkmath.Int) {
 	order.OpenAmount = amt
 }
 

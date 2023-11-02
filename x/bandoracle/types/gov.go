@@ -2,7 +2,7 @@ package types
 
 import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 const (
@@ -11,7 +11,6 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalFetchPrice)
-	govtypes.RegisterProposalTypeCodec(&FetchPriceProposal{}, "comdex/FetchPriceProposal")
 }
 
 var _ govtypes.Content = &FetchPriceProposal{}

@@ -411,12 +411,12 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 		//send newly minted token((collateral)) to the user
 		// send debt to collector to get added
 		//set net fees data
-		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, bidding.BidderAddress, englishAuction.DebtToken.Amount)
+		err = k.tokenMint.MintNewTokensForApp(ctx, englishAuction.AppId, englishAuction.DebtAssetId, bidding.BidderAddress, englishAuction.CollateralToken.Amount)
 		if err != nil {
 			return err
 		}
 
-		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.CollateralToken))
+		err = k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(englishAuction.DebtToken))
 		if err != nil {
 			return err
 		}

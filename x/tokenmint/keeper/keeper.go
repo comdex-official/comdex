@@ -3,22 +3,23 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/comdex-official/comdex/x/tokenmint/expected"
 	"github.com/comdex-official/comdex/x/tokenmint/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 type Keeper struct {
 	cdc   codec.BinaryCodec
-	key   sdk.StoreKey
+	key   storetypes.StoreKey
 	bank  expected.BankKeeper
 	asset expected.AssetKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, bank expected.BankKeeper, asset expected.AssetKeeper) Keeper {
 	return Keeper{
 		cdc:   cdc,
 		key:   key,

@@ -7,7 +7,7 @@ package tokenmint
 // 	tokenmintsimulation "github.com/comdex-official/comdex/x/tokenmint/simulation"
 // 	"github.com/comdex-official/comdex/x/tokenmint/types"
 // 	"github.com/cosmos/cosmos-sdk/baseapp"
-// 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+// 	simappparams "github.com/cosmos/cosmos-sdk/testutil/sims"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	"github.com/cosmos/cosmos-sdk/types/module"
 // 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"

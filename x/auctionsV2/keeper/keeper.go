@@ -5,17 +5,18 @@ import (
 
 	"github.com/comdex-official/comdex/x/auctionsV2/expected"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 type (
 	Keeper struct {
 		cdc            codec.BinaryCodec
-		storeKey       sdk.StoreKey
-		memKey         sdk.StoreKey
+		storeKey       storetypes.StoreKey
+		memKey         storetypes.StoreKey
 		paramstore     paramtypes.Subspace
 		LiquidationsV2 expected.LiquidationsV2Keeper
 		bankKeeper     expected.BankKeeper
@@ -31,7 +32,7 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	LiquidationsV2Keeper expected.LiquidationsV2Keeper,
 	bankKeeper expected.BankKeeper,

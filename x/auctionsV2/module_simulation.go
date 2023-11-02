@@ -1,13 +1,11 @@
 package auctionsV2
 
 import (
-	"math/rand"
-
 	"github.com/comdex-official/comdex/testutil/sample"
 	newaucsimulation "github.com/comdex-official/comdex/x/auctionsV2/simulation"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simappparams "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -46,10 +44,10 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 }
 
 // RandomizedParams creates randomized  param changes for the simulator
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
+// func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 
-	return []simtypes.ParamChange{}
-}
+// 	return []simtypes.ParamChange{}
+// }
 
 // RegisterStoreDecoder registers a decoder
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}

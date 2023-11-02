@@ -214,13 +214,13 @@ message PoolResponse {
   string creator = 10;
 
   string pool_coin_supply = 11
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 
-  string min_price = 12 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+  string min_price = 12 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec"];
 
-  string max_price = 13 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+  string max_price = 13 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec"];
 
-  string price = 14 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec"];
+  string price = 14 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec"];
 
   bool disabled = 15;
 
@@ -345,23 +345,23 @@ message QueryOrderBooksResponse {
 message OrderBookPairResponse {
   uint64 pair_id    = 1;
   string base_price = 2
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
   repeated OrderBookResponse order_books = 3 [(gogoproto.nullable) = false];
 }
 
 message OrderBookResponse {
   string price_unit = 1
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
   repeated OrderBookTickResponse sells = 2 [(gogoproto.nullable) = false];
   repeated OrderBookTickResponse buys  = 3 [(gogoproto.nullable) = false];
 }
 
 message OrderBookTickResponse {
-  string price = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string price = 1 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
   string user_order_amount = 2
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
   string pool_order_amount = 3
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 }
 
 message TotalActiveAndQueuedPoolCoins {

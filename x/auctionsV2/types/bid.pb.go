@@ -7,9 +7,9 @@ import (
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -221,7 +221,7 @@ type AuctionParams struct {
 	ClosingFee             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=closing_fee,json=closingFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"closing_fee" yaml:"closing_fee"`
 	MinUsdValueLeft        uint64                                 `protobuf:"varint,5,opt,name=min_usd_value_left,json=minUsdValueLeft,proto3" json:"min_usd_value_left,omitempty" yaml:"min_usd_value_left"`
 	BidFactor              github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
-	//For external apps
+	// For external apps
 	LiquidationPenalty github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
 	AuctionBonus       github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=auction_bonus,json=auctionBonus,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"auction_bonus" yaml:"auction_bonus"`
 }
@@ -550,7 +550,7 @@ func (m *Bid) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x38
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BiddingTimestamp, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -935,7 +935,7 @@ func (m *Bid) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovBid(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BiddingTimestamp)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BiddingTimestamp)
 	n += 1 + l + sovBid(uint64(l))
 	if m.AppId != 0 {
 		n += 1 + sovBid(uint64(m.AppId))
@@ -1260,7 +1260,7 @@ func (m *Bid) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BiddingTimestamp, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

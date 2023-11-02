@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -41,15 +41,15 @@ func txMint() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			appID, err := sdk.ParseUint(args[0])
+			appID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
-			assetID, err := sdk.ParseUint(args[1])
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
-			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress().String(), appID.Uint64(), assetID.Uint64())
+			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress().String(), appID, assetID)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

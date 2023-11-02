@@ -5,7 +5,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/cosmos/gogoproto/types"
 
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/comdex-official/comdex/x/vault/types"
@@ -652,12 +652,12 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	for j, extP := range extPair {
 		extPairVaultMappingData, found := k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 		individualVote := votingRatio[j]
-		votingR := individualVote.ToDec().Quo(totalVote.ToDec())
-		shareByExtPair := votingR.Mul(amount.ToDec())
+		votingR := sdk.NewDec(individualVote.Int64()).Quo(sdk.NewDec(totalVote.Int64()))
+		shareByExtPair := votingR.Mul(sdk.NewDec(amount.Int64()))
 		if !found || extPairVaultMappingData.TokenMintedAmount.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByExtPair.Quo(extPairVaultMappingData.TokenMintedAmount.ToDec())
+		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDec(extPairVaultMappingData.TokenMintedAmount.Int64()))
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 
 		for _, vaultID := range vaultsData.VaultIds {

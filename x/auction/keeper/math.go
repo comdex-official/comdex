@@ -9,7 +9,7 @@ func Multiply(a, b sdk.Dec) sdk.Dec {
 }
 
 func (k Keeper) getOutflowTokenInitialPrice(price sdk.Int, buffer sdk.Dec) sdk.Dec {
-	result := buffer.Mul(price.ToDec())
+	result := buffer.Mul(sdk.NewDec(price.Int64()))
 	return result
 }
 
@@ -20,7 +20,7 @@ func (k Keeper) getOutflowTokenEndPrice(price, cusp sdk.Dec) sdk.Dec {
 
 func (k Keeper) getPriceFromLinearDecreaseFunction(top sdk.Dec, tau, dur sdk.Int) sdk.Dec {
 	result1 := tau.Sub(dur)
-	result2 := top.Mul(result1.ToDec())
-	result3 := result2.Quo(tau.ToDec())
+	result2 := top.Mul(sdk.NewDec(result1.Int64()))
+	result3 := result2.Quo(sdk.NewDec(tau.Int64()))
 	return result3
 }

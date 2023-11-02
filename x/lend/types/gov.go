@@ -1,7 +1,7 @@
 package types
 
 import (
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 var (
@@ -20,27 +20,16 @@ var (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalAddLendPairs)
-	govtypes.RegisterProposalTypeCodec(&LendPairsProposal{}, "comdex/AddLendPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddMultipleLendPairs)
-	govtypes.RegisterProposalTypeCodec(&MultipleLendPairsProposal{}, "comdex/AddMultipleLendPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddPool)
-	govtypes.RegisterProposalTypeCodec(&AddPoolsProposal{}, "comdex/AddPoolsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetToPair)
-	govtypes.RegisterProposalTypeCodec(&AddAssetToPairProposal{}, "comdex/AddAssetToPairProposal")
 	govtypes.RegisterProposalType(ProposalAddMultipleAssetToPair)
-	govtypes.RegisterProposalTypeCodec(&AddMultipleAssetToPairProposal{}, "comdex/AddMultipleAssetToPairProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetRatesParams)
-	govtypes.RegisterProposalTypeCodec(&AddAssetRatesParams{}, "comdex/AddAssetRatesParams")
 	govtypes.RegisterProposalType(ProposalAddAuctionParams)
-	govtypes.RegisterProposalTypeCodec(&AddAuctionParamsProposal{}, "comdex/AddAuctionParamsProposal")
 	govtypes.RegisterProposalType(ProposalAddPoolPairs)
-	govtypes.RegisterProposalTypeCodec(&AddPoolPairsProposal{}, "comdex/AddPoolPairsProposal")
 	govtypes.RegisterProposalType(ProposalAddAssetRatesPoolPairs)
-	govtypes.RegisterProposalTypeCodec(&AddAssetRatesPoolPairsProposal{}, "comdex/AddAssetRatesPoolPairsProposal")
 	govtypes.RegisterProposalType(ProposalDepreciatePool)
-	govtypes.RegisterProposalTypeCodec(&AddPoolDepreciateProposal{}, "comdex/AddPoolDepreciateProposal")
 	govtypes.RegisterProposalType(ProposalAddEModePairs)
-	govtypes.RegisterProposalTypeCodec(&AddEModePairsProposal{}, "comdex/AddEModePairsProposal")
 }
 
 var (

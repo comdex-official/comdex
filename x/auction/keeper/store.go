@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	protobuftypes "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/cosmos/gogoproto/types"
 
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 )
@@ -16,14 +16,14 @@ func (k Keeper) SetProtocolStatistics(ctx sdk.Context, appID, assetID uint64, am
 	)
 	stat, found := k.GetProtocolStat(ctx, appID, assetID)
 	if found {
-		stat.Loss = stat.Loss.Add(amount.ToDec())
+		stat.Loss = stat.Loss.Add(sdk.NewDec(amount.Int64()))
 		value := k.cdc.MustMarshal(&stat)
 		store.Set(key, value)
 	} else {
 		var stats auctiontypes.ProtocolStatistics
 		stats.AppId = appID
 		stats.AssetId = assetID
-		stats.Loss = amount.ToDec()
+		stats.Loss = sdk.NewDec(amount.Int64())
 		value := k.cdc.MustMarshal(&stats)
 		store.Set(key, value)
 	}

@@ -5,7 +5,7 @@ import (
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {

@@ -3,20 +3,21 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/comdex-official/comdex/x/liquidationsV2/expected"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type Keeper struct {
 	cdc        codec.BinaryCodec
-	storeKey   sdk.StoreKey
-	memKey     sdk.StoreKey
+	storeKey   storetypes.StoreKey
+	memKey     storetypes.StoreKey
 	paramstore paramtypes.Subspace
 	account    expected.AccountKeeper
 	bank       expected.BankKeeper
@@ -33,7 +34,7 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	account expected.AccountKeeper,
 	bank expected.BankKeeper,

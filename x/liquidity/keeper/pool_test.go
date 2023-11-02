@@ -5,6 +5,8 @@ import (
 	"github.com/comdex-official/comdex/x/liquidity"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/types"
+
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/stretchr/testify/suite"
@@ -27,7 +29,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
-	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))))
+	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdkmath.NewInt(1000000000000))))
 
 	testCases := []struct {
 		Name               string
@@ -41,7 +43,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error app id invalid",
 			Msg: *types.NewMsgCreatePool(
-				69, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				69, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
 			ExpResp:            &types.Pool{},
@@ -52,7 +54,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error pair id invalid",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, 12, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, 12, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", 12),
 			ExpResp:            &types.Pool{},
@@ -63,7 +65,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error invalid deposit coin denom 1",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(1000000000000))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom1"),
 			ExpResp:            &types.Pool{},
@@ -74,7 +76,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error invalid deposit coin denom 2",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(1000000000000))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom2"),
 			ExpResp:            &types.Pool{},
@@ -85,7 +87,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error invalid deposit coin denom 3",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom1"),
 			ExpResp:            &types.Pool{},
@@ -96,9 +98,9 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error smaller than minimum deposit amount 1",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrInsufficientDepositAmount, "%s is smaller than %s", sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1))), sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount)),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInsufficientDepositAmount, "%s is smaller than %s", sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1))), sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount)),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -107,9 +109,9 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error smaller than minimum deposit amount 2",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrInsufficientDepositAmount, "%s is smaller than %s", sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount)),
+			ExpErr:             sdkerrors.Wrapf(types.ErrInsufficientDepositAmount, "%s is smaller than %s", sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount)),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -120,9 +122,9 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error insufficient deposit coins",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom, dummyPair1.QuoteCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -133,9 +135,9 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "error insufficient pool creation fees",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than %s", params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than %s", params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -144,7 +146,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "success valid case app1 pair1",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.Pool{
@@ -172,12 +174,12 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000)))),
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000)))),
 		},
 		{
 			Name: "error pool already exists",
 			Msg: *types.NewMsgCreatePool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr:             types.ErrPoolAlreadyExists,
 			ExpResp:            &types.Pool{},
@@ -188,7 +190,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 		{
 			Name: "success valid case app2 pair1",
 			Msg: *types.NewMsgCreatePool(
-				appID2, addr1, app2pair.Id, sdk.NewCoins(sdk.NewCoin(app2pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app2pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
+				appID2, addr1, app2pair.Id, sdk.NewCoins(sdk.NewCoin(app2pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app2pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.Pool{
@@ -216,7 +218,7 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				Type:                  types.PoolTypeBasic,
 				Creator:               addr1.String(),
 			},
-			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))), sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000)))),
+			AvailableBalance: sdk.NewCoins(sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000))), sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000)))),
 		},
 	}
 
@@ -247,13 +249,13 @@ func (s *KeeperTestSuite) TestCreatePool() {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
 				s.Require().NoError(err)
 
-				expectedPairCreationFeesCollected := sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdk.NewInt(int64(len(s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId))))))
+				expectedPairCreationFeesCollected := sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(len(s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId))))))
 
 				expectedPoolCreationFeesCollected := sdk.Coin{}
 				if tc.Msg.AppId == appID1 {
-					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex-1))))
+					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex-1))))
 				} else {
-					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex+1))))
+					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))
 				}
 
 				collectedPairPoolCreationFee := s.getBalances(sdk.MustAccAddressFromBech32(params.FeeCollectorAddress))
@@ -377,8 +379,8 @@ func (s *KeeperTestSuite) TestDeposit() {
 	app2Pool := s.CreateNewLiquidityPool(appID2, app2Pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
 
 	addr1AvailableBalance := sdk.NewCoins(
-		sdk.NewCoin(app1Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
-		sdk.NewCoin(app2Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
+		sdk.NewCoin(app1Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000))),
+		sdk.NewCoin(app2Pool.PoolCoinDenom, amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000))),
 	)
 
 	testCases := []struct {
@@ -393,7 +395,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error app id invalid",
 			Msg: *types.NewMsgDeposit(
-				69, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				69, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
 			ExpResp:            &types.DepositRequest{},
@@ -404,7 +406,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error pool id invalid",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, 69, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				appID1, addr1, 69, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pool %d not found", 69),
 			ExpResp:            &types.DepositRequest{},
@@ -415,7 +417,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error invalid deposit coin 1",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(100000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(100000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom1 is not in the pair"),
 			ExpResp:            &types.DepositRequest{},
@@ -426,7 +428,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error invalid deposit coin 2",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(100000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(100000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom2 is not in the pair"),
 			ExpResp:            &types.DepositRequest{},
@@ -437,7 +439,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error invalid deposit coin 3",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom fakedenom1 is not in the pair"),
 			ExpResp:            &types.DepositRequest{},
@@ -448,9 +450,9 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "error insufficeint deposit coins",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 100000000%s", app1Pair.BaseCoinDenom, app1Pair.BaseCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 100000000%s", app1Pair.BaseCoinDenom),
 			ExpResp:            &types.DepositRequest{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -459,7 +461,7 @@ func (s *KeeperTestSuite) TestDeposit() {
 		{
 			Name: "success valid case 1 app1 pool1",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.DepositRequest{
@@ -467,20 +469,20 @@ func (s *KeeperTestSuite) TestDeposit() {
 				PoolId:         1,
 				MsgHeight:      0,
 				Depositor:      addr1.String(),
-				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 				AcceptedCoins:  nil,
-				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(0)),
+				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(0)),
 				Status:         types.RequestStatusNotExecuted,
 				AppId:          appID1,
 			},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(1000000000))),
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(1000000000))),
 		},
 		{
 			Name: "success valid case 2 app1 pool1",
 			Msg: *types.NewMsgDeposit(
-				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(300000000))),
+				appID1, addr1, app1Pool.Id, sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(300000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.DepositRequest{
@@ -488,20 +490,20 @@ func (s *KeeperTestSuite) TestDeposit() {
 				PoolId:         1,
 				MsgHeight:      0,
 				Depositor:      addr1.String(),
-				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdk.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdk.NewInt(300000000))),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app1Pair.BaseCoinDenom, sdkmath.NewInt(300000000)), sdk.NewCoin(app1Pair.QuoteCoinDenom, sdkmath.NewInt(300000000))),
 				AcceptedCoins:  nil,
-				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(0)),
+				MintedPoolCoin: sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(0)),
 				Status:         types.RequestStatusNotExecuted,
 				AppId:          appID1,
 			},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))),
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(3999999999))),
 		},
 		{
 			Name: "success valid case 3 app2 pool1",
 			Msg: *types.NewMsgDeposit(
-				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.DepositRequest{
@@ -509,20 +511,20 @@ func (s *KeeperTestSuite) TestDeposit() {
 				PoolId:         1,
 				MsgHeight:      0,
 				Depositor:      addr1.String(),
-				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(100000000))),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdkmath.NewInt(100000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdkmath.NewInt(100000000))),
 				AcceptedCoins:  nil,
-				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(0)),
+				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdkmath.NewInt(0)),
 				Status:         types.RequestStatusNotExecuted,
 				AppId:          appID2,
 			},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(1000000000))),
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdkmath.NewInt(1000000000))),
 		},
 		{
 			Name: "success valid case 4 app2 pool1",
 			Msg: *types.NewMsgDeposit(
-				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(700000000))),
+				appID2, addr1, app2Pool.Id, sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdkmath.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdkmath.NewInt(700000000))),
 			),
 			ExpErr: nil,
 			ExpResp: &types.DepositRequest{
@@ -530,15 +532,15 @@ func (s *KeeperTestSuite) TestDeposit() {
 				PoolId:         1,
 				MsgHeight:      0,
 				Depositor:      addr1.String(),
-				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdk.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdk.NewInt(700000000))),
+				DepositCoins:   sdk.NewCoins(sdk.NewCoin(app2Pair.BaseCoinDenom, sdkmath.NewInt(700000000)), sdk.NewCoin(app2Pair.QuoteCoinDenom, sdkmath.NewInt(700000000))),
 				AcceptedCoins:  nil,
-				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(0)),
+				MintedPoolCoin: sdk.NewCoin(app2Pool.PoolCoinDenom, sdkmath.NewInt(0)),
 				Status:         types.RequestStatusNotExecuted,
 				AppId:          appID2,
 			},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
-			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdk.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdk.NewInt(7999999999))),
+			AvailableBalance:   addr1AvailableBalance.Add(sdk.NewCoin(app1Pool.PoolCoinDenom, sdkmath.NewInt(3999999999))).Add(sdk.NewCoin(app2Pool.PoolCoinDenom, sdkmath.NewInt(7999999999))),
 		},
 	}
 
@@ -734,7 +736,7 @@ func (s *KeeperTestSuite) TestWithdraw() {
 			Msg: *types.NewMsgWithdraw(
 				appID1, addr1, pool.Id, availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))),
 			),
-			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "%s is smaller than %s", availablePoolBalance.String(), availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))).String()),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance %s is smaller than %s", availablePoolBalance.String(), availablePoolBalance.Add(sdk.NewCoin(availablePoolBalance.Denom, availablePoolBalance.Amount.Add(newInt(1000)))).String()),
 			ExpResp:          &types.WithdrawRequest{},
 			AvailableBalance: sdk.NewCoins(),
 		},
@@ -940,8 +942,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 			Name: "error app id invalid",
 			Msg: *types.NewMsgCreateRangedPool(
 				69, addr1, app1pair.Id,
-				sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
 			ExpResp:            &types.Pool{},
@@ -953,8 +955,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 			Name: "error pair id invalid",
 			Msg: *types.NewMsgCreateRangedPool(
 				appID1, addr1, 12,
-				sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", 12),
 			ExpResp:            &types.Pool{},
@@ -966,8 +968,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 			Name: "error invalid deposit coin denom 1",
 			Msg: *types.NewMsgCreateRangedPool(
 				appID1, addr1, app1pair.Id,
-				sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom1"),
 			ExpResp:            &types.Pool{},
@@ -978,8 +980,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error invalid deposit coin denom 2",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin("fakedenom2", sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom2"),
 			ExpResp:            &types.Pool{},
@@ -990,8 +992,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error invalid deposit coin denom 3",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin("fakedenom1", sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidCoinDenom, "coin denom %s is not in the pair", "fakedenom1"),
 			ExpResp:            &types.Pool{},
@@ -1002,8 +1004,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error smaller than minimum deposit amount 1",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1))), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             types.ErrInsufficientDepositAmount,
 			ExpResp:            &types.Pool{},
@@ -1014,8 +1016,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error smaller than minimum deposit amount 2",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr:             types.ErrInsufficientDepositAmount,
 			ExpResp:            &types.Pool{},
@@ -1026,8 +1028,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error initial price lower than min price",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("0.98"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("0.98"),
 			),
 			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "initial price must not be lower than min price"),
 			ExpResp:            &types.Pool{},
@@ -1038,8 +1040,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error initial price higher than max price",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdk.NewInt(1)))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1.05"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, params.MinInitialDepositAmount), sdk.NewCoin(app1pair.QuoteCoinDenom, params.MinInitialDepositAmount.Sub(sdkmath.NewInt(1)))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1.05"),
 			),
 			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "initial price must not be higher than max price"),
 			ExpResp:            &types.Pool{},
@@ -1052,10 +1054,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error insufficient deposit coins",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, dummyPair1.Id, sdk.NewCoins(sdk.NewCoin(dummyPair1.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(dummyPair1.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
-			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom, dummyPair1.QuoteCoinDenom),
+			ExpErr:             sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 1000000000000%s", dummyPair1.QuoteCoinDenom),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1066,10 +1068,10 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "error insufficient pool creation fees",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, dummyPair2.Id, sdk.NewCoins(sdk.NewCoin(dummyPair2.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(dummyPair2.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0%s is smaller than %s", params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than %s", params.PoolCreationFee[0].String()), "insufficient pool creation fee"),
 			ExpResp:            &types.Pool{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1078,8 +1080,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 		{
 			Name: "success valid case app1 pair1 pool1",
 			Msg: *types.NewMsgCreateRangedPool(
-				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				appID1, addr1, app1pair.Id, sdk.NewCoins(sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app1pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr: nil,
 			ExpResp: &types.Pool{
@@ -1108,16 +1110,16 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				Creator:               addr1.String(),
 			},
 			AvailableBalance: sdk.NewCoins(
-				sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
-				sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(9925681617)),
+				sdk.NewCoin("pool1-3", amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000))),
+				sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(9925681617)),
 			),
 		},
 		{
 			Name: "success valid case app2 pair1",
 			Msg: *types.NewMsgCreateRangedPool(
 				appID2, addr1, app2pair.Id,
-				sdk.NewCoins(sdk.NewCoin(app2pair.BaseCoinDenom, sdk.NewInt(1000000000000)), sdk.NewCoin(app2pair.QuoteCoinDenom, sdk.NewInt(1000000000000))),
-				sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"),
+				sdk.NewCoins(sdk.NewCoin(app2pair.BaseCoinDenom, sdkmath.NewInt(1000000000000)), sdk.NewCoin(app2pair.QuoteCoinDenom, sdkmath.NewInt(1000000000000))),
+				sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"),
 			),
 			ExpErr: nil,
 			ExpResp: &types.Pool{
@@ -1146,8 +1148,8 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				Creator:               addr1.String(),
 			},
 			AvailableBalance: sdk.NewCoins(
-				sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdk.NewInt(1000000000000), sdk.NewInt(1000000000000))),
-				sdk.NewCoin(app1pair.BaseCoinDenom, sdk.NewInt(9925681617)),
+				sdk.NewCoin("pool2-1", amm.InitialPoolCoinSupply(sdkmath.NewInt(1000000000000), sdkmath.NewInt(1000000000000))),
+				sdk.NewCoin(app1pair.BaseCoinDenom, sdkmath.NewInt(9925681617)),
 			),
 		},
 	}
@@ -1186,13 +1188,13 @@ func (s *KeeperTestSuite) TestCreateRangedPool() {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
 				s.Require().NoError(err)
 
-				expectedPairCreationFeesCollected := sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdk.NewInt(int64(len(s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId))))))
+				expectedPairCreationFeesCollected := sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(len(s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId))))))
 
 				expectedPoolCreationFeesCollected := sdk.Coin{}
 				if tc.Msg.AppId == appID1 {
-					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex-1))))
+					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex-1))))
 				} else {
-					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex+1))))
+					expectedPoolCreationFeesCollected = sdk.NewCoin(params.PoolCreationFee[0].Denom, params.PoolCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))
 				}
 
 				collectedPairPoolCreationFee := s.getBalances(sdk.MustAccAddressFromBech32(params.FeeCollectorAddress))
@@ -1247,26 +1249,26 @@ func (s *KeeperTestSuite) Test1MaximumRangePoolInPair() {
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	// maximum 20 pool can be created in each pair
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1275,7 +1277,7 @@ func (s *KeeperTestSuite) Test1MaximumRangePoolInPair() {
 
 	s.fundAddr(addr1, params.PoolCreationFee)
 	s.fundAddr(addr1, parsedDepositCoins)
-	msg := types.NewMsgCreateRangedPool(appID1, addr1, pair.Id, parsedDepositCoins, sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	msg := types.NewMsgCreateRangedPool(appID1, addr1, pair.Id, parsedDepositCoins, sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 	_, err = s.keeper.CreateRangedPool(s.ctx, msg)
 	s.Require().EqualError(types.ErrTooManyPools, err.Error())
 }
@@ -1289,25 +1291,25 @@ func (s *KeeperTestSuite) Test2MaximumRangePoolInPair() {
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	// maximum 20 pool can be created in each pair
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2")
 
@@ -1318,7 +1320,7 @@ func (s *KeeperTestSuite) Test2MaximumRangePoolInPair() {
 
 	s.fundAddr(addr1, params.PoolCreationFee)
 	s.fundAddr(addr1, parsedDepositCoins)
-	msg := types.NewMsgCreateRangedPool(appID1, addr1, pair.Id, parsedDepositCoins, sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	msg := types.NewMsgCreateRangedPool(appID1, addr1, pair.Id, parsedDepositCoins, sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 	_, err = s.keeper.CreateRangedPool(s.ctx, msg)
 	s.Require().EqualError(types.ErrTooManyPools, err.Error())
 }
@@ -1332,26 +1334,26 @@ func (s *KeeperTestSuite) Test3MaximumRangePoolInPair() {
 
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	// maximum 20 pool can be created in each pair
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	_ = s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "1000000uasset1,1000000uasset2", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1375,20 +1377,20 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw() {
 	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1,1000000denom2", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("1.0"))
 
 	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
 
 	s.Deposit(appID1, pool.Id, s.addr(2), "400000denom1,1000000denom2")
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
-	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
 
 	poolCoin := s.getBalance(s.addr(2), pool.PoolCoinDenom)
 	s.Withdraw(appID1, pool.Id, s.addr(2), poolCoin.SubAmount(poolCoin.Amount.QuoRaw(3))) // withdraw 2/3 pool coin
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
-	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+	ammPool = pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(utils.DecApproxEqual(ammPool.Price(), utils.ParseDec("1.0")))
 }
 
@@ -1402,8 +1404,8 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side() {
 	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom1", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("0.5"))
 
 	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
-	s.Require().True(intEq(sdk.NewInt(1000000), ry.Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1000000), ry.Amount))
 	ps := s.keeper.GetPoolCoinSupply(s.ctx, pool)
 
 	s.Deposit(appID1, pool.Id, s.addr(2), "50000denom1")
@@ -1412,8 +1414,8 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side() {
 	pc := s.getBalance(s.addr(2), pool.PoolCoinDenom)
 
 	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
-	s.Require().True(intEq(sdk.ZeroInt(), rx.Amount))
-	s.Require().True(intEq(sdk.NewInt(1050000), ry.Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), rx.Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1050000), ry.Amount))
 	s.Require().True(intEq(ps.QuoRaw(20), pc.Amount))
 
 	balanceBefore := s.getBalance(s.addr(2), "denom1")
@@ -1421,13 +1423,13 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side() {
 	s.nextBlock()
 	balanceAfter := s.getBalance(s.addr(2), "denom1")
 
-	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdk.NewInt(50000)).LTE(sdk.OneInt()))
+	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdkmath.NewInt(50000)).LTE(sdkmath.OneInt()))
 
 	s.Deposit(appID1, pool.Id, s.addr(3), "1000000denom1,1000000denom2")
 	s.nextBlock()
 
-	s.Require().True(intEq(sdk.ZeroInt(), s.getBalance(s.addr(3), "denom1").Amount))
-	s.Require().True(intEq(sdk.NewInt(1000000), s.getBalance(s.addr(3), "denom2").Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), s.getBalance(s.addr(3), "denom1").Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1000000), s.getBalance(s.addr(3), "denom2").Amount))
 }
 
 func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
@@ -1440,8 +1442,8 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
 	pool := s.CreateNewLiquidityRangedPool(appID1, pair.Id, s.addr(1), "1000000denom2", utils.ParseDec("0.5"), utils.ParseDec("2.0"), utils.ParseDec("2.0"))
 
 	rx, ry := s.keeper.GetPoolBalances(s.ctx, pool)
-	s.Require().True(intEq(sdk.NewInt(1000000), rx.Amount))
-	s.Require().True(intEq(sdk.ZeroInt(), ry.Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1000000), rx.Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), ry.Amount))
 	ps := s.keeper.GetPoolCoinSupply(s.ctx, pool)
 
 	s.Deposit(appID1, pool.Id, s.addr(2), "50000denom2")
@@ -1450,8 +1452,8 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
 	pc := s.getBalance(s.addr(2), pool.PoolCoinDenom)
 
 	rx, ry = s.keeper.GetPoolBalances(s.ctx, pool)
-	s.Require().True(intEq(sdk.NewInt(1050000), rx.Amount))
-	s.Require().True(intEq(sdk.ZeroInt(), ry.Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1050000), rx.Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), ry.Amount))
 	s.Require().True(intEq(ps.QuoRaw(20), pc.Amount))
 
 	balanceBefore := s.getBalance(s.addr(2), "denom2")
@@ -1459,13 +1461,13 @@ func (s *KeeperTestSuite) TestRangedPoolDepositWithdraw_single_side2() {
 	s.nextBlock()
 	balanceAfter := s.getBalance(s.addr(2), "denom2")
 
-	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdk.NewInt(50000)).LTE(sdk.OneInt()))
+	s.Require().True(balanceAfter.Sub(balanceBefore).Amount.Sub(sdkmath.NewInt(50000)).LTE(sdkmath.OneInt()))
 
 	s.Deposit(appID1, pool.Id, s.addr(3), "1000000denom1,1000000denom2")
 	s.nextBlock()
 
-	s.Require().True(intEq(sdk.ZeroInt(), s.getBalance(s.addr(3), "denom2").Amount))
-	s.Require().True(intEq(sdk.NewInt(1000000), s.getBalance(s.addr(3), "denom1").Amount))
+	s.Require().True(intEq(sdkmath.ZeroInt(), s.getBalance(s.addr(3), "denom2").Amount))
+	s.Require().True(intEq(sdkmath.NewInt(1000000), s.getBalance(s.addr(3), "denom1").Amount))
 }
 
 func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_OnlyBasicPool() {
@@ -1480,13 +1482,13 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_OnlyBasicPool(
 	s.keeper.SetPair(s.ctx, pair)
 	p1 := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
 
-	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1515,15 +1517,15 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_OnlyRangedPool
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pair.LastPrice = utils.ParseDecP("1.01")
 	s.keeper.SetPair(s.ctx, pair)
-	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 
-	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1554,17 +1556,17 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_MultiplePools(
 	s.keeper.SetPair(s.ctx, pair)
 	p1 := s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor")
 	// the given deposit amount is not the actuall deposit amout, it will be decided by the protocal based on the min,max and initial prices of ranged pools
-	p2 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
-	p3 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.90"), sdk.MustNewDecFromStr("1.1"), sdk.MustNewDecFromStr("1"))
-	p4 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.99"), sdk.MustNewDecFromStr("1.01"), sdk.MustNewDecFromStr("1"))
+	p2 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
+	p3 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.90"), sdkmath.LegacyMustNewDecFromStr("1.1"), sdkmath.LegacyMustNewDecFromStr("1"))
+	p4 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.99"), sdkmath.LegacyMustNewDecFromStr("1.01"), sdkmath.LegacyMustNewDecFromStr("1"))
 
-	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1603,15 +1605,15 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_WithBurnRate()
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	pair.LastPrice = utils.ParseDecP("1.01")
 	s.keeper.SetPair(s.ctx, pair)
-	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdk.MustNewDecFromStr("0.95"), sdk.MustNewDecFromStr("1.05"), sdk.MustNewDecFromStr("1"))
+	p1 := s.CreateNewLiquidityRangedPool(appID1, pair.Id, addr1, "100000000ucmdx,100000000uharbor", sdkmath.LegacyMustNewDecFromStr("0.95"), sdkmath.LegacyMustNewDecFromStr("1.05"), sdkmath.LegacyMustNewDecFromStr("1"))
 
-	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdk.NewInt(30_000000), 0)
-	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdk.NewInt(54_000000), 0)
-	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdk.NewInt(17_000000), 0)
+	s.MarketOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(30_000000), 0)
+	s.MarketOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(54_000000), 0)
+	s.MarketOrder(appID1, s.addr(4), pair.Id, types.OrderDirectionBuy, sdkmath.NewInt(17_000000), 0)
 
-	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdk.NewInt(12_000000), 0)
-	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdk.NewInt(19_000000), 0)
-	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdk.NewInt(23_000000), 0)
+	s.MarketOrder(appID1, s.addr(5), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(12_000000), 0)
+	s.MarketOrder(appID1, s.addr(6), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(19_000000), 0)
+	s.MarketOrder(appID1, s.addr(7), pair.Id, types.OrderDirectionSell, sdkmath.NewInt(23_000000), 0)
 
 	params, err := s.keeper.GetGenericParams(s.ctx, appID1)
 	s.Require().NoError(err)
@@ -1623,7 +1625,7 @@ func (s *KeeperTestSuite) TestTransferFundsForSwapFeeDistribution_WithBurnRate()
 	accumulatedSwapFee := s.getBalances(pair.GetSwapFeeCollectorAddress())
 	s.Require().True(coinsEq(utils.ParseCoins("162000ucmdx,306613uharbor"), accumulatedSwapFee))
 
-	params.SwapFeeBurnRate = sdk.MustNewDecFromStr("0.5")
+	params.SwapFeeBurnRate = sdkmath.LegacyMustNewDecFromStr("0.5")
 	s.keeper.SetGenericParams(s.ctx, params)
 
 	receivedSwapFunds, err := s.keeper.TransferFundsForSwapFeeDistribution(s.ctx, appID1, p1.Id)

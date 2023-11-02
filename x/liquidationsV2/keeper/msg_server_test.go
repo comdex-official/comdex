@@ -281,8 +281,8 @@ func (s *KeeperTestSuite) TestLiquidateVaults() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
@@ -337,8 +337,8 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
@@ -434,8 +434,8 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForVault() {
 				s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
 				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
-				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt()))
-				s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt())
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt())
 				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
 				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
@@ -533,8 +533,8 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 				s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
 				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
-				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt()))
-				s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt())
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt())
 				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
 				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
@@ -775,12 +775,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 				AppID:            2,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
+				SurplusThreshold: sdk.NewInt(1000000000000000000),
+				DebtThreshold:    sdk.NewInt(282078000000),
 				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
+				LotSize:          sdk.NewInt(25000000000),
 				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				DebtLotSize:      sdk.NewInt(13157894000000),
 			},
 		},
 	} {

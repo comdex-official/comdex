@@ -2,11 +2,12 @@ package liquidationsV2
 
 import (
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock, k keeper.Keeper) {

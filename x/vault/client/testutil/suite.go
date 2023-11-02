@@ -11,17 +11,19 @@ import (
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/comdex-official/comdex/x/vault/types"
 
+	"github.com/comdex-official/comdex/testutil/network"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	store "github.com/cosmos/cosmos-sdk/store/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
+	// store "github.com/cosmos/cosmos-sdk/store/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
+	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	tmcli "github.com/cometbft/cometbft/libs/cli"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
 
 type VaultIntegrationTestSuite struct {
@@ -35,13 +37,13 @@ type VaultIntegrationTestSuite struct {
 	msgServer types.MsgServer
 }
 
-func NewAppConstructor() network.AppConstructor {
-	return func(val network.Validator) servertypes.Application {
+func NewAppConstructor() networkI.AppConstructor {
+	return func(val networkI.ValidatorI) servertypes.Application {
 		return chain.New(
-			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-			chain.MakeEncodingConfig(), simapp.EmptyAppOptions{}, chain.GetWasmEnabledProposals(), chain.EmptyWasmOpts,
-			baseapp.SetPruning(store.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
+			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.GetWasmEnabledProposals(), chain.EmptyWasmOpts,
+			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
+			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 		)
 	}
 }
@@ -53,7 +55,7 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 		s.T().Skip("skipping test in unit-tests mode.")
 	}
 
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.msgServer = vaultKeeper.NewMsgServer(s.app.VaultKeeper)
 

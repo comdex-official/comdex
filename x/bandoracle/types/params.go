@@ -7,6 +7,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
+	Int64Forty     = int64(40)
 	Int64Twenty    = int64(20)
 	Int64TwentyOne = int64(21)
 	Int64One       = int64(1)

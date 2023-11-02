@@ -7,9 +7,9 @@ import (
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -456,7 +456,7 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BidEndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BidEndTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BidEndTime):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -520,7 +520,7 @@ func (m *SurplusAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x42
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -598,7 +598,7 @@ func (m *DebtAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n6, err6 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BidEndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime):])
+	n6, err6 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BidEndTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BidEndTime):])
 	if err6 != nil {
 		return 0, err6
 	}
@@ -686,7 +686,7 @@ func (m *DebtAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n8, err8 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	n8, err8 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime):])
 	if err8 != nil {
 		return 0, err8
 	}
@@ -818,7 +818,7 @@ func (m *DutchAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x6a
 		}
 	}
-	n12, err12 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime):])
+	n12, err12 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StartTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTime):])
 	if err12 != nil {
 		return 0, err12
 	}
@@ -831,7 +831,7 @@ func (m *DutchAuction) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x58
 	}
-	n13, err13 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime):])
+	n13, err13 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.EndTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime):])
 	if err13 != nil {
 		return 0, err13
 	}
@@ -1126,7 +1126,7 @@ func (m *SurplusAuction) Size() (n int) {
 	}
 	l = m.Bid.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime)
 	n += 1 + l + sovAuction(uint64(l))
 	l = m.BidFactor.Size()
 	n += 1 + l + sovAuction(uint64(l))
@@ -1154,7 +1154,7 @@ func (m *SurplusAuction) Size() (n int) {
 	if m.AssetOutId != 0 {
 		n += 1 + sovAuction(uint64(m.AssetOutId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BidEndTime)
 	n += 2 + l + sovAuction(uint64(l))
 	return n
 }
@@ -1174,7 +1174,7 @@ func (m *DebtAuction) Size() (n int) {
 	n += 1 + l + sovAuction(uint64(l))
 	l = m.ExpectedMintedToken.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime)
 	n += 1 + l + sovAuction(uint64(l))
 	if m.ActiveBiddingId != 0 {
 		n += 1 + sovAuction(uint64(m.ActiveBiddingId))
@@ -1211,7 +1211,7 @@ func (m *DebtAuction) Size() (n int) {
 	if m.AssetOutId != 0 {
 		n += 2 + sovAuction(uint64(m.AssetOutId))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BidEndTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BidEndTime)
 	n += 2 + l + sovAuction(uint64(l))
 	return n
 }
@@ -1241,12 +1241,12 @@ func (m *DutchAuction) Size() (n int) {
 	n += 1 + l + sovAuction(uint64(l))
 	l = m.InflowTokenCurrentPrice.Size()
 	n += 1 + l + sovAuction(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.EndTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.EndTime)
 	n += 1 + l + sovAuction(uint64(l))
 	if m.AuctionStatus != 0 {
 		n += 1 + sovAuction(uint64(m.AuctionStatus))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StartTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StartTime)
 	n += 1 + l + sovAuction(uint64(l))
 	if len(m.BiddingIds) > 0 {
 		for _, e := range m.BiddingIds {
@@ -1580,7 +1580,7 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1795,7 +1795,7 @@ func (m *SurplusAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BidEndTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BidEndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1996,7 +1996,7 @@ func (m *DebtAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2295,7 +2295,7 @@ func (m *DebtAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BidEndTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BidEndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2665,7 +2665,7 @@ func (m *DutchAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.EndTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2717,7 +2717,7 @@ func (m *DutchAuction) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StartTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

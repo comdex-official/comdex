@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -16,8 +16,8 @@ const defTickPrec = amm.TickPrecision(3)
 
 func TestPriceToTick(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
-		expected sdk.Dec
+		price    sdkmath.LegacyDec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("0.000000000000099999"), utils.ParseDec("0.00000000000009999")},
 		{utils.ParseDec("1.999999999999999999"), utils.ParseDec("1.999")},
@@ -27,7 +27,7 @@ func TestPriceToTick(t *testing.T) {
 		{utils.ParseDec("10019"), utils.ParseDec("10010")},
 		{utils.ParseDec("1000100005"), utils.ParseDec("1000000000")},
 	} {
-		require.True(sdk.DecEq(t, tc.expected, amm.PriceToDownTick(tc.price, 3)))
+		require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.PriceToDownTick(tc.price, 3)))
 	}
 }
 
@@ -35,21 +35,21 @@ func TestTick(t *testing.T) {
 	for _, tc := range []struct {
 		i        int
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
-		{0, 3, sdk.NewDecWithPrec(1, int64(sdk.Precision-defTickPrec))},
+		{0, 3, sdkmath.LegacyNewDecWithPrec(1, int64(sdkmath.LegacyPrecision-defTickPrec))},
 		{1, 3, utils.ParseDec("0.000000000000001001")},
 		{8999, 3, utils.ParseDec("0.000000000000009999")},
 		{9000, 3, utils.ParseDec("0.000000000000010000")},
 		{9001, 3, utils.ParseDec("0.000000000000010010")},
 		{17999, 3, utils.ParseDec("0.000000000000099990")},
 		{18000, 3, utils.ParseDec("0.000000000000100000")},
-		{135000, 3, sdk.NewDec(1)},
+		{135000, 3, sdkmath.LegacyNewDec(1)},
 		{135001, 3, utils.ParseDec("1.001")},
 	} {
 		t.Run("", func(t *testing.T) {
 			res := amm.TickFromIndex(tc.i, tc.prec)
-			require.True(sdk.DecEq(t, tc.expected, res))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, res))
 			require.Equal(t, tc.i, amm.TickToIndex(res, tc.prec))
 		})
 	}
@@ -57,9 +57,9 @@ func TestTick(t *testing.T) {
 
 func TestUpTick(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
+		price    sdkmath.LegacyDec
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("1000000000000000000"), 3, utils.ParseDec("1001000000000000000")},
 		{utils.ParseDec("1000"), 3, utils.ParseDec("1001")},
@@ -75,16 +75,16 @@ func TestUpTick(t *testing.T) {
 		{utils.ParseDec("1000.9"), 3, utils.ParseDec("1001")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.UpTick(tc.price, tc.prec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.UpTick(tc.price, tc.prec)))
 		})
 	}
 }
 
 func TestDownTick(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
+		price    sdkmath.LegacyDec
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("1000000000000000000"), 3, utils.ParseDec("999900000000000000")},
 		{utils.ParseDec("10010"), 3, utils.ParseDec("10000")},
@@ -100,7 +100,7 @@ func TestDownTick(t *testing.T) {
 		{utils.ParseDec("1000.9"), 3, utils.ParseDec("1000")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.DownTick(tc.price, tc.prec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.DownTick(tc.price, tc.prec)))
 		})
 	}
 }
@@ -118,7 +118,7 @@ func TestHighestTick(t *testing.T) {
 			i, ok := new(big.Int).SetString(tc.expected, 10)
 			require.True(t, ok)
 			tick := amm.HighestTick(tc.prec)
-			require.True(sdk.DecEq(t, sdk.NewDecFromBigInt(i), tick))
+			require.True(sdkmath.LegacyDecEq(t, sdkmath.LegacyNewDecFromBigInt(i), tick))
 		})
 	}
 }
@@ -126,22 +126,22 @@ func TestHighestTick(t *testing.T) {
 func TestLowestTick(t *testing.T) {
 	for _, tc := range []struct {
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
-		{0, sdk.NewDecWithPrec(1, 18)},
-		{3, sdk.NewDecWithPrec(1, 15)},
+		{0, sdkmath.LegacyNewDecWithPrec(1, 18)},
+		{3, sdkmath.LegacyNewDecWithPrec(1, 15)},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.LowestTick(tc.prec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.LowestTick(tc.prec)))
 		})
 	}
 }
 
 func TestPriceToUpTick(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
+		price    sdkmath.LegacyDec
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("1.0015"), 3, utils.ParseDec("1.002")},
 		{utils.ParseDec("100"), 3, utils.ParseDec("100")},
@@ -149,7 +149,7 @@ func TestPriceToUpTick(t *testing.T) {
 		{utils.ParseDec("100.099"), 3, utils.ParseDec("100.1")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.PriceToUpTick(tc.price, tc.prec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.PriceToUpTick(tc.price, tc.prec)))
 		})
 	}
 }
@@ -179,9 +179,9 @@ func TestRoundTickIndex(t *testing.T) {
 
 func TestRoundPrice(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
+		price    sdkmath.LegacyDec
 		prec     int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("0.000000000000001000"), 3, utils.ParseDec("0.000000000000001000")},
 		{utils.ParseDec("0.000000000000010000"), 3, utils.ParseDec("0.000000000000010000")},
@@ -196,16 +196,16 @@ func TestRoundPrice(t *testing.T) {
 		{utils.ParseDec("1.0035"), 3, utils.ParseDec("1.004")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.RoundPrice(tc.price, tc.prec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.RoundPrice(tc.price, tc.prec)))
 		})
 	}
 }
 
 func TestTickGap(t *testing.T) {
 	for _, tc := range []struct {
-		price    sdk.Dec
+		price    sdkmath.LegacyDec
 		tickPrec int
-		expected sdk.Dec
+		expected sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("1.0"), 3, utils.ParseDec("0.001")},
 		{utils.ParseDec("1234"), 3, utils.ParseDec("1")},
@@ -215,7 +215,7 @@ func TestTickGap(t *testing.T) {
 		{utils.ParseDec("0.00000000009"), 3, utils.ParseDec("0.00000000000001")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, amm.TickGap(tc.price, tc.tickPrec)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, amm.TickGap(tc.price, tc.tickPrec)))
 		})
 	}
 }

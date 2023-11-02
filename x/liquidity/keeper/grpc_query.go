@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -592,7 +593,7 @@ func (k Querier) Farmer(c context.Context, req *types.QueryFarmerRequest) (*type
 	queuedFarmer, qfound := k.GetQueuedFarmer(ctx, req.AppId, req.PoolId, farmer)
 
 	if !afound && !qfound {
-		return &types.QueryFarmerResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
+		return &types.QueryFarmerResponse{ActivePoolCoin: sdk.NewCoin(pool.PoolCoinDenom, sdkmath.NewInt(0)), QueuedPoolCoin: []types.QueuedPoolCoin{}}, nil
 	}
 
 	availableLiquidityGauges := k.rewardsKeeper.GetAllGaugesByGaugeTypeID(ctx, rewardstypes.LiquidityGaugeTypeID)
@@ -608,7 +609,7 @@ func (k Querier) Farmer(c context.Context, req *types.QueryFarmerRequest) (*type
 		}
 	}
 
-	activePoolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.NewInt(0))
+	activePoolCoin := sdk.NewCoin(pool.PoolCoinDenom, sdkmath.NewInt(0))
 	if afound {
 		activePoolCoin.Amount = activePoolCoin.Amount.Add(activeFarmer.FarmedPoolCoin.Amount)
 	}
@@ -736,13 +737,13 @@ func (k Querier) TotalActiveAndQueuedPoolCoin(c context.Context, req *types.Quer
 
 	pools := k.GetAllPools(ctx, req.AppId)
 	for _, pool := range pools {
-		totalActiveCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		totalActiveCoin := sdk.NewCoin(pool.PoolCoinDenom, sdkmath.ZeroInt())
 		allActiveFarmers := k.GetAllActiveFarmers(ctx, req.AppId, pool.Id)
 		for _, afarmer := range allActiveFarmers {
 			totalActiveCoin = totalActiveCoin.Add(afarmer.FarmedPoolCoin)
 		}
 
-		totalQueuedCoin := sdk.NewCoin(pool.PoolCoinDenom, sdk.ZeroInt())
+		totalQueuedCoin := sdk.NewCoin(pool.PoolCoinDenom, sdkmath.ZeroInt())
 		allQueuedFarmers := k.GetAllQueuedFarmers(ctx, req.AppId, pool.Id)
 		for _, qfarmer := range allQueuedFarmers {
 			for _, qCoin := range qfarmer.QueudCoins {
@@ -841,7 +842,7 @@ func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest
 				return false, nil
 			}
 			rx, ry := k.getPoolBalances(ctx, pool, pair)
-			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{})
+			ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 			ob.AddOrder(amm.PoolOrders(ammPool, amm.DefaultOrderer, lowestPrice, highestPrice, int(tickPrec))...)
 			return false, nil
 		})

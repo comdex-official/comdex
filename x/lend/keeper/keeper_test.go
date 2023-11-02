@@ -2,14 +2,15 @@ package keeper_test
 
 import (
 	"encoding/binary"
-	"github.com/comdex-official/comdex/x/lend"
-	abci "github.com/tendermint/tendermint/abci/types"
 	"testing"
+
+	"github.com/comdex-official/comdex/x/lend"
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	chain "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/lend/keeper"
@@ -32,7 +33,7 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.app = chain.Setup(false)
+	s.app = chain.Setup(s.T(), false)
 	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
 	s.keeper = s.app.LendKeeper
 	s.querier = keeper.QueryServer{Keeper: s.keeper}
@@ -297,7 +298,7 @@ func (s *KeeperTestSuite) nextBlock() {
 	lend.BeginBlocker(s.ctx, abci.RequestBeginBlock{
 		Hash:                nil,
 		Header:              tmproto.Header{},
-		LastCommitInfo:      abci.LastCommitInfo{},
+		LastCommitInfo:      abci.CommitInfo{},
 		ByzantineValidators: nil,
 	}, s.keeper)
 
