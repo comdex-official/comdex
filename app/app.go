@@ -306,6 +306,7 @@ var (
 		ibcfee.AppModuleBasic{},
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
+		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 	)
