@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"log"
 
+	tmprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmprototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
 func (a *App) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
+	forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string,
 ) (servertypes.ExportedApp, error) { // as if they could withdraw from the start of the next block
 	ctx := a.NewContext(true, tmprototypes.Header{Height: a.LastBlockHeight()})
 
@@ -27,7 +27,7 @@ func (a *App) ExportAppStateAndValidators(
 		a.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := a.mm.ExportGenesis(ctx, a.cdc)
+	genState := a.mm.ExportGenesisForModules(ctx, a.cdc, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

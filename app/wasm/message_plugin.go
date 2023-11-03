@@ -62,6 +62,9 @@ type CustomMessenger struct {
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
 
+var comdex1 = []string{"comdex17p9rzwnnfxcjp32un9ug7yhhzgtkhvl9jfksztgw5uh69wac2pgs4jg6dx", "comdex1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqdfklyz"}
+var testnet3 = []string{"comdex1qwlgtx52gsdu7dtp0cekka5zehdl0uj3fhp9acg325fvgs8jdzksjvgq6q", "comdex1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrqfy9rd8"}
+
 func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddress, contractIBCPortID string, msg wasmvmtypes.CosmosMsg) ([]sdk.Event, [][]byte, error) {
 	if msg.Custom != nil {
 		// only handle the happy path where this is really minting / swapping ...
@@ -135,6 +138,15 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 }
 
 func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhiteListAssetLocker) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := WhiteListAsset(m.lockerKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list asset")
@@ -159,6 +171,15 @@ func WhiteListAsset(lockerKeeper lockerkeeper.Keeper, ctx sdk.Context, contractA
 }
 
 func (m *CustomMessenger) whitelistAppIDLockerRewards(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhitelistAppIDLockerRewards) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := WhitelistAppIDLockerRewards(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list appId locker rewards")
@@ -183,6 +204,15 @@ func WhitelistAppIDLockerRewards(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 }
 
 func (m *CustomMessenger) whitelistAppIDVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, whiteListAsset *bindings.MsgWhitelistAppIDVaultInterest) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := WhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "white list appId vault Interest")
@@ -206,6 +236,15 @@ func WhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ctx sdk.Con
 }
 
 func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddExtendedPairsVault) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgAddExtendedPairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "AddExtendedPairsVault error")
@@ -224,6 +263,15 @@ func MsgAddExtendedPairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, c
 }
 
 func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgSetCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgSetCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "SetCollectorLookupTable error")
@@ -242,6 +290,15 @@ func MsgSetCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx sdk.
 }
 
 func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgSetAuctionMappingForApp) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgSetAuctionMappingForApp(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "SetAuctionMappingForApp error")
@@ -260,6 +317,15 @@ func MsgSetAuctionMappingForApp(collectorKeeper collectorkeeper.Keeper, ctx sdk.
 }
 
 func (m *CustomMessenger) UpdatePairsVault(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdatePairsVault) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgUpdatePairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "UpdatePairsVault error")
@@ -278,6 +344,15 @@ func MsgUpdatePairsVault(assetKeeper assetkeeper.Keeper, ctx sdk.Context, contra
 }
 
 func (m *CustomMessenger) UpdateCollectorLookupTable(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgUpdateCollectorLookupTable) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgUpdateCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "UpdateCollectorLookupTable error")
@@ -296,6 +371,15 @@ func MsgUpdateCollectorLookupTable(collectorKeeper collectorkeeper.Keeper, ctx s
 }
 
 func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAssetLocker) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgRemoveWhitelistAssetLocker(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetRewards error")
@@ -314,6 +398,15 @@ func MsgRemoveWhitelistAssetLocker(rewardsKeeper rewardskeeper.Keeper, ctx sdk.C
 }
 
 func (m *CustomMessenger) RemoveWhitelistAppIDVaultInterest(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAppIDVaultInterest) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgRemoveWhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterest error")
@@ -332,6 +425,15 @@ func MsgRemoveWhitelistAppIDVaultInterest(rewardsKeeper rewardskeeper.Keeper, ct
 }
 
 func (m *CustomMessenger) WhitelistAppIDLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgWhitelistAppIDLiquidation) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgWhitelistAppIDLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidation error")
@@ -350,6 +452,15 @@ func MsgWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keeper, ct
 }
 
 func (m *CustomMessenger) RemoveWhitelistAppIDLiquidation(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRemoveWhitelistAppIDLiquidation) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgRemoveWhitelistAppIDLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidation error")
@@ -368,6 +479,15 @@ func MsgRemoveWhitelistAppIDLiquidation(liquidationKeeper liquidationkeeper.Keep
 }
 
 func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddAuctionParams) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgAddAuctionParams(m.auctionKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "AddAuctionParams error")
@@ -386,6 +506,15 @@ func MsgAddAuctionParams(auctionKeeper auctionkeeper.Keeper, ctx sdk.Context, co
 }
 
 func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgBurnGovTokensForApp) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgBurnGovTokensForApp(m.tokenMintKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
@@ -404,6 +533,15 @@ func MsgBurnGovTokensForApp(tokenMintKeeper tokenmintkeeper.Keeper, ctx sdk.Cont
 }
 
 func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgAddESMTriggerParams) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[0] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgAddESMTriggerParams(m.esmKeeper, ctx, contractAddr, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
@@ -422,6 +560,15 @@ func MsgAddESMTriggerParams(esmKeeper esmkeeper.Keeper, ctx sdk.Context, contrac
 }
 
 func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionRewards) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgAddEmissionRewards(m.vaultKeeper, ctx, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "Emission rewards error")
@@ -430,6 +577,15 @@ func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAdd
 }
 
 func (m *CustomMessenger) ExecuteAddEmissionPoolRewards(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgEmissionPoolRewards) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgAddEmissionPoolRewards(m.liquiditykeeper, ctx, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "Emission pool rewards error")
@@ -458,6 +614,15 @@ func MsgAddEmissionPoolRewards(liquiditykeeper liquidityKeeper.Keeper, ctx sdk.C
 }
 
 func (m *CustomMessenger) ExecuteFoundationEmission(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgFoundationEmission) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgFoundationEmission(m.tokenMintKeeper, ctx, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
@@ -476,6 +641,15 @@ func MsgFoundationEmission(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Conte
 }
 
 func (m *CustomMessenger) ExecuteMsgRebaseMint(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgRebaseMint) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgRebaseMint(m.tokenMintKeeper, ctx, a)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
@@ -494,6 +668,15 @@ func MsgRebaseMint(tokenmintKeeper tokenmintkeeper.Keeper, ctx sdk.Context,
 }
 
 func (m *CustomMessenger) ExecuteMsgGetSurplusFund(ctx sdk.Context, contractAddr sdk.AccAddress, a *bindings.MsgGetSurplusFund) ([]sdk.Event, [][]byte, error) {
+	if ctx.ChainID() == "comdex-1" {
+		if contractAddr.String() != comdex1[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	} else if ctx.ChainID() == "comdex-test3" {
+		if contractAddr.String() != testnet3[1] {
+			return nil, nil, sdkerrors.ErrInvalidAddress
+		}
+	}
 	err := MsgGetSurplusFund(m.collectorKeeper, ctx, a, contractAddr)
 	if err != nil {
 		return nil, nil, sdkerrors.Wrap(err, "Execute surplus fund rewards error")

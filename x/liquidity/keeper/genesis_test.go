@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -41,12 +42,12 @@ func (s *KeeperTestSuite) TestImportExportGenesis() {
 
 	s.Farm(appID1, pool.Id, s.addr(4), "4440000pool1-1")
 
-	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, s.addr(2), pair.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 
 	depositReq := s.Deposit(appID1, pool.Id, s.addr(3), "1000000denom1,1000000denom2")
 	withdrawReq := s.Withdraw(appID1, pool.Id, s.addr(1), poolCoin)
-	order := s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), 0)
+	order := s.LimitOrder(appID1, s.addr(3), pair.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(10000), 0)
 
 	pair, _ = k.GetPair(ctx, pair.AppId, pair.Id)
 	pool, _ = k.GetPool(ctx, pool.AppId, pool.Id)
@@ -137,8 +138,8 @@ func (s *KeeperTestSuite) TestIndexesAfterImport() {
 	withdrawReq1 := s.Withdraw(appID1, pool1.Id, s.addr(4), utils.ParseCoin("1000000pool1-1"))
 	withdrawReq2 := s.Withdraw(appID1, pool2.Id, s.addr(5), utils.ParseCoin("1000000pool1-2"))
 
-	order1 := s.LimitOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Minute)
-	order2 := s.LimitOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdk.NewInt(10000), time.Minute)
+	order1 := s.LimitOrder(appID1, s.addr(6), pair1.Id, types.OrderDirectionBuy, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Minute)
+	order2 := s.LimitOrder(appID1, s.addr(7), pair2.Id, types.OrderDirectionSell, utils.ParseDec("1.0"), sdkmath.NewInt(10000), time.Minute)
 
 	liquidity.EndBlocker(s.ctx, s.keeper, s.app.AssetKeeper)
 

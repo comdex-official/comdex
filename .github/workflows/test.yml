@@ -64,4 +64,4 @@ jobs:
             ${{ runner.os }}-go-${{ matrix.go-version }}-
       -
         name: Run all tests
-        run: make test-unit
+        run: make test

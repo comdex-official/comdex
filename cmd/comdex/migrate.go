@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
-	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+	// bump47: uncomment below 1
+	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 )
 
 func Migrate(appState types.AppMap, clientCtx client.Context) types.AppMap {

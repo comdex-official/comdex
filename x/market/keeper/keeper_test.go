@@ -70,7 +70,7 @@ func TestFucn2(t *testing.T) {
 	intPerBlockFactor := math.Pow(factor1.MustFloat64(), yearsElapsed.MustFloat64())
 	intAccPerBlock := intPerBlockFactor - rewardtypes.Float64One
 
-	amtFloat := amount.ToDec().MustFloat64()
+	amtFloat := sdk.NewDec(amount.Int64()).MustFloat64()
 	newAmount := intAccPerBlock * amtFloat
 
 	fmt.Println("yearsElapsed", yearsElapsed)

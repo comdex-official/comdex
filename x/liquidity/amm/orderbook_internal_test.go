@@ -6,17 +6,17 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	utils "github.com/comdex-official/comdex/types"
 )
 
-func newOrder(dir OrderDirection, price sdk.Dec, amt sdk.Int) *BaseOrder {
+func newOrder(dir OrderDirection, price sdkmath.LegacyDec, amt sdkmath.Int) *BaseOrder {
 	return NewBaseOrder(dir, price, amt, OfferCoinAmount(dir, price, amt))
 }
 
 func TestOrderBookTicks_add(t *testing.T) {
-	prices := []sdk.Dec{
+	prices := []sdkmath.LegacyDec{
 		utils.ParseDec("1.0"),
 		utils.ParseDec("1.1"),
 		utils.ParseDec("1.05"),
@@ -27,7 +27,7 @@ func TestOrderBookTicks_add(t *testing.T) {
 	}
 	var ticks orderBookTicks
 	for _, price := range prices {
-		ticks.addOrder(newOrder(Buy, price, sdk.NewInt(10000)))
+		ticks.addOrder(newOrder(Buy, price, sdkmath.NewInt(10000)))
 	}
 	pricesSet := map[string]struct{}{}
 	for _, price := range prices {
@@ -41,6 +41,6 @@ func TestOrderBookTicks_add(t *testing.T) {
 		return prices[i].GT(prices[j])
 	})
 	for i, price := range prices {
-		require.True(sdk.DecEq(t, price, ticks.ticks[i].price))
+		require.True(sdkmath.LegacyDecEq(t, price, ticks.ticks[i].price))
 	}
 }

@@ -7,9 +7,9 @@ import (
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-sdk/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -338,7 +338,7 @@ func (m *Pool) GetAssetData() []*AssetDataPoolMapping {
 
 type UserAssetLendBorrowMapping struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	//to check if poool id is needed
+	// to check if poool id is needed
 	LendId   uint64   `protobuf:"varint,2,opt,name=lend_id,json=lendId,proto3" json:"lend_id,omitempty" yaml:"lend_id"`
 	PoolId   uint64   `protobuf:"varint,3,opt,name=pool_id,json=poolId,proto3" json:"pool_id,omitempty" yaml:"pool_id"`
 	BorrowId []uint64 `protobuf:"varint,4,rep,packed,name=borrow_id,json=borrowId,proto3" json:"borrow_id,omitempty" yaml:"borrow_id"`
@@ -2282,7 +2282,7 @@ func (m *LendAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x5a
 	}
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastInteractionTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastInteractionTime):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastInteractionTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastInteractionTime):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -2315,7 +2315,7 @@ func (m *LendAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x3a
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LendingTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LendingTime):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LendingTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LendingTime):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -2395,7 +2395,7 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x72
 	}
-	n4, err4 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.LastInteractionTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.LastInteractionTime):])
+	n4, err4 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.LastInteractionTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastInteractionTime):])
 	if err4 != nil {
 		return 0, err4
 	}
@@ -2443,7 +2443,7 @@ func (m *BorrowAsset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x4a
-	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.BorrowingTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.BorrowingTime):])
+	n5, err5 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.BorrowingTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BorrowingTime):])
 	if err5 != nil {
 		return 0, err5
 	}
@@ -3528,7 +3528,7 @@ func (m *FundModBal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	n18, err18 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.DepositTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.DepositTime):])
+	n18, err18 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.DepositTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DepositTime):])
 	if err18 != nil {
 		return 0, err18
 	}
@@ -3586,7 +3586,7 @@ func (m *FundReserveBal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	n20, err20 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.DepositTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.DepositTime):])
+	n20, err20 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.DepositTime, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DepositTime):])
 	if err20 != nil {
 		return 0, err20
 	}
@@ -4367,7 +4367,7 @@ func (m *LendAsset) Size() (n int) {
 	}
 	l = m.AmountIn.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LendingTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LendingTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = m.AvailableToBorrow.Size()
 	n += 1 + l + sovLend(uint64(l))
@@ -4376,7 +4376,7 @@ func (m *LendAsset) Size() (n int) {
 	}
 	l = m.GlobalIndex.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastInteractionTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastInteractionTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = len(m.CPoolName)
 	if l > 0 {
@@ -4411,7 +4411,7 @@ func (m *BorrowAsset) Size() (n int) {
 	n += 1 + l + sovLend(uint64(l))
 	l = m.BridgedAssetAmount.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.BorrowingTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.BorrowingTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = m.StableBorrowRate.Size()
 	n += 1 + l + sovLend(uint64(l))
@@ -4421,7 +4421,7 @@ func (m *BorrowAsset) Size() (n int) {
 	n += 1 + l + sovLend(uint64(l))
 	l = m.ReserveGlobalIndex.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.LastInteractionTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.LastInteractionTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = len(m.CPoolName)
 	if l > 0 {
@@ -4800,7 +4800,7 @@ func (m *FundModBal) Size() (n int) {
 	}
 	l = m.AmountIn.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.DepositTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DepositTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = len(m.Funder)
 	if l > 0 {
@@ -4820,7 +4820,7 @@ func (m *FundReserveBal) Size() (n int) {
 	}
 	l = m.AmountIn.Size()
 	n += 1 + l + sovLend(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.DepositTime)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.DepositTime)
 	n += 1 + l + sovLend(uint64(l))
 	l = len(m.Funder)
 	if l > 0 {
@@ -5273,7 +5273,7 @@ func (m *LendAsset) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LendingTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LendingTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5393,7 +5393,7 @@ func (m *LendAsset) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastInteractionTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastInteractionTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5718,7 +5718,7 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.BorrowingTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.BorrowingTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5887,7 +5887,7 @@ func (m *BorrowAsset) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.LastInteractionTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.LastInteractionTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -9040,7 +9040,7 @@ func (m *FundModBal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.DepositTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.DepositTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -9207,7 +9207,7 @@ func (m *FundReserveBal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.DepositTime, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.DepositTime, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

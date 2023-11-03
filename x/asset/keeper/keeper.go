@@ -7,12 +7,14 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
 	"github.com/comdex-official/comdex/x/asset/expected"
 )
 
 type Keeper struct {
 	cdc        codec.BinaryCodec
-	key        sdk.StoreKey
+	key        storetypes.StoreKey
 	params     paramstypes.Subspace
 	account    expected.AccountKeeper
 	bank       expected.BankKeeper
@@ -23,7 +25,7 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	key sdk.StoreKey,
+	key storetypes.StoreKey,
 	params paramstypes.Subspace,
 	account expected.AccountKeeper,
 	bank expected.BankKeeper,

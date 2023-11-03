@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/expected"
@@ -100,7 +100,7 @@ func NewPoolResponse(pool Pool, rx, ry sdk.Coin, poolCoinSupply sdk.Int) PoolRes
 // IsTooSmallOrderAmount returns whether the order amount is too small for
 // matching, based on the order price.
 func IsTooSmallOrderAmount(amt sdk.Int, price sdk.Dec) bool {
-	return amt.LT(amm.MinCoinAmount) || price.MulInt(amt).LT(amm.MinCoinAmount.ToDec())
+	return amt.LT(amm.MinCoinAmount) || price.MulInt(amt).LT(sdk.NewDec(amm.MinCoinAmount.Int64()))
 }
 
 // PriceLimits returns the lowest and the highest price limits with given last price

@@ -9,10 +9,10 @@ import (
 )
 
 type EncodingConfig struct {
-	Amino             *codec.LegacyAmino
 	InterfaceRegistry codectypes.InterfaceRegistry
-	Marshaler         codec.ProtoCodecMarshaler
+	Marshaler         codec.Codec
 	TxConfig          client.TxConfig
+	Amino             *codec.LegacyAmino
 }
 
 func NewEncodingConfig() EncodingConfig {

@@ -6,9 +6,9 @@ import (
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/comdex-official/comdex/x/market/keeper"
 	"github.com/comdex-official/comdex/x/market/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, bandKeeper bandkeeper.Keeper, assetKeeper assetkeeper.Keeper) {
@@ -17,8 +17,8 @@ func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, ba
 	if bandKeeper.GetOracleValidationResult(ctx) {
 		block := bandKeeper.GetLastBlockHeight(ctx)
 		if block != types.Int64Zero {
-			// if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
-			if ctx.BlockHeight()%types.Int64Twenty == types.Int64Zero {
+			// if ctx.BlockHeight()%types.Int64Forty == types.Int64Zero && ctx.BlockHeight() != block && bandKeeper.GetCheckFlag(ctx) {
+			if ctx.BlockHeight()%types.Int64Forty == types.Int64Zero {
 				discardData := bandKeeper.GetDiscardData(ctx)
 				if discardData.DiscardBool {
 					allTwa := k.GetAllTwa(ctx)

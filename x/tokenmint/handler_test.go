@@ -1,21 +1,22 @@
 package tokenmint_test
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/tokenmint"
 	"github.com/comdex-official/comdex/x/tokenmint/keeper"
 	"github.com/comdex-official/comdex/x/tokenmint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"strings"
-	"testing"
 )
 
 func TestInvalidMsg(t *testing.T) {
-	app1 := app.Setup(false)
+	app1 := app.Setup(t, false)
 
 	app1.TokenmintKeeper = keeper.NewKeeper(
 		app1.AppCodec(), app1.GetKey(types.StoreKey), app1.BankKeeper, &app1.AssetKeeper)

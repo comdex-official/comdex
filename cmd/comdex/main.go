@@ -13,7 +13,7 @@ func main() {
 	comdex.SetAccountAddressPrefixes()
 
 	root, _ := NewRootCmd()
-	if err := servercmd.Execute(root, comdex.DefaultNodeHome); err != nil {
+	if err := servercmd.Execute(root, "", comdex.DefaultNodeHome); err != nil {
 		switch e := err.(type) {
 		case server.ErrorCode:
 			os.Exit(e.Code)

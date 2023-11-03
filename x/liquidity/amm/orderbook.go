@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 )
 
 // OrderBook is an order book.
@@ -48,47 +48,47 @@ func (ob *OrderBook) Orders() []Order {
 
 // BuyOrdersAt returns buy orders at given price in the order book.
 // Note that the orders are not sorted.
-func (ob *OrderBook) BuyOrdersAt(price sdk.Dec) []Order {
+func (ob *OrderBook) BuyOrdersAt(price sdkmath.LegacyDec) []Order {
 	return ob.buys.ordersAt(price)
 }
 
 // SellOrdersAt returns sell orders at given price in the order book.
 // Note that the orders are not sorted.
-func (ob *OrderBook) SellOrdersAt(price sdk.Dec) []Order {
+func (ob *OrderBook) SellOrdersAt(price sdkmath.LegacyDec) []Order {
 	return ob.sells.ordersAt(price)
 }
 
-func (ob *OrderBook) HighestPrice() (sdk.Dec, bool) {
+func (ob *OrderBook) HighestPrice() (sdkmath.LegacyDec, bool) {
 	highestBuyPrice, _, foundBuy := ob.buys.highestPrice()
 	highestSellPrice, _, foundSell := ob.sells.highestPrice()
 	switch {
 	case foundBuy && foundSell:
-		return sdk.MaxDec(highestBuyPrice, highestSellPrice), true
+		return sdkmath.LegacyMaxDec(highestBuyPrice, highestSellPrice), true
 	case foundBuy:
 		return highestBuyPrice, true
 	case foundSell:
 		return highestSellPrice, true
 	default:
-		return sdk.Dec{}, false
+		return sdkmath.LegacyDec{}, false
 	}
 }
 
-func (ob *OrderBook) LowestPrice() (sdk.Dec, bool) {
+func (ob *OrderBook) LowestPrice() (sdkmath.LegacyDec, bool) {
 	lowestBuyPrice, _, foundBuy := ob.buys.lowestPrice()
 	lowestSellPrice, _, foundSell := ob.sells.lowestPrice()
 	switch {
 	case foundBuy && foundSell:
-		return sdk.MinDec(lowestBuyPrice, lowestSellPrice), true
+		return sdkmath.LegacyMinDec(lowestBuyPrice, lowestSellPrice), true
 	case foundBuy:
 		return lowestBuyPrice, true
 	case foundSell:
 		return lowestSellPrice, true
 	default:
-		return sdk.Dec{}, false
+		return sdkmath.LegacyDec{}, false
 	}
 }
 
-func (ob *OrderBook) stringRepresentation(prices []sdk.Dec) string {
+func (ob *OrderBook) stringRepresentation(prices []sdkmath.LegacyDec) string {
 	if len(prices) == 0 {
 		return "<nil>"
 	}
@@ -110,7 +110,7 @@ func (ob *OrderBook) stringRepresentation(prices []sdk.Dec) string {
 // FullString includes all possible price ticks from the order book's
 // highest price to the lowest price.
 func (ob *OrderBook) FullString(tickPrec int) string {
-	var prices []sdk.Dec
+	var prices []sdkmath.LegacyDec
 	highest, found := ob.HighestPrice()
 	if !found {
 		return "<nil>"
@@ -125,11 +125,11 @@ func (ob *OrderBook) FullString(tickPrec int) string {
 // String returns a compact string representation of the order book.
 // String includes a tick only when there is at least one order on it.
 func (ob *OrderBook) String() string {
-	priceSet := map[string]sdk.Dec{}
+	priceSet := map[string]sdkmath.LegacyDec{}
 	for _, tick := range append(ob.buys.ticks, ob.sells.ticks...) {
 		priceSet[tick.price.String()] = tick.price
 	}
-	prices := make([]sdk.Dec, 0, len(priceSet))
+	prices := make([]sdkmath.LegacyDec, 0, len(priceSet))
 	for _, price := range priceSet {
 		prices = append(prices, price)
 	}
@@ -155,7 +155,7 @@ func newOrderBookSellTicks() *orderBookTicks {
 	}
 }
 
-func (ticks *orderBookTicks) findPrice(price sdk.Dec) (i int, exact bool) {
+func (ticks *orderBookTicks) findPrice(price sdkmath.LegacyDec) (i int, exact bool) {
 	i = sort.Search(len(ticks.ticks), func(i int) bool {
 		if ticks.priceIncreasing {
 			return ticks.ticks[i].price.GTE(price)
@@ -183,7 +183,7 @@ func (ticks *orderBookTicks) addOrder(order Order) {
 	}
 }
 
-func (ticks *orderBookTicks) ordersAt(price sdk.Dec) []Order {
+func (ticks *orderBookTicks) ordersAt(price sdkmath.LegacyDec) []Order {
 	i, exact := ticks.findPrice(price)
 	if !exact {
 		return nil
@@ -191,9 +191,9 @@ func (ticks *orderBookTicks) ordersAt(price sdk.Dec) []Order {
 	return ticks.ticks[i].orders
 }
 
-func (ticks *orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
+func (ticks *orderBookTicks) highestPrice() (sdkmath.LegacyDec, int, bool) {
 	if len(ticks.ticks) == 0 {
-		return sdk.Dec{}, 0, false
+		return sdkmath.LegacyDec{}, 0, false
 	}
 	if ticks.priceIncreasing {
 		return ticks.ticks[len(ticks.ticks)-1].price, len(ticks.ticks) - 1, true
@@ -201,9 +201,9 @@ func (ticks *orderBookTicks) highestPrice() (sdk.Dec, int, bool) {
 	return ticks.ticks[0].price, 0, true
 }
 
-func (ticks *orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
+func (ticks *orderBookTicks) lowestPrice() (sdkmath.LegacyDec, int, bool) {
 	if len(ticks.ticks) == 0 {
-		return sdk.Dec{}, 0, false
+		return sdkmath.LegacyDec{}, 0, false
 	}
 	if ticks.priceIncreasing {
 		return ticks.ticks[0].price, 0, true
@@ -213,7 +213,7 @@ func (ticks *orderBookTicks) lowestPrice() (sdk.Dec, int, bool) {
 
 // orderBookTick represents a tick in OrderBook.
 type orderBookTick struct {
-	price  sdk.Dec
+	price  sdkmath.LegacyDec
 	orders []Order
 }
 

@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	rewardtypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -77,7 +78,7 @@ func (s *KeeperTestSuite) TestFarm() {
 		{
 			Name:             "error insufficient pool denoms",
 			Msg:              *types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("100000000000pool1-1")),
-			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "10000000000pool1-1 is smaller than 100000000000pool1-1"),
+			ExpErr:           sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance 10000000000pool1-1 is smaller than 100000000000pool1-1"),
 			AvailableBalance: utils.ParseCoins("10000000000pool1-1,10000000000pool2-1"),
 		},
 		{
@@ -1267,19 +1268,19 @@ func (s *KeeperTestSuite) TestGetAmountFarmedForAssetID() {
 
 	quantityFarmed, err := s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset1.Id, liquidityProvider1)
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.NewInt(2999999997), quantityFarmed)
+	s.Require().Equal(sdkmath.NewInt(2999999997), quantityFarmed)
 
 	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset2.Id, liquidityProvider1)
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.NewInt(1999999998), quantityFarmed)
+	s.Require().Equal(sdkmath.NewInt(1999999998), quantityFarmed)
 
 	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset3.Id, liquidityProvider1)
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.NewInt(1999999998), quantityFarmed)
+	s.Require().Equal(sdkmath.NewInt(1999999998), quantityFarmed)
 
 	quantityFarmed, err = s.keeper.GetAmountFarmedForAssetID(s.ctx, appID1, asset4.Id, liquidityProvider1)
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.NewInt(999999999), quantityFarmed)
+	s.Require().Equal(sdkmath.NewInt(999999999), quantityFarmed)
 }
 
 func (s *KeeperTestSuite) TestOraclePricForRewardDistrbution() {

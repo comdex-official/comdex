@@ -7,14 +7,14 @@ func Multiply(a, b sdk.Dec) sdk.Dec {
 }
 
 func (k Keeper) GetCollalteralTokenInitialPrice(price sdk.Int, premium sdk.Dec) sdk.Dec {
-	result := premium.Mul(price.ToDec())
+	result := premium.Mul(sdk.NewDec(price.Int64()))
 	return result
 }
 
 func (k Keeper) GetPriceFromLinearDecreaseFunction(CollateralTokenAuctionPrice sdk.Dec, timeToReachZeroPrice, timeElapsed sdk.Int) sdk.Dec {
 	timeDifference := timeToReachZeroPrice.Sub(timeElapsed)
-	resultantPrice := CollateralTokenAuctionPrice.Mul(timeDifference.ToDec())
-	currentPrice := resultantPrice.Quo(timeToReachZeroPrice.ToDec())
+	resultantPrice := CollateralTokenAuctionPrice.Mul(sdk.NewDec(timeDifference.Int64()))
+	currentPrice := resultantPrice.Quo(sdk.NewDec(timeToReachZeroPrice.Int64()))
 	return currentPrice
 }
 

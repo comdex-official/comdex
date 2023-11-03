@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -59,7 +60,7 @@ func (k Keeper) getPoolBalances(ctx sdk.Context, pool types.Pool, pair types.Pai
 }
 
 // GetPoolCoinSupply returns total pool coin supply of the pool.
-func (k Keeper) GetPoolCoinSupply(ctx sdk.Context, pool types.Pool) sdk.Int {
+func (k Keeper) GetPoolCoinSupply(ctx sdk.Context, pool types.Pool) sdkmath.Int {
 	return k.bankKeeper.GetSupply(ctx, pool.PoolCoinDenom).Amount
 }
 
@@ -160,7 +161,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 	// Mint and send pool coin to the creator.
 	// Minting pool coin amount is calculated based on two coins' amount.
 	// Minimum minting amount is params.MinInitialPoolCoinSupply.
-	ps := sdk.MaxInt(
+	ps := sdkmath.MaxInt(
 		ammPool.PoolCoinSupply(),
 		params.MinInitialPoolCoinSupply,
 	)
@@ -178,7 +179,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg *types.MsgCreatePool) (types.Poo
 		ctx.BlockTime(),
 		rewardstypes.LiquidityGaugeTypeID,
 		types.DefaultSwapFeeDistributionDuration,
-		sdk.NewCoin(params.SwapFeeDistrDenom, sdk.NewInt(0)),
+		sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.NewInt(0)),
 		1,
 	)
 	newGauge.Kind = &rewardstypes.MsgCreateGauge_LiquidityMetaData{
@@ -312,7 +313,7 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 
 	// Mint and send pool coin to the creator.
 	// Minimum minting amount is params.MinInitialPoolCoinSupply.
-	ps := sdk.MaxInt(ammPool.PoolCoinSupply(), params.MinInitialPoolCoinSupply)
+	ps := sdkmath.MaxInt(ammPool.PoolCoinSupply(), params.MinInitialPoolCoinSupply)
 	poolCoin := sdk.NewCoin(pool.PoolCoinDenom, ps)
 	if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, sdk.NewCoins(poolCoin)); err != nil {
 		return types.Pool{}, err
@@ -327,7 +328,7 @@ func (k Keeper) CreateRangedPool(ctx sdk.Context, msg *types.MsgCreateRangedPool
 		ctx.BlockTime(),
 		rewardstypes.LiquidityGaugeTypeID,
 		types.DefaultSwapFeeDistributionDuration,
-		sdk.NewCoin(params.SwapFeeDistrDenom, sdk.NewInt(0)),
+		sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.NewInt(0)),
 		1,
 	)
 	newGauge.Kind = &rewardstypes.MsgCreateGauge_LiquidityMetaData{
@@ -548,7 +549,7 @@ func (k Keeper) FinishDepositRequest(ctx sdk.Context, req types.DepositRequest, 
 		return nil
 	}
 
-	refundingCoins := req.DepositCoins.Sub(req.AcceptedCoins)
+	refundingCoins := req.DepositCoins.Sub(req.AcceptedCoins...)
 	if !refundingCoins.IsZero() {
 		if err := k.bankKeeper.SendCoins(ctx, types.GlobalEscrowAddress, req.GetDepositor(), refundingCoins); err != nil {
 			return err
@@ -708,7 +709,7 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 			return sdk.Coin{}, types.ErrOraclePricesNotFound
 		}
 		// moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
-		poolLiquidityMap := make(map[uint64]sdk.Dec)
+		poolLiquidityMap := make(map[uint64]sdkmath.LegacyDec)
 		for _, pool := range allPoolsForPair {
 			if pool.Disabled {
 				continue
@@ -723,32 +724,32 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 			baseValue, _ := k.CalcAssetPrice(ctx, baseAsset.Id, ry.Amount)
 			totalValue := quoteValue.Add(baseValue)
 			if !totalValue.IsPositive() {
-				return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), nil
+				return sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.ZeroInt()), nil
 			}
 			poolLiquidityMap[pool.Id] = totalValue
 		}
-		totalLiquidity := sdk.ZeroDec()
+		totalLiquidity := sdkmath.LegacyZeroDec()
 		for _, pLiquidity := range poolLiquidityMap {
 			totalLiquidity = totalLiquidity.Add(pLiquidity)
 		}
 
 		requestedPoolShare := poolLiquidityMap[requestedPoolID].Quo(totalLiquidity)
-		eligibleSwapFeeAmount := requestedPoolShare.Mul(availableBalance.Amount.ToDec())
+		eligibleSwapFeeAmount := requestedPoolShare.Mul(sdkmath.LegacyNewDec(availableBalance.Amount.Int64()))
 		availableBalance.Amount = eligibleSwapFeeAmount.RoundInt()
 	}
 
-	burnAmount := availableBalance.Amount.ToDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
+	burnAmount := sdkmath.LegacyNewDec(availableBalance.Amount.Int64()).MulTruncate(params.SwapFeeBurnRate).TruncateInt()
 	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
 
 	if burnCoin.Amount.IsPositive() {
 		err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), types.ModuleName, sdk.NewCoins(burnCoin))
 		if err != nil {
-			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.ZeroInt()), err
 		}
 
 		err = k.bankKeeper.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(burnCoin))
 		if err != nil {
-			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.ZeroInt()), err
 		}
 	}
 
@@ -757,19 +758,19 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 	if availableBalance.IsPositive() {
 		err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, pair.GetSwapFeeCollectorAddress(), rewardstypes.ModuleName, sdk.NewCoins(availableBalance))
 		if err != nil {
-			return sdk.NewCoin(params.SwapFeeDistrDenom, sdk.ZeroInt()), err
+			return sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.ZeroInt()), err
 		}
 	} else {
 		// negative amount handalling
-		availableBalance.Amount = sdk.NewInt(0)
+		availableBalance.Amount = sdkmath.NewInt(0)
 	}
 	return availableBalance, nil
 }
 
-func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID uint64, amount sdk.Int, pool []uint64, votingRatio []sdk.Int) error {
+func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID uint64, amount sdkmath.Int, pool []uint64, votingRatio []sdkmath.Int) error {
 	var assetID uint64
 
-	totalVote := sdk.ZeroInt()
+	totalVote := sdkmath.ZeroInt()
 	app, _ := k.assetKeeper.GetApp(ctx, appID)
 	govToken := app.GenesisToken
 	for _, v := range govToken {
@@ -778,7 +779,7 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 		}
 	}
 	asset, _ := k.assetKeeper.GetAsset(ctx, assetID)
-	if amount.GT(sdk.ZeroInt()) {
+	if amount.GT(sdkmath.ZeroInt()) {
 		err := k.bankKeeper.MintCoins(ctx, tokenminttypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 		if err != nil {
 			return err
@@ -793,18 +794,18 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 		farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 		individualVote := votingRatio[j]
-		votingR := individualVote.ToDec().Quo(totalVote.ToDec())
-		shareByPool := votingR.Mul(amount.ToDec())
+		votingR := sdkmath.LegacyNewDec(individualVote.Int64()).Quo(sdkmath.LegacyNewDec(totalVote.Int64()))
+		shareByPool := votingR.Mul(sdkmath.LegacyNewDec(amount.Int64()))
 		if farmedCoins.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByPool.Quo(farmedCoins.Amount.ToDec())
+		perUserShareByAmtDec := shareByPool.Quo(sdkmath.LegacyNewDec(farmedCoins.Amount.Int64()))
 		allActiveFarmer := k.GetAllActiveFarmers(ctx, cswapAppID, extP)
 
 		for _, farmerDetail := range allActiveFarmer {
-			amt := sdk.NewDecFromInt(farmerDetail.FarmedPoolCoin.Amount).Mul(perUserShareByAmtDec)
+			amt := sdkmath.LegacyNewDecFromInt(farmerDetail.FarmedPoolCoin.Amount).Mul(perUserShareByAmtDec)
 			addr, _ := sdk.AccAddressFromBech32(farmerDetail.Farmer)
-			if amt.GT(sdk.NewDec(0)) {
+			if amt.GT(sdkmath.LegacyNewDec(0)) {
 				err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt.TruncateInt())))
 				if err != nil {
 					return err

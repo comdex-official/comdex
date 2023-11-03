@@ -289,8 +289,8 @@ func (s *KeeperTestSuite) TestLiquidateVaults() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeVault.AmountOut.ToDec().Mul(newDec("0.12")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
@@ -363,8 +363,8 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, beforeBorrow.AmountOut.Amount.ToDec().Mul(newDec("0.05")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
@@ -754,25 +754,25 @@ func (s *KeeperTestSuite) TestDebtAuctionBid() {
 		},
 		{
 			Name:    "bidding amount is greater than maximum bidding amount",
-			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(53000000))),
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(53000000))),
 			ExpErr:  auctionsV2types.ErrorMaxBidAmount,
 			ExpResp: nil,
 		},
 		{
 			Name:    "success valid case",
-			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(200000))),
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(200000))),
 			ExpErr:  nil,
 			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
 		},
 		{
 			Name:    "bid should be less than or equal to 180000",
-			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(200000))),
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(200000))),
 			ExpErr:  fmt.Errorf("bid should be less than or equal to 180000 : not found"),
 			ExpResp: nil,
 		},
 		{
 			Name:    "success valid case 2",
-			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset2", sdk.NewInt(180000))),
+			Msg:     *auctionsV2types.NewMsgPlaceMarketBid(bidder, 1, sdk.NewCoin("uasset3", sdk.NewInt(180000))),
 			ExpErr:  nil,
 			ExpResp: &auctionsV2types.MsgPlaceMarketBidResponse{},
 		},

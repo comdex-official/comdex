@@ -6,19 +6,20 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/comdex-official/comdex/x/market/expected"
 )
 
 type Keeper struct {
 	cdc              codec.BinaryCodec
-	key              sdk.StoreKey
+	key              storetypes.StoreKey
 	params           paramstypes.Subspace
 	scoped           expected.ScopedKeeper
 	assetKeeper      assetkeeper.Keeper
 	bandoraclekeeper expected.BandOracleKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, params paramstypes.Subspace, scoped expected.ScopedKeeper, assetKeeper assetkeeper.Keeper, bandoraclekeeper expected.BandOracleKeeper) Keeper {
 	return Keeper{
 		cdc:              cdc,
 		key:              key,

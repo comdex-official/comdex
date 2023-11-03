@@ -3,7 +3,7 @@ package amm
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -33,9 +33,9 @@ func Test_findFirstTrueCondition(t *testing.T) {
 
 func Test_poolOrderPriceGapRatio(t *testing.T) {
 	for _, tc := range []struct {
-		poolPrice    sdk.Dec
-		currentPrice sdk.Dec
-		expected     sdk.Dec
+		poolPrice    sdkmath.LegacyDec
+		currentPrice sdkmath.LegacyDec
+		expected     sdkmath.LegacyDec
 	}{
 		{utils.ParseDec("1"), utils.ParseDec("1"), utils.ParseDec("0.00003")},
 		{utils.ParseDec("1"), utils.ParseDec("1.005"), utils.ParseDec("0.000065")},
@@ -51,7 +51,7 @@ func Test_poolOrderPriceGapRatio(t *testing.T) {
 		{utils.ParseDec("1"), utils.ParseDec("0.1"), utils.ParseDec("0.005")},
 	} {
 		t.Run("", func(t *testing.T) {
-			require.True(sdk.DecEq(t, tc.expected, poolOrderPriceGapRatio(tc.poolPrice, tc.currentPrice)))
+			require.True(sdkmath.LegacyDecEq(t, tc.expected, poolOrderPriceGapRatio(tc.poolPrice, tc.currentPrice)))
 		})
 	}
 }

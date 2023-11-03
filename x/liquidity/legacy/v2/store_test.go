@@ -12,7 +12,7 @@ package v2_test
 // 	"github.com/comdex-official/comdex/x/liquidity/types"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	"github.com/stretchr/testify/require"
-// 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+// 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 // )
 
 // func CreateNewTestApp(t *testing.T, app *chain.App, ctx sdk.Context, appName string) uint64 {

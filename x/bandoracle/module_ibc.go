@@ -1,15 +1,14 @@
 package bandoracle
 
 import (
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	channeltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	host "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibcexported "github.com/cosmos/ibc-go/v4/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
@@ -132,16 +131,18 @@ func (im IBCModule) OnRecvPacket(
 		return oracleAck
 	}
 
-	var modulePacketData types.BandoraclePacketData
-	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error()))
-	}
+	//TODO: review commented code
+	// var modulePacketData types.BandoraclePacketData
+	// if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
+	// 	return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error()))
+	// }
 
-	// Dispatch packet
-	switch packet := modulePacketData.Packet.(type) {
-	default:
-		return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(types.ErrUnrecognisedPacket, "unrecognized %s packet type: %T", types.ModuleName, packet))
-	}
+	// // Dispatch packet
+	// switch packet := modulePacketData.Packet.(type) {
+	// default:
+	// 	return channeltypes.NewErrorAcknowledgement(sdkerrors.Wrapf(types.ErrUnrecognisedPacket, "unrecognized %s packet type: %T", types.ModuleName, packet))
+	// }
+	return nil
 
 	// NOTE: acknowledgement will be written synchronously during IBC handler execution.
 }
@@ -158,26 +159,31 @@ func (im IBCModule) OnAcknowledgementPacket(
 		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet acknowledgement: %v", err)
 	}
 
-	sdkResult, err := im.handleOracleAcknowledgment(ctx, ack, modulePacket)
+	_, err := im.handleOracleAcknowledgment(ctx, ack, modulePacket)
 	if err != nil {
 		return err
 	}
-	if sdkResult != nil {
-		sdkResult.Events = ctx.EventManager().Events().ToABCIEvents()
-		return nil
-	}
+	//TODO: review commented code
+	// if sdkResult != nil {
+	// 	sdkResult.Events = ctx.EventManager().Events().ToABCIEvents()
+	// 	return nil
+	// }
 
-	var modulePacketData types.BandoraclePacketData
-	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
-	}
+	// var modulePacketData types.BandoraclePacketData
+	// if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
+	// 	fmt.Println("err in OnAcknowledgementPacket------------------")
+	// 	return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+	// }
+	// fmt.Println("OnAcknowledgementPacket data", modulePacketData)
+	// fmt.Println("OnAcknowledgementPacket------------------ end")
 
-	// Dispatch packet
-	switch packet := modulePacketData.Packet.(type) {
-	default:
-		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
-	}
+	// // Dispatch packet
+	// switch packet := modulePacketData.Packet.(type) {
+	// default:
+	// 	errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
+	// 	return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+	// }
+	return nil
 }
 
 // OnTimeoutPacket implements the IBCModule interface.
@@ -186,17 +192,20 @@ func (im IBCModule) OnTimeoutPacket(
 	modulePacket channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {
-	var modulePacketData types.BandoraclePacketData
-	if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
-	}
+	//TODO: review commented code
+	// fmt.Println("modulePacket.GetData(on timout reaal data)", modulePacket)
+	// var modulePacketData types.BandoraclePacketData
+	// if err := modulePacketData.Unmarshal(modulePacket.GetData()); err != nil {
+	// 	return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal packet data: %s", err.Error())
+	// }
 
-	// Dispatch packet
-	switch packet := modulePacketData.Packet.(type) {
-	default:
-		errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
-	}
+	// // Dispatch packet
+	// switch packet := modulePacketData.Packet.(type) {
+	// default:
+	// 	errMsg := fmt.Sprintf("unrecognized %s packet type: %T", types.ModuleName, packet)
+	// 	return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+	// }
+	return nil
 }
 
 func (am AppModule) NegotiateAppVersion(ctx sdk.Context, order channeltypes.Order, connectionID string, portID string, counterparty channeltypes.Counterparty, proposedVersion string) (version string, err error) {

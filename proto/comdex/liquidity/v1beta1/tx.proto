@@ -107,13 +107,13 @@ message MsgCreateRangedPool {
       [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
 
   string min_price = 5
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   string max_price = 6
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   string initial_price = 7
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 }
 
 // MsgCreateRangedPoolResponse defines the Msg/CreateRangedPool response type.
@@ -172,10 +172,10 @@ message MsgLimitOrder {
   string demand_coin_denom = 5;
 
   // price specifies the order price
-  string price = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  string price = 6 [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   // amount specifies the amount of base coin the orderer wants to buy or sell
-  string amount = 7 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string amount = 7 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 
   // order_lifespan specifies the order lifespan
   google.protobuf.Duration order_lifespan = 8 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
@@ -204,7 +204,7 @@ message MsgMarketOrder {
   string demand_coin_denom = 5;
 
   // amount specifies the amount of base coin the orderer wants to buy or sell
-  string amount = 6 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string amount = 6 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 
   // order_lifespan specifies the order lifespan
   google.protobuf.Duration order_lifespan = 7 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
@@ -227,27 +227,27 @@ message MsgMMOrder {
 
   // max_sell_price specifies the maximum sell price
   string max_sell_price = 4
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   // min_sell_price specifies the minimum sell price
   string min_sell_price = 5
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   // sell_amount specifies the total amount of base coin of sell orders
   string sell_amount = 6
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 
   // max_buy_price specifies the maximum buy price
   string max_buy_price = 7
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   // min_buy_price specifies the minimum buy price
   string min_buy_price = 8
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
 
   // buy_amount specifies the total amount of base coin of buy orders
   string buy_amount = 9
-      [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+      [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 
   // order_lifespan specifies the order lifespan
   google.protobuf.Duration order_lifespan = 10 [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];

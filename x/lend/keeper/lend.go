@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )

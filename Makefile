@@ -16,7 +16,7 @@ endif
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
-TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
+TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::') # grab everything after the space in "github.com/cometbft/cometbft v0.37.2"
 DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
 BUILDDIR ?= $(CURDIR)/build
@@ -71,7 +71,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=comdex \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+			-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
 ifeq (cleveldb,$(findstring cleveldb,$(COMDEX_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
@@ -186,8 +186,19 @@ endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
-protoVer=v0.1
-containerProtoGenSwagger=comdex-proto-gen-swagger-$(protoVer)
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+protoVer=0.13.0
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+
+proto-gen:
+	@echo "============ Generating Protobuf files ============"
+	@$(protoImage) sh ./scripts/proto-gen.sh
+	@echo "============ Generating Protobuf files complete ============"
+.PHONY: proto-gen
 
 proto-swagger-gen:
 	@echo
@@ -204,7 +215,6 @@ proto-swagger-gen:
 	@echo
 	@echo "=========== Docs Generation Complete ============"
 	@echo
-.PHONY: docs
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."

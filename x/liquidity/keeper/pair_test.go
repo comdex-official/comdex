@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -73,7 +74,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, asset1.Denom, asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "0ucmdx is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
+			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -233,7 +234,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
 				s.Require().NoError(err)
 				collectedPairCreationFee := s.getBalances(sdk.MustAccAddressFromBech32(params.FeeCollectorAddress))
-				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdk.NewInt(int64(tc.QueryResponseIndex+1))))).IsEqual(collectedPairCreationFee))
+				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))).IsEqual(collectedPairCreationFee))
 
 				pairs := s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId)
 				s.Require().Len(pairs, int(tc.QueryResponseIndex)+1)

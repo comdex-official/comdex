@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/comdex-official/comdex/app"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/comdex-official/comdex/x/rewards"
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -12,7 +12,7 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
-	comdexApp := app.Setup(false)
+	comdexApp := app.Setup(t, false)
 	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
 
 	genesisState := types.GenesisState{

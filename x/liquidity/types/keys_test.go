@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )

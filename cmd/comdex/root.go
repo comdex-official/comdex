@@ -10,6 +10,11 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/prometheus/client_golang/prometheus"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	tmcfg "github.com/cometbft/cometbft/config"
+	tmcli "github.com/cometbft/cometbft/libs/cli"
+	"github.com/cometbft/cometbft/libs/log"
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -21,18 +26,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
+	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
-	tmdb "github.com/tendermint/tm-db"
 
 	comdex "github.com/comdex-official/comdex/app"
 )
@@ -46,7 +51,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
-		WithBroadcastMode(flags.BroadcastBlock).
+		WithBroadcastMode(flags.FlagBroadcastMode).
 		WithHomeDir(comdex.DefaultNodeHome).
 		WithViper("")
 
@@ -68,7 +73,10 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			// bump47: recheck if customTMConfig is required, else replace with nil
+			customTMConfig := initTendermintConfig()
+
+			return server.InterceptConfigsPreRunHandler(cmd, "", nil, customTMConfig)
 		},
 	}
 
@@ -76,10 +84,24 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	return root, encodingConfig
 }
 
+func initTendermintConfig() *tmcfg.Config {
+	cfg := tmcfg.DefaultConfig()
+
+	// these values put a higher strain on node memory
+	// cfg.P2P.MaxNumInboundPeers = 100
+	// cfg.P2P.MaxNumOutboundPeers = 40
+
+	return cfg
+}
+
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
+	cfg := sdk.GetConfig()
+	cfg.Seal()
+	
+	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator),
 		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
 		AddGenesisAccountCmd(comdex.DefaultNodeHome),
@@ -171,7 +193,7 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(options.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
+	snapshotDB, err := tmdb.NewDB("metadata", tmdb.GoLevelDBBackend, snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -183,6 +205,23 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	if cast.ToBool(options.Get("telemetry.enabled")) {
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
+	snapshotOptions := snapshottypes.NewSnapshotOptions(
+		cast.ToUint64(options.Get(server.FlagStateSyncSnapshotInterval)),
+		cast.ToUint32(options.Get(server.FlagStateSyncSnapshotKeepRecent)),
+	)
+
+	homeDir := cast.ToString(options.Get(flags.FlagHome))
+	chainID := cast.ToString(options.Get(flags.FlagChainID))
+	if chainID == "" {
+		// fallback to genesis chain-id
+		appGenesis, err := tmtypes.GenesisDocFromFile(filepath.Join(homeDir, "config", "genesis.json"))
+		if err != nil {
+			panic(err)
+		}
+
+		chainID = appGenesis.ChainID
+	}
+
 	return comdex.New(
 		logger, db, tracer, true, skipUpgradeHeights,
 		cast.ToString(options.Get(flags.FlagHome)),
@@ -199,14 +238,13 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(options.Get(server.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(options.Get(server.FlagIndexEvents))),
-		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(options.Get(server.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(options.Get(server.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshot(snapshotStore, snapshotOptions),
+		baseapp.SetChainID(chainID),
 	)
 }
 
 func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
-	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions,
+	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	config := comdex.MakeEncodingConfig()
 	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
@@ -226,5 +264,5 @@ func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64
 		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
 	}
 
-	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }

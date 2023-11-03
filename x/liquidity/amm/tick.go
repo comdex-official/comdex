@@ -5,59 +5,59 @@ import (
 	"math/big"
 	"math/rand"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 )
 
 // TickPrecision represents a tick precision.
 type TickPrecision int
 
-func (prec TickPrecision) PriceToDownTick(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) PriceToDownTick(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return PriceToDownTick(price, int(prec))
 }
 
-func (prec TickPrecision) PriceToUpTick(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) PriceToUpTick(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return PriceToUpTick(price, int(prec))
 }
 
-func (prec TickPrecision) UpTick(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) UpTick(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return UpTick(price, int(prec))
 }
 
-func (prec TickPrecision) DownTick(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) DownTick(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return DownTick(price, int(prec))
 }
 
-func (prec TickPrecision) HighestTick() sdk.Dec {
+func (prec TickPrecision) HighestTick() sdkmath.LegacyDec {
 	return HighestTick(int(prec))
 }
 
-func (prec TickPrecision) LowestTick() sdk.Dec {
+func (prec TickPrecision) LowestTick() sdkmath.LegacyDec {
 	return LowestTick(int(prec))
 }
 
-func (prec TickPrecision) TickToIndex(tick sdk.Dec) int {
+func (prec TickPrecision) TickToIndex(tick sdkmath.LegacyDec) int {
 	return TickToIndex(tick, int(prec))
 }
 
-func (prec TickPrecision) TickFromIndex(i int) sdk.Dec {
+func (prec TickPrecision) TickFromIndex(i int) sdkmath.LegacyDec {
 	return TickFromIndex(i, int(prec))
 }
 
-func (prec TickPrecision) RoundPrice(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) RoundPrice(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return RoundPrice(price, int(prec))
 }
 
-func (prec TickPrecision) TickGap(price sdk.Dec) sdk.Dec {
+func (prec TickPrecision) TickGap(price sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return TickGap(price, int(prec))
 }
 
-func (prec TickPrecision) RandomTick(r *rand.Rand, minPrice, maxPrice sdk.Dec) sdk.Dec {
+func (prec TickPrecision) RandomTick(r *rand.Rand, minPrice, maxPrice sdkmath.LegacyDec) sdkmath.LegacyDec {
 	return RandomTick(r, minPrice, maxPrice, int(prec))
 }
 
 // char returns the characteristic(integral part) of
 // log10(x * pow(10, sdk.Precision)).
-func char(x sdk.Dec) int {
+func char(x sdkmath.LegacyDec) int {
 	if x.IsZero() {
 		panic("cannot calculate log10 for 0")
 	}
@@ -65,14 +65,14 @@ func char(x sdk.Dec) int {
 }
 
 // pow10 returns pow(10, n - sdk.Precision).
-func pow10(n int) sdk.Dec {
+func pow10(n int) sdkmath.LegacyDec {
 	x := big.NewInt(10)
 	x.Exp(x, big.NewInt(int64(n)), nil)
-	return sdk.NewDecFromBigIntWithPrec(x, sdk.Precision)
+	return sdkmath.LegacyNewDecFromBigIntWithPrec(x, sdkmath.LegacyPrecision)
 }
 
 // isPow10 returns whether x is a power of 10 or not.
-func isPow10(x sdk.Dec) bool {
+func isPow10(x sdkmath.LegacyDec) bool {
 	b := x.BigInt()
 	if b.Sign() <= 0 {
 		return false
@@ -93,7 +93,7 @@ func isPow10(x sdk.Dec) bool {
 }
 
 // PriceToDownTick returns the highest price tick under(or equal to) the price.
-func PriceToDownTick(price sdk.Dec, prec int) sdk.Dec {
+func PriceToDownTick(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	b := price.BigInt()
 	l := char(price)
 	d := int64(l - prec)
@@ -102,12 +102,12 @@ func PriceToDownTick(price sdk.Dec, prec int) sdk.Dec {
 		p.Exp(p, big.NewInt(d), nil)
 		b.Quo(b, p).Mul(b, p)
 	}
-	return sdk.NewDecFromBigIntWithPrec(b, sdk.Precision)
+	return sdkmath.LegacyNewDecFromBigIntWithPrec(b, sdkmath.LegacyPrecision)
 }
 
 // PriceToUpTick returns the lowest price tick greater or equal than
 // the price.
-func PriceToUpTick(price sdk.Dec, prec int) sdk.Dec {
+func PriceToUpTick(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	tick := PriceToDownTick(price, prec)
 	if !tick.Equal(price) {
 		return UpTick(tick, prec)
@@ -116,7 +116,7 @@ func PriceToUpTick(price sdk.Dec, prec int) sdk.Dec {
 }
 
 // UpTick returns the next lowest price tick above the price.
-func UpTick(price sdk.Dec, prec int) sdk.Dec {
+func UpTick(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	tick := PriceToDownTick(price, prec)
 	if tick.Equal(price) {
 		l := char(price)
@@ -128,11 +128,11 @@ func UpTick(price sdk.Dec, prec int) sdk.Dec {
 
 // DownTick returns the next highest price tick under the price.
 // DownTick doesn't check if the price is the lowest price tick.
-func DownTick(price sdk.Dec, prec int) sdk.Dec {
+func DownTick(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	tick := PriceToDownTick(price, prec)
 	if tick.Equal(price) {
 		l := char(price)
-		var d sdk.Dec
+		var d sdkmath.LegacyDec
 		if isPow10(price) {
 			d = pow10(l - prec - 1)
 		} else {
@@ -144,21 +144,21 @@ func DownTick(price sdk.Dec, prec int) sdk.Dec {
 }
 
 // HighestTick returns the highest possible price tick.
-func HighestTick(prec int) sdk.Dec {
+func HighestTick(prec int) sdkmath.LegacyDec {
 	i := big.NewInt(2)
 	// Maximum 315 bits possible, but take slightly less value for safety.
 	i.Exp(i, big.NewInt(300), nil).Sub(i, big.NewInt(1))
-	return PriceToDownTick(sdk.NewDecFromBigIntWithPrec(i, sdk.Precision), prec)
+	return PriceToDownTick(sdkmath.LegacyNewDecFromBigIntWithPrec(i, sdkmath.LegacyPrecision), prec)
 }
 
 // LowestTick returns the lowest possible price tick.
-func LowestTick(prec int) sdk.Dec {
-	return sdk.NewDecWithPrec(1, int64(sdk.Precision-prec))
+func LowestTick(prec int) sdkmath.LegacyDec {
+	return sdkmath.LegacyNewDecWithPrec(1, int64(sdkmath.LegacyPrecision-prec))
 }
 
 // TickToIndex returns a tick index for given price.
 // Tick index 0 means the lowest possible price fit in ticks.
-func TickToIndex(price sdk.Dec, prec int) int {
+func TickToIndex(price sdkmath.LegacyDec, prec int) int {
 	b := price.BigInt()
 	l := len(b.Text(10)) - 1
 	d := int64(l - prec)
@@ -174,7 +174,7 @@ func TickToIndex(price sdk.Dec, prec int) int {
 
 // TickFromIndex returns a price for given tick index.
 // See TickToIndex for more details about tick indices.
-func TickFromIndex(i, prec int) sdk.Dec {
+func TickFromIndex(i, prec int) sdkmath.LegacyDec {
 	p := int(math.Pow10(prec))
 	l := i/(9*p) + prec
 	t := big.NewInt(int64(p + i%(p*9)))
@@ -183,7 +183,7 @@ func TickFromIndex(i, prec int) sdk.Dec {
 		m.Exp(m, big.NewInt(int64(l-prec)), nil)
 		t.Mul(t, m)
 	}
-	return sdk.NewDecFromBigIntWithPrec(t, sdk.Precision)
+	return sdkmath.LegacyNewDecFromBigIntWithPrec(t, sdkmath.LegacyPrecision)
 }
 
 // RoundTickIndex returns rounded tick index using banker's rounding.
@@ -192,7 +192,7 @@ func RoundTickIndex(i int) int {
 }
 
 // RoundPrice returns rounded price using banker's rounding.
-func RoundPrice(price sdk.Dec, prec int) sdk.Dec {
+func RoundPrice(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	tick := PriceToDownTick(price, prec)
 	if price.Equal(tick) {
 		return price
@@ -201,7 +201,7 @@ func RoundPrice(price sdk.Dec, prec int) sdk.Dec {
 }
 
 // TickGap returns tick gap at given price.
-func TickGap(price sdk.Dec, prec int) sdk.Dec {
+func TickGap(price sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	tick := PriceToDownTick(price, prec)
 	l := char(tick)
 	return pow10(l - prec)
@@ -210,7 +210,7 @@ func TickGap(price sdk.Dec, prec int) sdk.Dec {
 // RandomTick returns a random tick within range [minPrice, maxPrice].
 // If prices are not on ticks, then prices are adjusted to the nearest
 // ticks.
-func RandomTick(r *rand.Rand, minPrice, maxPrice sdk.Dec, prec int) sdk.Dec {
+func RandomTick(r *rand.Rand, minPrice, maxPrice sdkmath.LegacyDec, prec int) sdkmath.LegacyDec {
 	minPrice = PriceToUpTick(minPrice, prec)
 	maxPrice = PriceToDownTick(maxPrice, prec)
 	minPriceIdx := TickToIndex(minPrice, prec)

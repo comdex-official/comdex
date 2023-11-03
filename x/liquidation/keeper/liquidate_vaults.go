@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuftypes "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/cosmos/gogoproto/types"
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"

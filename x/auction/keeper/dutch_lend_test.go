@@ -667,7 +667,7 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	updatedPrice := price.Sub(price.Mul(Dec("0.09090909090")))
 
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned.TruncateInt(), updatedPrice.TruncateInt())
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, lockedVault[0].AmountOut.ToDec().Mul(s.GetAssetPrice(2)).Quo(beforeAmtIn.ToDec().Mul(s.GetAssetPrice(1))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2)).Quo(sdk.NewDec(beforeAmtIn.Int64()).Mul(s.GetAssetPrice(1))))
 }
 
 func (s *KeeperTestSuite) TestDutchActivatorLend() {
@@ -808,8 +808,8 @@ func (s *KeeperTestSuite) TestLendDutchBid() {
 				s.Require().NoError(err)
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
-				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
-				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
+				userReceivableAmount := sdk.NewDec(tc.msg.Amount.Amount.Int64()).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := sdk.NewDec(userReceivableAmount.Int64()).Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("ucmdx", userReceivableAmount)
 				userOutflowCoinFinal := sdk.NewCoin("ucmdx", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount
@@ -937,8 +937,8 @@ func (s *KeeperTestSuite) TestLendDutchBid3() {
 				s.Require().NoError(err)
 
 				userBid, err := k.GetDutchLendUserBidding(*ctx, userAddress1, appID, biddingID)
-				userReceivableAmount := tc.msg.Amount.Amount.ToDec().Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
-				auctionBonus := userReceivableAmount.ToDec().Mul(Dec("0.005"))
+				userReceivableAmount := sdk.NewDec(tc.msg.Amount.Amount.Int64()).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				auctionBonus := sdk.NewDec(userReceivableAmount.Int64()).Mul(Dec("0.005"))
 				userOutflowCoin := sdk.NewCoin("uosmo", userReceivableAmount)
 				userOutflowCoinFinal := sdk.NewCoin("uosmo", userReceivableAmount.Add(auctionBonus.TruncateInt()))
 				userInflowCoin := tc.msg.Amount

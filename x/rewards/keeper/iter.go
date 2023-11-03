@@ -58,11 +58,11 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 								continue
 							}
 						}
-						userShare := (locker.NetBalance.ToDec()).Quo(totalShare.ToDec()) // getting share percentage
+						userShare := (sdk.NewDec(locker.NetBalance.Int64())).Quo(sdk.NewDec(totalShare.Int64())) // getting share percentage
 						availableRewards := v.AvailableRewards                           // Available Rewards
 						Duration := v.DurationDays - int64(epoch.Count)                  // duration left (total duration - current count)
 
-						epochRewards := availableRewards.Amount.ToDec().Quo(sdk.NewDec(Duration))
+						epochRewards := sdk.NewDec(availableRewards.Amount.Int64()).Quo(sdk.NewDec(Duration))
 						dailyRewards := userShare.Mul(epochRewards)
 						user, _ := sdk.AccAddressFromBech32(locker.Depositor)
 						finalDailyRewards := dailyRewards.TruncateInt()
@@ -139,9 +139,9 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 								continue
 							}
 						}
-						individualUserShare := userVault.AmountOut.ToDec().Quo(sdk.NewDecFromInt(appExtPairVaultData.TokenMintedAmount)) // getting share percentage
+						individualUserShare := sdk.NewDec(userVault.AmountOut.Int64()).Quo(sdk.NewDecFromInt(appExtPairVaultData.TokenMintedAmount)) // getting share percentage
 						Duration := v.DurationDays - int64(epoch.Count)                                                                  // duration left (total duration - current count)
-						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
+						epochRewards := (sdk.NewDec(totalRewards.Amount.Int64())).Quo(sdk.NewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
 
@@ -194,7 +194,7 @@ func (k Keeper) CalculationOfRewards(
 	factor1 := a.Add(b)
 	intPerBlockFactor := math.Pow(factor1.MustFloat64(), yearsElapsed.MustFloat64())
 	intAccPerBlock := intPerBlockFactor - types.Float64One
-	amtFloat := amount.ToDec().MustFloat64()
+	amtFloat := sdk.NewDec(amount.Int64()).MustFloat64()
 	newAmount := intAccPerBlock * amtFloat
 
 	// s := fmt.Sprint(newAmount)
@@ -453,9 +453,9 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 							}
 						}
 
-						individualUserShare := eligibleRewardAmt.ToDec().Quo(sdk.NewDecFromInt(totalMintedData)) // getting share percentage
+						individualUserShare := sdk.NewDec(eligibleRewardAmt.Int64()).Quo(sdk.NewDecFromInt(totalMintedData)) // getting share percentage
 						Duration := extRew.DurationDays - int64(epoch.Count)                                     // duration left (total duration - current count)
-						epochRewards := (totalRewards.Amount.ToDec()).Quo(sdk.NewDec(Duration))
+						epochRewards := (sdk.NewDec(totalRewards.Amount.Int64())).Quo(sdk.NewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
 

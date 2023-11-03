@@ -3,9 +3,9 @@ package liquidation
 import (
 	"fmt"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/comdex-official/comdex/x/liquidation/keeper"
 	"github.com/comdex-official/comdex/x/liquidation/types"

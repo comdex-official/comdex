@@ -1,7 +1,7 @@
 package types
 
 import (
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 const (
@@ -10,7 +10,6 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalWhitelistLiquidation)
-	govtypes.RegisterProposalTypeCodec(&WhitelistLiquidationProposal{}, "comdex/AddWhitelistLiquidation")
 }
 
 var (

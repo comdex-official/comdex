@@ -2,28 +2,30 @@ package keeper
 
 import (
 	"fmt"
+	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"strconv"
 
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/lend/expected"
 	"github.com/comdex-official/comdex/x/lend/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	// liquidationtypes "github.com/comdex-official/comdex/x/liquidation/types"
 )
 
 type (
 	Keeper struct {
 		cdc         codec.BinaryCodec
-		storeKey    sdk.StoreKey
-		memKey      sdk.StoreKey
+		storeKey    storetypes.StoreKey
+		memKey      storetypes.StoreKey
 		paramstore  paramtypes.Subspace
 		bank        expected.BankKeeper
 		account     expected.AccountKeeper
@@ -38,7 +40,7 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
 	bank expected.BankKeeper,
 	account expected.AccountKeeper,
@@ -698,7 +700,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
-		updatedAmtIn := AmountIn.Amount.ToDec().Mul(assetInRatesStatsLtv)
+		updatedAmtIn := sdk.NewDec(AmountIn.Amount.Int64()).Mul(assetInRatesStatsLtv)
 		updatedAmtInPrice, err := k.Market.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
@@ -1608,7 +1610,59 @@ func (k Keeper) FundReserveAcc(ctx sdk.Context, assetID uint64, lender string, p
 	}
 	resBals.FundReserveBalance = append(resBals.FundReserveBalance, resBal)
 	k.SetFundReserveBal(ctx, resBals)
+	err = k.RemoveFaultyAuctions(ctx)
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+func (k Keeper) RemoveFaultyAuctions(ctx sdk.Context) error {
+	//Send Inflow_token_target_amount to the pool
+	//Subtract Inflow_token_target_amount from borrow Position
+	//Add the Borrowed amount in poolLBMapping
+	//Delete Auction
+	//Update BorrowPosition Is liquidated -> false
+
+	// get all the current auctions
+	dutchAuctions := k.Auction.GetDutchLendAuctions(ctx, 3)
+	for _, dutchAuction := range dutchAuctions {
+		cPoolModuleName := types.ModuleAcc1
+		reserveModuleName := types.ModuleName
+		//send debt from reserve to the pool
+		err := k.bank.SendCoinsFromModuleToModule(ctx, reserveModuleName, cPoolModuleName, sdk.NewCoins(dutchAuction.InflowTokenTargetAmount))
+		if err != nil {
+			return err
+		}
+		//send collateral to the reserve from auction module outflow_token_current_amount
+		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, reserveModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))
+		if err != nil {
+			return err
+		}
+
+		borrowPos := k.GetBorrowByUserAndAssetID(ctx, dutchAuction.VaultOwner.String(), dutchAuction.InflowTokenTargetAmount.Denom, dutchAuction.AssetOutId)
+		borrowPos.AmountOut.Amount = borrowPos.AmountOut.Amount.Sub(dutchAuction.InflowTokenTargetAmount.Amount)
+		borrowPos.IsLiquidated = false
+		k.SetBorrow(ctx, borrowPos)
+
+		poolAssetLBMappingData, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, 1, dutchAuction.AssetInId)
+
+		poolAssetLBMappingData.TotalBorrowed = poolAssetLBMappingData.TotalBorrowed.Add(borrowPos.AmountOut.Amount)
+		k.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
+		lockedVault, found := k.Liquidation.GetLockedVault(ctx, 3, dutchAuction.LockedVaultId)
+		if found {
+			k.Liquidation.DeleteLockedVault(ctx, lockedVault.AppId, lockedVault.LockedVaultId)
+		}
+		err = k.Auction.SetHistoryDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			return err
+		}
+		err = k.Auction.DeleteDutchLendAuction(ctx, dutchAuction)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -1645,7 +1699,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	// Adjusting bridged asset qty after auctions
 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, borrowPos.AmountIn.Amount.ToDec().Mul(assetInRatesStats.Ltv).TruncateInt())
+		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, sdk.NewDec(borrowPos.AmountIn.Amount.Int64()).Mul(assetInRatesStats.Ltv).TruncateInt())
 		priceFirstBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, firstTransitAssetID, sdk.OneInt())
 		priceSecondBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, secondTransitAssetID, sdk.OneInt())
 		firstBridgedAsset, _ := k.Asset.GetAsset(ctx, firstTransitAssetID)
