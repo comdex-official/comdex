@@ -1097,8 +1097,8 @@ github.com/cosmos/iavl v0.19.4/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONAp
 github.com/cosmos/iavl v0.20.0-alpha4/go.mod h1:WO7FyvaZJoH65+HFOsDir7xU9FWk2w9cHXNW1XHcl7A=
 github.com/cosmos/iavl v0.20.0 h1:fTVznVlepH0KK8NyKq8w+U7c2L6jofa27aFX6YGlm38=
 github.com/cosmos/iavl v0.20.0/go.mod h1:WO7FyvaZJoH65+HFOsDir7xU9FWk2w9cHXNW1XHcl7A=
-github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230726182236-3a9d46a7c2a4 h1:AKzCfYLsVG9DtNzjya12u+OO0sUQpcXlecqnD/2rqGg=
-github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230726182236-3a9d46a7c2a4/go.mod h1:/P6l2bWo2AR3rrsfs0DHuFZO3Imzb93sxFD3ihrIgw4=
+github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0 h1:mMHedP3Q+mz5gpOWNz0P+X8hxPdamylrBKc/P2cFakA=
+github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0/go.mod h1:/P6l2bWo2AR3rrsfs0DHuFZO3Imzb93sxFD3ihrIgw4=
 github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230726182236-3a9d46a7c2a4 h1:NuFmpHnENcTtZDEQf2vZzZluk5rQl3f7J4tqo9FlH/c=
 github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230726182236-3a9d46a7c2a4/go.mod h1:JwHFbo1oX/ht4fPpnPvmhZr+dCkYK1Vihw+vZE9umR4=
 github.com/cosmos/ibc-go/v7 v7.2.0 h1:dx0DLUl7rxdyZ8NiT6UsrbzKOJx/w7s+BOaewFRH6cg=
