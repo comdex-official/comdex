@@ -24,9 +24,9 @@ import (
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 
-	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
-	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
-	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
+	packetforward "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router"
+	packetforwardkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router/keeper"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router/types"
 
 	"github.com/rakyll/statik/fs"
 
@@ -889,7 +889,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper, // may be replaced with middleware
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
-		app.ScopedICQKeeper,
+		scopedICQKeeper,
 		app.GRPCQueryRouter(),
 		// NewQuerierWrapper(baseApp), // in-case of strangelove-ventures icq
 	)
