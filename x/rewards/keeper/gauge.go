@@ -95,9 +95,12 @@ func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID u
 		if poolID == kind.LiquidityMetaData.PoolId {
 			return sdkerrors.Wrap(types.ErrSamePoolID, fmt.Sprintf("pool id : %d", poolID))
 		}
-		_, found := k.liquidityKeeper.GetPool(ctx, appID, poolID)
+		pool, found := k.liquidityKeeper.GetPool(ctx, appID, poolID)
 		if !found {
 			return sdkerrors.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))
+		}
+		if pool.Disabled {
+			return sdkerrors.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", poolID))
 		}
 	}
 

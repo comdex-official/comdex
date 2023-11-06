@@ -24,9 +24,9 @@ import (
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 
-	packetforward "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
-	packetforwardkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
-	packetforwardtypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
+	packetforward "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router"
+	packetforwardkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router/keeper"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/router/types"
 
 	"github.com/rakyll/statik/fs"
 
@@ -306,6 +306,7 @@ var (
 		ibcfee.AppModuleBasic{},
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
+		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
 	)
@@ -390,10 +391,10 @@ type App struct {
 
 	// IBC modules
 	// transfer module
-	Ics20WasmHooks            *ibchooks.WasmHooks
-	HooksICS4Wrapper          ibchooks.ICS4Middleware
-	PacketForwardKeeper       *packetforwardkeeper.Keeper
-	ICQKeeper                 *icqkeeper.Keeper
+	Ics20WasmHooks      *ibchooks.WasmHooks
+	HooksICS4Wrapper    ibchooks.ICS4Middleware
+	PacketForwardKeeper *packetforwardkeeper.Keeper
+	ICQKeeper           *icqkeeper.Keeper
 
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
@@ -888,7 +889,7 @@ func New(
 		app.IbcKeeper.ChannelKeeper, // may be replaced with middleware
 		app.IbcKeeper.ChannelKeeper,
 		&app.IbcKeeper.PortKeeper,
-		app.ScopedICQKeeper,
+		scopedICQKeeper,
 		app.GRPCQueryRouter(),
 		// NewQuerierWrapper(baseApp), // in-case of strangelove-ventures icq
 	)
@@ -1454,25 +1455,16 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
+	a.UpgradeKeeper.SetUpgradeHandler(
+		tv13.UpgradeName,
+		tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper),
+	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
 	// This will read that value, and execute the preparations for the upgrade.
 	upgradeInfo, err := a.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
-	}
-
-	switch {
-	case upgradeInfo.Name == mv12.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			mv12.UpgradeName,
-			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper, a.BankKeeper, a.CollectorKeeper, a.LendKeeper, a.AuctionKeeper, a.LiquidationKeeper, a.AssetKeeper),
-		)
-	case upgradeInfo.Name == tv13.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			tv13.UpgradeName,
-			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper),
-		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
