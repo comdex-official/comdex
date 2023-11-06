@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"time"
@@ -168,6 +169,10 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 
 	pair := deserializerKit.Pair
 	pool := deserializerKit.Pool
+
+	if pool.Disabled {
+		return nil, sdkerrors.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", pool.Id))
+	}
 
 	asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	if err != nil {
