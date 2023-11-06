@@ -12,8 +12,8 @@ require (
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0-20230726182236-3a9d46a7c2a4
-	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230726182236-3a9d46a7c2a4
+	github.com/cosmos/ibc-apps/modules/async-icq/v7 v7.0.0
+	github.com/cosmos/ibc-apps/modules/ibc-hooks/v7 v7.0.0-20230803181732-7c8f814d3b79
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -28,12 +28,12 @@ require (
 )
 
 require (
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.0.0
 	github.com/cosmos/ibc-go/v7 v7.2.0
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/golangci/golangci-lint v1.51.2
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/pflag v1.0.5
-	github.com/strangelove-ventures/packet-forward-middleware/v7 v7.0.0-20230523193151-73dea436e53f
 	gopkg.in/yaml.v2 v2.4.0
 	mvdan.cc/gofumpt v0.5.0
 )
