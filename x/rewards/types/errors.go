@@ -27,4 +27,5 @@ var (
 	ErrInvalidAppID            = sdkerrors.Register(ModuleName, 1117, "invalid app id")
 	ErrInternalRewardsNotFound = sdkerrors.Register(ModuleName, 1118, "Internal rewards not found")
 	ErrStablemintVaultFound    = sdkerrors.Register(ModuleName, 1119, "Can't give reward to stablemint vault")
+	ErrDisabledPool            = sdkerrors.Register(ModuleName, 1120, "diabled pool")
 )
