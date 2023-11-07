@@ -198,8 +198,8 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
 	tv13 "github.com/comdex-official/comdex/app/upgrades/testnet/v13"
+	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 )
 
 const (
@@ -391,10 +391,10 @@ type App struct {
 
 	// IBC modules
 	// transfer module
-	Ics20WasmHooks            *ibchooks.WasmHooks
-	HooksICS4Wrapper          ibchooks.ICS4Middleware
-	PacketForwardKeeper       *packetforwardkeeper.Keeper
-	ICQKeeper                 *icqkeeper.Keeper
+	Ics20WasmHooks      *ibchooks.WasmHooks
+	HooksICS4Wrapper    ibchooks.ICS4Middleware
+	PacketForwardKeeper *packetforwardkeeper.Keeper
+	ICQKeeper           *icqkeeper.Keeper
 
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
@@ -1455,25 +1455,16 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 }
 
 func (a *App) registerUpgradeHandlers() {
+	a.UpgradeKeeper.SetUpgradeHandler(
+		mv13.UpgradeName,
+		mv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.ICQKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper, a.AssetKeeper, a.LendKeeper, a.NewliqKeeper, a.NewaucKeeper),
+	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
 	// This will read that value, and execute the preparations for the upgrade.
 	upgradeInfo, err := a.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
-	}
-
-	switch {
-	case upgradeInfo.Name == mv12.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			mv12.UpgradeName,
-			mv12.CreateUpgradeHandlerV12(a.mm, a.configurator, a.ICQKeeper, a.NewliqKeeper, a.NewaucKeeper, a.BankKeeper, a.CollectorKeeper, a.LendKeeper, a.AuctionKeeper, a.LiquidationKeeper, a.AssetKeeper),
-		)
-	case upgradeInfo.Name == tv13.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			tv13.UpgradeName,
-			tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper),
-		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
@@ -1489,12 +1480,15 @@ func (a *App) registerUpgradeHandlers() {
 func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
 
-	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == mv13.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				icqtypes.StoreKey,
 				liquidationsV2types.ModuleName,
 				auctionsV2types.ModuleName,
+				crisistypes.StoreKey,
+				consensusparamtypes.StoreKey,
+				ibcfeetypes.StoreKey,
 			},
 		}
 	case upgradeInfo.Name == tv13.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):

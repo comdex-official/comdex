@@ -685,6 +685,10 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 		return sdk.Coin{}, types.ErrInvalidPoolID
 	}
 
+	if requestedPool.Disabled {
+		return sdk.Coin{}, types.ErrDisabledPool
+	}
+
 	pair, found := k.GetPair(ctx, appID, requestedPool.PairId)
 	if !found {
 		return sdk.Coin{}, types.ErrInvalidPairID
