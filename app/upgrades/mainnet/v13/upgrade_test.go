@@ -7,7 +7,7 @@ import (
 
 	"github.com/comdex-official/comdex/app"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	v13 "github.com/comdex-official/comdex/app/upgrades/testnet/v13"
+	v13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 )
 
 type UpgradeTestSuite struct {
