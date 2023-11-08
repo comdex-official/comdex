@@ -5,9 +5,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/prometheus/client_golang/prometheus"
 
 	tmdb "github.com/cometbft/cometbft-db"
@@ -24,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
@@ -72,11 +75,16 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
 			}
+			// 2 seconds + 1 second tendermint = 3 second blocks
+			timeoutCommit := 2 * time.Second
 
-			// bump47: recheck if customTMConfig is required, else replace with nil
-			customTMConfig := initTendermintConfig()
+			customAppTemplate, customAppConfig := initAppConfig()
+			customTMConfig := initTendermintConfig(timeoutCommit)
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil, customTMConfig)
+			// Force faster block times
+			os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
+
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
 		},
 	}
 
@@ -84,14 +92,40 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	return root, encodingConfig
 }
 
-func initTendermintConfig() *tmcfg.Config {
+func initTendermintConfig(timeoutCommit time.Duration) *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory
 	// cfg.P2P.MaxNumInboundPeers = 100
 	// cfg.P2P.MaxNumOutboundPeers = 40
 
+	// While this is set, it only applies to new configs.
+	cfg.Consensus.TimeoutCommit = timeoutCommit
+
 	return cfg
+}
+
+// initAppConfig helps to override default appConfig template and configs.
+// return "", nil if no custom configuration is required for the application.
+func initAppConfig() (string, interface{}) {
+	type CustomAppConfig struct {
+		serverconfig.Config
+
+		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
+	}
+
+	// Optionally allow the chain developer to overwrite the SDK's default
+	// server config.
+	srvCfg := serverconfig.DefaultConfig()
+
+	customAppConfig := CustomAppConfig{
+		Config: *srvCfg,
+		Wasm:   wasmtypes.DefaultWasmConfig(),
+	}
+
+	customAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
+
+	return customAppTemplate, customAppConfig
 }
 
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
