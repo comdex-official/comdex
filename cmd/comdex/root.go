@@ -61,7 +61,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	cobra.EnableCommandSorting = false
 	root := &cobra.Command{
 		Use:   "comdex",
-		Short: "Comdex - Decentralised Synthetic Asset Exchange",
+		Short: "Comdex - DeFi Infrastructure layer for the Cosmos ecosystem",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
