@@ -41,7 +41,7 @@ func CreateUpgradeHandlerV13(
 	bandoracleKeeper bandoraclemodulekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying test net upgrade - v.13.0.0")
+		ctx.Logger().Info("Applying test net upgrade - v.13.1.0")
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
 		// Migrate Tendermint consensus parameters from x/params module to a deprecated x/consensus module.
