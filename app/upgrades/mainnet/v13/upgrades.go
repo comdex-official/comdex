@@ -6,13 +6,17 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
+	auctionkeeperold "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionV2keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
+	liquidationkeeperold "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationV2keeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	liquidationV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
+	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
+	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -54,6 +58,10 @@ func CreateUpgradeHandlerV13(
 	lendKeeper lendkeeper.Keeper,
 	liquidationV2Keeper liquidationV2keeper.Keeper,
 	auctionV2Keeper auctionV2keeper.Keeper,
+	auctionKeeperOld auctionkeeperold.Keeper,
+	liquidationKeeperOld liquidationkeeperold.Keeper,
+	marketKeeper marketkeeper.Keeper,
+	vaultKeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying main net upgrade - v.13.2.0")
@@ -144,6 +152,7 @@ func CreateUpgradeHandlerV13(
 
 		UpdateLendParams(ctx, lendKeeper, assetKeeper)
 		InitializeStates(ctx, liquidationV2Keeper, auctionV2Keeper)
+		MigrateAuctionsHarbor(ctx, assetKeeper, auctionKeeperOld, auctionV2Keeper, liquidationKeeperOld, liquidationV2Keeper, marketKeeper, vaultKeeper)
 
 		return vm, err
 	}
@@ -223,7 +232,7 @@ func InitializeStates(
 	englishAuctionParams := liquidationV2types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
 
 	harborParams := liquidationV2types.LiquidationWhiteListing{
-		AppId:               2,
+		AppId:               1,
 		Initiator:           true,
 		IsDutchActivated:    true,
 		DutchAuctionParam:   &dutchAuctionParams,
@@ -245,9 +254,9 @@ func InitializeStates(
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, harborParams)
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, commodoParams)
 
-	appReserveFundsTxDataHbr, found := liquidationKeeper.GetAppReserveFundsTxData(ctx, 2)
+	appReserveFundsTxDataHbr, found := liquidationKeeper.GetAppReserveFundsTxData(ctx, 1)
 	if !found {
-		appReserveFundsTxDataHbr.AppId = 2
+		appReserveFundsTxDataHbr.AppId = 1
 	}
 	appReserveFundsTxDataHbr.AssetTxData = append(appReserveFundsTxDataHbr.AssetTxData, liquidationV2types.AssetTxData{})
 	liquidationKeeper.SetAppReserveFundsTxData(ctx, appReserveFundsTxDataHbr)

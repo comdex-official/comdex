@@ -1457,7 +1457,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		mv13.UpgradeName,
-		mv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.ICQKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper, a.AssetKeeper, a.LendKeeper, a.NewliqKeeper, a.NewaucKeeper),
+		mv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.ICQKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper, a.AssetKeeper, a.LendKeeper, a.NewliqKeeper, a.NewaucKeeper, a.AuctionKeeper, a.LiquidationKeeper, a.MarketKeeper, a.VaultKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
