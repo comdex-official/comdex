@@ -232,7 +232,7 @@ func InitializeStates(
 	englishAuctionParams := liquidationV2types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
 
 	harborParams := liquidationV2types.LiquidationWhiteListing{
-		AppId:               1,
+		AppId:               2,
 		Initiator:           true,
 		IsDutchActivated:    true,
 		DutchAuctionParam:   &dutchAuctionParams,
@@ -254,9 +254,9 @@ func InitializeStates(
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, harborParams)
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, commodoParams)
 
-	appReserveFundsTxDataHbr, found := liquidationKeeper.GetAppReserveFundsTxData(ctx, 1)
+	appReserveFundsTxDataHbr, found := liquidationKeeper.GetAppReserveFundsTxData(ctx, 2)
 	if !found {
-		appReserveFundsTxDataHbr.AppId = 1
+		appReserveFundsTxDataHbr.AppId = 2
 	}
 	appReserveFundsTxDataHbr.AssetTxData = append(appReserveFundsTxDataHbr.AssetTxData, liquidationV2types.AssetTxData{})
 	liquidationKeeper.SetAppReserveFundsTxData(ctx, appReserveFundsTxDataHbr)
