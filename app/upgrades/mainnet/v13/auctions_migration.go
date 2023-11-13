@@ -11,7 +11,6 @@ import (
 	liquidationtypes "github.com/comdex-official/comdex/x/liquidationsV2/types"
 	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
-	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 )
@@ -42,16 +41,16 @@ func MigrateAuctionsHarbor(
 			if !found {
 				//todo
 				// create logic for generating locked vault from auction data
-				var vault vaultTypes.Vault
-				userVaults, _ := vaultKeeper.GetUserAppMappingData(ctx, auction.VaultOwner.String(), 2)
+				// var vault vaultTypes.Vault
+				// userVaults, _ := vaultKeeper.GetUserAppMappingData(ctx, auction.VaultOwner.String(), 1)
 				// loop into vaults and check if asset in and asset out are matching
-				for _, userVaultMap := range userVaults {
-					extPair, _ := assetKeeper.GetPairsVault(ctx, userVaultMap.ExtendedPairId)
-					pair, _ := assetKeeper.GetPair(ctx, extPair.PairId)
-					if pair.AssetIn == auction.AssetInId && pair.AssetOut == auction.AssetOutId {
-						vault, _ = vaultKeeper.GetVault(ctx, userVaultMap.VaultId)
-					}
-				}
+				// for _, userVaultMap := range userVaults {
+				// 	extPair, _ := assetKeeper.GetPairsVault(ctx, userVaultMap.ExtendedPairId)
+				// 	pair, _ := assetKeeper.GetPair(ctx, extPair.PairId)
+				// 	if pair.AssetIn == auction.AssetInId && pair.AssetOut == auction.AssetOutId {
+				// 		vault, _ = vaultKeeper.GetVault(ctx, userVaultMap.VaultId)
+				// 	}
+				// }
 				extPair, _ := assetKeeper.GetPairsVault(ctx, vault.ExtendedPairVaultID)
 				pair, _ := assetKeeper.GetPair(ctx, extPair.PairId)
 				assetIn, _ := assetKeeper.GetAsset(ctx, pair.AssetIn)
