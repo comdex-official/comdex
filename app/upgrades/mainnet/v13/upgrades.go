@@ -6,30 +6,23 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
-	auctionkeeperold "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionV2keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
 	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
-	liquidationkeeperold "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidationV2keeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	liquidationV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
-	marketkeeper "github.com/comdex-official/comdex/x/market/keeper"
-	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
@@ -42,15 +35,12 @@ func CreateUpgradeHandlerV13(
 	mm *module.Manager,
 	configurator module.Configurator,
 	cdc codec.Codec,
-	capabilityStoreKey *storetypes.KVStoreKey,
-	capabilityKeeper *capabilitykeeper.Keeper,
 	wasmKeeper wasmkeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
 	consensusParamsKeeper consensusparamkeeper.Keeper,
 	IBCKeeper ibckeeper.Keeper,
 	icqkeeper *icqkeeper.Keeper,
 	GovKeeper govkeeper.Keeper,
-	StakingKeeper stakingkeeper.Keeper,
 	MintKeeper mintkeeper.Keeper,
 	SlashingKeeper slashingkeeper.Keeper,
 	bandoracleKeeper bandoraclemodulekeeper.Keeper,
@@ -58,10 +48,6 @@ func CreateUpgradeHandlerV13(
 	lendKeeper lendkeeper.Keeper,
 	liquidationV2Keeper liquidationV2keeper.Keeper,
 	auctionV2Keeper auctionV2keeper.Keeper,
-	auctionKeeperOld auctionkeeperold.Keeper,
-	liquidationKeeperOld liquidationkeeperold.Keeper,
-	marketKeeper marketkeeper.Keeper,
-	vaultKeeper vaultkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying main net upgrade - v.13.2.0")
@@ -152,7 +138,6 @@ func CreateUpgradeHandlerV13(
 
 		UpdateLendParams(ctx, lendKeeper, assetKeeper)
 		InitializeStates(ctx, liquidationV2Keeper, auctionV2Keeper)
-		MigrateAuctionsHarbor(ctx, assetKeeper, auctionKeeperOld, auctionV2Keeper, liquidationKeeperOld, liquidationV2Keeper, marketKeeper, vaultKeeper)
 
 		return vm, err
 	}
