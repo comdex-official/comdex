@@ -14,9 +14,13 @@ Security researchers are essential in identifying vulnerabilities that may impac
 
 2. **Avoid reporting security vulnerabilities through public channels, including GitHub issues**
 
-## Reporting Security Issues
+To privately report a security vulnerability, please choose one of the following options:
 
-### GitHub Private Vulnerability Reporting
+### 1. Email
+
+Send your detailed vulnerability report to `dheeraj@comdex.one`.
+
+### 2. GitHub Private Vulnerability Reporting
 
 Utilize [GitHub's Private Vulnerability Reporting](https://github.com/comdex-official/comdex/security/advisories/new) for confidential disclosure.
 
@@ -47,7 +51,7 @@ During this time:
 
 ## Feature request
 
-For a feature request, e.g. module inclusion, please make a GitHub issue. Clearly state your use case and what value it will bring to other users or developers on Juno.
+For a feature request, e.g. module inclusion, please make a GitHub issue. Clearly state your use case and what value it will bring to other users or developers on comdex.
 
 ## Severity Characterization
 
@@ -67,4 +71,4 @@ Though we don't have an official bug bounty program, we generally offer rewards 
 
 ## Feedback on this Policy
 
-For recommendations on how to improve this policy, submit a pull request.
+For recommendations on how to improve this policy, either submit a pull request or send an email to `dheeraj@comdex.one`.
