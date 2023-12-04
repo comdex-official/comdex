@@ -18,7 +18,7 @@ To privately report a security vulnerability, please choose one of the following
 
 ### 1. Email
 
-Send your detailed vulnerability report to `dheeraj@comdex.one`.
+Send your detailed vulnerability report to `security@comdex.one`.
 
 ### 2. GitHub Private Vulnerability Reporting
 
