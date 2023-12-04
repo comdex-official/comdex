@@ -71,4 +71,4 @@ Though we don't have an official bug bounty program, we generally offer rewards 
 
 ## Feedback on this Policy
 
-For recommendations on how to improve this policy, either submit a pull request or send an email to `dheeraj@comdex.one`.
+For recommendations on how to improve this policy, either submit a pull request or send an email to `security@comdex.one`.
