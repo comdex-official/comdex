@@ -7,10 +7,11 @@ Security researchers are essential in identifying vulnerabilities that may impac
 ### Guidelines for Responsible Vulnerability Testing and Reporting
 
 1. **Refrain from testing vulnerabilities on our publicly accessible environments**, including but not limited to:
-  - Comdex mainnet `comdex-1` 
-  - Comdex frontend
-  - Comdex public testnets
-  - Comdex testnet frontend
+
+- Comdex mainnet `comdex-1`
+- Comdex frontend
+- Comdex public testnets
+- Comdex testnet frontend
 
 2. **Avoid reporting security vulnerabilities through public channels, including GitHub issues**
 
@@ -56,7 +57,7 @@ For a feature request, e.g. module inclusion, please make a GitHub issue. Clearl
 ## Severity Characterization
 
 | Severity     | Description                                                             |
-|--------------|-------------------------------------------------------------------------|
+| ------------ | ----------------------------------------------------------------------- |
 | **CRITICAL** | Immediate threat to critical systems (e.g., chain halts, funds at risk) |
 | **HIGH**     | Significant impact on major functionality                               |
 | **MEDIUM**   | Impacts minor features or exposes non-sensitive data                    |
@@ -66,9 +67,9 @@ For a feature request, e.g. module inclusion, please make a GitHub issue. Clearl
 
 Though we don't have an official bug bounty program, we generally offer rewards to security researchers who responsibly disclose vulnerabilities to us. Bounties are generally awarded for vulnerabilities classified as **high** or **critical** severity. Bounty amounts will be determined during the disclosure process, after the severity has been assessed.
 
-> [!WARNING] 
+> [!WARNING]
 > Targeting our production environments will disqualify you from receiving any bounty.
 
 ## Feedback on this Policy
 
-For recommendations on how to improve this policy, either submit a pull request or send an email to `security@comdex.one`.
+For recommendations on how to improve this policy, either submit a pull request or email `security@comdex.one`.
