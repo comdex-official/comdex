@@ -198,7 +198,7 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
-	mv12 "github.com/comdex-official/comdex/app/upgrades/mainnet/v12"
+	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 	tv13 "github.com/comdex-official/comdex/app/upgrades/testnet/v13"
 )
 
@@ -1456,8 +1456,8 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		tv13.UpgradeName,
-		tv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.keys[capabilitytypes.ModuleName], a.CapabilityKeeper, a.WasmKeeper, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.GovKeeper, *a.StakingKeeper, a.MintKeeper, a.SlashingKeeper, a.BandoracleKeeper),
+		mv13.UpgradeName,
+		mv13.CreateUpgradeHandlerV13(a.mm, a.configurator, a.cdc, a.ParamsKeeper, a.ConsensusParamsKeeper, *a.IbcKeeper, a.ICQKeeper, a.GovKeeper, a.AssetKeeper, a.LendKeeper, a.NewliqKeeper, a.NewaucKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1480,12 +1480,15 @@ func (a *App) registerUpgradeHandlers() {
 func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *storetypes.StoreUpgrades) *storetypes.StoreUpgrades {
 	switch {
 
-	case upgradeInfo.Name == mv12.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
+	case upgradeInfo.Name == mv13.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				icqtypes.StoreKey,
 				liquidationsV2types.ModuleName,
 				auctionsV2types.ModuleName,
+				crisistypes.StoreKey,
+				consensusparamtypes.StoreKey,
+				ibcfeetypes.StoreKey,
 			},
 		}
 	case upgradeInfo.Name == tv13.UpgradeName && !a.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height):

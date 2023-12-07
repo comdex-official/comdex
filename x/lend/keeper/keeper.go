@@ -1633,7 +1633,7 @@ func (k Keeper) RemoveFaultyAuctions(ctx sdk.Context) error {
 		//send debt from reserve to the pool
 		err := k.bank.SendCoinsFromModuleToModule(ctx, reserveModuleName, cPoolModuleName, sdk.NewCoins(dutchAuction.InflowTokenTargetAmount))
 		if err != nil {
-			return err
+			continue
 		}
 		//send collateral to the reserve from auction module outflow_token_current_amount
 		err = k.bank.SendCoinsFromModuleToModule(ctx, auctiontypes.ModuleName, reserveModuleName, sdk.NewCoins(dutchAuction.OutflowTokenCurrentAmount))

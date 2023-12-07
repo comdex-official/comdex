@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"time"
+	// "time"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -76,13 +76,13 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 				return err
 			}
 			// 2 seconds + 1 second tendermint = 3 second blocks
-			timeoutCommit := 2 * time.Second
+			// timeoutCommit := 2 * time.Second
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig(timeoutCommit)
+			customTMConfig := initTendermintConfig()
 
 			// Force faster block times
-			os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
+			// os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
 
 			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
 		},
@@ -92,7 +92,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	return root, encodingConfig
 }
 
-func initTendermintConfig(timeoutCommit time.Duration) *tmcfg.Config {
+func initTendermintConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory
@@ -100,7 +100,7 @@ func initTendermintConfig(timeoutCommit time.Duration) *tmcfg.Config {
 	// cfg.P2P.MaxNumOutboundPeers = 40
 
 	// While this is set, it only applies to new configs.
-	cfg.Consensus.TimeoutCommit = timeoutCommit
+	// cfg.Consensus.TimeoutCommit = timeoutCommit
 
 	return cfg
 }
