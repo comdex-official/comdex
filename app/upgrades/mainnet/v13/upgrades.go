@@ -2,13 +2,10 @@ package v13
 
 import (
 	"fmt"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionV2keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
-	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquidationV2keeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
@@ -19,10 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
@@ -35,15 +30,11 @@ func CreateUpgradeHandlerV13(
 	mm *module.Manager,
 	configurator module.Configurator,
 	cdc codec.Codec,
-	wasmKeeper wasmkeeper.Keeper,
 	paramsKeeper paramskeeper.Keeper,
 	consensusParamsKeeper consensusparamkeeper.Keeper,
 	IBCKeeper ibckeeper.Keeper,
 	icqkeeper *icqkeeper.Keeper,
 	GovKeeper govkeeper.Keeper,
-	MintKeeper mintkeeper.Keeper,
-	SlashingKeeper slashingkeeper.Keeper,
-	bandoracleKeeper bandoraclemodulekeeper.Keeper,
 	assetKeeper assetkeeper.Keeper,
 	lendKeeper lendkeeper.Keeper,
 	liquidationV2Keeper liquidationV2keeper.Keeper,
@@ -63,7 +54,6 @@ func CreateUpgradeHandlerV13(
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v4-to-v5.md
 		// -- nothing --
 
-		// TODO: check if v5-v6 is required ??
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v5-to-v6.md
 
 		// ibc v6-to-v7
@@ -95,7 +85,6 @@ func CreateUpgradeHandlerV13(
 		}
 		logger.Info(fmt.Sprintf("post migrate version map: %v", vm))
 
-		//TODO: confirm the initial deposit
 		// update gov params to use a 20% initial deposit ratio, allowing us to remote the ante handler
 		govParams := GovKeeper.GetParams(ctx)
 		govParams.MinInitialDepositRatio = sdk.NewDec(20).Quo(sdk.NewDec(100)).String()
@@ -103,38 +92,6 @@ func CreateUpgradeHandlerV13(
 			return nil, err
 		}
 		logger.Info(fmt.Sprintf("updated gov params to %v", govParams))
-
-		// x/Mint
-		// Double blocks per year (from 6 seconds to 3 = 2x blocks per year)
-		mintParams := MintKeeper.GetParams(ctx)
-		mintParams.BlocksPerYear *= 2
-		if err = MintKeeper.SetParams(ctx, mintParams); err != nil {
-			return nil, err
-		}
-		logger.Info(fmt.Sprintf("updated minted blocks per year logic to %v", mintParams))
-
-		// x/Slashing
-		// Double slashing window due to double blocks per year
-		slashingParams := SlashingKeeper.GetParams(ctx)
-		slashingParams.SignedBlocksWindow *= 2
-		if err := SlashingKeeper.SetParams(ctx, slashingParams); err != nil {
-			return nil, err
-		}
-		logger.Info(fmt.Sprintf("updated slashing params to %v", slashingParams))
-
-		// update wasm to permissionless
-		wasmParams := wasmKeeper.GetParams(ctx)
-		wasmParams.CodeUploadAccess = wasmtypes.AllowEverybody
-		wasmKeeper.SetParams(ctx, wasmParams)
-		logger.Info(fmt.Sprintf("updated wasm params to %v", wasmParams))
-
-		// update discard BH of oracle
-		bandData := bandoracleKeeper.GetFetchPriceMsg(ctx)
-		if bandData.Size() > 0 {
-			bandData.AcceptedHeightDiff = 6000
-			bandoracleKeeper.SetFetchPriceMsg(ctx, bandData)
-			logger.Info(fmt.Sprintf("updated bandData to %v", bandData))
-		}
 
 		UpdateLendParams(ctx, lendKeeper, assetKeeper)
 		InitializeStates(ctx, liquidationV2Keeper, auctionV2Keeper)
