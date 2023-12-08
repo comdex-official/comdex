@@ -24,7 +24,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 	if bid.Denom != auctionData.DebtToken.Denom {
 		return bidId, types.ErrorUnknownDebtToken
 	}
-	liquidationData, _ := k.LiquidationsV2.GetLockedVault(ctx, auctionData.AppId, auctionData.LockedVaultId)
+	liquidationData, found := k.LiquidationsV2.GetLockedVault(ctx, auctionData.AppId, auctionData.LockedVaultId)
+	if !found {
+		return 0, types.ErrorInGettingLockedVault
+	}
 	//Price data of the token from market module
 	debtToken, _ := k.market.GetTwa(ctx, auctionData.DebtAssetId)
 	debtPrice := sdk.NewDecFromInt(sdk.NewInt(int64(debtToken.Twa)))
@@ -163,7 +166,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 				if keeperIncentive.GT(sdk.ZeroInt()) {
 					liquidationPenalty = liquidationPenalty.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive))
 					addr, _ := sdk.AccAddressFromBech32(liquidationData.InternalKeeperAddress)
-					err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive)))
+					err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive)))
 					if err != nil {
 						return bidId, err
 					}
