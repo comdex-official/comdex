@@ -28,8 +28,8 @@ require (
 )
 
 require (
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.0.0
-	github.com/cosmos/ibc-go/v7 v7.2.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.0.1
+	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/golangci/golangci-lint v1.51.2
 	github.com/rakyll/statik v0.1.7
