@@ -198,6 +198,10 @@ import (
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
+	"github.com/comdex-official/comdex/x/nft"
+	nftkeeper "github.com/comdex-official/comdex/x/nft/keeper"
+	nfttypes "github.com/comdex-official/comdex/x/nft/types"
+
 	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 	tv13 "github.com/comdex-official/comdex/app/upgrades/testnet/v13"
 )
@@ -306,6 +310,7 @@ var (
 		ibcfee.AppModuleBasic{},
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
+		nft.AppModuleBasic{},
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -388,6 +393,7 @@ type App struct {
 	Rewardskeeper     rewardskeeper.Keeper
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
+	NFTKeeper         nftkeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -434,7 +440,8 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
+			icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, nfttypes.StoreKey,
 		)
 	)
 
@@ -491,6 +498,7 @@ func New(
 	app.ParamsKeeper.Subspace(auctionsV2types.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(nfttypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	// baseApp.SetParamStore(
@@ -898,6 +906,11 @@ func New(
 	// Create Async ICQ module
 	icqModule := icq.NewIBCModule(*app.ICQKeeper)
 
+	app.NFTKeeper = nftkeeper.NewKeeper(
+		app.cdc,
+		app.keys[nfttypes.StoreKey],
+	)
+
 	// Note: the sealing is done after creating wasmd and wiring that up
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -1055,6 +1068,7 @@ func New(
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		nft.NewAppModule(app.cdc, app.NFTKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1101,6 +1115,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nfttypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1144,6 +1159,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nfttypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1191,6 +1207,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nfttypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1451,6 +1468,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		ibcfeetypes.ModuleName:         nil,
 		assettypes.ModuleName:          nil,
 		icqtypes.ModuleName:            nil,
+		nfttypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
 	}
 }
 
