@@ -40,12 +40,12 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&AddAssetInAppProposal{},
 		&UpdateGovTimeInAppProposal{},
 		&AddMultipleAssetsPairsProposal{},
-		&MsgUpdateParams{},
 	)
 
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgAddAsset{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
