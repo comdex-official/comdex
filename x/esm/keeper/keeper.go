@@ -30,6 +30,7 @@ type (
 		market     expected.MarketKeeper
 		tokenmint  expected.Tokenmint
 		collector  expected.Collector
+		authority  string
 	}
 )
 
@@ -44,6 +45,7 @@ func NewKeeper(
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
 	collector expected.Collector,
+	authority string,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -61,6 +63,7 @@ func NewKeeper(
 		market:     market,
 		tokenmint:  tokenmint,
 		collector:  collector,
+		authority:  authority,
 	}
 }
 

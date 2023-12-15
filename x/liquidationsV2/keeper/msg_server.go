@@ -2,8 +2,10 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"strconv"
 )
 
@@ -49,4 +51,15 @@ func (m msgServer) MsgLiquidateExternalKeeper(c context.Context, req *types.MsgL
 		return nil, err
 	}
 	return &types.MsgLiquidateExternalKeeperResponse{}, nil
+}
+
+func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if m.keeper.authority != req.Authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", m.keeper.authority, req.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	m.keeper.SetParams(ctx, req.Params)
+
+	return &types.MsgUpdateParamsResponse{}, nil
 }

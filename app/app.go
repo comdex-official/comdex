@@ -506,7 +506,8 @@ func New(
 	// 		Subspace(baseapp.Paramspace).
 	// 		WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
 	// )
-	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(appCodec, keys[consensusparamtypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	govModAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(appCodec, keys[consensusparamtypes.StoreKey], govModAddress)
 	baseApp.SetParamStore(&app.ConsensusParamsKeeper)
 
 	// add capability keeper and ScopeToModule for ibc module
@@ -534,21 +535,21 @@ func New(
 		authtypes.ProtoBaseAccount,
 		app.ModuleAccountsPermissions(),
 		AccountAddressPrefix,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	app.BankKeeper = bankkeeper.NewBaseKeeper(
 		app.cdc,
 		app.keys[banktypes.StoreKey],
 		app.AccountKeeper,
 		nil,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.cdc,
 		app.keys[stakingtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	app.MintKeeper = mintkeeper.NewKeeper(
 		app.cdc,
@@ -557,7 +558,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	app.DistrKeeper = distrkeeper.NewKeeper(
 		app.cdc,
@@ -566,14 +567,14 @@ func New(
 		app.BankKeeper,
 		stakingKeeper,
 		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		app.cdc,
 		encoding.Amino,
 		app.keys[slashingtypes.StoreKey],
 		stakingKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
 		app.cdc,
@@ -581,7 +582,7 @@ func New(
 		invCheckPeriod,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(
@@ -597,7 +598,7 @@ func New(
 		app.cdc,
 		homePath,
 		app.BaseApp,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 	// register the staking hooks
 	// NOTE: StakingKeeper above is passed by reference, so that it will contain these hooks
@@ -695,6 +696,7 @@ func New(
 		&app.Rewardskeeper,
 		&app.VaultKeeper,
 		&app.BandoracleKeeper,
+		govModAddress,
 	)
 
 	app.LendKeeper = lendkeeper.NewKeeper(
@@ -722,6 +724,7 @@ func New(
 		&app.MarketKeeper,
 		&app.TokenmintKeeper,
 		&app.CollectorKeeper,
+		govModAddress,
 	)
 
 	app.VaultKeeper = vaultkeeper.NewKeeper(
@@ -872,6 +875,7 @@ func New(
 		&app.LendKeeper,
 		&app.NewaucKeeper,
 		&app.CollectorKeeper,
+		govModAddress,
 	)
 
 	app.NewaucKeeper = auctionsV2keeper.NewKeeper(
@@ -895,7 +899,7 @@ func New(
 		app.keys[commontypes.MemStoreKey],
 		app.GetSubspace(commontypes.ModuleName),
 		&app.WasmKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 	)
 
 	// ICQ Keeper
@@ -943,7 +947,7 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		govModAddress,
 		wasmOpts...,
 	)
 
@@ -971,7 +975,7 @@ func New(
 
 	govKeeper := govkeeper.NewKeeper(
 		app.cdc, keys[govtypes.StoreKey], app.AccountKeeper, app.BankKeeper,
-		app.StakingKeeper, app.MsgServiceRouter(), govtypes.DefaultConfig(), authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		app.StakingKeeper, app.MsgServiceRouter(), govtypes.DefaultConfig(), govModAddress,
 	)
 
 	govKeeper.SetLegacyRouter(govRouter)

@@ -4,6 +4,10 @@ package comdex.esm.v1beta1;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "comdex/esm/v1beta1/esm.proto";
+import "comdex/esm/v1beta1/params.proto";
+
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/esm/types";
 
@@ -12,6 +16,7 @@ service Msg {
   rpc ExecuteESM(MsgExecuteESM) returns (MsgExecuteESMResponse);
   rpc MsgKillSwitch(MsgKillRequest) returns (MsgKillResponse);
   rpc MsgCollateralRedemption(MsgCollateralRedemptionRequest) returns (MsgCollateralRedemptionResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 message MsgDepositESM {
@@ -41,3 +46,25 @@ message MsgDepositESMResponse {}
 message MsgExecuteESMResponse {}
 message MsgKillResponse {}
 message MsgCollateralRedemptionResponse{}
+
+
+// MsgUpdateParams is the MsgUpdateParams request type.
+//
+// Since: 0.47
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the x/esm parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+//
+// Since: 0.47
+message MsgUpdateParamsResponse {}
