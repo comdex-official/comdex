@@ -9,6 +9,12 @@ option go_package = "github.com/comdex-official/comdex/x/common/types";
 
 // GenesisState defines the common module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
-  repeated WhitelistedContract whitelisted_contracts  = 2 [ (gogoproto.moretags) = "yaml:\"whitelisted_contracts\"" ];
+  Params params = 1 [
+    (gogoproto.moretags) = "yaml:\"params\"",
+    (gogoproto.nullable) = false
+  ];
+  repeated WhitelistedContract whitelisted_contracts  = 2  [
+    (gogoproto.moretags) = "yaml:\"whitelisted_contracts\"",
+    (gogoproto.nullable) = false
+  ];
 }
