@@ -18,7 +18,7 @@ func NewParams(
 // default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		SecurityAddress:  []string{"comdex1tadhnvwa0sqzwr3m60f7dsjw4ua77qsz3ptcyw"},
+		SecurityAddress:  []string{"comdex1nh4gxgzq7hw8fvtkxjg4kpfqmsq65szqxxdqye"},
 		ContractGasLimit: uint64(1000000000),
 	}
 }
