@@ -80,14 +80,14 @@ func CmdDeRegisterContract() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			gameId, err := strconv.ParseUint(args[0], 10, 64)
+			gameID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("game-id '%s' not a valid uint", args[1])
+				return fmt.Errorf("game-id '%s' not a valid uint", args[0])
 			}
 
 			msg := types.NewMsgDeRegisterContract(
 				clientCtx.GetFromAddress().String(),
-				gameId,
+				gameID,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

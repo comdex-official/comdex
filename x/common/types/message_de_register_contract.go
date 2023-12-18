@@ -11,11 +11,11 @@ var _ sdk.Msg = &MsgDeRegisterContract{}
 
 func NewMsgDeRegisterContract(
 	securityAddress string,
-	gameId uint64,
+	gameID uint64,
 ) *MsgDeRegisterContract {
 	return &MsgDeRegisterContract{
 		SecurityAddress: securityAddress,
-		GameId: gameId,
+		GameId: gameID,
 	}
 }
 

@@ -31,6 +31,6 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
-func ContractKey(gameId uint64) []byte {
-	return append(SetContractKeyPrefix, sdk.Uint64ToBigEndian(gameId)...)
+func ContractKey(gameID uint64) []byte {
+	return append(SetContractKeyPrefix, sdk.Uint64ToBigEndian(gameID)...)
 }
