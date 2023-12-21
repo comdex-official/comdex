@@ -1345,22 +1345,14 @@ func (a *App) registerUpgradeHandlers() {
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
 	// This will read that value, and execute the preparations for the upgrade.
+	a.UpgradeKeeper.SetUpgradeHandler(
+		mv11.UpgradeName,
+		mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
+	)
+
 	upgradeInfo, err := a.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(err)
-	}
-
-	switch {
-	case upgradeInfo.Name == tv11_4.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			tv11_4.UpgradeName,
-			tv11_4.CreateUpgradeHandlerV114(a.mm, a.configurator, a.AssetKeeper),
-		)
-	case upgradeInfo.Name == mv11.UpgradeName:
-		a.UpgradeKeeper.SetUpgradeHandler(
-			mv11.UpgradeName,
-			mv11.CreateUpgradeHandlerV11(a.mm, a.configurator, a.LiquidityKeeper, a.AssetKeeper, a.BankKeeper, a.AccountKeeper, a.Rewardskeeper, a.ICAHostKeeper),
-		)
 	}
 
 	var storeUpgrades *storetypes.StoreUpgrades
