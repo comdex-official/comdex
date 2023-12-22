@@ -738,11 +738,11 @@ func (k Keeper) TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, requ
 		}
 
 		requestedPoolShare := poolLiquidityMap[requestedPoolID].Quo(totalLiquidity)
-		eligibleSwapFeeAmount := requestedPoolShare.Mul(sdkmath.LegacyNewDec(availableBalance.Amount.Int64()))
+		eligibleSwapFeeAmount := requestedPoolShare.Mul(availableBalance.Amount.ToLegacyDec())
 		availableBalance.Amount = eligibleSwapFeeAmount.RoundInt()
 	}
 
-	burnAmount := sdkmath.LegacyNewDec(availableBalance.Amount.Int64()).MulTruncate(params.SwapFeeBurnRate).TruncateInt()
+	burnAmount := availableBalance.Amount.ToLegacyDec().MulTruncate(params.SwapFeeBurnRate).TruncateInt()
 	burnCoin := sdk.NewCoin(availableBalance.Denom, burnAmount)
 
 	if burnCoin.Amount.IsPositive() {
@@ -798,12 +798,12 @@ func (k Keeper) WasmMsgAddEmissionPoolRewards(ctx sdk.Context, appID, cswapAppID
 		moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 		farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
 		individualVote := votingRatio[j]
-		votingR := sdkmath.LegacyNewDec(individualVote.Int64()).Quo(sdkmath.LegacyNewDec(totalVote.Int64()))
-		shareByPool := votingR.Mul(sdkmath.LegacyNewDec(amount.Int64()))
+		votingR := individualVote.ToLegacyDec().Quo(totalVote.ToLegacyDec())
+		shareByPool := votingR.Mul(amount.ToLegacyDec())
 		if farmedCoins.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByPool.Quo(sdkmath.LegacyNewDec(farmedCoins.Amount.Int64()))
+		perUserShareByAmtDec := shareByPool.Quo(farmedCoins.Amount.ToLegacyDec())
 		allActiveFarmer := k.GetAllActiveFarmers(ctx, cswapAppID, extP)
 
 		for _, farmerDetail := range allActiveFarmer {

@@ -41,7 +41,7 @@ func NewUserOrder(order Order) *UserOrder {
 		utils.SafeMath(func() {
 			amt = sdk.MinInt(
 				order.OpenAmount,
-				sdk.NewDec(order.RemainingOfferCoin.Amount.Int64()).QuoTruncate(order.Price).TruncateInt(),
+				order.RemainingOfferCoin.Amount.ToLegacyDec().QuoTruncate(order.Price).TruncateInt(),
 			)
 		}, func() {
 			amt = order.OpenAmount
