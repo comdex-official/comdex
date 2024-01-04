@@ -1,0 +1,63 @@
+syntax = "proto3";
+package comdex.rwa.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+option go_package = "github.com/comdex-official/comdex/x/rwa/types";
+
+message Invoice {
+
+  uint64 id =1;
+  string from =2;
+  string receiver =10;
+  uint64 counterparty_id =3;
+  string nft_id =4;
+
+  cosmos.base.v1beta1.Coin amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  cosmos.base.v1beta1.Coin receivable = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"receivable\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+  cosmos.base.v1beta1.Coin amount_paid = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"amount_paid\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  ServiceType service_type = 8;
+  Status status =9;
+
+}
+
+enum ServiceType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  SERVICE_TYPE_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "ServiceTypeUnspecified"];
+  SERVICE_TYPE_GOODS = 1 [(gogoproto.enumvalue_customname) = "ServiceTypeGoods"];
+  SERVICE_TYPE_SERVICE = 2 [(gogoproto.enumvalue_customname) = "ServiceTypeSERVICE"];
+}
+
+enum Status{
+
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  INVOICE_STATUS_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "InvoiceStatusUnspecified"];
+
+  INVOICE_STATUS_RAISED = 1 [(gogoproto.enumvalue_customname) = "InvoiceStatusRaised"];
+
+  INVOICE_STATUS_ACCEPTED = 2 [(gogoproto.enumvalue_customname) = "InvoiceStatusAccepted"];
+  INVOICE_STATUS_PAID = 3 [(gogoproto.enumvalue_customname) = "InvoiceStatusPaid"];
+  INVOICE_STATUS_PARTIALLY_PAID = 4 [(gogoproto.enumvalue_customname) = "InvoiceStatusPartiallyPaid"];
+  INVOICE_STATUS_RE_VERIFY = 5 [(gogoproto.enumvalue_customname) = "InvoiceStatusReVerify"];
+
+}

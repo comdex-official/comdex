@@ -1,0 +1,39 @@
+syntax = "proto3";
+package comdex.rwa.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rwa/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message RwaUser {
+  string account_address = 1;
+  string name = 3;
+  string address = 4;
+  string jurisdiction = 5;
+  string owner = 6;
+  string email_id = 7;
+  KycStatus kyc_status = 8;
+  string kyc_type = 9;
+  repeated uint64 counterparty_list =10;
+
+}
+
+message Counterparty{
+
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  string sender =2;
+  string receiver =3;
+  bool accepted =4;
+}
+
+enum KycStatus{
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  KYC_UNVERIFIED = 0 [(gogoproto.enumvalue_customname) = "KycUnverified"];
+  KYC_VERIFICATION_IN_PROGRESS = 1 [(gogoproto.enumvalue_customname) = "KycInProgress"];
+  KYC_VERIFICATION_REJECTED = 2 [(gogoproto.enumvalue_customname) = "KycRejected"];
+  KYC_VERIFICATION_APPROVED = 3 [(gogoproto.enumvalue_customname) = "KycApproved"];
+  KYC_VERIFICATION_RE_VERIFY = 4 [(gogoproto.enumvalue_customname) = "KycReVerify"];
+}

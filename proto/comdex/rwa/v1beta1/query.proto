@@ -1,0 +1,85 @@
+syntax = "proto3";
+package comdex.rwa.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "comdex/rwa/v1beta1/profile.proto";
+import "comdex/rwa/v1beta1/invoice.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rwa/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+service Query {
+
+  rpc QueryRwaUser(RwaUserRequest) returns (RwaUserResponse) {
+    option (google.api.http).get = "/comdex/rwa/v1beta1/rwa_user/{account_address}";
+  };
+
+  rpc QueryCounterParty(CounterPartyRequest) returns (CounterPartyResponse) {
+    option (google.api.http).get = "/comdex/rwa/v1beta1/counter_party/{id}";
+  };
+
+  rpc QueryInvoice(InvoiceRequest) returns (InvoiceResponse) {
+    option (google.api.http).get = "/comdex/rwa/v1beta1/invoice/{id}";
+  };
+
+  rpc QueryInvoiceAsSender(InvoiceSenderRequest) returns (InvoiceResponse) {
+    option (google.api.http).get = "/comdex/rwa/v1beta1/invoice/{from}";
+  };
+
+  rpc QueryInvoiceAsReceiver(InvoiceReceiverRequest) returns (InvoiceResponse) {
+    option (google.api.http).get = "/comdex/rwa/v1beta1/invoice/{receiver}";
+  };
+
+}
+
+message RwaUserRequest {
+  string account_address = 1 [(gogoproto.moretags) = "yaml:\"account_address\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message RwaUserResponse {
+  RwaUser rwa_user = 1 [(gogoproto.moretags) = "yaml:\"rwa_user\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message CounterPartyRequest{
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message CounterPartyResponse {
+  Counterparty counter_party = 1 [(gogoproto.moretags) = "yaml:\"counter_party\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message InvoiceRequest{
+  uint64 id = 1 [(gogoproto.moretags) = "yaml:\"id\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message InvoiceSenderRequest{
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message InvoiceReceiverRequest{
+  string receiver = 1 [(gogoproto.moretags) = "yaml:\"receiver\""];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}
+
+message InvoiceResponse {
+  Invoice invoice = 1 [(gogoproto.moretags) = "yaml:\"invoice\""];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2
+  [(gogoproto.moretags) = "yaml:\"pagination\""];
+}

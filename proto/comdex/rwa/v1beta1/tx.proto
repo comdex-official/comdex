@@ -1,0 +1,105 @@
+syntax = "proto3";
+package comdex.rwa.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/rwa/v1beta1/invoice.proto";
+import "comdex/rwa/v1beta1/profile.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/rwa/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+service Msg {
+
+  rpc MsgCreateRwaUser(CreateRwaUserRequest) returns (CreateRwaUserResponse);
+  rpc MsgCreateCounterParty(CreateCounterPartyRequest) returns (CreateCounterPartyResponse);
+  rpc MsgUpdateCounterParty(UpdateCounterPartyRequest) returns (UpdateCounterPartyResponse);
+  rpc MsgUpdateRwaUser(UpdateRwaUserRequest) returns (UpdateRwaUserResponse);
+  rpc MsgUpdateKYC(UpdateKYCRequest) returns (UpdateKYCResponse);
+  rpc MsgCreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse);
+
+}
+
+message CreateRwaUserRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string name = 2 [(gogoproto.moretags) = "yaml:\"name\""];
+  string address = 3 [(gogoproto.moretags) = "yaml:\"address\""];
+  string owner = 4 [(gogoproto.moretags) = "yaml:\"owner\""];
+  string jurisdiction = 5 [(gogoproto.moretags) = "yaml:\"jurisdiction\""];
+  string email_id = 6 [(gogoproto.moretags) = "yaml:\"email_id\""];
+}
+
+message CreateRwaUserResponse {
+}
+
+message CreateCounterPartyRequest{
+  string from = 1 [(gogoproto.moretags) = "yaml:\"from\""];
+  string send_to = 2 [(gogoproto.moretags) = "yaml:\"send_to\""];
+}
+
+message CreateCounterPartyResponse {
+}
+
+message UpdateCounterPartyRequest{
+  uint64  id = 1;
+  string from = 2 [(gogoproto.moretags) = "yaml:\"from\""];
+  string send_to = 3 [(gogoproto.moretags) = "yaml:\"send_to\""];
+  bool accepted = 4 ;
+}
+
+message UpdateCounterPartyResponse {
+}
+message UpdateRwaUserRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  string name = 2 [(gogoproto.moretags) = "yaml:\"name\""];
+  string address = 3 [(gogoproto.moretags) = "yaml:\"address\""];
+  string owner = 4 [(gogoproto.moretags) = "yaml:\"owner\""];
+  string jurisdiction = 5 [(gogoproto.moretags) = "yaml:\"jurisdiction\""];
+  string email_id = 6 [(gogoproto.moretags) = "yaml:\"email_id\""];
+  KycStatus kyc = 7;
+  string kyc_type =8;
+}
+
+message UpdateRwaUserResponse {
+}
+message UpdateKYCRequest{
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  KycStatus kyc = 2;
+  string kyc_type =3;
+}
+
+message UpdateKYCResponse{
+
+}
+
+message CreateInvoiceRequest{
+  uint64 id =1;
+  string from =2;
+  string receiver =10;
+  uint64 counterparty_id =3;
+  string nft_id =4;
+
+  cosmos.base.v1beta1.Coin amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"amount\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  cosmos.base.v1beta1.Coin receivable = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"receivable\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+
+  cosmos.base.v1beta1.Coin amount_paid = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags)   = "yaml:\"amount_paid\"",
+    (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
+  ];
+  ServiceType service_type = 8;
+  Status status =9;
+}
+
+message CreateInvoiceResponse{
+
+}

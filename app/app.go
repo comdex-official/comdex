@@ -2,6 +2,9 @@ package app
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/x/rwa"
+	rwakeeper "github.com/comdex-official/comdex/x/rwa/keeper"
+	rwatypes "github.com/comdex-official/comdex/x/rwa/types"
 	"io"
 	"net/http"
 	"os"
@@ -311,6 +314,7 @@ var (
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
 		nft.AppModuleBasic{},
+		rwa.AppModuleBasic{},
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -394,6 +398,7 @@ type App struct {
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
 	NFTKeeper         nftkeeper.Keeper
+	RwaKeeper         rwakeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -441,7 +446,7 @@ func New(
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
 			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
-			icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, nfttypes.StoreKey,
+			icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, nfttypes.StoreKey, rwatypes.StoreKey,
 		)
 	)
 
@@ -499,6 +504,7 @@ func New(
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(nfttypes.ModuleName)
+	app.ParamsKeeper.Subspace(rwatypes.ModuleName)
 
 	// set the BaseApp's parameter store
 	// baseApp.SetParamStore(
@@ -911,6 +917,14 @@ func New(
 		app.keys[nfttypes.StoreKey],
 	)
 
+	app.RwaKeeper = rwakeeper.NewKeeper(
+		app.cdc,
+		app.keys[rwatypes.StoreKey],
+		app.GetSubspace(rwatypes.ModuleName),
+		app.BankKeeper,
+		app.AccountKeeper,
+	)
+
 	// Note: the sealing is done after creating wasmd and wiring that up
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -1069,6 +1083,7 @@ func New(
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
 		nft.NewAppModule(app.cdc, app.NFTKeeper),
+		rwa.NewAppModule(app.cdc, app.RwaKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1116,6 +1131,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		nfttypes.ModuleName,
+		rwatypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1160,6 +1176,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		nfttypes.ModuleName,
+		rwatypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1208,6 +1225,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		nfttypes.ModuleName,
+		rwatypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1469,6 +1487,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		assettypes.ModuleName:          nil,
 		icqtypes.ModuleName:            nil,
 		nfttypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		rwatypes.ModuleName:            nil,
 	}
 }
 
