@@ -200,6 +200,10 @@ import (
 
 	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 	tv13 "github.com/comdex-official/comdex/app/upgrades/testnet/v13"
+
+	"github.com/cosmos/cosmos-sdk/x/nft"
+	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
+	nftmodule "github.com/cosmos/cosmos-sdk/x/nft/module"
 )
 
 const (
@@ -309,6 +313,7 @@ var (
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		nftmodule.AppModuleBasic{},
 	)
 )
 
@@ -388,6 +393,7 @@ type App struct {
 	Rewardskeeper     rewardskeeper.Keeper
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
+	NFTKeeper         nftkeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -434,7 +440,8 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey,
+			icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, nftkeeper.StoreKey,
 		)
 	)
 
@@ -614,6 +621,8 @@ func New(
 		app.UpgradeKeeper,
 		scopedIBCKeeper,
 	)
+
+	app.NFTKeeper = nftkeeper.NewKeeper(keys[nftkeeper.StoreKey], appCodec, app.AccountKeeper, app.BankKeeper)
 
 	// Configure the hooks keeper
 	hooksKeeper := ibchookskeeper.NewKeeper(
@@ -1055,6 +1064,7 @@ func New(
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		nftmodule.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1101,6 +1111,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1144,6 +1155,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1191,6 +1203,7 @@ func New(
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	)
 
@@ -1451,6 +1464,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		ibcfeetypes.ModuleName:         nil,
 		assettypes.ModuleName:          nil,
 		icqtypes.ModuleName:            nil,
+		nft.ModuleName:                 nil,
 	}
 }
 
