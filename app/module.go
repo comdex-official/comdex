@@ -60,8 +60,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/x/nft"
-	nftmodule "github.com/cosmos/cosmos-sdk/x/nft/module"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -134,7 +132,6 @@ var ModuleBasics = module.NewBasicManager(
 	icq.AppModuleBasic{},
 	ibchooks.AppModuleBasic{},
 	packetforward.AppModuleBasic{},
-	nftmodule.AppModuleBasic{},
 )
 
 func appModules(
@@ -191,7 +188,6 @@ func appModules(
 		ibchooks.NewAppModule(app.AppKeepers.AccountKeeper),
 		icq.NewAppModule(*app.AppKeepers.ICQKeeper),
 		packetforward.NewAppModule(app.AppKeepers.PacketForwardKeeper),
-		nftmodule.NewAppModule(appCodec, app.AppKeepers.NFTKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.interfaceRegistry),
 	}
 }
 func orderBeginBlockers() []string {
@@ -235,7 +231,6 @@ func orderBeginBlockers() []string {
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	}
 }
@@ -281,7 +276,6 @@ func orderEndBlockers() []string {
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	}
 }
@@ -326,7 +320,6 @@ func orderInitGenesis() []string {
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
-		nft.ModuleName,
 		consensusparamtypes.ModuleName,
 	}
 }

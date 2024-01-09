@@ -74,8 +74,6 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/x/nft"
-	nftkeeper "github.com/cosmos/cosmos-sdk/x/nft/keeper"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -151,7 +149,6 @@ var maccPerms = map[string][]string{
 	ibcfeetypes.ModuleName:         nil,
 	assettypes.ModuleName:          nil,
 	icqtypes.ModuleName:            nil,
-	nft.ModuleName:                 nil,
 }
 
 type AppKeepers struct {
@@ -216,7 +213,6 @@ type AppKeepers struct {
 	Rewardskeeper     rewardskeeper.Keeper
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
-	NFTKeeper         nftkeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -374,8 +370,6 @@ func NewAppKeepers(
 		appKeepers.UpgradeKeeper,
 		scopedIBCKeeper,
 	)
-
-	appKeepers.NFTKeeper = nftkeeper.NewKeeper(keys[nftkeeper.StoreKey], appCodec, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
 	// Configure the hooks keeper
 	hooksKeeper := ibchookskeeper.NewKeeper(
