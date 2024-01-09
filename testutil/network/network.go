@@ -2,6 +2,7 @@ package network
 
 import (
 	"fmt"
+	"github.com/comdex-official/comdex/app/params"
 	"testing"
 	"time"
 
@@ -11,18 +12,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 
 	comdex "github.com/comdex-official/comdex/app"
 )
 
 type (
-	Network = network.Network
-	Config  = network.Config
+	Network   = network.Network
+	Config    = network.Config
 	Validator = network.Validator
 )
 
@@ -38,7 +39,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	} else {
 		cfg = configs[0]
 	}
-	net, _ := network.New(t,t.TempDir(), cfg)
+	net, _ := network.New(t, t.TempDir(), cfg)
 	t.Cleanup(net.Cleanup)
 	return net
 }
@@ -46,7 +47,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 // DefaultConfig will initialize config for the network with custom application,
 // genesis and single validator. All other parameters are inherited from cosmos-sdk/testutil/network.DefaultConfig
 func DefaultConfig() network.Config {
-	encoding := comdex.MakeEncodingConfig()
+	encoding := params.MakeEncodingConfig()
 	return network.Config{
 		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,

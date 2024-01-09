@@ -3,6 +3,7 @@ package app
 import (
 	"cosmossdk.io/math"
 	"encoding/json"
+	"github.com/comdex-official/comdex/app/params"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -55,7 +56,7 @@ func MakeTestEncodingConfig() moduletestutil.TestEncodingConfig {
 func setup(t *testing.T, withGenesis bool) (*App, GenesisState) {
 	db := dbm.NewMemDB()
 	//encCdc := MakeTestEncodingConfig()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
 	if withGenesis {
 		return app, NewDefaultGenesisState(app.AppCodec())
 	}

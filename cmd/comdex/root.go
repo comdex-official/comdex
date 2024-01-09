@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/comdex-official/comdex/app/params"
 	"io"
 	"os"
 	"path/filepath"
@@ -45,8 +46,8 @@ import (
 	comdex "github.com/comdex-official/comdex/app"
 )
 
-func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
-	encodingConfig := comdex.MakeEncodingConfig()
+func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
+	encodingConfig := params.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -128,10 +129,10 @@ func initAppConfig() (string, interface{}) {
 	return customAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
+func initRootCmd(rootCmd *cobra.Command, encoding params.EncodingConfig) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
-	
+
 	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
@@ -260,7 +261,7 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 		logger, db, tracer, true, skipUpgradeHeights,
 		cast.ToString(options.Get(flags.FlagHome)),
 		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
-		comdex.MakeEncodingConfig(),
+		params.MakeEncodingConfig(),
 		options,
 		comdex.GetWasmEnabledProposals(),
 		wasmOpts,
@@ -280,7 +281,7 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
 	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
-	config := comdex.MakeEncodingConfig()
+	config := params.MakeEncodingConfig()
 	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
 	homePath, ok := options.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
