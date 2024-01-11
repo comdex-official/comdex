@@ -344,8 +344,8 @@ func DistributeOrderAmountToOrders(orders []Order, amt sdkmath.Int, price sdkmat
 		if matchableAmt.IsZero() {
 			continue
 		}
-		orderAmt := sdkmath.LegacyNewDec(order.GetAmount().Int64())
-		proportion := orderAmt.QuoTruncate(sdkmath.LegacyNewDec(totalAmt.Int64()))
+		orderAmt := order.GetAmount().ToLegacyDec()
+		proportion := orderAmt.QuoTruncate(totalAmt.ToLegacyDec())
 		matchedAmt := sdkmath.MinInt(matchableAmt, proportion.MulInt(amt).TruncateInt())
 		if matchedAmt.IsPositive() {
 			matchedAmtByOrder[order] = matchedAmt

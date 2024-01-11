@@ -264,7 +264,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
 	s.Require().NoError(err)
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDecFromInt(lockedVault[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestUpdateLockedVaults() {
@@ -272,7 +272,7 @@ func (s *KeeperTestSuite) TestUpdateLockedVaults() {
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 
 	lockedVault1 := liquidationKeeper.GetLockedVaults(*ctx)
-	s.Require().Equal(lockedVault1[0].CrAtLiquidation, sdk.NewDec(lockedVault1[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault1[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault1[0].CrAtLiquidation, sdk.NewDecFromInt(lockedVault1[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDecFromInt(lockedVault1[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestSetFlags() {

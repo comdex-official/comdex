@@ -238,7 +238,7 @@ func (k Keeper) PlaceLendDutchAuctionBid(ctx sdk.Context, appID, auctionMappingI
 
 	// calculating additional auction bonus to the bidder
 
-	auctionBonus := sdk.NewDec(slice.Int64()).Mul(assetStats.LiquidationBonus)
+	auctionBonus := sdk.NewDecFromInt(slice).Mul(assetStats.LiquidationBonus)
 	totalAmountToBidder := sdk.NewCoin(auction.OutflowTokenInitAmount.Denom, slice.Add(auctionBonus.TruncateInt()))
 
 	biddingID, err := k.CreateNewDutchLendBid(ctx, appID, auctionMappingID, auctionID, bidder.String(), inFlowTokenCoin, outFlowTokenCoin)

@@ -21,7 +21,7 @@ import (
 
 // GetShareValue multiplies with truncation by receiving int amount and decimal ratio and returns int result.
 func GetShareValue(amount sdkmath.Int, ratio sdkmath.LegacyDec) sdkmath.Int {
-	return sdkmath.LegacyNewDec(amount.Int64()).MulTruncate(ratio).TruncateInt()
+	return amount.ToLegacyDec().MulTruncate(ratio).TruncateInt()
 }
 
 type StrIntMap map[string]sdkmath.Int

@@ -267,7 +267,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
 	s.Require().NoError(err)
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDecFromInt(lockedVault[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) AddAuctionParams() {
@@ -317,7 +317,7 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.Require().Equal(dutchAuction.InflowTokenCurrentAmount.Amount, sdk.ZeroInt())
 
 	inFlowTokenTargetAmount := lockedVault.AmountOut
-	mulfactor := sdk.NewDec(inFlowTokenTargetAmount.Int64()).Mul(dutchAuction.LiquidationPenalty)
+	mulfactor := sdk.NewDecFromInt(inFlowTokenTargetAmount).Mul(dutchAuction.LiquidationPenalty)
 	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.InterestAccumulated)
 
 	s.Require().Equal(dutchAuction.InflowTokenTargetAmount.Amount, inFlowTokenTargetAmount)
@@ -439,7 +439,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 				s.Require().NoError(err)
 
 				userBid, err := k.GetDutchUserBidding(*ctx, userAddress1, appID, biddingID)
-				userReceivableAmount := sdk.NewDec(tc.msg.Amount.Amount.Int64()).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				userReceivableAmount := sdk.NewDecFromInt(tc.msg.Amount.Amount).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
 				userOutflowCoin := sdk.NewCoin("ucmst", userReceivableAmount)
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
@@ -558,7 +558,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	// verify loss
 	stats, found := k.GetProtocolStat(*ctx, appId, 2)
 	s.Require().True(found)
-	loss := sdk.NewDec(afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount.Int64())
+	loss := sdk.NewDecFromInt(afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount)
 	s.Require().Equal(loss, stats.Loss)
 }
 

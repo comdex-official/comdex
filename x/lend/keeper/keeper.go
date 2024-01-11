@@ -700,7 +700,7 @@ func (k Keeper) BorrowAsset(ctx sdk.Context, addr string, lendID, pairID uint64,
 		mappingData.BorrowId = append(mappingData.BorrowId, borrowPos.ID)
 		k.SetUserLendBorrowMapping(ctx, mappingData)
 	} else {
-		updatedAmtIn := sdk.NewDec(AmountIn.Amount.Int64()).Mul(assetInRatesStatsLtv)
+		updatedAmtIn := sdk.NewDecFromInt(AmountIn.Amount).Mul(assetInRatesStatsLtv)
 		updatedAmtInPrice, err := k.Market.CalcAssetPrice(ctx, lendPos.AssetID, updatedAmtIn.TruncateInt())
 		if err != nil {
 			return err
@@ -1699,7 +1699,7 @@ func (k Keeper) CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.Locke
 
 	// Adjusting bridged asset qty after auctions
 	if !kind.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) {
-		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, sdk.NewDec(borrowPos.AmountIn.Amount.Int64()).Mul(assetInRatesStats.Ltv).TruncateInt())
+		amtIn, _ := k.Market.CalcAssetPrice(ctx, pair.AssetIn, sdk.NewDecFromInt(borrowPos.AmountIn.Amount).Mul(assetInRatesStats.Ltv).TruncateInt())
 		priceFirstBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, firstTransitAssetID, sdk.OneInt())
 		priceSecondBridgedAsset, _ := k.Market.CalcAssetPrice(ctx, secondTransitAssetID, sdk.OneInt())
 		firstBridgedAsset, _ := k.Asset.GetAsset(ctx, firstTransitAssetID)

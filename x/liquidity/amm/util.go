@@ -36,7 +36,7 @@ func MatchableAmount(order Order, price sdkmath.LegacyDec) (matchableAmt sdkmath
 		remainingOfferCoinAmt := order.GetOfferCoinAmount().Sub(order.GetPaidOfferCoinAmount())
 		matchableAmt = sdkmath.MinInt(
 			order.GetOpenAmount(),
-			sdkmath.LegacyNewDec(remainingOfferCoinAmt.Int64()).QuoTruncate(price).TruncateInt(),
+			remainingOfferCoinAmt.ToLegacyDec().QuoTruncate(price).TruncateInt(),
 		)
 	case Sell:
 		matchableAmt = order.GetOpenAmount()

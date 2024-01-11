@@ -652,12 +652,12 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	for j, extP := range extPair {
 		extPairVaultMappingData, found := k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 		individualVote := votingRatio[j]
-		votingR := sdk.NewDec(individualVote.Int64()).Quo(sdk.NewDec(totalVote.Int64()))
-		shareByExtPair := votingR.Mul(sdk.NewDec(amount.Int64()))
+		votingR := sdk.NewDecFromInt(individualVote).Quo(sdk.NewDecFromInt(totalVote))
+		shareByExtPair := votingR.Mul(sdk.NewDecFromInt(amount))
 		if !found || extPairVaultMappingData.TokenMintedAmount.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDec(extPairVaultMappingData.TokenMintedAmount.Int64()))
+		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDecFromInt(extPairVaultMappingData.TokenMintedAmount))
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 
 		for _, vaultID := range vaultsData.VaultIds {

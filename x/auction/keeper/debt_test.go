@@ -400,7 +400,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidId, tc.bidID)
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidOwner, tc.msg.Bidder)
 				if tc.bidID != uint64(1) {
-					s.Require().True(afterAuction.ExpectedMintedToken.Amount.LTE(sdk.NewDec(beforeAuction.ExpectedMintedToken.Amount.Int64()).Mul(sdk.MustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
+					s.Require().True(afterAuction.ExpectedMintedToken.Amount.LTE(sdk.NewDecFromInt(beforeAuction.ExpectedMintedToken.Amount).Mul(sdk.MustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
 				}
 				s.Require().Equal(beforeHarborBalance, afterHarborBalance)
 				s.Require().Equal(beforeCmstBalance.Sub(expectedUserToken), afterCmstBalance)
