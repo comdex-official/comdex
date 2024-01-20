@@ -6,6 +6,7 @@ import (
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
@@ -21,8 +22,8 @@ func CreateUpgradeHandlerV5Beta(
 		if err != nil {
 			return nil, err
 		}
-		SetVaultLengthCounter(ctx, vaultkeeper)
-		err = FuncMigrateLiquidatedBorrow(ctx, lk, liqk)
+		SetVaultLengthCounter(sdk.UnwrapSDKContext(ctx), vaultkeeper)
+		err = FuncMigrateLiquidatedBorrow(sdk.UnwrapSDKContext(ctx), lk, liqk)
 		if err != nil {
 			return nil, err
 		}

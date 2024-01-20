@@ -274,13 +274,13 @@ func CreateUpgradeHandler(
 		if !correctTypecast {
 			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
 		}
-		icamodule.InitModule(ctx, controllerParams, hostParams)
+		icamodule.InitModule(sdk.UnwrapSDKContext(ctx), controllerParams, hostParams)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
 		}
 
-		InitializeStates(ctx, assetKeeper, liquidityKeeper, collectorKeeper, auctionKeeper, lockerKeeper, rewardsKeeper, liquidationKeeper)
+		InitializeStates(sdk.UnwrapSDKContext(ctx), assetKeeper, liquidityKeeper, collectorKeeper, auctionKeeper, lockerKeeper, rewardsKeeper, liquidationKeeper)
 
 		// update wasm to permission
 		wasmParams := wasmKeeper.GetParams(ctx)

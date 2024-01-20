@@ -215,8 +215,8 @@ func CreateUpgradeHandler811(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		UpdateAuctionParams(ctx, assetKeeper, lendKeeper, auctionKeeper)
-		UpdateExtendedPairVaultsAndAsset(ctx, assetKeeper)
+		UpdateAuctionParams(sdk.UnwrapSDKContext(ctx), assetKeeper, lendKeeper, auctionKeeper)
+		UpdateExtendedPairVaultsAndAsset(sdk.UnwrapSDKContext(ctx), assetKeeper)
 		return newVM, err
 	}
 }

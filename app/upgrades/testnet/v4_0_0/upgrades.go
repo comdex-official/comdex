@@ -69,7 +69,7 @@ func CreateUpgradeHandlerV410(
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 1, 1)
+		CreateSwapFeeGauge(sdk.UnwrapSDKContext(ctx), rewardskeeper, liquiditykeeper, 1, 1)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
@@ -83,7 +83,7 @@ func CreateUpgradeHandlerV420(
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
@@ -116,7 +116,7 @@ func CreateUpgradeHandlerV430(
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
-		EditAndSetPair(ctx, assetkeeper)
+		EditAndSetPair(sdk.UnwrapSDKContext(ctx), assetkeeper)
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err

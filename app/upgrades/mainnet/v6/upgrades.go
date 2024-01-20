@@ -238,11 +238,11 @@ func CreateUpgradeHandler(
 	lendKeeper lendkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Running revert of tombstoning")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Running revert of tombstoning")
 
-		ctx.Logger().Info("Running module migrations for v6.0.0...")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Running module migrations for v6.0.0...")
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		InitializeLendStates(ctx, assetKeeper, lendKeeper)
+		InitializeLendStates(sdk.UnwrapSDKContext(ctx), assetKeeper, lendKeeper)
 		return newVM, err
 	}
 }

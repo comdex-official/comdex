@@ -93,7 +93,7 @@ func CreateUpgradeHandlerV11(
 	icahostkeeper icahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying main net upgrade - v.11.5.0")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Applying main net upgrade - v.11.5.0")
 
 		// fromVM[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
 
@@ -160,16 +160,16 @@ func CreateUpgradeHandlerV11(
 				sdk.MsgTypeURL(&vaulttypes.MsgVaultInterestCalcRequest{}),
 			},
 		}
-		icahostkeeper.SetParams(ctx, hostParams)
+		icahostkeeper.SetParams(sdk.UnwrapSDKContext(ctx), hostParams)
 
-		assetKeeper.SetParams(ctx, assettypes.NewParams())
+		assetKeeper.SetParams(sdk.UnwrapSDKContext(ctx), assettypes.NewParams())
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
-		RefundFeeForAccidentallyCreatedPirToOwner(ctx, liquidityKeeper, assetKeeper, bankKeeper)
-		DistributeRewards(ctx, accountKeeper, bankKeeper, rewardsKeeper)
+		RefundFeeForAccidentallyCreatedPirToOwner(sdk.UnwrapSDKContext(ctx), liquidityKeeper, assetKeeper, bankKeeper)
+		DistributeRewards(sdk.UnwrapSDKContext(ctx), accountKeeper, bankKeeper, rewardsKeeper)
 		return vm, err
 	}
 }

@@ -74,7 +74,7 @@ func CreateUpgradeHandlerV2(
 		if !correctTypecast {
 			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
 		}
-		icamodule.InitModule(ctx, controllerParams, hostParams)
+		icamodule.InitModule(sdk.UnwrapSDKContext(ctx), controllerParams, hostParams)
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {

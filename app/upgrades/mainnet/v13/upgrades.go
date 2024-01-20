@@ -44,14 +44,14 @@ func CreateUpgradeHandlerV13(
 	auctionV2Keeper auctionV2keeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying main net upgrade - v.13.3.0")
-		logger := ctx.Logger().With("upgrade", UpgradeName)
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Applying main net upgrade - v.13.3.0")
+		logger := sdk.UnwrapSDKContext(ctx).Logger().With("upgrade", UpgradeName)
 
 		// Migrate Tendermint consensus parameters from x/params module to a deprecated x/consensus module.
 		// The old params module is required to still be imported in your app.go in order to handle this migration.
-		ctx.Logger().Info("Migrating tendermint consensus params from x/params to x/consensus...")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Migrating tendermint consensus params from x/params to x/consensus...")
 		legacyParamSubspace := paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-		baseapp.MigrateParams(ctx, legacyParamSubspace, &consensusParamsKeeper)
+		baseapp.MigrateParams(sdk.UnwrapSDKContext(ctx), legacyParamSubspace, consensusParamsKeeper.ParamsStore)
 
 		// ibc v4-to-v5
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v4-to-v5.md
@@ -62,23 +62,23 @@ func CreateUpgradeHandlerV13(
 		// ibc v6-to-v7
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v6-to-v7.md#chains
 		// (optional) prune expired tendermint consensus states to save storage space
-		ctx.Logger().Info("Pruning expired tendermint consensus states...")
-		if _, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, IBCKeeper.ClientKeeper); err != nil {
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Pruning expired tendermint consensus states...")
+		if _, err := ibctmmigrations.PruneExpiredConsensusStates(sdk.UnwrapSDKContext(ctx), cdc, IBCKeeper.ClientKeeper); err != nil {
 			return nil, err
 		}
 
 		// ibc v7-to-v7.1
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md#09-localhost-migration
 		// explicitly update the IBC 02-client params, adding the localhost client type
-		params := IBCKeeper.ClientKeeper.GetParams(ctx)
+		params := IBCKeeper.ClientKeeper.GetParams(sdk.UnwrapSDKContext(ctx))
 		params.AllowedClients = append(params.AllowedClients, exported.Localhost)
-		IBCKeeper.ClientKeeper.SetParams(ctx, params)
+		IBCKeeper.ClientKeeper.SetParams(sdk.UnwrapSDKContext(ctx), params)
 		logger.Info(fmt.Sprintf("updated ibc client params %v", params))
 
 		// icq params set
 		icqparams := icqtypes.DefaultParams()
 		icqparams.AllowQueries = append(icqparams.AllowQueries, "/cosmwasm.wasm.v1.Query/SmartContractState")
-		icqkeeper.SetParams(ctx, icqparams)
+		icqkeeper.SetParams(sdk.UnwrapSDKContext(ctx), icqparams)
 
 		// Run migrations
 		logger.Info(fmt.Sprintf("pre migrate version map: %v", fromVM))
@@ -89,15 +89,18 @@ func CreateUpgradeHandlerV13(
 		logger.Info(fmt.Sprintf("post migrate version map: %v", vm))
 
 		// update gov params to use a 20% initial deposit ratio, allowing us to remote the ante handler
-		govParams := GovKeeper.GetParams(ctx)
+		govParams, err := GovKeeper.Params.Get(ctx)
+		if err !=nil {
+			return nil, err
+		}
 		govParams.MinInitialDepositRatio = sdkmath.LegacyNewDec(20).Quo(sdkmath.LegacyNewDec(100)).String()
-		if err := GovKeeper.SetParams(ctx, govParams); err != nil {
+		if err := GovKeeper.Params.Set(ctx, govParams); err != nil {
 			return nil, err
 		}
 		logger.Info(fmt.Sprintf("updated gov params to %v", govParams))
 
-		UpdateLendParams(ctx, lendKeeper, assetKeeper)
-		InitializeStates(ctx, liquidationV2Keeper, auctionV2Keeper)
+		UpdateLendParams(sdk.UnwrapSDKContext(ctx), lendKeeper, assetKeeper)
+		InitializeStates(sdk.UnwrapSDKContext(ctx), liquidationV2Keeper, auctionV2Keeper)
 
 		return vm, err
 	}

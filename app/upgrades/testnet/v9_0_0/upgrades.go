@@ -67,7 +67,7 @@ func CreateUpgradeHandlerV900Beta(
 		if err != nil {
 			return nil, err
 		}
-		UpdateDenomAndAddAsset(ctx, assetKeeper)
+		UpdateDenomAndAddAsset(sdk.UnwrapSDKContext(ctx), assetKeeper)
 		return vm, err
 	}
 }

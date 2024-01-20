@@ -44,18 +44,18 @@ func CreateUpgradeHandlerV12(
 	assetKeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying main net upgrade - v.12.0.0")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Applying main net upgrade - v.12.0.0")
 
 		icqparams := icqtypes.DefaultParams()
 		icqparams.AllowQueries = append(icqparams.AllowQueries, "/cosmwasm.wasm.v1.Query/SmartContractState")
-		icqkeeper.SetParams(ctx, icqparams)
+		icqkeeper.SetParams(sdk.UnwrapSDKContext(ctx), icqparams)
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
-		UpdateLendParams(ctx, lendKeeper, assetKeeper)
-		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
+		UpdateLendParams(sdk.UnwrapSDKContext(ctx), lendKeeper, assetKeeper)
+		InitializeStates(sdk.UnwrapSDKContext(ctx), liquidationKeeper, auctionKeeper)
 		//Refund(ctx, bankKeeper, collectorKeeper)
 		//RemoveFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
 		return vm, err

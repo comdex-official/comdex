@@ -137,8 +137,8 @@ func CreateUpgradeHandler700(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		InitializeLendReservesStates(ctx, lendKeeper)
-		ReturnAtomToVaultOwners(ctx, bankKeeper)
+		InitializeLendReservesStates(sdk.UnwrapSDKContext(ctx), lendKeeper)
+		ReturnAtomToVaultOwners(sdk.UnwrapSDKContext(ctx), bankKeeper)
 		return newVM, err
 	}
 }
