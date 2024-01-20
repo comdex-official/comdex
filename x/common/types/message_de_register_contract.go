@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -15,7 +16,7 @@ func NewMsgDeRegisterContract(
 ) *MsgDeRegisterContract {
 	return &MsgDeRegisterContract{
 		SecurityAddress: securityAddress,
-		GameId: gameID,
+		GameId:          gameID,
 	}
 }
 
@@ -43,7 +44,7 @@ func (msg *MsgDeRegisterContract) GetSignBytes() []byte {
 func (msg *MsgDeRegisterContract) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.SecurityAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
 	return nil

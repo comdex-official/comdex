@@ -23,7 +23,6 @@ import (
 var (
 	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
-	_ module.AppModuleSimulation = AppModule{}
 )
 
 type AppModuleBasic struct{ cdc codec.BinaryCodec }
@@ -88,6 +87,12 @@ func (a AppModule) ConsensusVersion() uint64 {
 	return 2
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (a AppModule) IsOnePerModuleType() {}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (a AppModule) IsAppModule() {}
+
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	cdc.MustUnmarshalJSON(message, &state)
@@ -111,11 +116,11 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterQueryServer(configurator.QueryServer(), keeper.NewQueryServer(a.keeper))
 }
 
-func (a AppModule) BeginBlock(ctx sdk.Context, req abcitypes.RequestBeginBlock) {
-	BeginBlocker(ctx, req, a.keeper)
+func (a AppModule) BeginBlock(ctx sdk.Context) error{
+	return nil
 }
 
-func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
+func (a AppModule) EndBlock(ctx context.Context) error {
 	return nil
 }
 
@@ -124,12 +129,6 @@ func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
 func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
 	return nil
 }
-
-// func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange {
-// 	return nil
-// }
-
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
 	return nil

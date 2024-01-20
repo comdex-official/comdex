@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -50,10 +52,10 @@ func (k Keeper) GetRewardByApp(ctx sdk.Context, appID uint64) (rewards []types.I
 	var (
 		store = k.Store(ctx)
 		key   = types.RewardsKeyByApp(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -74,10 +76,10 @@ func (k Keeper) GetRewardByApp(ctx sdk.Context, appID uint64) (rewards []types.I
 func (k Keeper) GetRewards(ctx sdk.Context) (lends []types.InternalRewards) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.RewardsKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.RewardsKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -127,10 +129,10 @@ func (k Keeper) GetAppIDByApp(ctx sdk.Context, appID uint64) (uint64, bool) {
 func (k Keeper) GetAppIDs(ctx sdk.Context) (appIds []uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIdsVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppIdsVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -179,10 +181,10 @@ func (k Keeper) GetExternalRewardsLocker(ctx sdk.Context, id uint64) (LockerExte
 func (k Keeper) GetExternalRewardsLockers(ctx sdk.Context) (LockerExternalRewards []types.LockerExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsLockerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ExternalRewardsLockerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -319,10 +321,10 @@ func (k Keeper) GetExternalRewardsVaultID(ctx sdk.Context) uint64 {
 func (k Keeper) GetExternalRewardVaults(ctx sdk.Context) (VaultExternalRewards []types.VaultExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ExternalRewardsVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -461,10 +463,10 @@ func (k Keeper) GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewar
 func (k Keeper) GetAllLockerRewardTracker(ctx sdk.Context) (Lockrewards []types.LockerRewardsTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockerRewardsTrackerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockerRewardsTrackerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -516,10 +518,10 @@ func (k Keeper) GetVaultInterestTracker(ctx sdk.Context, id, appID uint64) (vaul
 func (k Keeper) GetAllVaultInterestTracker(ctx sdk.Context) (Vaultrewards []types.VaultInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.VaultInterestTrackerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.VaultInterestTrackerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -535,7 +537,7 @@ func (k Keeper) GetAllVaultInterestTracker(ctx sdk.Context) (Vaultrewards []type
 	return Vaultrewards
 }
 
-func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error {
+func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID uint64, Depositor string, NetBalance sdkmath.Int, blockHeight int64, lockerBlockTime int64) error {
 	_, found := k.GetReward(ctx, appID, assetID)
 	if !found {
 		return nil
@@ -546,7 +548,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 	if !found {
 		return collectortypes.ErrorAssetDoesNotExist
 	}
-	var rewards sdk.Dec
+	var rewards sdkmath.LegacyDec
 	var err error
 	collectorBTime := collectorLookup.BlockTime.Unix()
 	if collectorLookup.LockerSavingRate.IsZero() {
@@ -577,10 +579,10 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
 	}
 
-	if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+	if lockerRewardsTracker.RewardsAccumulated.GTE(sdkmath.LegacyOneDec()) {
 		// send rewards
 		newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-		newRewardDec := sdk.NewDecFromInt(newReward)
+		newRewardDec := sdkmath.LegacyNewDecFromInt(newReward)
 		lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 		k.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 		// netFeeCollectedData, found := k.collector.GetNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId)
@@ -593,7 +595,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 		}
 		assetData, _ := k.asset.GetAsset(ctx, assetID)
 
-		if newReward.GT(sdk.ZeroInt()) {
+		if newReward.GT(sdkmath.ZeroInt()) {
 			err = k.bank.SendCoinsFromModuleToModule(ctx, collectortypes.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 			if err != nil {
 				return err
@@ -636,7 +638,7 @@ func (k Keeper) CalculateLockerRewards(ctx sdk.Context, appID, assetID, lockerID
 	return nil
 }
 
-func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, vaultID uint64, totalDebt sdk.Int, blockHeight int64, vaultBlockTime int64) error {
+func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, vaultID uint64, totalDebt sdkmath.Int, blockHeight int64, vaultBlockTime int64) error {
 	_, found := k.GetAppIDByApp(ctx, appID)
 	if !found {
 		return nil
@@ -672,9 +674,9 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 	}
 
-	if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+	if vaultInterestTracker.InterestAccumulated.GTE(sdkmath.LegacyOneDec()) {
 		newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-		newInterestDec := sdk.NewDecFromInt(newInterest)
+		newInterestDec := sdkmath.LegacyNewDecFromInt(newInterest)
 		vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 		vaultData.BlockTime = ctx.BlockTime()
@@ -698,10 +700,10 @@ func (k Keeper) CalculateVaultInterest(ctx sdk.Context, appID, extendedPairID, v
 func (k Keeper) GetExternalRewardLends(ctx sdk.Context) (LendExternalRewards []types.LendExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsLendKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ExternalRewardsLendKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -795,10 +797,10 @@ func (k Keeper) GetExternalRewardStableVaultByApp(ctx sdk.Context, id uint64) (V
 func (k Keeper) GetAllExternalRewardStableVault(ctx sdk.Context) (VaultExternalRewards []types.StableVaultExternalRewards) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ExternalRewardsStableVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ExternalRewardsStableVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

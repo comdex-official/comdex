@@ -1,29 +1,32 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
+	sdkmath "cosmossdk.io/math"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 )
 
 // Generic for all auctions.
-func (k Keeper) SetProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) {
+func (k Keeper) SetProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdkmath.Int) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.ProtocolStatisticsKey(appID, assetID)
 	)
 	stat, found := k.GetProtocolStat(ctx, appID, assetID)
 	if found {
-		stat.Loss = stat.Loss.Add(sdk.NewDecFromInt(amount))
+		stat.Loss = stat.Loss.Add(sdkmath.LegacyNewDecFromInt(amount))
 		value := k.cdc.MustMarshal(&stat)
 		store.Set(key, value)
 	} else {
 		var stats auctiontypes.ProtocolStatistics
 		stats.AppId = appID
 		stats.AssetId = assetID
-		stats.Loss = sdk.NewDecFromInt(amount)
+		stats.Loss = sdkmath.LegacyNewDecFromInt(amount)
 		value := k.cdc.MustMarshal(&stats)
 		store.Set(key, value)
 	}
@@ -45,10 +48,10 @@ func (k Keeper) GetProtocolStat(ctx sdk.Context, appID, assetID uint64) (stats a
 func (k Keeper) GetAllProtocolStat(ctx sdk.Context) (protocolStatistics []auctiontypes.ProtocolStatistics) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.ProtocolStatisticsPrefixKey)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.ProtocolStatisticsPrefixKey)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -135,7 +138,7 @@ func (k Keeper) GetAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint
 		return auctiontypes.DutchString, nil
 	}
 
-	return "", sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
+	return "", errorsmod.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
 }
 
 func (k Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID uint64) (string, error) {
@@ -149,16 +152,16 @@ func (k Keeper) GetLendAuctionType(ctx sdk.Context, auctionTypeID uint64, appID 
 		return auctiontypes.DutchString, nil
 	}
 
-	return "", sdkerrors.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
+	return "", errorsmod.Wrapf(sdkerrors.ErrNotFound, "auction mapping id %d not found", auctionTypeID)
 }
 
 func (k Keeper) GetAllAuctions(ctx sdk.Context) (auctions []auctiontypes.SurplusAuction) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.AuctionKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.AuctionKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -266,10 +269,10 @@ func (k Keeper) GetSurplusAuctions(ctx sdk.Context, appID uint64) (auctions []au
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appID, auctiontypes.SurplusString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -289,10 +292,10 @@ func (k Keeper) GetHistorySurplusAuctions(ctx sdk.Context, appID uint64) (auctio
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryAuctionTypeKey(appID, auctiontypes.SurplusString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -383,10 +386,10 @@ func (k Keeper) GetSurplusUserBiddings(ctx sdk.Context, bidder string, appID uin
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appID, auctiontypes.SurplusString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -405,10 +408,10 @@ func (k Keeper) GetSurplusUserBiddings(ctx sdk.Context, bidder string, appID uin
 func (k Keeper) GetAllSurplusUserBiddings(ctx sdk.Context) (surplusBiddings []auctiontypes.SurplusBiddings) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -427,10 +430,10 @@ func (k Keeper) GetHistorySurplusUserBiddings(ctx sdk.Context, bidder string, ap
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appID, auctiontypes.SurplusString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -526,10 +529,10 @@ func (k Keeper) GetDebtAuctions(ctx sdk.Context, appID uint64) (auctions []aucti
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appID, auctiontypes.DebtString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -559,10 +562,10 @@ func (k Keeper) GetHistoryDebtAuctions(ctx sdk.Context, appID uint64) (auctions 
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryAuctionTypeKey(appID, auctiontypes.DebtString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -635,10 +638,10 @@ func (k Keeper) GetDebtUserBidding(ctx sdk.Context, bidder string, appID, biddin
 func (k Keeper) GetAllDebtUserBidding(ctx sdk.Context) (debtBiddings []auctiontypes.DebtBiddings) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -670,10 +673,10 @@ func (k Keeper) GetDebtUserBiddings(ctx sdk.Context, bidder string, appID uint64
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appID, auctiontypes.DebtString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -693,10 +696,10 @@ func (k Keeper) GetHistoryDebtUserBiddings(ctx sdk.Context, bidder string, appID
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appID, auctiontypes.DebtString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -796,10 +799,10 @@ func (k Keeper) GetDutchAuctions(ctx sdk.Context, appID uint64) (auctions []auct
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.AuctionTypeKey(appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -829,10 +832,10 @@ func (k Keeper) GetHistoryDutchAuctions(ctx sdk.Context, appID uint64) (auctions
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryAuctionTypeKey(appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -925,10 +928,10 @@ func (k Keeper) GetDutchUserBiddings(ctx sdk.Context, bidder string, appID uint6
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.UserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -947,10 +950,10 @@ func (k Keeper) GetDutchUserBiddings(ctx sdk.Context, bidder string, appID uint6
 func (k Keeper) GetAllDutchUserBiddings(ctx sdk.Context) (dutchBiddings []auctiontypes.DutchBiddings) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.UserKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -969,10 +972,10 @@ func (k Keeper) GetHistoryDutchUserBiddings(ctx sdk.Context, bidder string, appI
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryUserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -1018,10 +1021,10 @@ func (k Keeper) GetAuctionParams(ctx sdk.Context, AppID uint64) (asset auctionty
 func (k Keeper) GetAllAuctionParams(ctx sdk.Context) (auctionParams []auctiontypes.AuctionParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, auctiontypes.AuctionParamsKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, auctiontypes.AuctionParamsKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -1148,10 +1151,10 @@ func (k Keeper) GetDutchLendAuctions(ctx sdk.Context, appID uint64) (auctions []
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.LendAuctionTypeKey(appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -1171,10 +1174,10 @@ func (k Keeper) GetHistoryDutchLendAuctions(ctx sdk.Context, appID uint64) (auct
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryLendAuctionTypeKey(appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -1267,10 +1270,10 @@ func (k Keeper) GetDutchLendUserBiddings(ctx sdk.Context, bidder string, appID u
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.LendUserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -1290,10 +1293,10 @@ func (k Keeper) GetHistoryDutchLendUserBiddings(ctx sdk.Context, bidder string, 
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.HistoryLendUserAuctionTypeKey(bidder, appID, auctiontypes.DutchString)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

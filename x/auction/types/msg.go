@@ -3,6 +3,8 @@ package types
 import (
 	"errors"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -40,10 +42,10 @@ func (m MsgPlaceSurplusBidRequest) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
 	}
 	if !m.Amount.IsValid() {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "bid amount %s", m.Amount)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidCoins, "bid amount %s", m.Amount)
 	}
 	return nil
 }
@@ -81,7 +83,7 @@ func (m MsgPlaceDebtBidRequest) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
 	}
 	return nil
 }
@@ -118,7 +120,7 @@ func (m MsgPlaceDutchBidRequest) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
 	}
 	return nil
 }
@@ -155,7 +157,7 @@ func (m MsgPlaceDutchLendBidRequest) ValidateBasic() error {
 	}
 	_, err := sdk.AccAddressFromBech32(m.Bidder)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "--from address cannot be empty or invalid")
 	}
 	return nil
 }

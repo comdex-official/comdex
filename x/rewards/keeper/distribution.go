@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"time"
 
@@ -63,7 +64,7 @@ func (k Keeper) BeginRewardDistributions(
 ) (sdk.Coin, error) {
 	rewardDistributionData, err := k.GetRewardDistributionData(ctx, gauge, coinToDistribute, epochCount, epochDuration)
 	if err != nil {
-		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), err
+		return sdk.NewCoin(coinToDistribute.Denom, sdkmath.NewInt(0)), err
 	}
 
 	newDistributionInfo := types.DistributionInfo{
@@ -71,7 +72,7 @@ func (k Keeper) BeginRewardDistributions(
 		Coins:     []sdk.Coins{},
 	}
 
-	totalDistributionCoinsCalculated := sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0))
+	totalDistributionCoinsCalculated := sdk.NewCoin(coinToDistribute.Denom, sdkmath.NewInt(0))
 
 	for _, distrData := range rewardDistributionData {
 		newDistributionInfo.Addresses = append(newDistributionInfo.Addresses, distrData.RewardReceiver)
@@ -80,7 +81,7 @@ func (k Keeper) BeginRewardDistributions(
 	}
 
 	if totalDistributionCoinsCalculated.Amount.GT(coinToDistribute.Amount) {
-		return sdk.NewCoin(coinToDistribute.Denom, sdk.NewInt(0)), types.ErrInvalidCalculatedAMount
+		return sdk.NewCoin(coinToDistribute.Denom, sdkmath.NewInt(0)), types.ErrInvalidCalculatedAMount
 	}
 
 	k.doDistributionSends(ctx, gauge.GaugeTypeId, &newDistributionInfo)

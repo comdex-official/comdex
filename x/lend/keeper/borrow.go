@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -65,10 +66,10 @@ func (k Keeper) GetBorrow(ctx sdk.Context, ID uint64) (borrow types.BorrowAsset,
 func (k Keeper) GetAllBorrow(ctx sdk.Context) (borrowAsset []types.BorrowAsset) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.BorrowPairKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -108,10 +109,10 @@ func (k Keeper) HasBorrowForAddressByPair(ctx sdk.Context, address string, pairI
 func (k Keeper) GetBorrows(ctx sdk.Context) (borrowIds []uint64, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -154,10 +155,10 @@ func (k Keeper) GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest t
 func (k Keeper) GetAllBorrowInterestTracker(ctx sdk.Context) (interest []types.BorrowInterestTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.BorrowInterestTrackerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.BorrowInterestTrackerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

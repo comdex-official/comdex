@@ -1,7 +1,9 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+
 	"github.com/comdex-official/comdex/x/collector/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -105,7 +107,7 @@ func (k Keeper) Refund(ctx sdk.Context) error {
 		return types.ErrorInsufficientBalance
 	} else {
 		for i := 0; i < len(refundData); i++ {
-			cmstCoins := sdk.NewCoin("ucmst", sdk.NewInt(refundData[i].amount))
+			cmstCoins := sdk.NewCoin("ucmst", sdkmath.NewInt(refundData[i].amount))
 
 			vaultOwner1, err := sdk.AccAddressFromBech32(refundData[i].vaultOwner)
 			if err != nil {
@@ -121,7 +123,7 @@ func (k Keeper) Refund(ctx sdk.Context) error {
 		}
 
 		// decrease net fee collected
-		err := k.DecreaseNetFeeCollectedData(ctx, 2, 3, sdk.NewInt(20163520000))
+		err := k.DecreaseNetFeeCollectedData(ctx, 2, 3, sdkmath.NewInt(20163520000))
 		if err != nil {
 			return err
 		}

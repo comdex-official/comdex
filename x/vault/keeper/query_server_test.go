@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/vault/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/stretchr/testify/suite"
@@ -24,8 +25,8 @@ func (s *KeeperTestSuite) TestQueryAllVaults() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 	}{
 		{
 			Address:             addr1,
@@ -93,8 +94,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 	}{
 		{
 			Address:             addr1,
@@ -159,8 +160,8 @@ func (s *KeeperTestSuite) TestQueryVault() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultResponse
@@ -299,8 +300,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoByVaultID() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultInfoByVaultIDRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultInfoByVaultIDResponse
@@ -450,8 +451,8 @@ func (s *KeeperTestSuite) TestQueryVaultInfoOfOwnerByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultInfoOfOwnerByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultInfoOfOwnerByAppResponse
@@ -609,8 +610,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultsByAppAndExtendedPair() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryAllVaultsByAppAndExtendedPairRequest
 		ExpErr              error
 		ExpResp             *types.QueryAllVaultsByAppAndExtendedPairResponse
@@ -769,8 +770,8 @@ func (s *KeeperTestSuite) TestQueryVaultIDOfOwnerByExtendedPairAndApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultIDOfOwnerByExtendedPairAndAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultIDOfOwnerByExtendedPairAndAppResponse
@@ -877,8 +878,8 @@ func (s *KeeperTestSuite) TestQueryVaultIdsByAppInAllExtendedPairs() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultIdsByAppInAllExtendedPairsRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultIdsByAppInAllExtendedPairsResponse
@@ -984,8 +985,8 @@ func (s *KeeperTestSuite) TestQueryAllVaultIdsByAnOwner() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryAllVaultIdsByAnOwnerRequest
 		ExpErr              error
 		ExpResp             *types.QueryAllVaultIdsByAnOwnerResponse
@@ -1091,8 +1092,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryTokenMintedByAppAndExtendedPairRequest
 		ExpErr              error
 		ExpResp             *types.QueryTokenMintedByAppAndExtendedPairResponse
@@ -1113,7 +1114,7 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			Req:                 &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
 			ExpErr:              nil,
 			ExpResp: &types.QueryTokenMintedByAppAndExtendedPairResponse{
-				TokenMinted: sdk.NewInt(200000000),
+				TokenMinted: sdkmath.NewInt(200000000),
 			},
 		},
 		{
@@ -1126,7 +1127,7 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			Req:                 &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID1, ExtendedPairId: extendedVaultPairID1},
 			ExpErr:              nil,
 			ExpResp: &types.QueryTokenMintedByAppAndExtendedPairResponse{
-				TokenMinted: sdk.NewInt(400000000),
+				TokenMinted: sdkmath.NewInt(400000000),
 			},
 		},
 		{
@@ -1139,7 +1140,7 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			Req:                 &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID2, ExtendedPairId: extendedVaultPairID2},
 			ExpErr:              nil,
 			ExpResp: &types.QueryTokenMintedByAppAndExtendedPairResponse{
-				TokenMinted: sdk.NewInt(200000000),
+				TokenMinted: sdkmath.NewInt(200000000),
 			},
 		},
 		{
@@ -1152,7 +1153,7 @@ func (s *KeeperTestSuite) TestQueryTokenMintedByAppAndExtendedPair() {
 			Req:                 &types.QueryTokenMintedByAppAndExtendedPairRequest{AppId: appID2, ExtendedPairId: extendedVaultPairID2},
 			ExpErr:              nil,
 			ExpResp: &types.QueryTokenMintedByAppAndExtendedPairResponse{
-				TokenMinted: sdk.NewInt(400000000),
+				TokenMinted: sdkmath.NewInt(400000000),
 			},
 		},
 	}
@@ -1192,8 +1193,8 @@ func (s *KeeperTestSuite) TestQueryTokenMintedAssetWiseByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryTokenMintedAssetWiseByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryTokenMintedAssetWiseByAppResponse
@@ -1307,8 +1308,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultCountByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultCountByAppResponse
@@ -1420,8 +1421,8 @@ func (s *KeeperTestSuite) TestQueryVaultCountByAppAndExtendedPair() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryVaultCountByAppAndExtendedPairRequest
 		ExpErr              error
 		ExpResp             *types.QueryVaultCountByAppAndExtendedPairResponse
@@ -1533,8 +1534,8 @@ func (s *KeeperTestSuite) TestQueryTotalValueLockedByAppAndExtendedPair() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryTotalValueLockedByAppAndExtendedPairRequest
 		ExpErr              error
 		ExpResp             uint64
@@ -1644,8 +1645,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairIDsByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryExtendedPairIDsByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryExtendedPairIDsByAppResponse
@@ -1751,7 +1752,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByVaultID() {
 		Address                     sdk.AccAddress
 		AppID                       uint64
 		ExtendedVaultPairID         uint64
-		AmountIn                    sdk.Int
+		AmountIn                    sdkmath.Int
 		Req                         *types.QueryStableVaultByVaultIDRequest
 		ExpErr                      error
 		ExpResp                     *types.QueryStableVaultByVaultIDResponse
@@ -1840,7 +1841,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByApp() {
 		Address                     sdk.AccAddress
 		AppID                       uint64
 		ExtendedVaultPairID         uint64
-		AmountIn                    sdk.Int
+		AmountIn                    sdkmath.Int
 		Req                         *types.QueryStableVaultByAppRequest
 		ExpErr                      error
 		ExpResp                     *types.QueryStableVaultByAppResponse
@@ -1933,7 +1934,7 @@ func (s *KeeperTestSuite) TestQueryStableVaultByAppAndExtendedPair() {
 		Address                     sdk.AccAddress
 		AppID                       uint64
 		ExtendedVaultPairID         uint64
-		AmountIn                    sdk.Int
+		AmountIn                    sdkmath.Int
 		Req                         *types.QueryStableVaultByAppAndExtendedPairRequest
 		ExpErr                      error
 		ExpResp                     *types.QueryStableVaultByAppAndExtendedPairResponse
@@ -2022,8 +2023,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByAppAndExtendedPair(
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryExtendedPairVaultMappingByAppAndExtendedPairRequest
 		ExpErr              error
 		ExpResp             *types.QueryExtendedPairVaultMappingByAppAndExtendedPairResponse
@@ -2152,8 +2153,8 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaultMappingByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryExtendedPairVaultMappingByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryExtendedPairVaultMappingByAppResponse
@@ -2290,8 +2291,8 @@ func (s *KeeperTestSuite) TestQueryTVLByAppOfAllExtendedPairs() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryTVLByAppOfAllExtendedPairsRequest
 		ExpErr              error
 		ExpResp             *types.QueryTVLByAppOfAllExtendedPairsResponse
@@ -2412,8 +2413,8 @@ func (s *KeeperTestSuite) TestQueryTVLByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryTVLByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryTVLByAppResponse
@@ -2519,8 +2520,8 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryUserMyPositionByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryUserMyPositionByAppResponse
@@ -2550,7 +2551,7 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 				CollateralLocked:  newInt(1000000000),
 				TotalDue:          newInt(400000000),
 				AvailableToBorrow: newInt(34782608),
-				AverageCrRatio:    sdk.MustNewDecFromStr("2.5"),
+				AverageCrRatio:    sdkmath.LegacyMustNewDecFromStr("2.5"),
 			},
 		},
 		{
@@ -2566,7 +2567,7 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 				CollateralLocked:  newInt(1000000000),
 				TotalDue:          newInt(400000000),
 				AvailableToBorrow: newInt(34782608),
-				AverageCrRatio:    sdk.MustNewDecFromStr("2.5"),
+				AverageCrRatio:    sdkmath.LegacyMustNewDecFromStr("2.5"),
 			},
 		},
 		{
@@ -2582,7 +2583,7 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 				CollateralLocked:  newInt(1000000000),
 				TotalDue:          newInt(400000000),
 				AvailableToBorrow: newInt(34782608),
-				AverageCrRatio:    sdk.MustNewDecFromStr("2.5"),
+				AverageCrRatio:    sdkmath.LegacyMustNewDecFromStr("2.5"),
 			},
 		},
 		{
@@ -2598,7 +2599,7 @@ func (s *KeeperTestSuite) TestQueryUserMyPositionByApp() {
 				CollateralLocked:  newInt(1000000000),
 				TotalDue:          newInt(400000000),
 				AvailableToBorrow: newInt(34782608),
-				AverageCrRatio:    sdk.MustNewDecFromStr("2.5"),
+				AverageCrRatio:    sdkmath.LegacyMustNewDecFromStr("2.5"),
 			},
 		},
 	}
@@ -2641,8 +2642,8 @@ func (s *KeeperTestSuite) TestQueryUserExtendedPairTotalData() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryUserExtendedPairTotalDataRequest
 		ExpErr              error
 		ExpResp             *types.QueryUserExtendedPairTotalDataResponse
@@ -2776,8 +2777,8 @@ func (s *KeeperTestSuite) TestQueryPairsLockedAndMintedStatisticByApp() {
 		Address             sdk.AccAddress
 		AppID               uint64
 		ExtendedVaultPairID uint64
-		AmountIn            sdk.Int
-		AmountOut           sdk.Int
+		AmountIn            sdkmath.Int
+		AmountOut           sdkmath.Int
 		Req                 *types.QueryPairsLockedAndMintedStatisticByAppRequest
 		ExpErr              error
 		ExpResp             *types.QueryPairsLockedAndMintedStatisticByAppResponse

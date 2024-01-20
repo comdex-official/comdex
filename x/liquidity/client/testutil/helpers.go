@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -26,7 +28,7 @@ var commonArgs = []string{
 func MsgCreate(
 	clientCtx client.Context,
 	appMappingID, extendedPairVaultID uint64,
-	amountIn, amountOut sdk.Int,
+	amountIn, amountOut sdkmath.Int,
 	from string,
 	extraArgs ...string,
 ) (testutil.BufferWriter, error) {
@@ -52,7 +54,7 @@ func (s *LiquidityIntegrationTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -77,7 +79,7 @@ func (s *LiquidityIntegrationTestSuite) CreateNewAsset(name, denom string, price
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})

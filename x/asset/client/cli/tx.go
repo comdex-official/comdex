@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
@@ -103,7 +104,7 @@ func NewCreateMultipleAssets(clientCtx client.Context, txf tx.Factory, fs *flag.
 		newIsOnChain := ParseBoolFromString(isOnChain[i])
 		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
 		newIsCdpMintable := ParseBoolFromString(isCdpMintable[i])
-		newDecimals, ok := sdk.NewIntFromString(decimals[i])
+		newDecimals, ok := sdkmath.NewIntFromString(decimals[i])
 		if !ok {
 			return txf, nil, types.ErrorInvalidDecimals
 		}
@@ -126,10 +127,6 @@ func NewCreateMultipleAssets(clientCtx client.Context, txf tx.Factory, fs *flag.
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 
@@ -209,7 +206,7 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 	from := clientCtx.GetFromAddress()
 
-	newDecimals, ok := sdk.NewIntFromString(decimals)
+	newDecimals, ok := sdkmath.NewIntFromString(decimals)
 	if !ok {
 		return txf, nil, types.ErrorInvalidDecimals
 	}
@@ -231,10 +228,6 @@ func NewCreateAssets(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet)
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 
@@ -261,7 +254,7 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 
 			denom := args[2]
 
-			decimals, ok := sdk.NewIntFromString(args[3])
+			decimals, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidDecimals
 			}
@@ -302,10 +295,6 @@ func NewCmdSubmitUpdateAssetProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -373,10 +362,6 @@ func NewCmdSubmitAddPairsProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -453,10 +438,6 @@ func NewCmdSubmitUpdatePairProposal() *cobra.Command {
 				return err
 			}
 
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -528,10 +509,6 @@ func NewCmdSubmitAddMultiplePairsProposal() *cobra.Command {
 				return err
 			}
 
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -581,7 +558,7 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 
 			var aMap types.AppData
 			var bMap []types.MintGenesisToken
-			newMinGovDeposit, ok := sdk.NewIntFromString(minGovDeposit)
+			newMinGovDeposit, ok := sdkmath.NewIntFromString(minGovDeposit)
 
 			if err != nil {
 				return err
@@ -610,10 +587,6 @@ func NewCmdSubmitAddAppProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -651,7 +624,7 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 				return err
 			}
 
-			minGovDeposit, ok := sdk.NewIntFromString(args[2])
+			minGovDeposit, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidMinGovSupply
 			}
@@ -686,10 +659,6 @@ func NewCmdSubmitUpdateGovTimeInAppProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -786,7 +755,7 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 	}
 
 	var bMap []types.MintGenesisToken
-	newGenesisSupply, ok := sdk.NewIntFromString(genesisSupply)
+	newGenesisSupply, ok := sdkmath.NewIntFromString(genesisSupply)
 	if !ok {
 		return txf, nil, types.ErrorInvalidGenesisSupply
 	}
@@ -820,9 +789,6 @@ func NewCreateAssetInAppMsg(clientCtx client.Context, txf tx.Factory, fs *flag.F
 		return txf, nil, err
 	}
 
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
 	return txf, msg, nil
 }
 
@@ -918,11 +884,11 @@ func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *
 		newIsOnChain := ParseBoolFromString(isOnChain[i])
 		newAssetOraclePrice := ParseBoolFromString(assetOraclePrice[i])
 		newIsCdpMintable := ParseBoolFromString(isCdpMintable[i])
-		newDecimals, ok := sdk.NewIntFromString(decimals[i])
+		newDecimals, ok := sdkmath.NewIntFromString(decimals[i])
 		if !ok {
 			return txf, nil, types.ErrorInvalidDecimals
 		}
-		newAssetOut, _ := sdk.NewIntFromString(assetOut[i])
+		newAssetOut, _ := sdkmath.NewIntFromString(assetOut[i])
 
 		assets = append(assets, types.AssetPair{
 			Name:                  names[i],
@@ -944,10 +910,6 @@ func NewCreateMultipleAssetsPairs(clientCtx client.Context, txf tx.Factory, fs *
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 

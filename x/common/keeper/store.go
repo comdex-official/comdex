@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/common/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 )
 
@@ -75,10 +76,10 @@ func (k Keeper) DeleteContract(ctx sdk.Context, gameID uint64) {
 func (k Keeper) GetAllContract(ctx sdk.Context) (contracts []types.WhitelistedContract) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.SetContractKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.SetContractKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

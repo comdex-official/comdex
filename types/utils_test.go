@@ -5,35 +5,35 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	sdkmath "cosmossdk.io/math"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 
 	"github.com/comdex-official/comdex/types"
 )
 
 func TestGetShareValue(t *testing.T) {
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(100), sdk.MustNewDecFromStr("0.9")), sdk.NewInt(90))
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(100), sdk.MustNewDecFromStr("1.1")), sdk.NewInt(110))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(100), sdkmath.LegacyMustNewDecFromStr("0.9")), sdkmath.NewInt(90))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(100), sdkmath.LegacyMustNewDecFromStr("1.1")), sdkmath.NewInt(110))
 
 	// truncated
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(101), sdk.MustNewDecFromStr("0.9")), sdk.NewInt(90))
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(101), sdk.MustNewDecFromStr("1.1")), sdk.NewInt(111))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(101), sdkmath.LegacyMustNewDecFromStr("0.9")), sdkmath.NewInt(90))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(101), sdkmath.LegacyMustNewDecFromStr("1.1")), sdkmath.NewInt(111))
 
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(100), sdk.MustNewDecFromStr("0")), sdk.NewInt(0))
-	require.EqualValues(t, types.GetShareValue(sdk.NewInt(0), sdk.MustNewDecFromStr("1.1")), sdk.NewInt(0))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(100), sdkmath.LegacyMustNewDecFromStr("0")), sdkmath.NewInt(0))
+	require.EqualValues(t, types.GetShareValue(sdkmath.NewInt(0), sdkmath.LegacyMustNewDecFromStr("1.1")), sdkmath.NewInt(0))
 }
 
 func TestAddOrInit(t *testing.T) {
 	strIntMap := make(types.StrIntMap)
 
 	// Set when the key not existed on the map
-	strIntMap.AddOrSet("a", sdk.NewInt(1))
-	require.Equal(t, strIntMap["a"], sdk.NewInt(1))
+	strIntMap.AddOrSet("a", sdkmath.NewInt(1))
+	require.Equal(t, strIntMap["a"], sdkmath.NewInt(1))
 
 	// Added when the key existed on the map
-	strIntMap.AddOrSet("a", sdk.NewInt(1))
-	require.Equal(t, strIntMap["a"], sdk.NewInt(2))
+	strIntMap.AddOrSet("a", sdkmath.NewInt(1))
+	require.Equal(t, strIntMap["a"], sdkmath.NewInt(2))
 }
 
 func TestParseTime(t *testing.T) {
@@ -180,7 +180,7 @@ func TestDateRangeIncludes(t *testing.T) {
 }
 
 func TestSafeMath(t *testing.T) {
-	maxInt, _ := sdk.NewIntFromString("115792089237316195423570985008687907853269984665640564039457584007913129639935")
+	maxInt, _ := sdkmath.NewIntFromString("115792089237316195423570985008687907853269984665640564039457584007913129639935")
 
 	for _, tc := range []struct {
 		op       func()
@@ -188,36 +188,36 @@ func TestSafeMath(t *testing.T) {
 	}{
 		{
 			func() {
-				maxInt.Add(sdk.OneInt())
+				maxInt.Add(sdkmath.OneInt())
 			},
 			true,
 		},
 		{
 			func() {
-				maxInt.Sub(sdk.OneInt())
+				maxInt.Sub(sdkmath.OneInt())
 			},
 			false,
 		},
 		{
 			func() {
 				i, _ := new(big.Int).SetString("133499189745056880149688856635597007162669032647290798121690100488888732861290034376435130433535", 10)
-				sdk.NewDecFromBigIntWithPrec(i, sdk.Precision)
+				sdkmath.LegacyNewDecFromBigIntWithPrec(i, sdkmath.LegacyPrecision)
 			},
 			false,
 		},
 		{
 			func() {
 				i, _ := new(big.Int).SetString("133499189745056880149688856635597007162669032647290798121690100488888732861290034376435130433535", 10)
-				d := sdk.NewDecFromBigIntWithPrec(i, sdk.Precision)
-				d.Add(sdk.NewDecWithPrec(1, sdk.Precision))
+				d := sdkmath.LegacyNewDecFromBigIntWithPrec(i, sdkmath.LegacyPrecision)
+				d.Add(sdkmath.LegacyNewDecWithPrec(1, sdkmath.LegacyPrecision))
 			},
 			true,
 		},
 		{
 			func() {
 				i, _ := new(big.Int).SetString("1334991897450568801496888566355970071626690326472907981216901004888887328612900343764351304", 10)
-				d := sdk.NewDecFromBigIntWithPrec(i, sdk.Precision)
-				d.Quo(sdk.NewDecWithPrec(1, 10))
+				d := sdkmath.LegacyNewDecFromBigIntWithPrec(i, sdkmath.LegacyPrecision)
+				d.Quo(sdkmath.LegacyNewDecWithPrec(1, 10))
 			},
 			true,
 		},

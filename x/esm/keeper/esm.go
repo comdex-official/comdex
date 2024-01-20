@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -38,10 +40,10 @@ func (k Keeper) GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParam
 func (k Keeper) GetAllESMTriggerParams(ctx sdk.Context) (eSMTriggerParams []types.ESMTriggerParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ESMTriggerParamsKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ESMTriggerParamsKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -84,10 +86,10 @@ func (k Keeper) GetCurrentDepositStats(ctx sdk.Context, id uint64) (depositStats
 func (k Keeper) GetAllCurrentDepositStats(ctx sdk.Context) (currentDepositStats []types.CurrentDepositStats) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.CurrentDepositStatsPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.CurrentDepositStatsPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -130,10 +132,10 @@ func (k Keeper) GetESMStatus(ctx sdk.Context, id uint64) (esmStatus types.ESMSta
 func (k Keeper) GetAllESMStatus(ctx sdk.Context) (eSMStatus []types.ESMStatus) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ESMStatusPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ESMStatusPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -174,10 +176,10 @@ func (k Keeper) SetUserDepositByApp(ctx sdk.Context, userDeposits types.UsersDep
 func (k Keeper) GetAllUserDepositByApp(ctx sdk.Context) (usersDepositMapping []types.UsersDepositMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.UserDepositByAppPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.UserDepositByAppPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -246,10 +248,10 @@ func (k Keeper) GetDataAfterCoolOff(ctx sdk.Context, id uint64) (esmDataAfterCoo
 func (k Keeper) GetAllDataAfterCoolOff(ctx sdk.Context) (dataAfterCoolOff []types.DataAfterCoolOff) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ESMDataAfterCoolOffPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ESMDataAfterCoolOffPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -341,9 +343,9 @@ func (k Keeper) SetUpShareCalculation(ctx sdk.Context, appID uint64) error {
 		} else {
 			amt.Share = amtDValue.Quo(coolOffData.DebtTotalAmount)
 			debtDValue := amt.Share.Mul(coolOffData.CollateralTotalAmount)
-			// amt.DebtTokenWorth = debtDValue.Quo(sdk.Dec(amt.Amount))
-			denominator := sdk.NewDecFromInt(assetData.Decimals)
-			numerator := sdk.NewDecFromInt(amt.Amount).Quo(denominator)
+			// amt.DebtTokenWorth = debtDValue.Quo(sdkmath.LegacyDec(amt.Amount))
+			denominator := sdkmath.LegacyNewDecFromInt(assetData.Decimals)
+			numerator := sdkmath.LegacyNewDecFromInt(amt.Amount).Quo(denominator)
 			amt.DebtTokenWorth = debtDValue.Quo(numerator)
 		}
 		k.SetAssetToAmount(ctx, amt)
@@ -402,7 +404,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 				itemc.Amount = data.AmountIn
 				itemc.IsCollateral = true
 				coolOffData.CollateralTotalAmount = k.CalcDollarValueOfToken(ctx, rateIn, data.AmountIn, assetInData.Decimals)
-				itemc.Share = sdk.OneDec()
+				itemc.Share = sdkmath.LegacyOneDec()
 
 				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 				if err != nil {
@@ -415,7 +417,7 @@ func (k Keeper) SetUpCollateralRedemptionForVault(ctx sdk.Context, appID uint64,
 				itemd.Amount = data.AmountOut
 				itemd.IsCollateral = false
 				coolOffData.DebtTotalAmount = k.CalcDollarValueOfToken(ctx, rateOut, data.AmountOut, assetOutData.Decimals)
-				itemd.Share = sdk.OneDec()
+				itemd.Share = sdkmath.LegacyOneDec()
 				k.SetAssetToAmount(ctx, itemd)
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
@@ -515,7 +517,7 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 				itemc.Amount = data.AmountIn
 				itemc.IsCollateral = true
 				coolOffData.CollateralTotalAmount = k.CalcDollarValueOfToken(ctx, rateIn, data.AmountIn, assetInData.Decimals)
-				itemc.Share = sdk.OneDec()
+				itemc.Share = sdkmath.LegacyOneDec()
 
 				err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, data.AmountIn)))
 				if err != nil {
@@ -528,11 +530,11 @@ func (k Keeper) SetUpCollateralRedemptionForStableVault(ctx sdk.Context, appID u
 				itemd.Amount = data.AmountOut
 				itemd.IsCollateral = false
 				coolOffData.DebtTotalAmount = k.CalcDollarValueOfToken(ctx, rateOut, data.AmountOut, assetOutData.Decimals)
-				itemd.Share = sdk.OneDec()
+				itemd.Share = sdkmath.LegacyOneDec()
 				k.SetAssetToAmount(ctx, itemd)
 
 				// debt token worth ????
-				// itemd.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemd.Share).Quo(sdk.NewDecFromInt(itemd.Amount))
+				// itemd.DebtTokenWorth = coolOffData.CollateralTotalAmount.Mul(itemd.Share).Quo(sdkmath.LegacyNewDecFromInt(itemd.Amount))
 
 				k.SetDataAfterCoolOff(ctx, coolOffData)
 			} else {
@@ -658,10 +660,10 @@ func (k Keeper) GetAllAssetToAmount(ctx sdk.Context, appID uint64) (assetToAmoun
 	var (
 		store = k.Store(ctx)
 		key   = types.AppAssetToAmountKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -676,9 +678,9 @@ func (k Keeper) GetAllAssetToAmount(ctx sdk.Context, appID uint64) (assetToAmoun
 	return assetToAmount
 }
 
-func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, rate uint64, amt sdk.Int, decimals sdk.Int) (price sdk.Dec) {
-	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(rate)))
-	denominator := sdk.NewDecFromInt(decimals)
+func (k Keeper) CalcDollarValueOfToken(ctx sdk.Context, rate uint64, amt sdkmath.Int, decimals sdkmath.Int) (price sdkmath.LegacyDec) {
+	numerator := sdkmath.LegacyNewDecFromInt(amt).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(rate)))
+	denominator := sdkmath.LegacyNewDecFromInt(decimals)
 	return numerator.Quo(denominator)
 }
 

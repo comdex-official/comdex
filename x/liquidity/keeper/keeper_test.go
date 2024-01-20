@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	sdkmath "cosmossdk.io/math"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	chain "github.com/comdex-official/comdex/app"
@@ -39,7 +38,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.keeper = s.app.LiquidityKeeper
 	s.querier = keeper.Querier{Keeper: s.keeper}
 	s.msgServer = keeper.NewMsgServerImpl(s.keeper)
@@ -93,7 +92,7 @@ func coinEq(exp, got sdk.Coin) (bool, string, string, string) {
 }
 
 func coinsEq(exp, got sdk.Coins) (bool, string, string, string) {
-	return exp.IsEqual(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
+	return exp.Equal(got), "expected:\t%v\ngot:\t\t%v", exp.String(), got.String()
 }
 
 func intEq(exp, got sdkmath.Int) (bool, string, string, string) {

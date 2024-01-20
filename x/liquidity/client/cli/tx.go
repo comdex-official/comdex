@@ -1,6 +1,7 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"strconv"
 	"strings"
@@ -176,17 +177,17 @@ $ %s tx %s create-ranged-pool 1 1 1000000000uatom,10000000000stake 1.3 2.5 1.5 -
 				return fmt.Errorf("invalid deposit coins: %w", err)
 			}
 
-			minPrice, err := sdk.NewDecFromStr(args[3])
+			minPrice, err := sdkmath.LegacyNewDecFromStr(args[3])
 			if err != nil {
 				return fmt.Errorf("invalid min price: %w", err)
 			}
 
-			maxPrice, err := sdk.NewDecFromStr(args[4])
+			maxPrice, err := sdkmath.LegacyNewDecFromStr(args[4])
 			if err != nil {
 				return fmt.Errorf("invalid max price: %w", err)
 			}
 
-			initialPrice, err := sdk.NewDecFromStr(args[5])
+			initialPrice, err := sdkmath.LegacyNewDecFromStr(args[5])
 			if err != nil {
 				return fmt.Errorf("invalid initial price: %w", err)
 			}
@@ -368,12 +369,12 @@ $ %s tx %s limit-order 1 1 s 10000uatom stake 2.0 10000 --order-lifespan=10m --f
 				return fmt.Errorf("invalid demand coin denom: %w", err)
 			}
 
-			price, err := sdk.NewDecFromStr(args[5])
+			price, err := sdkmath.LegacyNewDecFromStr(args[5])
 			if err != nil {
 				return fmt.Errorf("invalid price: %w", err)
 			}
 
-			amt, ok := sdk.NewIntFromString(args[6])
+			amt, ok := sdkmath.NewIntFromString(args[6])
 			if !ok {
 				return fmt.Errorf("invalid amount: %s", args[6])
 			}
@@ -462,7 +463,7 @@ $ %s tx %s market-order 1 1 s 10000uatom stake 10000 --order-lifespan=10m --from
 				return fmt.Errorf("invalid demand coin denom: %w", err)
 			}
 
-			amt, ok := sdk.NewIntFromString(args[5])
+			amt, ok := sdkmath.NewIntFromString(args[5])
 			if !ok {
 				return fmt.Errorf("invalid amount: %s", args[5])
 			}
@@ -539,32 +540,32 @@ $ %s tx %s mm-order 1 1 102 101 10000 0 0 0 --from mykey
 				return fmt.Errorf("parse pair id: %w", err)
 			}
 
-			maxSellPrice, err := sdk.NewDecFromStr(args[2])
+			maxSellPrice, err := sdkmath.LegacyNewDecFromStr(args[2])
 			if err != nil {
 				return fmt.Errorf("invalid max sell price: %w", err)
 			}
 
-			minSellPrice, err := sdk.NewDecFromStr(args[3])
+			minSellPrice, err := sdkmath.LegacyNewDecFromStr(args[3])
 			if err != nil {
 				return fmt.Errorf("invalid min sell price: %w", err)
 			}
 
-			sellAmt, ok := sdk.NewIntFromString(args[4])
+			sellAmt, ok := sdkmath.NewIntFromString(args[4])
 			if !ok {
 				return fmt.Errorf("invalid sell amount: %s", args[4])
 			}
 
-			maxBuyPrice, err := sdk.NewDecFromStr(args[5])
+			maxBuyPrice, err := sdkmath.LegacyNewDecFromStr(args[5])
 			if err != nil {
 				return fmt.Errorf("invalid max buy price: %w", err)
 			}
 
-			minBuyPrice, err := sdk.NewDecFromStr(args[6])
+			minBuyPrice, err := sdkmath.LegacyNewDecFromStr(args[6])
 			if err != nil {
 				return fmt.Errorf("invalid min buy price: %w", err)
 			}
 
-			buyAmt, ok := sdk.NewIntFromString(args[7])
+			buyAmt, ok := sdkmath.NewIntFromString(args[7])
 			if !ok {
 				return fmt.Errorf("invalid buy amount: %s", args[7])
 			}
@@ -902,10 +903,6 @@ func NewCmdUpdateGenericParamsProposal() *cobra.Command {
 				return err
 			}
 
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
@@ -970,10 +967,6 @@ func NewCmdCreateNewLiquidityPairProposal() *cobra.Command {
 
 			msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 			if err != nil {
-				return err
-			}
-
-			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 

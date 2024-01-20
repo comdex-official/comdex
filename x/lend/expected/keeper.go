@@ -1,38 +1,39 @@
 package expected
 
 import (
+	"context"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/liquidation/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	sdkmath "cosmossdk.io/math"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 )
 
 type BankKeeper interface {
-	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
-	GetAllBalances(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+	BurnCoins(ctx context.Context, name string, coins sdk.Coins) error
+	MintCoins(ctx context.Context, name string, coins sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx context.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	SpendableCoins(ctx context.Context, address sdk.AccAddress) sdk.Coins
+	GetAllBalances(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 	SendCoinsFromModuleToModule(
-		ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins,
+		ctx context.Context, senderModule, recipientModule string, amt sdk.Coins,
 	) error
-	SendCoins(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	SendCoins(ctx context.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin 
 }
 
 type AccountKeeper interface {
 	GetModuleAddress(name string) sdk.AccAddress
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 }
 
 type MarketKeeper interface {
 	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error)
 }
 
 type BandOracleKeeper interface {

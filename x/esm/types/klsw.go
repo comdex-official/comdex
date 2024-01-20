@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -16,7 +17,7 @@ func NewMsgKillRequest(from sdk.AccAddress, switchParams KillSwitchParams) *MsgK
 
 func (m *MsgKillRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(errors.ErrInvalidAddress, "from cannot be empty")
+		return errorsmod.Wrap(errors.ErrInvalidAddress, "from cannot be empty")
 	}
 
 	return nil

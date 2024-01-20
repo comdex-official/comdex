@@ -1,9 +1,9 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -33,7 +33,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	return err
 }
 
-func MigrateExternalRewardLends(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateExternalRewardLends(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	key := types.ExternalRewardsLendMappingKey(3)
 	value := store.Get(key)
 	var extRew types.LendExternalRewards
@@ -45,7 +45,7 @@ func MigrateExternalRewardLends(store sdk.KVStore, cdc codec.BinaryCodec) error 
 	return nil
 }
 
-func SetExternalRewardLends(store sdk.KVStore, cdc codec.BinaryCodec, extRew types.LendExternalRewards) {
+func SetExternalRewardLends(store storetypes.KVStore, cdc codec.BinaryCodec, extRew types.LendExternalRewards) {
 	var (
 		key   = types.ExternalRewardsLendMappingKey(extRew.AppMappingId)
 		value = cdc.MustMarshal(&extRew)

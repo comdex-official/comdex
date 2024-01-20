@@ -3,6 +3,8 @@ package keeper
 import (
 	"sort"
 
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -67,10 +69,10 @@ func (k Keeper) GetLend(ctx sdk.Context, id uint64) (lend types.LendAsset, found
 func (k Keeper) GetAllLend(ctx sdk.Context) (lendAsset []types.LendAsset) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendUserPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LendUserPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -161,10 +163,10 @@ func (k Keeper) DeletePool(ctx sdk.Context, id uint64) {
 func (k Keeper) GetPools(ctx sdk.Context) (pools []types.Pool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.PoolKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.PoolKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -208,10 +210,10 @@ func (k Keeper) GetAssetToPair(ctx sdk.Context, assetID, poolID uint64) (assetTo
 func (k Keeper) GetAllAssetToPair(ctx sdk.Context) (assetToPairMapping []types.AssetToPairMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetToPairMappingKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AssetToPairMappingKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -254,10 +256,10 @@ func (k Keeper) GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID
 func (k Keeper) GetAllAssetStatsByPoolIDAndAssetID(ctx sdk.Context) (assetStats []types.PoolAssetLBMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AssetStatsByPoolIDAndAssetIDKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -308,10 +310,10 @@ func (k Keeper) GetLendRewardTracker(ctx sdk.Context, id uint64) (rewards types.
 func (k Keeper) GetAllLendRewardTracker(ctx sdk.Context) (rewards []types.LendRewardsTracker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendRewardsTrackerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LendRewardsTrackerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -355,10 +357,10 @@ func (k Keeper) GetUserTotalMappingData(ctx sdk.Context, address string) (mappin
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLendBorrowKey(address)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -378,10 +380,10 @@ func (k Keeper) GetAllUserTotalMappingData(ctx sdk.Context) (mappingData []types
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLendBorrowMappingKeyPrefix
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -470,10 +472,10 @@ func (k Keeper) GetReserveBuybackAssetData(ctx sdk.Context, id uint64) (reserve 
 func (k Keeper) GetAllReserveBuybackAssetData(ctx sdk.Context) (reserve []types.ReserveBuybackAssetData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.ReserveBuybackAssetDataKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.ReserveBuybackAssetDataKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -558,10 +560,10 @@ func (k Keeper) GetFundModBal(ctx sdk.Context) (modBal types.ModBal, found bool)
 func (k Keeper) GetAllFundModBal(ctx sdk.Context) (modBal types.ModBal) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.KeyFundModBal)
+		iter  = storetypes.KVStorePrefixIterator(store, types.KeyFundModBal)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -600,10 +602,10 @@ func (k Keeper) GetFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal, fou
 func (k Keeper) GetAllFundReserveBal(ctx sdk.Context) (resBal types.ReserveBal) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.KeyFundReserveBal)
+		iter  = storetypes.KVStorePrefixIterator(store, types.KeyFundReserveBal)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -642,10 +644,10 @@ func (k Keeper) GetAllReserveStatsByAssetID(ctx sdk.Context, id uint64) (allRese
 func (k Keeper) GetTotalReserveStatsByAssetID(ctx sdk.Context) (reserve []types.AllReserveStats) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AllReserveStatsPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AllReserveStatsPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
@@ -9,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func Dec(s string) sdk.Dec {
-	dec, err := sdk.NewDecFromStr(s)
+func Dec(s string) sdkmath.LegacyDec {
+	dec, err := sdkmath.LegacyNewDecFromStr(s)
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +24,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
@@ -32,7 +33,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg2 := assetTypes.AppData{
 		Name:             "harbor",
 		ShortName:        "harbor",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
@@ -40,7 +41,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg3 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg3)
@@ -49,7 +50,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg4 := assetTypes.Asset{ //1
 		Name:          "ATOM",
 		Denom:         "uatom",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -71,7 +72,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg5 := assetTypes.Asset{ //2
 		Name:          "CMDX",
 		Denom:         "ucmdx",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -93,7 +94,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg6 := assetTypes.Asset{ //3
 		Name:          "CMST",
 		Denom:         "ucmst",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -115,7 +116,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg13a := assetTypes.Asset{ //4
 		Name:      "OSMO",
 		Denom:     "uosmo",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg13a)
@@ -135,7 +136,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg11 := assetTypes.Asset{ //5
 		Name:      "CATOM",
 		Denom:     "ucatom",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg11)
@@ -144,7 +145,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg12 := assetTypes.Asset{ //6
 		Name:      "CCMDX",
 		Denom:     "uccmdx",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg12)
@@ -153,7 +154,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg13 := assetTypes.Asset{ //7
 		Name:      "CCMST",
 		Denom:     "uccmst",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg13)
@@ -162,7 +163,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg13b := assetTypes.Asset{ //8
 		Name:      "COSMO",
 		Denom:     "ucosmo",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg13b)
@@ -250,33 +251,33 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	assetDataPoolOneAssetOne := &lendtypes.AssetDataPoolMapping{
 		AssetID:          1,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 	assetDataPoolOneAssetTwo := &lendtypes.AssetDataPoolMapping{
 		AssetID:          2,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000),
 	}
 	assetDataPoolOneAssetThree := &lendtypes.AssetDataPoolMapping{
 		AssetID:          3,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 
 	assetDataPoolTwoAssetOne := &lendtypes.AssetDataPoolMapping{
 		AssetID:          1,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 	assetDataPoolTwoAssetTwo := &lendtypes.AssetDataPoolMapping{
 		AssetID:          4,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(2000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(2000000000000),
 	}
 	assetDataPoolTwoAssetThree := &lendtypes.AssetDataPoolMapping{
 		AssetID:          3,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 
 	assetDataCMDXPool = append(assetDataCMDXPool, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -510,7 +511,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		AuctionDurationSeconds: 21600,
 		Buffer:                 Dec("1.2"),
 		Cusp:                   Dec("0.7"),
-		Step:                   sdk.NewInt(360),
+		Step:                   sdkmath.NewInt(360),
 		PriceFunctionType:      1,
 		DutchId:                3,
 		BidDurationSeconds:     3600,
@@ -522,28 +523,28 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 
 	userAddr := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
 	userAddress, _ := sdk.AccAddressFromBech32(userAddr)
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
-	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddr, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddr, sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddr, sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddr, sdk.NewCoin("ucmdx", sdkmath.NewInt(1000000000000)))
 	s.Require().NoError(err)
-	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddr, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
-	s.Require().NoError(err)
-
-	s.fundAddr(userAddress, sdk.NewCoin("uosmo", sdk.NewIntFromUint64(100000000000000)))
-	err = lendKeeper.FundModAcc(s.ctx, 2, 4, userAddr, sdk.NewCoin("uosmo", sdk.NewInt(100000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddr, sdk.NewCoin("ucmst", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
 
-	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
-	err = lendKeeper.FundModAcc(s.ctx, 2, 3, userAddr, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uosmo", sdkmath.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 4, userAddr, sdk.NewCoin("uosmo", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
 
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
-	err = lendKeeper.FundModAcc(s.ctx, 2, 1, userAddr, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 3, userAddr, sdk.NewCoin("ucmst", sdkmath.NewInt(100000000000)))
+	s.Require().NoError(err)
+
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 2, 1, userAddr, sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
 
 	lendKeeper, ctx = &s.lendKeeper, &s.ctx
@@ -553,28 +554,28 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 		AssetId:        1,
 		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		AmountIn:       sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)),
 		PairId:         3,
 		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(70000000000)),
+		AmountOut:      sdk.NewCoin("ucmdx", sdkmath.NewInt(70000000000)),
 		AppId:          3,
 	}
 
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg20)
 	s.Require().NoError(err)
 	msg30 := lendtypes.MsgBorrowAlternate{
 		Lender:         "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp",
 		AssetId:        1,
 		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		AmountIn:       sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)),
 		PairId:         3,
 		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(70000000000)),
+		AmountOut:      sdk.NewCoin("ucmdx", sdkmath.NewInt(70000000000)),
 		AppId:          3,
 	}
 	userAddr2, _ := sdk.AccAddressFromBech32("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp")
-	s.fundAddr(userAddr2, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	s.fundAddr(userAddr2, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg30)
 	s.Require().NoError(err)
 
@@ -582,14 +583,14 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 		AssetId:        2,
 		PoolId:         1,
-		AmountIn:       sdk.NewCoin("ucmdx", sdk.NewInt(100000000000)),
+		AmountIn:       sdk.NewCoin("ucmdx", sdkmath.NewInt(100000000000)),
 		PairId:         13,
 		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("uosmo", sdk.NewInt(32500000000)),
+		AmountOut:      sdk.NewCoin("uosmo", sdkmath.NewInt(32500000000)),
 		AppId:          3,
 	}
 
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg40)
 	s.Require().NoError(err)
 }
@@ -662,5 +663,5 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	updatedPrice := price.Sub(price.Mul(Dec("0.09090909090")))
 
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned.TruncateInt(), updatedPrice.TruncateInt())
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2)).Quo(sdk.NewDecFromInt(beforeAmtIn).Mul(s.GetAssetPrice(1))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdkmath.LegacyNewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2)).Quo(sdkmath.LegacyNewDecFromInt(beforeAmtIn).Mul(s.GetAssetPrice(1))))
 }

@@ -5,8 +5,11 @@ import (
 	"math"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
+
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/types"
@@ -45,7 +48,7 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 					totalShare := lockerLookup.DepositedAmount
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
-					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
+					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdkmath.ZeroInt())
 					for _, lockerID := range lockerLookup.LockerIds {
 						locker, found := k.locker.GetLocker(ctx, lockerID)
 						if !found {
@@ -58,16 +61,16 @@ func (k Keeper) DistributeExtRewardLocker(ctx sdk.Context) error {
 								continue
 							}
 						}
-						userShare := (sdk.NewDecFromInt(locker.NetBalance)).Quo(sdk.NewDecFromInt(totalShare)) // getting share percentage
-						availableRewards := v.AvailableRewards                           // Available Rewards
-						Duration := v.DurationDays - int64(epoch.Count)                  // duration left (total duration - current count)
+						userShare := (sdkmath.LegacyNewDecFromInt(locker.NetBalance)).Quo(sdkmath.LegacyNewDecFromInt(totalShare)) // getting share percentage
+						availableRewards := v.AvailableRewards                                                                     // Available Rewards
+						Duration := v.DurationDays - int64(epoch.Count)                                                            // duration left (total duration - current count)
 
-						epochRewards := sdk.NewDecFromInt(availableRewards.Amount).Quo(sdk.NewDec(Duration))
+						epochRewards := sdkmath.LegacyNewDecFromInt(availableRewards.Amount).Quo(sdkmath.LegacyNewDec(Duration))
 						dailyRewards := userShare.Mul(epochRewards)
 						user, _ := sdk.AccAddressFromBech32(locker.Depositor)
 						finalDailyRewards := dailyRewards.TruncateInt()
 						// after calculating final daily rewards, the amount is sent to the user
-						if finalDailyRewards.GT(sdk.ZeroInt()) {
+						if finalDailyRewards.GT(sdkmath.ZeroInt()) {
 							amountRewardedTracker.Amount = amountRewardedTracker.Amount.Add(finalDailyRewards)
 							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(availableRewards.Denom, finalDailyRewards)))
 							if err != nil {
@@ -124,7 +127,7 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 					appExtPairVaultData, _ := k.vault.GetAppExtendedPairVaultMappingData(ctx, v.AppMappingId, v.ExtendedPairId)
 
 					// initializing amountRewardedTracker to keep a track of daily rewards given to locker owners
-					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdk.ZeroInt())
+					amountRewardedTracker := sdk.NewCoin(v.TotalRewards.Denom, sdkmath.ZeroInt())
 
 					for _, vaultID := range appExtPairVaultData.VaultIds {
 						totalRewards := v.AvailableRewards
@@ -139,14 +142,14 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 								continue
 							}
 						}
-						individualUserShare := sdk.NewDecFromInt(userVault.AmountOut).Quo(sdk.NewDecFromInt(appExtPairVaultData.TokenMintedAmount)) // getting share percentage
-						Duration := v.DurationDays - int64(epoch.Count)                                                                  // duration left (total duration - current count)
-						epochRewards := (sdk.NewDecFromInt(totalRewards.Amount)).Quo(sdk.NewDec(Duration))
+						individualUserShare := sdkmath.LegacyNewDecFromInt(userVault.AmountOut).Quo(sdkmath.LegacyNewDecFromInt(appExtPairVaultData.TokenMintedAmount)) // getting share percentage
+						Duration := v.DurationDays - int64(epoch.Count)                                                                                                 // duration left (total duration - current count)
+						epochRewards := (sdkmath.LegacyNewDecFromInt(totalRewards.Amount)).Quo(sdkmath.LegacyNewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
 
 						user, _ := sdk.AccAddressFromBech32(userVault.Owner)
-						if finalDailyRewards.GT(sdk.ZeroInt()) {
+						if finalDailyRewards.GT(sdkmath.ZeroInt()) {
 							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
 							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, finalDailyRewards)))
 							if err != nil {
@@ -177,61 +180,61 @@ func (k Keeper) DistributeExtRewardVault(ctx sdk.Context) error {
 // calculate new locker rewards
 func (k Keeper) CalculationOfRewards(
 	ctx sdk.Context,
-	amount sdk.Int, lsr sdk.Dec, bTime int64,
-) (sdk.Dec, error) {
+	amount sdkmath.Int, lsr sdkmath.LegacyDec, bTime int64,
+) (sdkmath.LegacyDec, error) {
 	currentTime := ctx.BlockTime().Unix()
 
 	secondsElapsed := currentTime - bTime
 	if secondsElapsed < types.Int64Zero {
-		return sdk.ZeroDec(), sdkerrors.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
+		return sdkmath.LegacyZeroDec(), errorsmod.Wrap(types.ErrNegativeTimeElapsed, fmt.Sprintf("%d seconds", secondsElapsed))
 	}
 	//{(1+ Annual Interest Rate)^(No of seconds per block/No. of seconds in a year)}-1
 
-	yearsElapsed := sdk.NewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
+	yearsElapsed := sdkmath.LegacyNewDec(secondsElapsed).QuoInt64(types.SecondsPerYear)
 	perc := lsr.String()
-	a, _ := sdk.NewDecFromStr("1")
-	b, _ := sdk.NewDecFromStr(perc)
+	a, _ := sdkmath.LegacyNewDecFromStr("1")
+	b, _ := sdkmath.LegacyNewDecFromStr(perc)
 	factor1 := a.Add(b)
 	intPerBlockFactor := math.Pow(factor1.MustFloat64(), yearsElapsed.MustFloat64())
 	intAccPerBlock := intPerBlockFactor - types.Float64One
-	amtFloat := sdk.NewDecFromInt(amount).MustFloat64()
+	amtFloat := sdkmath.LegacyNewDecFromInt(amount).MustFloat64()
 	newAmount := intAccPerBlock * amtFloat
 
 	// s := fmt.Sprint(newAmount)
 	s := strconv.FormatFloat(newAmount, 'f', 18, 64)
-	newAm, err := sdk.NewDecFromStr(s)
+	newAm, err := sdkmath.LegacyNewDecFromStr(s)
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return sdkmath.LegacyZeroDec(), err
 	}
 	return newAm, nil
 }
 
-func (k Keeper) OraclePriceForRewards(ctx sdk.Context, id uint64, amt sdk.Int) (sdk.Dec, bool) {
+func (k Keeper) OraclePriceForRewards(ctx sdk.Context, id uint64, amt sdkmath.Int) (sdkmath.LegacyDec, bool) {
 	asset, found := k.asset.GetAsset(ctx, id)
 	if !found {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 
 	price, found := k.marketKeeper.GetTwa(ctx, asset.Id)
 	if !found {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 
 	// if price is not active and twa is 0 return false
 	if !price.IsPriceActive && price.Twa <= 0 {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 
-	numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa)))
-	denominator := sdk.NewDecFromInt(asset.Decimals)
+	numerator := sdkmath.LegacyNewDecFromInt(amt).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(price.Twa)))
+	denominator := sdkmath.LegacyNewDecFromInt(asset.Decimals)
 	return numerator.Quo(denominator), true
 }
 
 func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	// Give external rewards to borrowers for opening a vault with specific assetID
 	var addrArr []string
-	var amountArr []sdk.Dec
-	totalAmount := sdk.NewInt(0)
+	var amountArr []sdkmath.LegacyDec
+	totalAmount := sdkmath.NewInt(0)
 	extRewards := k.GetExternalRewardLends(ctx)
 	for _, v := range extRewards {
 		klwsParams, _ := k.esm.GetKillSwitchData(ctx, v.AppMappingId)
@@ -281,16 +284,16 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 					if !found {
 						continue
 					}
-					if totalAmount.LTE(sdk.ZeroInt()) {
+					if totalAmount.LTE(sdkmath.ZeroInt()) {
 						continue
 					}
-					dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
-					totalAPR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalAmount))
-					amountRewardedTracker := sdk.NewInt(0)
+					dailyRewardAmt := totalRewardAmt.Quo(sdkmath.LegacyNewDec(v.DurationDays - int64(epoch.Count)))
+					totalAPR := dailyRewardAmt.Quo(sdkmath.LegacyNewDecFromInt(totalAmount))
+					amountRewardedTracker := sdkmath.NewInt(0)
 					for i, borrower := range addrArr {
 						user, _ := sdk.AccAddressFromBech32(borrower)
 						finalDailyRewardsPerUser := amountArr[i].Mul(totalAPR)
-						if finalDailyRewardsPerUser.TruncateInt().GT(sdk.ZeroInt()) {
+						if finalDailyRewardsPerUser.TruncateInt().GT(sdkmath.ZeroInt()) {
 							amountRewardedTracker = amountRewardedTracker.Add(finalDailyRewardsPerUser.TruncateInt())
 							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(v.TotalRewards.Denom, finalDailyRewardsPerUser.TruncateInt())))
 							if err != nil {
@@ -313,32 +316,32 @@ func (k Keeper) DistributeExtRewardLend(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, borrowAmount sdk.Dec) (sdk.Dec, bool) {
+func (k Keeper) CheckMinOfBorrowersLiquidityAndBorrow(ctx sdk.Context, addr sdk.AccAddress, masterPoolID int64, appID uint64, borrowAmount sdkmath.LegacyDec) (sdkmath.LegacyDec, bool) {
 	farmedCoin, found := k.liquidityKeeper.GetActiveFarmer(ctx, appID, uint64(masterPoolID), addr)
 	if !found {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 	deserializerKit, err := k.liquidityKeeper.GetPoolTokenDesrializerKit(ctx, appID, uint64(masterPoolID))
 	if err != nil {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 	x, y, err := k.liquidityKeeper.CalculateXYFromPoolCoin(ctx, deserializerKit, farmedCoin.FarmedPoolCoin)
 	if err != nil {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 
 	quoteCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.QuoteCoinDenom)
 	baseCoinAsset, _ := k.asset.GetAssetForDenom(ctx, deserializerKit.Pair.BaseCoinDenom)
 	priceQuoteCoin, found := k.OraclePriceForRewards(ctx, quoteCoinAsset.Id, x)
 	if !found {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 	priceBaseCoin, found := k.OraclePriceForRewards(ctx, baseCoinAsset.Id, y)
 	if !found {
-		return sdk.ZeroDec(), false
+		return sdkmath.LegacyZeroDec(), false
 	}
 
-	return sdk.MinDec(priceQuoteCoin.Add(priceBaseCoin), borrowAmount), true
+	return sdkmath.LegacyMinDec(priceQuoteCoin.Add(priceBaseCoin), borrowAmount), true
 }
 
 func (k Keeper) CombinePSMUserPositions(ctx sdk.Context) error {
@@ -407,7 +410,7 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 				if et < timeNow {
 					if epoch.Count < uint64(extRew.DurationDays) { // rewards will be given till the duration defined in the ext rewards
 						// initializing amountRewardedTracker to keep a track of daily rewards given to stableVault users
-						amountRewardedTracker := sdk.NewCoin(extRew.TotalRewards.Denom, sdk.ZeroInt())
+						amountRewardedTracker := sdk.NewCoin(extRew.TotalRewards.Denom, sdkmath.ZeroInt())
 						totalRewards := extRew.AvailableRewards
 
 						// checking if the locker was not created just to claim the external rewards, so we apply a basic check here.
@@ -424,27 +427,27 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 						userBalance := k.bank.GetBalance(ctx, user, asset.Denom)                                                 // userbal
 						farmedAmount, err := k.liquidityKeeper.GetAmountFarmedForAssetID(ctx, extRew.CswapAppId, asset.Id, user) // cswap farm
 						if err != nil {
-							farmedAmount = sdk.ZeroInt()
+							farmedAmount = sdkmath.ZeroInt()
 						}
 						lendAsset, found := k.lend.UserAssetLends(ctx, user.String(), asset.Id) // commodo lend pos
 						if !found {
-							lendAsset = sdk.ZeroInt()
+							lendAsset = sdkmath.ZeroInt()
 						}
-						lockerAmt := sdk.ZeroInt()
+						lockerAmt := sdkmath.ZeroInt()
 						lockerLookupData, found := k.locker.GetUserLockerAssetMapping(ctx, user.String(), extRew.AppId, asset.Id) // locker data
 						if found {
 							lockerData, _ := k.locker.GetLocker(ctx, lockerLookupData.LockerId)
 							lockerAmt = lockerData.NetBalance
 						}
 
-						eligibleRewardAmt := sdk.ZeroInt()
+						eligibleRewardAmt := sdkmath.ZeroInt()
 						if (userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)).GTE(userReward.Amount) {
 							eligibleRewardAmt = userReward.Amount
 						} else {
 							eligibleRewardAmt = userBalance.Amount.Add(farmedAmount).Add(lendAsset).Add(lockerAmt)
 						}
 
-						totalMintedData := sdk.ZeroInt()
+						totalMintedData := sdkmath.ZeroInt()
 						getAllExtpairData, _ := k.asset.GetPairsVaults(ctx)
 						for _, stableExtPairData := range getAllExtpairData {
 							if stableExtPairData.AppId == extRew.AppId && stableExtPairData.IsStableMintVault {
@@ -453,13 +456,13 @@ func (k Keeper) DistributeExtRewardStableVault(ctx sdk.Context) error {
 							}
 						}
 
-						individualUserShare := sdk.NewDecFromInt(eligibleRewardAmt).Quo(sdk.NewDecFromInt(totalMintedData)) // getting share percentage
-						Duration := extRew.DurationDays - int64(epoch.Count)                                     // duration left (total duration - current count)
-						epochRewards := (sdk.NewDecFromInt(totalRewards.Amount)).Quo(sdk.NewDec(Duration))
+						individualUserShare := sdkmath.LegacyNewDecFromInt(eligibleRewardAmt).Quo(sdkmath.LegacyNewDecFromInt(totalMintedData)) // getting share percentage
+						Duration := extRew.DurationDays - int64(epoch.Count)                                                                    // duration left (total duration - current count)
+						epochRewards := (sdkmath.LegacyNewDecFromInt(totalRewards.Amount)).Quo(sdkmath.LegacyNewDec(Duration))
 						dailyRewards := individualUserShare.Mul(epochRewards)
 						finalDailyRewards := dailyRewards.TruncateInt()
 
-						if finalDailyRewards.GT(sdk.ZeroInt()) {
+						if finalDailyRewards.GT(sdkmath.ZeroInt()) {
 							amountRewardedTracker = amountRewardedTracker.Add(sdk.NewCoin(totalRewards.Denom, finalDailyRewards))
 							err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, user, sdk.NewCoins(sdk.NewCoin(totalRewards.Denom, finalDailyRewards)))
 							if err != nil {

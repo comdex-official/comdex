@@ -1,12 +1,14 @@
 package liquidity_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"strings"
 	"testing"
 	"time"
 
 	_ "github.com/stretchr/testify/suite"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/comdex-official/comdex/app"
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity"
@@ -15,7 +17,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -39,7 +40,7 @@ func TestInvalidMsg(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, res)
 
-	_, _, log := sdkerrors.ABCIInfo(err, false)
+	_, _, log := errorsmod.ABCIInfo(err, false)
 	require.True(t, strings.Contains(log, "unrecognized liquidityV1 message type:"))
 }
 
@@ -106,7 +107,7 @@ func (s *ModuleTestSuite) TestMsgCreatePool() {
 	s.Require().Equal(false, pools[0].Disabled)
 	s.Require().Equal(appID1, pools[0].AppId)
 
-	s.Require().True(utils.ParseCoins("1000000000000uasset1,1000000000000uasset2").IsEqual(s.getBalances(pools[0].GetReserveAddress())))
+	s.Require().True(utils.ParseCoins("1000000000000uasset1,1000000000000uasset2").Equal(s.getBalances(pools[0].GetReserveAddress())))
 
 	gauges := s.app.Rewardskeeper.GetAllGauges(s.ctx)
 	s.Require().Len(gauges, 1)
@@ -190,8 +191,8 @@ func (s *ModuleTestSuite) TestMsgLimitOrder() {
 		types.OrderDirectionBuy,
 		utils.ParseCoin("1003000uasset2"),
 		asset1.Denom,
-		sdk.NewDec(1),
-		sdk.NewInt(1000000),
+		sdkmath.LegacyNewDec(1),
+		sdkmath.NewInt(1000000),
 		time.Second*10,
 	)
 	s.fundAddr(addr1, sdk.NewCoins(msg.OfferCoin))
@@ -208,9 +209,9 @@ func (s *ModuleTestSuite) TestMsgLimitOrder() {
 	s.Require().Equal(utils.ParseCoin("1000000uasset2"), orders[0].OfferCoin)
 	s.Require().Equal(utils.ParseCoin("1000000uasset2"), orders[0].RemainingOfferCoin)
 	s.Require().Equal(utils.ParseCoin("0uasset1"), orders[0].ReceivedCoin)
-	s.Require().Equal(sdk.NewDec(1), orders[0].Price)
-	s.Require().Equal(sdk.NewInt(1000000), orders[0].Amount)
-	s.Require().Equal(sdk.NewInt(1000000), orders[0].OpenAmount)
+	s.Require().Equal(sdkmath.LegacyNewDec(1), orders[0].Price)
+	s.Require().Equal(sdkmath.NewInt(1000000), orders[0].Amount)
+	s.Require().Equal(sdkmath.NewInt(1000000), orders[0].OpenAmount)
 	s.Require().Equal(uint64(1), orders[0].BatchId)
 	s.Require().Equal(s.ctx.BlockTime().Add(time.Second*10), orders[0].ExpireAt)
 	s.Require().Equal(types.OrderStatusNotExecuted, orders[0].Status)
@@ -229,8 +230,8 @@ func (s *ModuleTestSuite) TestMsgMarketOrder() {
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
 
-	s.LimitOrder(appID1, addr1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), sdk.NewInt(10000), 0)
-	s.LimitOrder(appID1, addr1, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), sdk.NewInt(10000), 0)
+	s.LimitOrder(appID1, addr1, pair.Id, types.OrderDirectionBuy, utils.ParseDec("1"), sdkmath.NewInt(10000), 0)
+	s.LimitOrder(appID1, addr1, pair.Id, types.OrderDirectionSell, utils.ParseDec("1"), sdkmath.NewInt(10000), 0)
 	s.nextBlock()
 
 	msg := types.NewMsgMarketOrder(
@@ -240,7 +241,7 @@ func (s *ModuleTestSuite) TestMsgMarketOrder() {
 		types.OrderDirectionBuy,
 		utils.ParseCoin("1103300uasset2"),
 		asset1.Denom,
-		sdk.NewInt(1000000),
+		sdkmath.NewInt(1000000),
 		time.Second*10,
 	)
 	s.fundAddr(addr1, sdk.NewCoins(msg.OfferCoin))
@@ -257,9 +258,9 @@ func (s *ModuleTestSuite) TestMsgMarketOrder() {
 	s.Require().Equal(utils.ParseCoin("1100000uasset2"), orders[0].OfferCoin)
 	s.Require().Equal(utils.ParseCoin("1100000uasset2"), orders[0].RemainingOfferCoin)
 	s.Require().Equal(utils.ParseCoin("0uasset1"), orders[0].ReceivedCoin)
-	s.Require().Equal(sdk.MustNewDecFromStr("1.1"), orders[0].Price)
-	s.Require().Equal(sdk.NewInt(1000000), orders[0].Amount)
-	s.Require().Equal(sdk.NewInt(1000000), orders[0].OpenAmount)
+	s.Require().Equal(sdkmath.LegacyMustNewDecFromStr("1.1"), orders[0].Price)
+	s.Require().Equal(sdkmath.NewInt(1000000), orders[0].Amount)
+	s.Require().Equal(sdkmath.NewInt(1000000), orders[0].OpenAmount)
 	s.Require().Equal(uint64(2), orders[0].BatchId)
 	s.Require().Equal(s.ctx.BlockTime().Add(time.Second*10), orders[0].ExpireAt)
 	s.Require().Equal(types.OrderStatusNotExecuted, orders[0].Status)
@@ -279,7 +280,7 @@ func (s *ModuleTestSuite) TestMsgCancelOrder() {
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
 
-	order := s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), sdk.NewInt(1000000), time.Second*10)
+	order := s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), sdkmath.NewInt(1000000), time.Second*10)
 
 	s.nextBlock()
 
@@ -291,7 +292,7 @@ func (s *ModuleTestSuite) TestMsgCancelOrder() {
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusCanceled, order.Status)
 
-	s.Require().True(utils.ParseCoins("1003000uasset1").IsEqual(s.getBalances(addr2)))
+	s.Require().True(utils.ParseCoins("1003000uasset1").Equal(s.getBalances(addr2)))
 
 	s.nextBlock()
 	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, order.Id)
@@ -311,7 +312,7 @@ func (s *ModuleTestSuite) TestMsgCancelAllOrders() {
 	pair := s.CreateNewLiquidityPair(appID1, addr1, asset1.Denom, asset2.Denom)
 	_ = s.CreateNewLiquidityPool(appID1, pair.Id, addr1, "1000000000000uasset1,1000000000000uasset2")
 
-	order := s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), sdk.NewInt(1000000), time.Second*10)
+	order := s.LimitOrder(appID1, addr2, pair.Id, types.OrderDirectionSell, utils.ParseDec("1.1"), sdkmath.NewInt(1000000), time.Second*10)
 
 	s.nextBlock()
 
@@ -323,7 +324,7 @@ func (s *ModuleTestSuite) TestMsgCancelAllOrders() {
 	s.Require().True(found)
 	s.Require().Equal(types.OrderStatusCanceled, order.Status)
 
-	s.Require().True(utils.ParseCoins("1003000uasset1").IsEqual(s.getBalances(addr2)))
+	s.Require().True(utils.ParseCoins("1003000uasset1").Equal(s.getBalances(addr2)))
 
 	s.nextBlock()
 	_, found = s.keeper.GetOrder(s.ctx, appID1, pair.Id, order.Id)
@@ -345,7 +346,7 @@ func (s *ModuleTestSuite) TestMsgFarm() {
 	liquidityProvider1 := s.addr(2)
 	s.Deposit(appID1, pool.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset2")
 	s.nextBlock()
-	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").Equal(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
 	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
@@ -355,7 +356,7 @@ func (s *ModuleTestSuite) TestMsgFarm() {
 	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
 	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Denom, "pool1-1")
-	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdkmath.NewInt(5000000000))
 }
 
 func (s *ModuleTestSuite) TestMsgUnfarm() {
@@ -373,7 +374,7 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 	liquidityProvider1 := s.addr(2)
 	s.Deposit(appID1, pool.Id, liquidityProvider1, "1000000000uasset1,1000000000uasset2")
 	s.nextBlock()
-	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").Equal(s.getBalances(liquidityProvider1)))
 
 	s.ctx = s.ctx.WithBlockTime(s.ctx.BlockTime())
 	msg := types.NewMsgFarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
@@ -383,7 +384,7 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 	queuedFarmer, found := s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
 	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Denom, "pool1-1")
-	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdk.NewInt(5000000000))
+	s.Require().Equal(queuedFarmer.QueudCoins[0].FarmedPoolCoin.Amount, sdkmath.NewInt(5000000000))
 
 	msgUnlock := types.NewMsgUnfarm(appID1, pool.Id, liquidityProvider1, utils.ParseCoin("5000000000pool1-1"))
 	_, err = handler(s.ctx, msgUnlock)
@@ -392,5 +393,5 @@ func (s *ModuleTestSuite) TestMsgUnfarm() {
 	queuedFarmer, found = s.keeper.GetQueuedFarmer(s.ctx, appID1, pool.Id, liquidityProvider1)
 	s.Require().True(found)
 	s.Require().Len(queuedFarmer.QueudCoins, 0)
-	s.Require().True(utils.ParseCoins("10000000000pool1-1").IsEqual(s.getBalances(liquidityProvider1)))
+	s.Require().True(utils.ParseCoins("10000000000pool1-1").Equal(s.getBalances(liquidityProvider1)))
 }

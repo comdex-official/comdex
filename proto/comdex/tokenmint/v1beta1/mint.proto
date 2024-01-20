@@ -21,7 +21,7 @@ message TokenMint{
 message MintedTokens{
   uint64 asset_id = 1  [(gogoproto.moretags) = "yaml:\"asset_id\""];
   string genesis_supply = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"genesis_supply\"",
     (gogoproto.nullable) = false
   ];
@@ -31,7 +31,7 @@ message MintedTokens{
     (gogoproto.moretags) = "yaml:\"created_at\""
   ];
   string current_supply = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"current_supply\"",
     (gogoproto.nullable) = false
   ];

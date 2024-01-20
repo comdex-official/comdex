@@ -1,6 +1,7 @@
 package v5_0_0 //nolint:revive,stylecheck
 
 import (
+	sdkmath "cosmossdk.io/math"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/lend/types"
 	liquidationkeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
@@ -27,7 +28,7 @@ func SetVaultLengthCounter(
 func FuncMigrateLiquidatedBorrow(ctx sdk.Context, k lendkeeper.Keeper, liqK liquidationkeeper.Keeper) error {
 	liqBorrow := liqK.GetLockedVaultByApp(ctx, 3)
 	for _, v := range liqBorrow {
-		if v.AmountIn.GT(sdk.ZeroInt()) && v.AmountOut.GT(sdk.ZeroInt()) {
+		if v.AmountIn.GT(sdkmath.ZeroInt()) && v.AmountOut.GT(sdkmath.ZeroInt()) {
 			borrowMetaData := v.GetBorrowMetaData()
 			pair, _ := k.GetLendPair(ctx, v.ExtendedPairId)
 			assetIn, _ := k.Asset.GetAsset(ctx, pair.AssetIn)
@@ -41,7 +42,7 @@ func FuncMigrateLiquidatedBorrow(ctx sdk.Context, k lendkeeper.Keeper, liqK liqu
 				cpoolName = "OSMO-ATOM-CMST"
 			}
 
-			globalIndex, _ := sdk.NewDecFromStr("0.002")
+			globalIndex, _ := sdkmath.LegacyNewDecFromStr("0.002")
 
 			newBorrow := types.BorrowAsset{
 				ID:                  v.OriginalVaultId,
@@ -53,9 +54,9 @@ func FuncMigrateLiquidatedBorrow(ctx sdk.Context, k lendkeeper.Keeper, liqK liqu
 				BridgedAssetAmount:  borrowMetaData.BridgedAssetAmount,
 				BorrowingTime:       ctx.BlockTime(),
 				StableBorrowRate:    borrowMetaData.StableBorrowRate,
-				InterestAccumulated: sdk.NewDecFromInt(v.InterestAccumulated),
+				InterestAccumulated: sdkmath.LegacyNewDecFromInt(v.InterestAccumulated),
 				GlobalIndex:         globalIndex,
-				ReserveGlobalIndex:  sdk.OneDec(),
+				ReserveGlobalIndex:  sdkmath.LegacyOneDec(),
 				LastInteractionTime: ctx.BlockTime(),
 				CPoolName:           cpoolName,
 				IsLiquidated:        false,

@@ -4,12 +4,12 @@ import (
 	"encoding/binary"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/comdex-official/comdex/x/lend"
-	abci "github.com/cometbft/cometbft/abci/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	markettypes "github.com/comdex-official/comdex/x/market/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/suite"
 
 	chain "github.com/comdex-official/comdex/app"
@@ -34,7 +34,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.keeper = s.app.LendKeeper
 	s.querier = keeper.QueryServer{Keeper: s.keeper}
 	s.msgServer = keeper.NewMsgServerImpl(s.keeper)
@@ -69,12 +69,12 @@ func (s *KeeperTestSuite) fundAddr(addr sdk.AccAddress, amt sdk.Coins) {
 	s.Require().NoError(err)
 }
 
-func newInt(i int64) sdk.Int {
-	return sdk.NewInt(i)
+func newInt(i int64) sdkmath.Int {
+	return sdkmath.NewInt(i)
 }
 
-func newDec(i string) sdk.Dec {
-	dec, _ := sdk.NewDecFromStr(i)
+func newDec(i string) sdkmath.LegacyDec {
+	dec, _ := sdkmath.LegacyNewDecFromStr(i)
 	return dec
 }
 
@@ -95,7 +95,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, _ uint64) uint64 {
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})
@@ -180,7 +180,7 @@ func (s *KeeperTestSuite) CreateNewPool(moduleName, cPoolName string, assetData 
 	return poolID
 }
 
-func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64) uint64 {
+func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdkmath.LegacyDec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdkmath.LegacyDec, CAssetID uint64) uint64 {
 	err := s.app.LendKeeper.AddAssetRatesParams(s.ctx, types.AssetRatesParams{
 		AssetID:              AssetID,
 		UOptimal:             UOptimal,
@@ -236,7 +236,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        shortName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -257,7 +257,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	return appID
 }
 
-func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64, moduleName, cPoolName string, assetData []*types.AssetDataPoolMapping, MinUsdValueLeft uint64, IsIsolated bool) uint64 {
+func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdkmath.LegacyDec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdkmath.LegacyDec, CAssetID uint64, moduleName, cPoolName string, assetData []*types.AssetDataPoolMapping, MinUsdValueLeft uint64, IsIsolated bool) uint64 {
 	err := s.app.LendKeeper.AddAssetRatesPoolPairs(s.ctx, types.AssetRatesPoolPairs{
 		AssetID:              AssetID,
 		UOptimal:             UOptimal,
@@ -295,11 +295,6 @@ func (s *KeeperTestSuite) PoolDepreciate(individualPool []types.IndividualPoolDe
 }
 
 func (s *KeeperTestSuite) nextBlock() {
-	lend.BeginBlocker(s.ctx, abci.RequestBeginBlock{
-		Hash:                nil,
-		Header:              tmproto.Header{},
-		LastCommitInfo:      abci.CommitInfo{},
-		ByzantineValidators: nil,
-	}, s.keeper)
+	lend.BeginBlocker(s.ctx, s.keeper)
 
 }

@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -85,16 +86,16 @@ func (m *MsgFetchPriceData) GetSignBytes() []byte {
 func (m *MsgFetchPriceData) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Creator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 	if m.SourceChannel == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid source channel")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid source channel")
 	}
 	if m.TwaBatchSize == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid batch size")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid batch size")
 	}
 	if m.AcceptedHeightDiff <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid height")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid height")
 	}
 	return nil
 }

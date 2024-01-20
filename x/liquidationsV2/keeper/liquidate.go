@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+
+	sdkmath "cosmossdk.io/math"
 	utils "github.com/comdex-official/comdex/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
@@ -121,10 +123,10 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 			return fmt.Errorf("error Calculating CR in Liquidation, liquidate_vaults.go for vaultID %d", vault.Id)
 		}
 		//Calculating Liquidation Fees
-		feesToBeCollected := sdk.NewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
+		feesToBeCollected := sdkmath.LegacyNewDecFromInt(totalOut).Mul(extPair.LiquidationPenalty).TruncateInt()
 
 		//Calculating auction bonus to be given
-		auctionBonusToBeGiven := sdk.ZeroInt()
+		auctionBonusToBeGiven := sdkmath.ZeroInt()
 
 		//Checking if the vault getting liquidated is a cmst based vault or not
 		//This is primarily to infer that primary market will consider cmst at $1 at the time of buying it
@@ -138,7 +140,7 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 
 		}
 
-		if vault.AmountIn.GT(sdk.ZeroInt()) {
+		if vault.AmountIn.GT(sdkmath.ZeroInt()) {
 			err := k.bank.SendCoinsFromModuleToModule(ctx, vaulttypes.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(k.ReturnCoin(ctx, pair.AssetIn, vault.AmountIn)))
 			if err != nil {
 				return fmt.Errorf("error , not enough token in vault to transfer %s", vault.AmountIn)
@@ -166,12 +168,12 @@ func (k Keeper) LiquidateIndividualVault(ctx sdk.Context, vaultID uint64, liquid
 	return nil
 }
 
-func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdk.Int) sdk.Coin {
+func (k Keeper) ReturnCoin(ctx sdk.Context, assetID uint64, amount sdkmath.Int) sdk.Coin {
 	asset, _ := k.asset.GetAsset(ctx, assetID)
 	return sdk.NewCoin(asset.Denom, amount)
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdk.Dec, appID uint64, isInternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdk.Int, bonusToBeGiven sdk.Int, initiatorType string, auctionType bool, isDebtCmst bool, collateralID uint64, DebtId uint64) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, OriginalVaultId, ExtendedPairId uint64, Owner string, AmountIn, AmountOut, CollateralToBeAuctioned, TargetDebt sdk.Coin, collateralizationRatio sdkmath.LegacyDec, appID uint64, isInternalKeeper bool, internalKeeperAddress string, externalKeeperAddress string, feesToBeCollected sdkmath.Int, bonusToBeGiven sdkmath.Int, initiatorType string, auctionType bool, isDebtCmst bool, collateralID uint64, DebtId uint64) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -285,7 +287,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 	if err != nil {
 		return fmt.Errorf("error in calculating Borrow Interest before liquidation %d", err)
 	}
-	if !borrowPos.StableBorrowRate.Equal(sdk.ZeroDec()) {
+	if !borrowPos.StableBorrowRate.Equal(sdkmath.LegacyZeroDec()) {
 		borrowPos, err = k.lend.ReBalanceStableRates(ctx, borrowPos)
 		if err != nil {
 			return fmt.Errorf("error in re-balance stable rate check before liquidation")
@@ -297,7 +299,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 		LiquidationThreshold = liqThreshold.ELiquidationThreshold
 	}
 
-	var currentCollateralizationRatio sdk.Dec
+	var currentCollateralizationRatio sdkmath.LegacyDec
 	var firstTransitAssetID, secondTransitAssetID uint64
 	// for getting transit assets details
 	for _, data := range pool.AssetData {
@@ -317,12 +319,12 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 	// 	a. if borrow is from same pool
 	//  b. if borrow is from first transit asset
 	//  c. if borrow is from second transit asset
-	if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) { // first condition
+	if borrowPos.BridgedAssetAmount.Amount.Equal(sdkmath.ZeroInt()) { // first condition
 		currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
 		if err != nil {
 			return err
 		}
-		if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold) {
+		if sdkmath.LegacyDec.GT(currentCollateralizationRatio, LiquidationThreshold) {
 			err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 			if err != nil {
 				return fmt.Errorf("error in first condition UpdateLockedBorrows in UpdateLockedBorrows , liquidate_borrow.go for ID ")
@@ -334,7 +336,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 			if err != nil {
 				return err
 			}
-			if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
+			if sdkmath.LegacyDec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
 				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 				if err != nil {
 					return fmt.Errorf("error in second condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
@@ -346,7 +348,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 				return err
 			}
 
-			if sdk.Dec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
+			if sdkmath.LegacyDec.GT(currentCollateralizationRatio, LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
 				err = k.UpdateLockedBorrows(ctx, borrowPos, lendPos.Owner, lendPos.AppID, currentCollateralizationRatio, liqThreshold, lendPair, pool, assetIn, liquidator, isInternalkeeper)
 				if err != nil {
 					return fmt.Errorf("error in third condition UpdateLockedBorrows in UpdateLockedBorrows, liquidate_borrow.go for ID ")
@@ -357,7 +359,7 @@ func (k Keeper) LiquidateIndividualBorrow(ctx sdk.Context, borrowID uint64, liqu
 	return nil
 }
 
-func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdk.Dec, assetRatesStats lendtypes.AssetRatesParams, lendPair lendtypes.Extended_Pair, pool lendtypes.Pool, assetIn assettypes.Asset, liquidator string, isInternalkeeper bool) error {
+func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsset, owner string, appID uint64, currentCollateralizationRatio sdkmath.LegacyDec, assetRatesStats lendtypes.AssetRatesParams, lendPair lendtypes.Extended_Pair, pool lendtypes.Pool, assetIn assettypes.Asset, liquidator string, isInternalkeeper bool) error {
 	lendPos, _ := k.lend.GetLend(ctx, borrow.LendingID)
 	whitelistingData, found := k.GetLiquidationWhiteListing(ctx, appID)
 	if !found {
@@ -368,10 +370,10 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	pair, _ := k.lend.GetLendPair(ctx, borrow.PairID)
 	cAsset, _ := k.asset.GetAsset(ctx, assetRatesStats.CAssetID)
 	//Calculating Liquidation Fees
-	feesToBeCollected := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationPenalty).TruncateInt()
+	feesToBeCollected := sdkmath.LegacyNewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationPenalty).TruncateInt()
 
 	//Calculating auction bonus to be given
-	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
+	auctionBonusToBeGiven := sdkmath.LegacyNewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
 
 	err := k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount)))
 	if err != nil {
@@ -391,7 +393,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	k.lend.UpdateBorrowStats(ctx, lendPair, borrow.IsStableBorrow, borrow.AmountOut.Amount, false)
 	lendPos.AmountIn.Amount = lendPos.AmountIn.Amount.Sub(borrow.AmountIn.Amount)
 	k.lend.UpdateLendStats(ctx, lendPos.AssetID, lendPos.PoolID, borrow.AmountIn.Amount, false)
-	if !lendPos.AmountIn.Amount.GT(sdk.ZeroInt()) {
+	if !lendPos.AmountIn.Amount.GT(sdkmath.ZeroInt()) {
 		// delete lend position
 		k.lend.DeleteLendForAddressByAsset(ctx, lendPos.Owner, lendPos.ID)
 		k.lend.DeleteIDFromAssetStatsMapping(ctx, lendPos.PoolID, lendPos.AssetID, borrow.LendingID, true)
@@ -487,7 +489,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
 		// net = 200 debtThreshold = 500 , lotSize = 100
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
+		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdkmath.LegacyZeroDec(), appID, false, "", "", sdkmath.ZeroInt(), sdkmath.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
 		if err != nil {
 			return err
 		}
@@ -509,7 +511,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 		if err != nil {
 			return err
 		}
-		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "surplus", false, false, collateralAssetID, debtAssetID)
+		err = k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdkmath.LegacyZeroDec(), appID, false, "", "", sdkmath.ZeroInt(), sdkmath.ZeroInt(), "surplus", false, false, collateralAssetID, debtAssetID)
 		if err != nil {
 			return err
 		}
@@ -527,7 +529,7 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 //
 // --Collateral 		cmst		harbor
 // debt				harbor		cmst
-func (k Keeper) DebtTokenAmount(ctx sdk.Context, DebtAssetID, CollateralAssetId uint64, lotSize, debtLotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
+func (k Keeper) DebtTokenAmount(ctx sdk.Context, DebtAssetID, CollateralAssetId uint64, lotSize, debtLotSize sdkmath.Int) (collateralToken, debtToken sdk.Coin) {
 	collateralAsset, found1 := k.asset.GetAsset(ctx, CollateralAssetId)
 	debtAsset, found2 := k.asset.GetAsset(ctx, DebtAssetID)
 	if !found1 || !found2 {
@@ -536,13 +538,13 @@ func (k Keeper) DebtTokenAmount(ctx sdk.Context, DebtAssetID, CollateralAssetId 
 	return sdk.NewCoin(collateralAsset.Denom, debtLotSize), sdk.NewCoin(debtAsset.Denom, lotSize)
 }
 
-func (k Keeper) SurplusTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAssetID uint64, lotSize sdk.Int) (collateralToken, debtToken sdk.Coin) {
+func (k Keeper) SurplusTokenAmount(ctx sdk.Context, CollateralAssetId, DebtAssetID uint64, lotSize sdkmath.Int) (collateralToken, debtToken sdk.Coin) {
 	collateralAsset, found1 := k.asset.GetAsset(ctx, CollateralAssetId)
 	debtAsset, found2 := k.asset.GetAsset(ctx, DebtAssetID)
 	if !found1 || !found2 {
 		return sdk.Coin{}, sdk.Coin{}
 	}
-	return sdk.NewCoin(collateralAsset.Denom, lotSize), sdk.NewCoin(debtAsset.Denom, sdk.ZeroInt())
+	return sdk.NewCoin(collateralAsset.Denom, lotSize), sdk.NewCoin(debtAsset.Denom, sdkmath.ZeroInt())
 }
 
 func (k Keeper) MsgAppReserveFundsFn(ctx sdk.Context, from string, appId, assetId uint64, tokenQuantity sdk.Coin) error {
@@ -605,8 +607,8 @@ func (k Keeper) WithdrawAppReserveFundsFn(ctx sdk.Context, appId, assetId uint64
 		return types.ErrorInvalidAppOrAssetData
 	}
 
-	if appReserveFunds.TokenQuantity.Amount.Sub(tokenQuantity.Amount).GTE(sdk.ZeroInt()) {
-		if tokenQuantity.Amount.GT(sdk.ZeroInt()) {
+	if appReserveFunds.TokenQuantity.Amount.Sub(tokenQuantity.Amount).GTE(sdkmath.ZeroInt()) {
+		if tokenQuantity.Amount.GT(sdkmath.ZeroInt()) {
 			err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(tokenQuantity))
 			if err != nil {
 				return err
@@ -696,21 +698,21 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 	}
 
 	appReserveFunds, found := k.GetAppReserveFunds(ctx, appID, debtAssetId)
-	if !found || appReserveFunds.TokenQuantity.Amount.LTE(sdk.NewInt(0)) {
+	if !found || appReserveFunds.TokenQuantity.Amount.LTE(sdkmath.NewInt(0)) {
 		return fmt.Errorf("reserve funds not added for debt asset id")
 	}
 
-	feeToBeCollected := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionParams.LiquidationPenalty).TruncateInt()
+	feeToBeCollected := sdkmath.LegacyNewDecFromInt(debtToken.Amount).Mul(auctionParams.LiquidationPenalty).TruncateInt()
 	feetoken := sdk.NewCoin(debtToken.Denom, feeToBeCollected)
 	//Calculating auction bonus to be given
-	bonusToBeGiven := sdk.NewDecFromInt(debtToken.Amount).Mul(auctionParams.AuctionBonus).TruncateInt()
+	bonusToBeGiven := sdkmath.LegacyNewDecFromInt(debtToken.Amount).Mul(auctionParams.AuctionBonus).TruncateInt()
 
 	addr, err := sdk.AccAddressFromBech32(from)
 	err = k.bank.SendCoinsFromAccountToModule(ctx, addr, auctionsV2types.ModuleName, sdk.NewCoins(collateralToken))
 	if err != nil {
 		return err
 	}
-	err = k.CreateLockedVault(ctx, 0, 0, owner, collateralToken, debtToken, collateralToken, debtToken.Add(feetoken), sdk.ZeroDec(), appID, false, "", from, feeToBeCollected, bonusToBeGiven, "external", true, isDebtCmst, collateralAssetId, debtAssetId)
+	err = k.CreateLockedVault(ctx, 0, 0, owner, collateralToken, debtToken, collateralToken, debtToken.Add(feetoken), sdkmath.LegacyZeroDec(), appID, false, "", from, feeToBeCollected, bonusToBeGiven, "external", true, isDebtCmst, collateralAssetId, debtAssetId)
 	if err != nil {
 		return fmt.Errorf("error Creating Locked Vaults in Liquidation, liquidate_vaults.go for External liquidation ")
 	}
@@ -745,7 +747,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	if !found {
 		reservePoolRecords = lendtypes.BorrowInterestTracker{
 			BorrowingId:         liquidationData.OriginalVaultId,
-			ReservePoolInterest: sdk.ZeroDec(),
+			ReservePoolInterest: sdkmath.LegacyZeroDec(),
 		}
 	}
 
@@ -754,7 +756,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	if pair.IsEModeEnabled {
 		liquidationPenalty = assetInStats.ELiquidationPenalty
 	}
-	liqPenaltyAmount := sdk.NewDecFromInt(borrowPos.AmountOut.Amount).Mul(liquidationPenalty).TruncateInt()
+	liqPenaltyAmount := sdkmath.LegacyNewDecFromInt(borrowPos.AmountOut.Amount).Mul(liquidationPenalty).TruncateInt()
 	err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, sdk.NewCoin(borrowPos.AmountOut.Denom, liqPenaltyAmount), true)
 	if err != nil {
 		return err
@@ -764,11 +766,11 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	if !found {
 		allReserveStats = lendtypes.AllReserveStats{
 			AssetID:                        pair.AssetOut,
-			AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-			AmountOutFromReserveForAuction: sdk.ZeroInt(),
-			AmountInFromLiqPenalty:         sdk.ZeroInt(),
-			AmountInFromRepayments:         sdk.ZeroInt(),
-			TotalAmountOutToLenders:        sdk.ZeroInt(),
+			AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+			AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+			AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
+			AmountInFromRepayments:         sdkmath.ZeroInt(),
+			TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 		}
 	}
 	allReserveStats.AmountInFromLiqPenalty = allReserveStats.AmountInFromLiqPenalty.Add(liqPenaltyAmount)
@@ -777,7 +779,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	// after recovering interest some part of the interest goes into the reserve pool
 	// and for the remaining quantity equivalent number of cToken is minted to be given to the lenders upon calculate interest and rewards
 	amtToReservePool := reservePoolRecords.ReservePoolInterest
-	if amtToReservePool.TruncateInt().GT(sdk.ZeroInt()) {
+	if amtToReservePool.TruncateInt().GT(sdkmath.ZeroInt()) {
 		amount := sdk.NewCoin(auctionData.DebtToken.Denom, amtToReservePool.TruncateInt())
 		err = k.lend.UpdateReserveBalances(ctx, pair.AssetOut, pool.ModuleName, amount, true)
 		if err != nil {
@@ -788,7 +790,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	k.lend.SetAllReserveStatsByAssetID(ctx, allReserveStats)
 	// amount minted in the debt pool
 	amtToMint := (borrowPos.InterestAccumulated.Sub(amtToReservePool)).TruncateInt()
-	if amtToMint.GT(sdk.ZeroInt()) {
+	if amtToMint.GT(sdkmath.ZeroInt()) {
 		err = k.bank.MintCoins(ctx, pool.ModuleName, sdk.NewCoins(sdk.NewCoin(cAsset.Denom, amtToMint)))
 		if err != nil {
 			return err
@@ -797,7 +799,7 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 		k.lend.SetAssetStatsByPoolIDAndAssetID(ctx, poolAssetLBMappingData)
 	}
 	// if borrow position is having bridged asset then return to the initial pool
-	if borrowPos.BridgedAssetAmount.Amount.GT(sdk.NewInt(0)) {
+	if borrowPos.BridgedAssetAmount.Amount.GT(sdkmath.NewInt(0)) {
 		assetInPool, _ := k.lend.GetPool(ctx, lend.PoolID)
 		err = k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, assetInPool.ModuleName, sdk.NewCoins(borrowPos.BridgedAssetAmount))
 		if err != nil {

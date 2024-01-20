@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus() {
@@ -19,12 +19,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 				AppID:            2,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(200000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {
@@ -91,12 +91,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 				AppID:            2,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(200000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {

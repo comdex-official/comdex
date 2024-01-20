@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -40,10 +42,10 @@ func (k Keeper) GetLockerTotalRewardsByAppWise(ctx sdk.Context, appID uint64) (l
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerTotalRewardsByAppWiseKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -64,10 +66,10 @@ func (k Keeper) GetLockerTotalRewardsByAppWise(ctx sdk.Context, appID uint64) (l
 func (k Keeper) GetAllLockerTotalRewardsByAssetAppWise(ctx sdk.Context) (lockerTotalRewardsByAssetAppWise []types.LockerTotalRewardsByAssetAppWise) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockerTotalRewardsByAssetAppWiseKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockerTotalRewardsByAssetAppWiseKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -111,10 +113,10 @@ func (k Keeper) GetLockerProductAssetMappingByApp(ctx sdk.Context, appID uint64)
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerProductAssetMappingByAppKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -135,10 +137,10 @@ func (k Keeper) GetLockerProductAssetMappingByApp(ctx sdk.Context, appID uint64)
 func (k Keeper) GetAllLockerProductAssetMapping(ctx sdk.Context) (lockerProductAssetMapping []types.LockerProductAssetMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockerProductAssetMappingKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockerProductAssetMappingKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -182,10 +184,10 @@ func (k Keeper) GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (locker
 	var (
 		store = k.Store(ctx)
 		key   = types.LockerLookupTableByAppKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -207,10 +209,10 @@ func (k Keeper) GetLockerLookupTableByApp(ctx sdk.Context, appID uint64) (locker
 func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []types.LockerLookupTableData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockerLookupTableKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockerLookupTableKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -226,7 +228,7 @@ func (k Keeper) GetAllLockerLookupTable(ctx sdk.Context) (lockerLookupTable []ty
 }
 
 // UpdateAmountLockerMapping For updating token locker mapping in lookup table.
-func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appID uint64, assetID uint64, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateAmountLockerMapping(ctx sdk.Context, appID uint64, assetID uint64, amount sdkmath.Int, changeType bool) {
 	// if Change type true = Add to deposits
 
 	// If change type false = Subtract from the deposits
@@ -272,10 +274,10 @@ func (k Keeper) GetUserLockerAppMapping(ctx sdk.Context, address string, appID u
 	var (
 		store = k.Store(ctx)
 		key   = types.UserAppLockerMappingKey(address, appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -298,10 +300,10 @@ func (k Keeper) GetUserLockerMapping(ctx sdk.Context, address string) (userLocke
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLockerMappingKey(address)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -323,10 +325,10 @@ func (k Keeper) GetUserLockerMapping(ctx sdk.Context, address string) (userLocke
 func (k Keeper) GetAllUserLockerAssetMapping(ctx sdk.Context) (userLockerAssetMapping []types.UserAppAssetLockerMapping) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.UserLockerAssetMappingKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.UserLockerAssetMappingKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -409,10 +411,10 @@ func (k Keeper) GetLocker(ctx sdk.Context, lockerID uint64) (locker types.Locker
 func (k Keeper) GetLockers(ctx sdk.Context) (locker []types.Locker) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockerKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockerKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

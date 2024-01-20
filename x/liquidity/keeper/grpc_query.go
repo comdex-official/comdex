@@ -4,13 +4,14 @@ import (
 	"context"
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
@@ -713,7 +714,7 @@ func (k Querier) FarmedPoolCoin(c context.Context, req *types.QueryFarmedPoolCoi
 	ctx := sdk.UnwrapSDKContext(c)
 	pool, found := k.GetPool(ctx, req.AppId, req.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidPoolID, "pool id %d is invalid", req.PoolId)
 	}
 	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
 	farmedCoins := k.bankKeeper.GetBalance(ctx, moduleAddr, pool.PoolCoinDenom)
@@ -804,12 +805,12 @@ func (k Querier) OrderBooks(c context.Context, req *types.QueryOrderBooksRequest
 
 	_, found := k.assetKeeper.GetApp(ctx, req.AppId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", req.AppId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", req.AppId)
 	}
 
 	params, err := k.GetGenericParams(ctx, req.AppId)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "params retreval failed")
+		return nil, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	tickPrec := params.TickPrecision

@@ -1,9 +1,11 @@
 package v4_0_0 //nolint:revive,stylecheck
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -18,7 +20,7 @@ func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
@@ -44,7 +46,7 @@ func CreateSwapFeeGauge(
 		ctx.BlockTime(),
 		rewardstypes.LiquidityGaugeTypeID,
 		liquiditytypes.DefaultSwapFeeDistributionDuration,
-		sdk.NewCoin(params.SwapFeeDistrDenom, sdk.NewInt(0)),
+		sdk.NewCoin(params.SwapFeeDistrDenom, sdkmath.NewInt(0)),
 		1,
 	)
 	newGauge.Kind = &rewardstypes.MsgCreateGauge_LiquidityMetaData{
@@ -64,7 +66,7 @@ func CreateUpgradeHandlerV410(
 	rewardskeeper rewardskeeper.Keeper,
 	liquiditykeeper liquiditykeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
 		CreateSwapFeeGauge(ctx, rewardskeeper, liquiditykeeper, 1, 1)
@@ -111,7 +113,7 @@ func CreateUpgradeHandlerV430(
 	configurator module.Configurator,
 	assetkeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// This change is only for testnet upgrade
 
 		EditAndSetPair(ctx, assetkeeper)

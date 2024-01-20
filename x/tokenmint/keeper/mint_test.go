@@ -2,6 +2,8 @@ package keeper_test
 
 import (
 	"fmt"
+
+	sdkmath "cosmossdk.io/math"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/tokenmint/keeper"
 	tokenmintTypes "github.com/comdex-official/comdex/x/tokenmint/types"
@@ -10,12 +12,12 @@ import (
 
 func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	genesisSupply := sdk.NewIntFromUint64(9000000)
+	genesisSupply := sdkmath.NewIntFromUint64(9000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
@@ -38,7 +40,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
@@ -55,7 +57,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg20 := assetTypes.AppData{
 		Name:             "cool",
 		ShortName:        "cool",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken:     nil,
 	}
@@ -65,7 +67,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg3 := assetTypes.Asset{
 		Name:      "CMDX",
 		Denom:     "ucmdx",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 
@@ -75,7 +77,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg4 := assetTypes.Asset{
 		Name:      "CMST",
 		Denom:     "ucmst",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
@@ -84,7 +86,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg5 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 
@@ -159,7 +161,7 @@ func (s *KeeperTestSuite) TestMsgMintNewTokens() {
 		},
 	} {
 		s.Run(tc.name, func() {
-			genesisSupply := sdk.NewIntFromUint64(9000000)
+			genesisSupply := sdkmath.NewIntFromUint64(9000000)
 			asset, found := s.assetKeeper.GetAsset(*ctx, tc.msg.AssetId)
 			s.Require().True(found)
 			previousCoin, err := s.getBalance(userAddress, asset.Denom)
@@ -203,7 +205,7 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 		appID         uint64
 		assetID       uint64
 		address       string
-		mintAmount    sdk.Int
+		mintAmount    sdkmath.Int
 		expectedError bool
 	}{
 		{
@@ -211,7 +213,7 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 			1,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
 			false,
 		},
 		{
@@ -219,7 +221,7 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 			33,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
 			true,
 		},
 		{
@@ -227,7 +229,7 @@ func (s *KeeperTestSuite) TestMintNewTokensForApp() {
 			3,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
 			true,
 		},
 	} {
@@ -279,8 +281,8 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 		appID         uint64
 		assetID       uint64
 		address       string
-		sendAmount    sdk.Int
-		burnAmount    sdk.Int
+		sendAmount    sdkmath.Int
+		burnAmount    sdkmath.Int
 		expectedError bool
 	}{
 		{
@@ -288,8 +290,8 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 			1,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(423),
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
 			false,
 		},
 		{
@@ -297,8 +299,8 @@ func (s *KeeperTestSuite) TestBurnTokensForApp() {
 			1,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(422),
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(422),
+			sdkmath.NewIntFromUint64(423),
 			true,
 		},
 	} {
@@ -348,7 +350,7 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 		appID         uint64
 		assetID       uint64
 		address       string
-		burnAmount    sdk.Int
+		burnAmount    sdkmath.Int
 		expectedError bool
 	}{
 		{
@@ -356,7 +358,7 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 			1,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(423),
+			sdkmath.NewIntFromUint64(423),
 			false,
 		},
 		{
@@ -364,7 +366,7 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 			1,
 			2,
 			userAddress,
-			sdk.NewIntFromUint64(9000001),
+			sdkmath.NewIntFromUint64(9000001),
 			true,
 		},
 	} {
@@ -403,7 +405,7 @@ func (s *KeeperTestSuite) TestBurnGovTokensForApp() {
 				s.Require().True(found)
 				s.Require().Equal(res.MintedTokens.AssetId, tc.assetID)
 				s.Require().Equal(res.MintedTokens.GenesisSupply, beforeTokenMint.MintedTokens.GenesisSupply)
-				s.Require().Equal(sdk.NewInt(currentSupply).Add(tc.burnAmount), beforeTokenMint.MintedTokens.CurrentSupply)
+				s.Require().Equal(sdkmath.NewInt(currentSupply).Add(tc.burnAmount), beforeTokenMint.MintedTokens.CurrentSupply)
 				s.Require().Equal(beforeTokenMintBalance, afterTokenMintBalance)
 				s.Require().Equal(beforeUserBalance.Amount.Sub(afterUserBalance.Amount), tc.burnAmount)
 			}

@@ -22,7 +22,7 @@ message MsgCreateLockerRequest{
   string depositor = 1 [(gogoproto.moretags) = "yaml:\"depositor\""];
 
   string amount = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.nullable) = false
   ];
@@ -62,7 +62,7 @@ message MsgDepositAssetRequest {
   uint64 locker_id = 2[
     (gogoproto.moretags) = "yaml:\"locker_id\""];
   string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.nullable) = false
 
@@ -86,7 +86,7 @@ message MsgWithdrawAssetRequest {
   [
     (gogoproto.moretags) = "yaml:\"locker_id\""];
   string amount = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.nullable) = false
 

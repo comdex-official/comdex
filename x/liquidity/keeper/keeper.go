@@ -3,14 +3,14 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/liquidity/expected"
 	"github.com/comdex-official/comdex/x/liquidity/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 // Keeper of the liquidity store.

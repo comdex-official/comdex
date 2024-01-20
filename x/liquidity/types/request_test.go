@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -90,7 +91,7 @@ func TestDepositRequest_Validate(t *testing.T) {
 		{
 			"invalid minted pool coin",
 			func(req *types.DepositRequest) {
-				req.MintedPoolCoin = sdk.Coin{Denom: "pool1", Amount: sdk.NewInt(-1)}
+				req.MintedPoolCoin = sdk.Coin{Denom: "pool1", Amount: sdkmath.NewInt(-1)}
 			},
 			"invalid minted pool coin -1pool1: negative coin amount: -1",
 		},
@@ -167,7 +168,7 @@ func TestWithdrawRequest_Validate(t *testing.T) {
 		{
 			"invalid pool coin",
 			func(req *types.WithdrawRequest) {
-				req.PoolCoin = sdk.Coin{Denom: "pool1", Amount: sdk.NewInt(-1)}
+				req.PoolCoin = sdk.Coin{Denom: "pool1", Amount: sdkmath.NewInt(-1)}
 			},
 			"invalid pool coin -1pool1: negative coin amount: -1",
 		},
@@ -271,7 +272,7 @@ func TestOrder_Validate(t *testing.T) {
 		{
 			"invalid offer coin",
 			func(order *types.Order) {
-				order.OfferCoin = sdk.Coin{Denom: "denom1", Amount: sdk.NewInt(-1)}
+				order.OfferCoin = sdk.Coin{Denom: "denom1", Amount: sdkmath.NewInt(-1)}
 			},
 			"invalid offer coin -1denom1: negative coin amount: -1",
 		},
@@ -285,7 +286,7 @@ func TestOrder_Validate(t *testing.T) {
 		{
 			"invalid remaining offer coin",
 			func(order *types.Order) {
-				order.RemainingOfferCoin = sdk.Coin{Denom: "denom1", Amount: sdk.NewInt(-1)}
+				order.RemainingOfferCoin = sdk.Coin{Denom: "denom1", Amount: sdkmath.NewInt(-1)}
 			},
 			"invalid remaining offer coin -1denom1: negative coin amount: -1",
 		},
@@ -307,7 +308,7 @@ func TestOrder_Validate(t *testing.T) {
 		{
 			"invalid received coin",
 			func(order *types.Order) {
-				order.ReceivedCoin = sdk.Coin{Denom: "denom1", Amount: sdk.NewInt(-1)}
+				order.ReceivedCoin = sdk.Coin{Denom: "denom1", Amount: sdkmath.NewInt(-1)}
 			},
 			"invalid received coin -1denom1: negative coin amount: -1",
 		},
@@ -321,21 +322,21 @@ func TestOrder_Validate(t *testing.T) {
 		{
 			"zero price",
 			func(order *types.Order) {
-				order.Price = sdk.ZeroDec()
+				order.Price = sdkmath.LegacyZeroDec()
 			},
 			"price must be positive: 0.000000000000000000",
 		},
 		{
 			"zero amount",
 			func(order *types.Order) {
-				order.Amount = sdk.ZeroInt()
+				order.Amount = sdkmath.ZeroInt()
 			},
 			"amount must be positive: 0",
 		},
 		{
 			"negative open amount",
 			func(order *types.Order) {
-				order.OpenAmount = sdk.NewInt(-1)
+				order.OpenAmount = sdkmath.NewInt(-1)
 			},
 			"open amount must not be negative: -1",
 		},
@@ -366,7 +367,7 @@ func TestOrder_Validate(t *testing.T) {
 			orderer := sdk.AccAddress(crypto.AddressHash([]byte("orderer")))
 			msg := types.NewMsgLimitOrder(
 				1, orderer, pair.Id, types.OrderDirectionBuy, utils.ParseCoin("1000000denom2"),
-				"denom1", utils.ParseDec("1.0"), sdk.NewInt(1000000), types.DefaultMaxOrderLifespan)
+				"denom1", utils.ParseDec("1.0"), sdkmath.NewInt(1000000), types.DefaultMaxOrderLifespan)
 			expireAt := utils.ParseTime("2022-01-01T00:00:00Z")
 			order := types.NewOrderForLimitOrder(msg, 1, pair, utils.ParseCoin("1000000denom2"), msg.Price, expireAt, 1)
 			tc.malleate(&order)

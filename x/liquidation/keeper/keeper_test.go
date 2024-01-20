@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"testing"
 	"time"
 
@@ -8,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	chain "github.com/comdex-official/comdex/app"
@@ -45,7 +45,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.vaultKeeper = s.app.VaultKeeper
 	s.liquidationKeeper = s.app.LiquidationKeeper
 	s.assetKeeper = s.app.AssetKeeper
@@ -113,9 +113,9 @@ func (s *KeeperTestSuite) AddAuctionParams() {
 	auctionParams := auctionTypes.AuctionParams{
 		AppId:                  1,
 		AuctionDurationSeconds: 300,
-		Buffer:                 sdk.MustNewDecFromStr("1.2"),
-		Cusp:                   sdk.MustNewDecFromStr("0.6"),
-		Step:                   sdk.NewIntFromUint64(1),
+		Buffer:                 sdkmath.LegacyMustNewDecFromStr("1.2"),
+		Cusp:                   sdkmath.LegacyMustNewDecFromStr("0.6"),
+		Step:                   sdkmath.NewIntFromUint64(1),
 		PriceFunctionType:      1,
 		SurplusId:              1,
 		DebtId:                 2,

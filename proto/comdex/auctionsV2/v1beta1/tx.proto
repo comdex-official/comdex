@@ -25,7 +25,7 @@ message MsgDepositLimitBidRequest {
   string premium_discount = 3 [
     (gogoproto.moretags) = "yaml:\"premium_discount\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
   string bidder = 4;
   cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];
@@ -39,7 +39,7 @@ message MsgCancelLimitBidRequest {
   string premium_discount = 3 [
     (gogoproto.moretags) = "yaml:\"premium_discount\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
   string bidder = 4;
 }
@@ -52,7 +52,7 @@ message MsgWithdrawLimitBidRequest {
   string premium_discount = 3 [
     (gogoproto.moretags) = "yaml:\"premium_discount\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
   string bidder = 4;
   cosmos.base.v1beta1.Coin amount = 5 [(gogoproto.nullable) = false];

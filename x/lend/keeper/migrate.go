@@ -1,10 +1,11 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	migrationtypes "github.com/comdex-official/comdex/x/lend/migrations/v2/types"
 	"github.com/comdex-official/comdex/x/lend/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -47,7 +48,7 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	return err
 }
 
-func MigrateModBal(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateModBal(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	key := types.KeyFundModBal
 	value := store.Get(key)
 	var modBal types.ModBal
@@ -59,7 +60,7 @@ func MigrateModBal(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetModBal(store sdk.KVStore, cdc codec.BinaryCodec, modBal types.ModBal) {
+func SetModBal(store storetypes.KVStore, cdc codec.BinaryCodec, modBal types.ModBal) {
 	var (
 		key   = types.KeyFundModBal
 		value = cdc.MustMarshal(&modBal)
@@ -68,7 +69,7 @@ func SetModBal(store sdk.KVStore, cdc codec.BinaryCodec, modBal types.ModBal) {
 	store.Set(key, value)
 }
 
-func MigrateResBal(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateResBal(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	key := types.KeyFundReserveBal
 	value := store.Get(key)
 	var resBal types.ReserveBal
@@ -80,7 +81,7 @@ func MigrateResBal(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetResBal(store sdk.KVStore, cdc codec.BinaryCodec, resBal types.ReserveBal) {
+func SetResBal(store storetypes.KVStore, cdc codec.BinaryCodec, resBal types.ReserveBal) {
 	var (
 		key   = types.KeyFundReserveBal
 		value = cdc.MustMarshal(&resBal)
@@ -89,7 +90,7 @@ func SetResBal(store sdk.KVStore, cdc codec.BinaryCodec, resBal types.ReserveBal
 	store.Set(key, value)
 }
 
-func MigrateResStats(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateResStats(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	key1 := types.AllReserveStatsKey(1)
 	value1 := store.Get(key1)
 	var allReserveStats1 types.AllReserveStats
@@ -114,7 +115,7 @@ func MigrateResStats(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetResStats(store sdk.KVStore, cdc codec.BinaryCodec, allReserveStats types.AllReserveStats) {
+func SetResStats(store storetypes.KVStore, cdc codec.BinaryCodec, allReserveStats types.AllReserveStats) {
 	var (
 		key   = types.AllReserveStatsKey(allReserveStats.AssetID)
 		value = cdc.MustMarshal(&allReserveStats)
@@ -146,9 +147,9 @@ func MigrateStoreV2(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Bin
 	return err
 }
 
-func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateLendPairs(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 
-	iterator := store.Iterator(types.LendPairKeyPrefix, sdk.PrefixEndBytes(types.LendPairKeyPrefix))
+	iterator := store.Iterator(types.LendPairKeyPrefix, storetypes.PrefixEndBytes(types.LendPairKeyPrefix))
 	defer func(iterator storetypes.Iterator) {
 		err := iterator.Close()
 		if err != nil {
@@ -171,7 +172,7 @@ func MigrateLendPairs(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair_Old) {
+func SetLendPairs(store storetypes.KVStore, cdc codec.BinaryCodec, pair migrationtypes.Extended_Pair_Old) {
 	newPair := types.Extended_Pair{
 		Id:              pair.Id,
 		AssetIn:         pair.AssetIn,
@@ -190,9 +191,9 @@ func SetLendPairs(store sdk.KVStore, cdc codec.BinaryCodec, pair migrationtypes.
 	store.Set(key, value)
 }
 
-func MigrateAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateAssetRatesParams(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 
-	iterator := store.Iterator(types.AssetRatesParamsKeyPrefix, sdk.PrefixEndBytes(types.AssetRatesParamsKeyPrefix))
+	iterator := store.Iterator(types.AssetRatesParamsKeyPrefix, storetypes.PrefixEndBytes(types.AssetRatesParamsKeyPrefix))
 	defer func(iterator storetypes.Iterator) {
 		err := iterator.Close()
 		if err != nil {
@@ -215,7 +216,7 @@ func MigrateAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec, assetRatesParams migrationtypes.AssetRatesParams_Old) {
+func SetAssetRatesParams(store storetypes.KVStore, cdc codec.BinaryCodec, assetRatesParams migrationtypes.AssetRatesParams_Old) {
 	newAssetRatesParams := types.AssetRatesParams{
 		AssetID:               assetRatesParams.AssetID,
 		UOptimal:              assetRatesParams.UOptimal,
@@ -233,9 +234,9 @@ func SetAssetRatesParams(store sdk.KVStore, cdc codec.BinaryCodec, assetRatesPar
 		ReserveFactor:         assetRatesParams.ReserveFactor,
 		CAssetID:              assetRatesParams.CAssetID,
 		IsIsolated:            false,
-		ELtv:                  sdk.NewDec(0),
-		ELiquidationThreshold: sdk.NewDec(0),
-		ELiquidationPenalty:   sdk.NewDec(0),
+		ELtv:                  sdkmath.LegacyNewDec(0),
+		ELiquidationThreshold: sdkmath.LegacyNewDec(0),
+		ELiquidationPenalty:   sdkmath.LegacyNewDec(0),
 	}
 
 	var (

@@ -1,10 +1,9 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"strconv"
 	"strings"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	flag "github.com/spf13/pflag"
 )
@@ -34,16 +33,16 @@ func ParseUint64SliceFromString(s string, separator string) ([]uint64, error) {
 	return parsedInt, nil
 }
 
-func ParseDecSliceFromString(s string, separator string) ([]sdk.Dec, error) {
-	var newParsedDec []sdk.Dec
+func ParseDecSliceFromString(s string, separator string) ([]sdkmath.LegacyDec, error) {
+	var newParsedDec []sdkmath.LegacyDec
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
 		parsed, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return []sdk.Dec{}, err
+			return []sdkmath.LegacyDec{}, err
 		}
-		parsedDec := sdk.NewDec(parsed)
+		parsedDec := sdkmath.LegacyNewDec(parsed)
 		newParsedDec = append(newParsedDec, parsedDec)
 	}
 	return newParsedDec, nil
@@ -114,14 +113,14 @@ func FlagAddEModePairs() *flag.FlagSet {
 	return fs
 }
 
-func ParseDecSliceFromStringForDec(s string, separator string) ([]sdk.Dec, error) {
-	var newParsedDec []sdk.Dec
+func ParseDecSliceFromStringForDec(s string, separator string) ([]sdkmath.LegacyDec, error) {
+	var newParsedDec []sdkmath.LegacyDec
 	for _, s := range strings.Split(s, separator) {
 		s = strings.TrimSpace(s)
 
-		parsed, err := sdk.NewDecFromStr(s)
+		parsed, err := sdkmath.LegacyNewDecFromStr(s)
 		if err != nil {
-			return []sdk.Dec{}, err
+			return []sdkmath.LegacyDec{}, err
 		}
 		newParsedDec = append(newParsedDec, parsed)
 	}

@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
+
 	"cosmossdk.io/errors"
 	"github.com/comdex-official/comdex/x/common/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 type msgServer struct {
@@ -47,16 +49,16 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 	allContracts := k.GetAllContract(ctx)
 
 	for _, data := range allContracts {
-		if data.ContractAddress == msg.ContractAddress{
-			return &types.MsgRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "contract already registered")
+		if data.ContractAddress == msg.ContractAddress {
+			return &types.MsgRegisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "contract already registered")
 		}
 	}
 	gameID := k.GetGameID(ctx)
-	contract := types.WhitelistedContract {
-		GameId: gameID+1,
+	contract := types.WhitelistedContract{
+		GameId:          gameID + 1,
 		SecurityAddress: msg.SecurityAddress,
-		ContractAdmin: contractInfo.Admin,
-		GameName: msg.GameName,
+		ContractAdmin:   contractInfo.Admin,
+		GameName:        msg.GameName,
 		ContractAddress: msg.ContractAddress,
 	}
 
@@ -66,7 +68,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 		return &types.MsgRegisterContractResponse{}, err
 	}
 	k.SetGameID(ctx, gameID+1)
-	
+
 	return &types.MsgRegisterContractResponse{}, nil
 }
 
@@ -81,7 +83,7 @@ func (k msgServer) DeRegisterContract(goCtx context.Context, msg *types.MsgDeReg
 	// Get Game info from Game Id
 	gameInfo, found := k.GetContract(ctx, msg.GameId)
 	if !found {
-		return &types.MsgDeRegisterContractResponse{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "no contract found for this game ID")
+		return &types.MsgDeRegisterContractResponse{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "no contract found for this game ID")
 	}
 
 	// Validation such that only the user who instantiated the contract can register contract
@@ -93,12 +95,12 @@ func (k msgServer) DeRegisterContract(goCtx context.Context, msg *types.MsgDeReg
 
 	// check if sender is authorized
 	exists := k.CheckSecurityAddress(ctx, msg.SecurityAddress)
-	if !exists && contractInfo.Admin != msg.SecurityAddress{
+	if !exists && contractInfo.Admin != msg.SecurityAddress {
 		return &types.MsgDeRegisterContractResponse{}, sdkerrors.ErrUnauthorized
 	}
 
 	k.DeleteContract(ctx, msg.GameId)
-	
+
 	return &types.MsgDeRegisterContractResponse{}, nil
 }
 

@@ -1,9 +1,8 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (m *Extended_Pair) Validate() error {
@@ -60,40 +59,40 @@ func (m *AssetRatesParams) Validate() error {
 	if m.AssetID == 0 {
 		return fmt.Errorf("assetID cannot be zero")
 	}
-	if m.UOptimal.LTE(sdk.ZeroDec()) {
+	if m.UOptimal.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("UOptimal cannot be zero")
 	}
-	if m.Base.LTE(sdk.ZeroDec()) {
+	if m.Base.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("base cannot be zero")
 	}
-	if m.Slope1.LTE(sdk.ZeroDec()) {
+	if m.Slope1.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("slope1 cannot be zero")
 	}
-	if m.Slope2.LTE(sdk.ZeroDec()) {
+	if m.Slope2.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("slope2 cannot be zero")
 	}
-	if m.StableBase.LT(sdk.ZeroDec()) {
+	if m.StableBase.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableBase cannot be less than zero")
 	}
-	if m.StableSlope1.LT(sdk.ZeroDec()) {
+	if m.StableSlope1.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableSlope1 cannot be less than zero")
 	}
-	if m.StableSlope2.LT(sdk.ZeroDec()) {
+	if m.StableSlope2.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableSlope2 cannot be less than zero")
 	}
-	if m.LiquidationThreshold.LTE(sdk.ZeroDec()) {
+	if m.LiquidationThreshold.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationThreshold cannot be zero")
 	}
-	if m.LiquidationBonus.LTE(sdk.ZeroDec()) {
+	if m.LiquidationBonus.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationBonus cannot be zero")
 	}
-	if m.LiquidationPenalty.LTE(sdk.ZeroDec()) {
+	if m.LiquidationPenalty.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationPenalty cannot be zero")
 	}
-	if m.Ltv.LTE(sdk.ZeroDec()) {
+	if m.Ltv.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("ltv cannot be zero")
 	}
-	if m.ReserveFactor.LTE(sdk.ZeroDec()) {
+	if m.ReserveFactor.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("ReserveFactor cannot be zero")
 	}
 	if m.CAssetID == 0 {
@@ -116,40 +115,40 @@ func (m *AssetRatesPoolPairs) Validate() error {
 	if m.AssetID == 0 {
 		return fmt.Errorf("assetID cannot be zero")
 	}
-	if m.UOptimal.LTE(sdk.ZeroDec()) {
+	if m.UOptimal.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("UOptimal cannot be zero")
 	}
-	if m.Base.LTE(sdk.ZeroDec()) {
+	if m.Base.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("base cannot be zero")
 	}
-	if m.Slope1.LTE(sdk.ZeroDec()) {
+	if m.Slope1.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("slope1 cannot be zero")
 	}
-	if m.Slope2.LTE(sdk.ZeroDec()) {
+	if m.Slope2.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("slope2 cannot be zero")
 	}
-	if m.StableBase.LT(sdk.ZeroDec()) {
+	if m.StableBase.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableBase cannot be less than zero")
 	}
-	if m.StableSlope1.LT(sdk.ZeroDec()) {
+	if m.StableSlope1.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableSlope1 cannot be less than zero")
 	}
-	if m.StableSlope2.LT(sdk.ZeroDec()) {
+	if m.StableSlope2.LT(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("StableSlope2 cannot be less than zero")
 	}
-	if m.LiquidationThreshold.LTE(sdk.ZeroDec()) {
+	if m.LiquidationThreshold.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationThreshold cannot be zero")
 	}
-	if m.LiquidationBonus.LTE(sdk.ZeroDec()) {
+	if m.LiquidationBonus.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationBonus cannot be zero")
 	}
-	if m.LiquidationPenalty.LTE(sdk.ZeroDec()) {
+	if m.LiquidationPenalty.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("LiquidationPenalty cannot be zero")
 	}
-	if m.Ltv.LTE(sdk.ZeroDec()) {
+	if m.Ltv.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("ltv cannot be zero")
 	}
-	if m.ReserveFactor.LTE(sdk.ZeroDec()) {
+	if m.ReserveFactor.LTE(sdkmath.LegacyZeroDec()) {
 		return fmt.Errorf("ReserveFactor cannot be zero")
 	}
 	if m.CAssetID == 0 {

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -26,7 +28,7 @@ var (
 type PoolTokenDeserializerKit struct {
 	Pair                 Pair
 	Pool                 Pool
-	PoolCoinSupply       sdk.Int
+	PoolCoinSupply       sdkmath.Int
 	QuoteCoinPoolBalance sdk.Coin
 	BaseCoinPoolBalance  sdk.Coin
 	AmmPoolObject        amm.Pool
@@ -80,7 +82,7 @@ func NewBasicPool(appID, id, pairID uint64, creator sdk.AccAddress) Pool {
 }
 
 // NewRangedPool returns a new ranged pool object.
-func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, maxPrice sdk.Dec) Pool {
+func NewRangedPool(appID, id, pairID uint64, creator sdk.AccAddress, minPrice, maxPrice sdkmath.LegacyDec) Pool {
 	return Pool{
 		Type:                  PoolTypeRanged,
 		Id:                    id,
@@ -134,7 +136,7 @@ func (pool Pool) Validate() error {
 }
 
 // AMMPool constructs amm.Pool interface from Pool.
-func (pool Pool) AMMPool(rx, ry, ps sdk.Int) amm.Pool {
+func (pool Pool) AMMPool(rx, ry, ps sdkmath.Int) amm.Pool {
 	switch pool.Type {
 	case PoolTypeBasic:
 		return amm.NewBasicPool(rx, ry, ps)
@@ -168,7 +170,7 @@ func NewPoolOrderer(
 	}
 }
 
-func (orderer *PoolOrderer) Order(dir amm.OrderDirection, price sdk.Dec, amt sdk.Int) amm.Order {
+func (orderer *PoolOrderer) Order(dir amm.OrderDirection, price sdkmath.LegacyDec, amt sdkmath.Int) amm.Order {
 	var offerCoinDenom, demandCoinDenom string
 	switch dir {
 	case amm.Buy:

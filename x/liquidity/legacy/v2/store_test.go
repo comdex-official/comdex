@@ -22,7 +22,7 @@ package v2_test
 // 	err := app.AssetKeeper.AddAppRecords(ctx, assettypes.AppData{
 // 		Name:             strings.ToLower(appName),
 // 		ShortName:        strings.ToLower(appName),
-// 		MinGovDeposit:    sdk.NewInt(0),
+// 		MinGovDeposit:    sdkmath.NewInt(0),
 // 		GovTimeInSeconds: 0,
 // 		GenesisToken:     []assettypes.MintGenesisToken{},
 // 	})

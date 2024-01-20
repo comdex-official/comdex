@@ -45,13 +45,13 @@ message GenericParams {
         [(gogoproto.customtype) = "cosmossdk.io/math.LegacyDec", (gogoproto.nullable) = false];
   
     uint64 deposit_extra_gas = 13
-        [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
+        [(gogoproto.customtype) = "cosmossdk.io/store.Gas", (gogoproto.nullable) = false];
   
     uint64 withdraw_extra_gas = 14
-        [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
+        [(gogoproto.customtype) = "cosmossdk.io/store.Gas", (gogoproto.nullable) = false];
   
     uint64 order_extra_gas = 15
-        [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Gas", (gogoproto.nullable) = false];
+        [(gogoproto.customtype) = "cosmossdk.io/store.Gas", (gogoproto.nullable) = false];
     
     string swap_fee_distr_denom = 16;
 

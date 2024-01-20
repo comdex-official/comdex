@@ -2,23 +2,25 @@ package main
 
 import (
 	"bufio"
+	sdkmath "cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 
-	tmconfig "github.com/cometbft/cometbft/config"
+	"cosmossdk.io/math/unsafe"
+	cmtconfig "github.com/cometbft/cometbft/config"
 	tmos "github.com/cometbft/cometbft/libs/os"
-	tmrand "github.com/cometbft/cometbft/libs/rand"
 	tmtypes "github.com/cometbft/cometbft/types"
-	tmtimetypes "github.com/cometbft/cometbft/types/time"
+	cmttime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -73,7 +75,7 @@ Example:
 
 			return InitTestnet(
 				clientCtx, cmd, config, mbm, genBalIterator, outputDir, chainID, minGasPrices,
-				nodeDirPrefix, nodeDaemonHome, startingIPAddress, keyringBackend, algo, numValidators,
+				nodeDirPrefix, nodeDaemonHome, startingIPAddress, keyringBackend, algo, numValidators, clientCtx.TxConfig.SigningContext().ValidatorAddressCodec(),
 			)
 		},
 	}
@@ -96,7 +98,7 @@ const nodeDirPerm = 0o755
 func InitTestnet(
 	clientCtx client.Context,
 	cmd *cobra.Command,
-	nodeConfig *tmconfig.Config,
+	nodeConfig *cmtconfig.Config,
 	mbm module.BasicManager,
 	genBalIterator banktypes.GenesisBalancesIterator,
 	outputDir,
@@ -108,9 +110,10 @@ func InitTestnet(
 	keyringBackend,
 	algoStr string,
 	numValidators int,
+	valAddrCodec runtime.ValidatorAddressCodec,
 ) error {
 	if chainID == "" {
-		chainID = "chain-" + tmrand.NewRand().Str(6)
+		chainID = "chain-" + unsafe.NewRand().Str(6)
 	}
 
 	nodeIDs := make([]string, numValidators)
@@ -189,8 +192,8 @@ func InitTestnet(
 			return err
 		}
 
-		accTokens := sdk.TokensFromConsensusPower(1000, sdk.NewInt(1))
-		accStakingTokens := sdk.TokensFromConsensusPower(500, sdk.NewInt(1))
+		accTokens := sdk.TokensFromConsensusPower(1000, sdkmath.NewInt(1))
+		accStakingTokens := sdk.TokensFromConsensusPower(500, sdkmath.NewInt(1))
 		coins := sdk.Coins{
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
 			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
@@ -199,14 +202,19 @@ func InitTestnet(
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: coins.Sort()})
 		genAccounts = append(genAccounts, authtypes.NewBaseAccount(addr, nil, 0, 0))
 
-		valTokens := sdk.TokensFromConsensusPower(100, sdk.NewInt(1))
+		valStr, err := valAddrCodec.BytesToString(sdk.ValAddress(addr))
+		if err != nil {
+			return err
+		}
+
+		valTokens := sdk.TokensFromConsensusPower(100, sdkmath.NewInt(1))
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
-			sdk.ValAddress(addr),
+			valStr,
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
-			stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
-			sdk.OneInt(),
+			stakingtypes.NewCommissionRates(sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec()),
+			sdkmath.OneInt(),
 		)
 		if err != nil {
 			return err
@@ -226,7 +234,7 @@ func InitTestnet(
 			WithKeybase(kb).
 			WithTxConfig(clientCtx.TxConfig)
 
-		if err := tx.Sign(txFactory, nodeDirName, txBuilder, true); err != nil {
+		if err := tx.Sign(cmd.Context(), txFactory, nodeDirName, txBuilder, true); err != nil {
 			return err
 		}
 
@@ -248,7 +256,7 @@ func InitTestnet(
 
 	err := collectGenFiles(
 		clientCtx, nodeConfig, chainID, nodeIDs, valPubKeys, numValidators,
-		outputDir, nodeDirPrefix, nodeDaemonHome, genBalIterator,
+		outputDir, nodeDirPrefix, nodeDaemonHome, genBalIterator, valAddrCodec,
 	)
 	if err != nil {
 		return err
@@ -302,12 +310,12 @@ func initGenFiles(
 }
 
 func collectGenFiles(
-	clientCtx client.Context, nodeConfig *tmconfig.Config, chainID string,
+	clientCtx client.Context, nodeConfig *cmtconfig.Config, chainID string,
 	nodeIDs []string, valPubKeys []cryptotypes.PubKey, numValidators int,
-	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator,
+	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator, valAddrCodec runtime.ValidatorAddressCodec,
 ) error {
 	var appState json.RawMessage
-	genTime := tmtimetypes.Now()
+	genTime := cmttime.Now()
 
 	for i := 0; i < numValidators; i++ {
 		nodeDirName := fmt.Sprintf("%s%d", nodeDirPrefix, i)
@@ -320,12 +328,12 @@ func collectGenFiles(
 		nodeID, valPubKey := nodeIDs[i], valPubKeys[i]
 		initCfg := genutiltypes.NewInitConfig(chainID, gentxsDir, nodeID, valPubKey)
 
-		genDoc, err := tmtypes.GenesisDocFromFile(nodeConfig.GenesisFile())
+		genDoc, err := genutiltypes.AppGenesisFromFile(nodeConfig.GenesisFile())
 		if err != nil {
 			return err
 		}
 
-		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, *genDoc, genBalIterator, genutiltypes.DefaultMessageValidator)
+		nodeAppState, err := genutil.GenAppStateFromConfig(clientCtx.Codec, clientCtx.TxConfig, nodeConfig, initCfg, genDoc, genBalIterator, genutiltypes.DefaultMessageValidator, valAddrCodec)
 		if err != nil {
 			return err
 		}

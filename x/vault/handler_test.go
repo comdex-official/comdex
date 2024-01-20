@@ -1,6 +1,8 @@
 package vault_test
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	"strings"
 	"testing"
 
@@ -13,7 +15,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,7 +30,7 @@ func TestInvalidMsg(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, res)
 
-	_, _, log := sdkerrors.ABCIInfo(err, false)
+	_, _, log := errorsmod.ABCIInfo(err, false)
 	require.True(t, strings.Contains(log, "unknown message type"))
 }
 
@@ -43,7 +44,7 @@ func (s *ModuleTestSuite) TestMsgCreate() {
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
 	msg := types.NewMsgCreateRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000),
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000),
 	)
 
 	s.fundAddr(addr1, sdk.NewCoins(sdk.NewCoin("uasset1", msg.AmountIn)))
@@ -52,7 +53,7 @@ func (s *ModuleTestSuite) TestMsgCreate() {
 	s.Require().NoError(err)
 
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(addr1.String()))
-	s.Require().True(sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(198000000))).IsEqual(availableBalances))
+	s.Require().True(sdk.NewCoins(sdk.NewCoin("uasset2", sdkmath.NewInt(198000000))).Equal(availableBalances))
 
 	vaults := s.keeper.GetVaults(s.ctx)
 	s.Require().Len(vaults, 1)
@@ -74,14 +75,14 @@ func (s *ModuleTestSuite) TestMsgDeposit() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
 	msgDeposit := types.NewMsgDepositRequest(
-		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(69000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdkmath.NewInt(69000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgDeposit.Amount)))
 
@@ -108,14 +109,14 @@ func (s *ModuleTestSuite) TestMsgWithdraw() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
 	msgWithdraw := types.NewMsgWithdrawRequest(
-		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(50000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdkmath.NewInt(50000000),
 	)
 	_, err = handler(s.ctx, msgWithdraw)
 	s.Require().NoError(err)
@@ -140,14 +141,14 @@ func (s *ModuleTestSuite) TestMsgDraw() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
 	msgDraw := types.NewMsgDrawRequest(
-		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(10000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdkmath.NewInt(10000000),
 	)
 	_, err = handler(s.ctx, msgDraw)
 	s.Require().NoError(err)
@@ -172,14 +173,14 @@ func (s *ModuleTestSuite) TestMsgDepositAndDraw() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
 	msgDepositAndDraw := types.NewMsgDepositAndDrawRequest(
-		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(69000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdkmath.NewInt(69000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgDepositAndDraw.Amount)))
 
@@ -205,7 +206,7 @@ func (s *ModuleTestSuite) TestMsgVaultInterestCalcRequest() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
@@ -237,14 +238,14 @@ func (s *ModuleTestSuite) TestMsgRepay() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
 	msgRepay := types.NewMsgRepayRequest(
-		addr1, appID1, extendedVaultPairID1, 1, sdk.NewInt(100000000),
+		addr1, appID1, extendedVaultPairID1, 1, sdkmath.NewInt(100000000),
 	)
 	_, err = handler(s.ctx, msgRepay)
 	s.Require().NoError(err)
@@ -269,13 +270,13 @@ func (s *ModuleTestSuite) TestMsgClose() {
 	pairID := s.CreateNewPair(addr1, asseOneID, asseTwoID)
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, false, true)
 
-	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000), sdk.NewInt(200000000))
+	msgCreate := types.NewMsgCreateRequest(addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000), sdkmath.NewInt(200000000))
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgCreate.AmountIn)))
 
 	_, err := handler(s.ctx, msgCreate)
 	s.Require().NoError(err)
 
-	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(2000000))))
+	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset2", sdkmath.NewInt(2000000))))
 
 	msgRepay := types.NewMsgLiquidateRequest(
 		addr1, appID1, extendedVaultPairID1, 1,
@@ -298,7 +299,7 @@ func (s *ModuleTestSuite) TestMsgCreateStableMint() {
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
 
 	msgStableMintCreate := types.NewMsgCreateStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(100000000),
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(100000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintCreate.Amount)))
 
@@ -324,7 +325,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
 
 	msgStableMintCreate := types.NewMsgCreateStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(100000000),
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(100000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintCreate.Amount)))
 
@@ -332,7 +333,7 @@ func (s *ModuleTestSuite) TestMsgDepositStableMint() {
 	s.Require().NoError(err)
 
 	msgStableMintDeposit := types.NewMsgDepositStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(2000000000), 1,
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(2000000000), 1,
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintDeposit.Amount)))
 
@@ -358,7 +359,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	extendedVaultPairID1 := s.CreateNewExtendedVaultPair("CMDX-C", appID1, pairID, true, true)
 
 	msgStableMintCreate := types.NewMsgCreateStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(1000000000),
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(1000000000),
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintCreate.Amount)))
 
@@ -366,7 +367,7 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 	s.Require().NoError(err)
 
 	msgStableMintWithdraw := types.NewMsgWithdrawStableMintRequest(
-		addr1, appID1, extendedVaultPairID1, sdk.NewInt(500000000), 1,
+		addr1, appID1, extendedVaultPairID1, sdkmath.NewInt(500000000), 1,
 	)
 	s.fundAddr(sdk.MustAccAddressFromBech32(addr1.String()), sdk.NewCoins(sdk.NewCoin("uasset1", msgStableMintWithdraw.Amount)))
 
@@ -375,8 +376,8 @@ func (s *ModuleTestSuite) TestMsgWithdrawStableMint() {
 
 	stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
 	s.Require().Equal(uint64(1), stableMintVaults[0].Id)
-	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountIn)
-	s.Require().Equal(sdk.NewInt(505000000), stableMintVaults[0].AmountOut)
+	s.Require().Equal(sdkmath.NewInt(505000000), stableMintVaults[0].AmountIn)
+	s.Require().Equal(sdkmath.NewInt(505000000), stableMintVaults[0].AmountOut)
 	s.Require().Equal(appID1, stableMintVaults[0].AppId)
 	s.Require().Equal(extendedVaultPairID1, stableMintVaults[0].ExtendedPairVaultID)
 }

@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -32,7 +33,7 @@ func (k Keeper) GetGenericParams(ctx sdk.Context, appID uint64) (types.GenericPa
 		}
 		_, found := k.assetKeeper.GetApp(ctx, appID)
 		if !found {
-			return types.GenericParams{}, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+			return types.GenericParams{}, errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
 		}
 		genericParams = types.DefaultGenericParams(appID)
 		k.SetGenericParams(ctx, genericParams)
@@ -48,7 +49,7 @@ func (k Keeper) SetGenericParams(ctx sdk.Context, genericParams types.GenericPar
 func (k Keeper) UpdateGenericParams(ctx sdk.Context, appID uint64, keys, values []string) error {
 	_, found := k.assetKeeper.GetApp(ctx, appID)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+		return errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
 	}
 
 	if len(keys) != len(values) {

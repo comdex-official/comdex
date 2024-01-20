@@ -3,7 +3,6 @@ package collector_test
 import (
 	"testing"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	app "github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/collector"
@@ -13,7 +12,7 @@ import (
 
 func TestGenesis(t *testing.T) {
 	comdexApp := app.Setup(t, false)
-	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := comdexApp.BaseApp.NewContext(false)
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 	}

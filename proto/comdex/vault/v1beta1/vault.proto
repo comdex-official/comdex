@@ -22,12 +22,12 @@ message Vault {
 
   string owner = 4 [(gogoproto.moretags) = "yaml:\"owner\""];
   string amount_in = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount_in\"",
     (gogoproto.nullable) = false
   ];
   string amount_out = 6 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount_out\"",
     (gogoproto.nullable) = false
   ];
@@ -37,12 +37,12 @@ message Vault {
     (gogoproto.moretags) = "yaml:\"created_at\""
   ];
   string interest_accumulated = 8[
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
     (gogoproto.nullable) = false
   ];
   string closing_fee_accumulated = 9 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"interest_accumulated\"",
     (gogoproto.nullable) = false
   ];
@@ -75,10 +75,10 @@ message AppExtendedPairVaultMappingData
   repeated uint64 vault_ids = 3 [(gogoproto.moretags) = "yaml:\"vault_ids\""];
   string token_minted_amount = 4[
     (gogoproto.moretags) = "yaml:\"token_minted_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
   string collateral_locked_amount = 5[(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
 }
 
@@ -88,7 +88,7 @@ message TvlLockedDataMap
 {
   string asset_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_denom\""];
   string collateral_locked_amount = 2 [(gogoproto.moretags) = "yaml:\"collateral_locked_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
 }
 
@@ -96,7 +96,7 @@ message MintedDataMap
 {
   string asset_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_denom\""];
   string minted_amount = 2 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
 }
 
@@ -106,12 +106,12 @@ message StableMintVault {
     (gogoproto.moretags) = "yaml:\"id\""
   ];
   string amount_in = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount_in\"",
     (gogoproto.nullable) = false
   ];
   string amount_out = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount_out\"",
     (gogoproto.nullable) = false
   ];
@@ -130,11 +130,11 @@ message PairStatisticData {
   string asset_in_denom = 1 [(gogoproto.moretags) = "yaml:\"asset_in_denom\""];
   string asset_out_denom = 2 [(gogoproto.moretags) = "yaml:\"asset_out_denom\""];
   string collateral_amount = 3 [(gogoproto.moretags) = "yaml:\"collateral_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
     
   string minted_amount = 4 [(gogoproto.moretags) = "yaml:\"minted_amount\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
   uint64 extended_pair_vault_id = 5 [
     (gogoproto.customname) = "ExtendedPairVaultID",
@@ -156,7 +156,7 @@ message StableMintVaultRewards {
   ];
 
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags) = "yaml:\"amount\"",
     (gogoproto.nullable) = false
   ];

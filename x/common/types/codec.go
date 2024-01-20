@@ -8,7 +8,6 @@ import (
 	// this line is used by starport scaffolding # 1
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 )
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
@@ -41,6 +40,5 @@ var (
 func init() {
 	RegisterLegacyAminoCodec(Amino)
 	cryptocodec.RegisterCrypto(Amino)
-	RegisterLegacyAminoCodec(authzcodec.Amino)
 	Amino.Seal()
 }

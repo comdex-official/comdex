@@ -3,14 +3,16 @@ package keeper
 import (
 	"fmt"
 
-	"encoding/hex"
-	"github.com/cometbft/cometbft/libs/log"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 
+	"encoding/hex"
+
+	"cosmossdk.io/log"
+
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/common/expected"
 	"github.com/comdex-official/comdex/x/common/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -63,7 +65,7 @@ func (k Keeper) SudoContractCall(ctx sdk.Context, contractAddress string, p []by
 
 	contractAddr, err := sdk.AccAddressFromBech32(contractAddress)
 	if err != nil {
-		return sdkerrors.Wrapf(err, "contract")
+		return errorsmod.Wrapf(err, "contract")
 	}
 	data, err := k.conOps.Sudo(ctx, contractAddr, p)
 	if err != nil {
@@ -87,6 +89,6 @@ func (k Keeper) CheckSecurityAddress(ctx sdk.Context, from string) bool {
 	return false
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.storeKey)
 }

@@ -3,16 +3,17 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/collector/expected"
 	"github.com/comdex-official/comdex/x/collector/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 type (
@@ -62,6 +63,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdk.Int {
+func (k Keeper) ModuleBalance(ctx sdk.Context, moduleName string, denom string) sdkmath.Int {
 	return k.bank.GetBalance(ctx, authtypes.NewModuleAddress(moduleName), denom).Amount
 }

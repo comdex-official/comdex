@@ -20,32 +20,32 @@ message VaultInfo{
 
   string collateral = 4 [
     (gogoproto.moretags) = "yaml:\"collateral\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 
   string debt = 5 [
     (gogoproto.moretags) = "yaml:\"debt\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 
   string collateralization_ratio = 6 [
     (gogoproto.moretags) = "yaml:\"collateralization_ratio\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
   string extended_pair_name = 7 [(gogoproto.moretags) = "yaml:\"extended_pair_name\""];
 
   string interest_rate = 8 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"interest_rate\""
   ];
   string asset_in_denom = 9 [(gogoproto.moretags) = "yaml:\"asset_in_denom\""];
   string asset_out_denom = 10 [(gogoproto.moretags) = "yaml:\"asset_out_denom\""];
   string min_cr = 11 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"min_cr\""
   ];
@@ -182,7 +182,7 @@ message QueryTokenMintedByAppAndExtendedPairRequest {
 message QueryTokenMintedByAppAndExtendedPairResponse {
   string token_minted = 1 [
     (gogoproto.moretags) = "yaml:\"token_minted\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
 }
 
@@ -229,7 +229,7 @@ message QueryTotalValueLockedByAppAndExtendedPairRequest {
 
 message QueryTotalValueLockedByAppAndExtendedPairResponse {
   string value_locked = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"];
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"];
 }
 
 message QueryExtendedPairIDsByAppRequest {
@@ -314,7 +314,7 @@ message QueryTVLByAppRequest {
 
 message QueryTVLByAppResponse {
   string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
 }
 
@@ -326,19 +326,19 @@ message QueryUserMyPositionByAppRequest {
 
 message QueryUserMyPositionByAppResponse {
   string collateral_locked = 1 [(gogoproto.moretags) = "yaml:\"collateral_locked\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
   string total_due = 2 [(gogoproto.moretags) = "yaml:\"total_due\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
   string available_to_borrow = 3 [
     (gogoproto.moretags) = "yaml:\"available_to_borrow\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
   string average_cr_ratio = 4 [
     (gogoproto.moretags) = "yaml:\"average_cr_ratio\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }

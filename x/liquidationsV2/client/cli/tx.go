@@ -1,15 +1,17 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	flag "github.com/spf13/pflag"
-	"strconv"
-	"time"
 
 	"github.com/spf13/cobra"
 
@@ -182,7 +184,7 @@ func NewCmdSubmitWhitelistingLiquidationProposal() *cobra.Command {
 			}
 
 			txf, err := tx.NewFactoryCLI(clientCtx, cmd.Flags())
-			if err !=nil {
+			if err != nil {
 				return err
 			}
 			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
@@ -214,12 +216,12 @@ func WhitelistLiquidation(clientCtx client.Context, txf tx.Factory, fs *flag.Fla
 		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
 	}
 
-	premium, err := sdk.NewDecFromStr(liquidationWhitelisting.Premium)
+	premium, err := sdkmath.LegacyNewDecFromStr(liquidationWhitelisting.Premium)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	discount, err := sdk.NewDecFromStr(liquidationWhitelisting.Discount)
+	discount, err := sdkmath.LegacyNewDecFromStr(liquidationWhitelisting.Discount)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -237,9 +239,9 @@ func WhitelistLiquidation(clientCtx client.Context, txf tx.Factory, fs *flag.Fla
 	dutchAuctionParam := types.DutchAuctionParam{
 		Premium:         premium,
 		Discount:        discount,
-		DecrementFactor: sdk.NewInt(decrementFactor),
+		DecrementFactor: sdkmath.NewInt(decrementFactor),
 	}
-	englishAuctionParam := types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(decrementFactorEnglish)}
+	englishAuctionParam := types.EnglishAuctionParam{DecrementFactor: sdkmath.NewInt(decrementFactorEnglish)}
 
 	liquidationWhitelistingStruct := types.LiquidationWhiteListing{
 		AppId:               appId,
@@ -259,10 +261,6 @@ func WhitelistLiquidation(clientCtx client.Context, txf tx.Factory, fs *flag.Fla
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 

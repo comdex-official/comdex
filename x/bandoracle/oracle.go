@@ -1,11 +1,12 @@
 package bandoracle
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/bandprotocol/bandchain-packet/obi"
 	"github.com/bandprotocol/bandchain-packet/packet"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	"github.com/comdex-official/comdex/x/bandoracle/types"
 )
@@ -18,7 +19,7 @@ func (im IBCModule) handleOraclePacket(
 	var modulePacketData packet.OracleResponsePacketData
 	fetchPriceMsg := im.keeper.GetFetchPriceMsg(ctx)
 	if modulePacket.DestinationChannel != fetchPriceMsg.SourceChannel {
-		return channeltypes.Acknowledgement{}, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
+		return channeltypes.Acknowledgement{}, errorsmod.Wrap(sdkerrors.ErrUnknownRequest,
 			"Module packet destination channel and source channel mismatch")
 	}
 	if err := types.ModuleCdc.UnmarshalJSON(modulePacket.GetData(), &modulePacketData); err != nil {
@@ -30,14 +31,14 @@ func (im IBCModule) handleOraclePacket(
 		var fetchPriceResult types.FetchPriceResult
 		if err := obi.Decode(modulePacketData.Result, &fetchPriceResult); err != nil {
 			ack = channeltypes.NewErrorAcknowledgement(err)
-			return ack, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest,
+			return ack, errorsmod.Wrap(sdkerrors.ErrUnknownRequest,
 				"cannot decode the fetchPrice received packet")
 		}
 		im.keeper.SetFetchPriceResult(ctx, types.OracleRequestID(modulePacketData.RequestID), fetchPriceResult)
 		// TODO: FetchPrice market data reception logic //nolint:godox
 
 	default:
-		err := sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
+		err := errorsmod.Wrapf(sdkerrors.ErrJSONUnmarshal,
 			"market received packet not found: %s", modulePacketData.GetClientID())
 		ack = channeltypes.NewErrorAcknowledgement(err)
 		return ack, err
@@ -73,14 +74,14 @@ func (im IBCModule) handleOracleAcknowledgment(
 		case types.FetchPriceClientIDKey:
 			var fetchPriceData types.FetchPriceCallData
 			if err = obi.Decode(data.GetCalldata(), &fetchPriceData); err != nil {
-				return nil, sdkerrors.Wrap(err,
+				return nil, errorsmod.Wrap(err,
 					"cannot decode the fetchPrice market acknowledgment packet")
 			}
 			im.keeper.SetLastFetchPriceID(ctx, requestID)
 			return &sdk.Result{}, nil
 
 		default:
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrJSONUnmarshal,
+			return nil, errorsmod.Wrapf(sdkerrors.ErrJSONUnmarshal,
 				"market acknowledgment packet not found: %s", data.GetClientID())
 		}
 	}

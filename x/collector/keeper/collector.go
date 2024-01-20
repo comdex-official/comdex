@@ -1,8 +1,10 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	"github.com/comdex-official/comdex/x/collector/types"
@@ -11,9 +13,9 @@ import (
 )
 
 // GetAmountFromCollector returns amount from the collector.
-func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) (sdk.Int, error) {
+func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, amount sdkmath.Int) (sdkmath.Int, error) {
 	netFeeData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
-	var returnedFee sdk.Int
+	var returnedFee sdkmath.Int
 	if !found {
 		return returnedFee, types.ErrorDataDoesNotExists
 	}
@@ -21,7 +23,7 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 		return returnedFee, types.ErrorAmountCanNotBeNegative
 	}
 
-	if !(netFeeData.NetFeesCollected.Sub(amount).GT(sdk.ZeroInt())) {
+	if !(netFeeData.NetFeesCollected.Sub(amount).GT(sdkmath.ZeroInt())) {
 		return returnedFee, types.ErrorRequestedAmtExceedsCollectedFee
 	}
 	asset, _ := k.asset.GetAsset(ctx, assetID)
@@ -31,14 +33,14 @@ func (k Keeper) GetAmountFromCollector(ctx sdk.Context, appID, assetID uint64, a
 	}
 	err = k.DecreaseNetFeeCollectedData(ctx, appID, assetID, amount)
 	if err != nil {
-		return sdk.Int{}, err
+		return sdkmath.Int{}, err
 	}
 
 	returnedFee = amount
 	return returnedFee, nil
 }
 
-func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error {
+func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdkmath.Int) error {
 	netFeeData, found := k.GetNetFeeCollectedData(ctx, appID, assetID)
 	if !found {
 		return types.ErrorDataDoesNotExists
@@ -61,7 +63,7 @@ func (k Keeper) DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint
 }
 
 // UpdateCollector update collector store.
-func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdk.Int) error {
+func (k Keeper) UpdateCollector(ctx sdk.Context, appID, assetID uint64, collectedStabilityFee, collectedClosingFee, collectedOpeningFee, liquidationRewardsCollected sdkmath.Int) error {
 	if !k.asset.HasAsset(ctx, assetID) {
 		return types.ErrorAssetDoesNotExist
 	}
@@ -140,10 +142,10 @@ func (k Keeper) GetAppidToAssetCollectorMapping(ctx sdk.Context, appID, assetID 
 func (k Keeper) GetAllAppidToAssetCollectorMapping(ctx sdk.Context) (appIDToAssetCollectorMapping []types.AppToAssetIdCollectorMapping) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIDToAssetCollectorMappingPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppIDToAssetCollectorMappingPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -255,10 +257,10 @@ func (k Keeper) GetCollectorLookupTableByApp(ctx sdk.Context, appID uint64) (col
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.CollectorLookupTableMappingByAppKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -279,10 +281,10 @@ func (k Keeper) GetCollectorLookupTableByApp(ctx sdk.Context, appID uint64) (col
 func (k Keeper) GetAllCollectorLookupTable(ctx sdk.Context) (collectorLookup []types.CollectorLookupTableData) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.AddCollectorLookupKey)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AddCollectorLookupKey)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -328,10 +330,10 @@ func (k Keeper) GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom
 func (k Keeper) GetAllAppToDenomsMapping(ctx sdk.Context) (appToDenomsMapping []types.AppToDenomsMapping) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.CollectorForDenomKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.CollectorForDenomKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -420,10 +422,10 @@ func (k Keeper) GetAuctionMappingForApp(ctx sdk.Context, appID, assetID uint64) 
 func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []types.AppAssetIdToAuctionLookupTable, found bool) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIDToAuctionMappingPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppIDToAuctionMappingPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -442,7 +444,7 @@ func (k Keeper) GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLoo
 	return collectorAuctionLookupTable, true
 }
 
-func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error {
+func (k Keeper) SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdkmath.Int) error {
 	if fee.IsNegative() {
 		return types.ErrorNetFeesCanNotBeNegative
 	}
@@ -493,10 +495,10 @@ func (k Keeper) GetAppNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFee
 	var (
 		store = ctx.KVStore(k.storeKey)
 		key   = types.AppNetFeeCollectedDataKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -517,10 +519,10 @@ func (k Keeper) GetAppNetFeeCollectedData(ctx sdk.Context, appID uint64) (netFee
 func (k Keeper) GetAllNetFeeCollectedData(ctx sdk.Context) (netFeeCollectedData []types.AppAssetIdToFeeCollectedData) {
 	var (
 		store = ctx.KVStore(k.storeKey)
-		iter  = sdk.KVStorePrefixIterator(store, types.NetFeeCollectedDataPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.NetFeeCollectedDataPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -688,7 +690,7 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 				// do nothing
 				Collector.BlockHeight = ctx.BlockHeight()
 				Collector.BlockTime = ctx.BlockTime()
-			} else if Collector.LockerSavingRate.GT(sdk.ZeroDec()) && updateColBinding.LSR.GT(sdk.ZeroDec()) {
+			} else if Collector.LockerSavingRate.GT(sdkmath.LegacyZeroDec()) && updateColBinding.LSR.GT(sdkmath.LegacyZeroDec()) {
 				// run script to distribute
 				k.LockerIterateRewards(ctx, Collector.LockerSavingRate, Collector.BlockHeight, Collector.BlockTime.Unix(), updateColBinding.AppID, updateColBinding.AssetID, true)
 				Collector.BlockHeight = ctx.BlockHeight()
@@ -713,12 +715,12 @@ func (k Keeper) WasmUpdateCollectorLookupTable(ctx sdk.Context, updateColBinding
 	return nil
 }
 
-func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
+func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdkmath.LegacyDec, collectorBh, collectorBt int64, appID, assetID uint64, changeTypes bool) {
 	lockers, found := k.locker.GetLockerLookupTable(ctx, appID, assetID)
 	if found {
 		for _, lockID := range lockers.LockerIds {
 			lockerData, _ := k.locker.GetLocker(ctx, lockID)
-			var rewards sdk.Dec
+			var rewards sdkmath.LegacyDec
 			var err error
 			if lockerData.BlockHeight == 0 {
 				rewards, err = k.rewards.CalculationOfRewards(ctx, lockerData.NetBalance, collectorLsr, collectorBt)
@@ -743,10 +745,10 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Add(rewards)
 			}
 
-			if lockerRewardsTracker.RewardsAccumulated.GTE(sdk.OneDec()) {
+			if lockerRewardsTracker.RewardsAccumulated.GTE(sdkmath.LegacyOneDec()) {
 				// send rewards
 				newReward := lockerRewardsTracker.RewardsAccumulated.TruncateInt()
-				newRewardDec := sdk.NewDecFromInt(newReward)
+				newRewardDec := sdkmath.LegacyNewDecFromInt(newReward)
 				lockerRewardsTracker.RewardsAccumulated = lockerRewardsTracker.RewardsAccumulated.Sub(newRewardDec)
 				k.rewards.SetLockerRewardTracker(ctx, lockerRewardsTracker)
 				err = k.DecreaseNetFeeCollectedData(ctx, appID, lockerData.AssetDepositId, newReward)
@@ -755,7 +757,7 @@ func (k Keeper) LockerIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, coll
 				}
 				assetData, _ := k.asset.GetAsset(ctx, assetID)
 
-				if newReward.GT(sdk.ZeroInt()) {
+				if newReward.GT(sdkmath.ZeroInt()) {
 					err = k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, lockertypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, newReward)))
 					if err != nil {
 						continue
@@ -825,7 +827,7 @@ func (k Keeper) WasmCheckSurplusRewardQuery(ctx sdk.Context, appID, assetID uint
 		finalAmount := netFeeCollectedData.NetFeesCollected.Sub(collectorLookup.SurplusThreshold)
 		return sdk.NewCoin(asset.Denom, finalAmount)
 	}
-	return sdk.NewCoin(asset.Denom, sdk.NewInt(0))
+	return sdk.NewCoin(asset.Denom, sdkmath.NewInt(0))
 }
 
 func (k Keeper) WasmMsgGetSurplusFund(ctx sdk.Context, appID, assetID uint64, addr sdk.AccAddress, amount sdk.Coin) error {

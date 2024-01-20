@@ -3,11 +3,14 @@ package keeper
 import (
 	"regexp"
 
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/comdex-official/comdex/x/asset/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) SetAssetID(ctx sdk.Context, id uint64) {
@@ -83,10 +86,10 @@ func (k Keeper) GetAssetDenom(ctx sdk.Context, id uint64) string {
 func (k Keeper) GetAssets(ctx sdk.Context) (assets []types.Asset) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AssetKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -235,7 +238,7 @@ func (k *Keeper) AddMultipleAssetRecords(ctx sdk.Context, records ...types.Asset
 func (k *Keeper) AddAsset(ctx sdk.Context, msg *types.MsgAddAsset) error {
 	params := k.GetParams(ctx)
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, msg.GetCreator(), types.ModuleName, sdk.NewCoins(params.AssetRegisrationFee)); err != nil {
-		return sdkerrors.Wrap(err, "insufficient asset registration fee")
+		return errorsmod.Wrap(err, "insufficient asset registration fee")
 	}
 
 	err := k.AddAssetRecords(ctx, msg.Asset)
@@ -271,7 +274,7 @@ func (k Keeper) UpdateAssetRecords(ctx sdk.Context, msg types.Asset) error {
 	asset.Denom = msg.Denom
 	k.SetAssetForDenom(ctx, asset.Denom, asset.Id)
 
-	if msg.Decimals.GT(sdk.ZeroInt()) {
+	if msg.Decimals.GT(sdkmath.ZeroInt()) {
 		asset.Decimals = msg.Decimals
 	}
 	asset.IsOraclePriceRequired = msg.IsOraclePriceRequired

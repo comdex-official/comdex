@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
@@ -55,25 +57,25 @@ func (k Keeper) AddPoolRecords(ctx sdk.Context, pool types.Pool) error {
 		var assetStats types.PoolAssetLBMapping
 		assetStats.PoolID = newPool.PoolID
 		assetStats.AssetID = v.AssetID
-		assetStats.TotalBorrowed = sdk.ZeroInt()
-		assetStats.TotalStableBorrowed = sdk.ZeroInt()
-		assetStats.TotalLend = sdk.ZeroInt()
-		assetStats.TotalInterestAccumulated = sdk.ZeroInt()
+		assetStats.TotalBorrowed = sdkmath.ZeroInt()
+		assetStats.TotalStableBorrowed = sdkmath.ZeroInt()
+		assetStats.TotalLend = sdkmath.ZeroInt()
+		assetStats.TotalInterestAccumulated = sdkmath.ZeroInt()
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
 		reserveBuybackStats, found := k.GetReserveBuybackAssetData(ctx, v.AssetID)
 		if !found {
 			reserveBuybackStats.AssetID = v.AssetID
-			reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
-			reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
+			reserveBuybackStats.ReserveAmount = sdkmath.ZeroInt()
+			reserveBuybackStats.BuybackAmount = sdkmath.ZeroInt()
 			k.SetReserveBuybackAssetData(ctx, reserveBuybackStats)
 			reserveStat := types.AllReserveStats{
 				AssetID:                        v.AssetID,
-				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-				AmountOutFromReserveForAuction: sdk.ZeroInt(),
-				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+				AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+				AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
 				AmountInFromRepayments:         reserveBuybackStats.BuybackAmount.Add(reserveBuybackStats.ReserveAmount),
-				TotalAmountOutToLenders:        sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 			}
 			k.SetAllReserveStatsByAssetID(ctx, reserveStat)
 		}
@@ -105,25 +107,25 @@ func (k Keeper) AddPoolsPairsRecords(ctx sdk.Context, pool types.PoolPairs) erro
 		var assetStats types.PoolAssetLBMapping
 		assetStats.PoolID = newPool.PoolID
 		assetStats.AssetID = v.AssetID
-		assetStats.TotalBorrowed = sdk.ZeroInt()
-		assetStats.TotalStableBorrowed = sdk.ZeroInt()
-		assetStats.TotalLend = sdk.ZeroInt()
-		assetStats.TotalInterestAccumulated = sdk.ZeroInt()
+		assetStats.TotalBorrowed = sdkmath.ZeroInt()
+		assetStats.TotalStableBorrowed = sdkmath.ZeroInt()
+		assetStats.TotalLend = sdkmath.ZeroInt()
+		assetStats.TotalInterestAccumulated = sdkmath.ZeroInt()
 		k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 		k.UpdateAPR(ctx, newPool.PoolID, v.AssetID)
 		reserveBuybackStats, found := k.GetReserveBuybackAssetData(ctx, v.AssetID)
 		if !found {
 			reserveBuybackStats.AssetID = v.AssetID
-			reserveBuybackStats.ReserveAmount = sdk.ZeroInt()
-			reserveBuybackStats.BuybackAmount = sdk.ZeroInt()
+			reserveBuybackStats.ReserveAmount = sdkmath.ZeroInt()
+			reserveBuybackStats.BuybackAmount = sdkmath.ZeroInt()
 			k.SetReserveBuybackAssetData(ctx, reserveBuybackStats)
 			reserveStat := types.AllReserveStats{
 				AssetID:                        v.AssetID,
-				AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-				AmountOutFromReserveForAuction: sdk.ZeroInt(),
-				AmountInFromLiqPenalty:         sdk.ZeroInt(),
+				AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+				AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+				AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
 				AmountInFromRepayments:         reserveBuybackStats.BuybackAmount.Add(reserveBuybackStats.ReserveAmount),
-				TotalAmountOutToLenders:        sdk.ZeroInt(),
+				TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 			}
 			k.SetAllReserveStatsByAssetID(ctx, reserveStat)
 		}
@@ -354,10 +356,10 @@ func (k Keeper) GetLendPair(ctx sdk.Context, id uint64) (pair types.Extended_Pai
 func (k Keeper) GetLendPairs(ctx sdk.Context) (pairs []types.Extended_Pair) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LendPairKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LendPairKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -445,10 +447,10 @@ func (k Keeper) GetAddAuctionParamsData(ctx sdk.Context, appID uint64) (auctionP
 func (k Keeper) GetAllAddAuctionParamsData(ctx sdk.Context) (auctionParams []types.AuctionParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AuctionParamPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AuctionParamPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -491,10 +493,10 @@ func (k Keeper) GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRates
 func (k Keeper) GetAllAssetRatesParams(ctx sdk.Context) (assetRatesParams []types.AssetRatesParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AssetRatesParamsKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AssetRatesParamsKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

@@ -2,6 +2,8 @@ package types
 
 import (
 	"fmt"
+
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -41,7 +43,7 @@ func (msg *MsgPlaceMarketBidRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgDepositLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdk.Int, amount sdk.Coin) *MsgDepositLimitBidRequest {
+func NewMsgDepositLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdkmath.Int, amount sdk.Coin) *MsgDepositLimitBidRequest {
 	return &MsgDepositLimitBidRequest{
 		CollateralTokenId: collateralTokenId,
 		DebtTokenId:       debtTokenId,
@@ -79,7 +81,7 @@ func (msg *MsgDepositLimitBidRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgCancelLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdk.Int) *MsgCancelLimitBidRequest {
+func NewMsgCancelLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdkmath.Int) *MsgCancelLimitBidRequest {
 	return &MsgCancelLimitBidRequest{
 		CollateralTokenId: collateralTokenId,
 		DebtTokenId:       debtTokenId,
@@ -113,7 +115,7 @@ func (msg *MsgCancelLimitBidRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(bz)
 }
 
-func NewMsgWithdrawLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdk.Int, amount sdk.Coin) *MsgWithdrawLimitBidRequest {
+func NewMsgWithdrawLimitBid(bidder string, collateralTokenId, debtTokenId uint64, premiumDiscount sdkmath.Int, amount sdk.Coin) *MsgWithdrawLimitBidRequest {
 	return &MsgWithdrawLimitBidRequest{
 		CollateralTokenId: collateralTokenId,
 		DebtTokenId:       debtTokenId,

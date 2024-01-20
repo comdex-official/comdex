@@ -1,8 +1,10 @@
 package expected
 
 import (
+	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -10,11 +12,11 @@ import (
 )
 
 type BankKeeper interface {
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx context.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx context.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
 
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins) error
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	SendCoinsFromModuleToModule(ctx context.Context, senderModule, recipientModule string, amt sdk.Coins) error
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin 
 }
 
 type AssetKeeper interface {
@@ -41,7 +43,7 @@ type LockerKeeper interface {
 
 type RewardsKeeper interface {
 	GetReward(ctx sdk.Context, appID, assetID uint64) (rewards rewardstypes.InternalRewards, found bool)
-	CalculationOfRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec, bTime int64) (sdk.Dec, error)
+	CalculationOfRewards(ctx sdk.Context, amount sdkmath.Int, lsr sdkmath.LegacyDec, bTime int64) (sdkmath.LegacyDec, error)
 	SetLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker)
 	GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards rewardstypes.LockerRewardsTracker, found bool)
 }

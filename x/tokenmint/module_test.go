@@ -1,10 +1,10 @@
 package tokenmint_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"encoding/binary"
 	"testing"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,7 +31,7 @@ func TestModuleTestSuite(t *testing.T) {
 
 func (suite *ModuleTestSuite) SetupTest() {
 	app := chain.Setup(suite.T(), false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false)
 
 	suite.app = app
 	suite.ctx = ctx
@@ -50,7 +50,7 @@ func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -75,7 +75,7 @@ func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) uint6
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 		IsCdpMintable:         true,

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	liquiditytypes "github.com/comdex-official/comdex/x/liquidity/types"
@@ -11,10 +13,10 @@ import (
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	"github.com/comdex-official/comdex/x/rewards/expected"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
@@ -115,7 +117,7 @@ func (k Keeper) WhitelistAppIDVault(ctx sdk.Context, appMappingID uint64) error 
 	return nil
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
@@ -393,9 +395,9 @@ func (k Keeper) ActExternalRewardsStableVaults(
 	return nil
 }
 
-func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRewardsAPRRequest) sdk.Dec {
-	totalAmount := sdk.NewInt(0)
-	totalAPR := sdk.NewDec(0)
+func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRewardsAPRRequest) sdkmath.LegacyDec {
+	totalAmount := sdkmath.NewInt(0)
+	totalAPR := sdkmath.LegacyNewDec(0)
 	id := uint64(0)
 	extRews := k.GetExternalRewardLends(ctx)
 	for _, data := range extRews {
@@ -403,7 +405,7 @@ func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRe
 		if dataAsset.AssetId[0] == request.AssetId && dataAsset.CPoolId == request.CPoolId {
 			id = data.Id
 		} else {
-			return sdk.NewDec(0)
+			return sdkmath.LegacyNewDec(0)
 		}
 	}
 	v := k.GetExternalRewardLend(ctx, id)
@@ -412,7 +414,7 @@ func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRe
 	assetID := request.AssetId
 	borrowByPoolIDAssetID, found := k.lend.GetAssetStatsByPoolIDAndAssetID(ctx, request.CPoolId, assetID)
 	if !found {
-		return sdk.Dec{}
+		return sdkmath.LegacyDec{}
 	}
 	for _, borrowId := range borrowByPoolIDAssetID.BorrowIds {
 		borrowPos, found := k.lend.GetBorrow(ctx, borrowId)
@@ -436,18 +438,18 @@ func (k Keeper) ExtLendRewardsAPR(ctx sdk.Context, request *types.QueryExtLendRe
 	}
 	rewardAsset, found := k.asset.GetAssetForDenom(ctx, v.TotalRewards.Denom)
 	if !found {
-		return sdk.NewDec(0)
+		return sdkmath.LegacyNewDec(0)
 	}
 	totalRewardAmt, found := k.OraclePriceForRewards(ctx, rewardAsset.Id, v.AvailableRewards.Amount)
 	if !found {
-		return sdk.NewDec(0)
+		return sdkmath.LegacyNewDec(0)
 	}
-	if totalAmount.LTE(sdk.ZeroInt()) {
-		return sdk.NewDec(0)
+	if totalAmount.LTE(sdkmath.ZeroInt()) {
+		return sdkmath.LegacyNewDec(0)
 	}
-	dailyRewardAmt := totalRewardAmt.Quo(sdk.NewDec(v.DurationDays - int64(epoch.Count)))
-	str, _ := sdk.NewDecFromStr(types.DaysInYear)
-	APR := dailyRewardAmt.Quo(sdk.NewDecFromInt(totalAmount))
+	dailyRewardAmt := totalRewardAmt.Quo(sdkmath.LegacyNewDec(v.DurationDays - int64(epoch.Count)))
+	str, _ := sdkmath.LegacyNewDecFromStr(types.DaysInYear)
+	APR := dailyRewardAmt.Quo(sdkmath.LegacyNewDecFromInt(totalAmount))
 	totalAPR = APR.Mul(str)
 
 	return totalAPR

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
@@ -10,12 +11,12 @@ import (
 
 func (s *KeeperTestSuite) AddAppAsset() {
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	genesisSupply := sdk.NewIntFromUint64(1000000)
+	genesisSupply := sdkmath.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
@@ -35,7 +36,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	// {
 	// 	Name:             "commodo",
 	// 	ShortName:        "commodo",
-	// 	MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+	// 	MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 	// 	GovTimeInSeconds: 900,
 	// 	GenesisToken: []assetTypes.MintGenesisToken{
 	// 		{
@@ -52,7 +53,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2 := assetTypes.Asset{
 		Name:      "CMDX",
 		Denom:     "ucmdx",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg2)
@@ -60,7 +61,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg3 := assetTypes.Asset{
 		Name:      "CMST",
 		Denom:     "ucmst",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg3)
@@ -68,7 +69,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg4 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
@@ -81,9 +82,9 @@ func (s *KeeperTestSuite) AddAuctionParams() {
 	auctionParams := auctionTypes.AuctionParams{
 		AppId:                  1,
 		AuctionDurationSeconds: 300,
-		Buffer:                 sdk.MustNewDecFromStr("1.2"),
-		Cusp:                   sdk.MustNewDecFromStr("0.6"),
-		Step:                   sdk.NewIntFromUint64(1),
+		Buffer:                 sdkmath.LegacyMustNewDecFromStr("1.2"),
+		Cusp:                   sdkmath.LegacyMustNewDecFromStr("0.6"),
+		Step:                   sdkmath.NewIntFromUint64(1),
 		PriceFunctionType:      1,
 		SurplusId:              1,
 		DebtId:                 2,
@@ -105,12 +106,12 @@ func (s *KeeperTestSuite) TestWasmUpdateCollectorLookupTable() {
 			bindings.MsgUpdateCollectorLookupTable{
 				AppID:            1,
 				AssetID:          2,
-				SurplusThreshold: sdk.NewInt(9999),
-				DebtThreshold:    sdk.NewInt(99),
-				LSR:              sdk.MustNewDecFromStr("0.001"),
-				LotSize:          sdk.NewInt(100),
-				BidFactor:        sdk.MustNewDecFromStr("0.00001"),
-				DebtLotSize:      sdk.NewInt(300),
+				SurplusThreshold: sdkmath.NewInt(9999),
+				DebtThreshold:    sdkmath.NewInt(99),
+				LSR:              sdkmath.LegacyMustNewDecFromStr("0.001"),
+				LotSize:          sdkmath.NewInt(100),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.00001"),
+				DebtLotSize:      sdkmath.NewInt(300),
 			},
 		},
 	} {
@@ -146,12 +147,12 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(2000000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(2000000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 		{
@@ -160,12 +161,12 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 				AppID:            1,
 				CollectorAssetID: 3,
 				SecondaryAssetID: 2,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(2000000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(2000000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {
@@ -234,19 +235,19 @@ func (s *KeeperTestSuite) TestWasmSetCollectorLookupTableAndAuctionControl() {
 func (s *KeeperTestSuite) TestSetNetFeesCollected() {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 	s.TestWasmSetCollectorLookupTableAndAuctionControl()
-	negNumber, _ := sdk.NewIntFromString("-100")
+	negNumber, _ := sdkmath.NewIntFromString("-100")
 	for _, tc := range []struct {
 		name          string
 		appID         uint64
 		assetID       uint64
-		fee           sdk.Int
+		fee           sdkmath.Int
 		errorExpected bool
 	}{
 		{
 			"Set net fees collected : AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(100),
+			sdkmath.NewIntFromUint64(100),
 			false,
 		},
 		{
@@ -276,19 +277,19 @@ func (s *KeeperTestSuite) TestSetNetFeesCollected() {
 func (s *KeeperTestSuite) TestAddNetFeesCollected() {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 	s.TestSetNetFeesCollected()
-	negNumber, _ := sdk.NewIntFromString("-100")
+	negNumber, _ := sdkmath.NewIntFromString("-100")
 	for _, tc := range []struct {
 		name          string
 		appID         uint64
 		assetID       uint64
-		fee           sdk.Int
+		fee           sdkmath.Int
 		errorExpected bool
 	}{
 		{
 			"Add net fees collected : AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(974),
+			sdkmath.NewIntFromUint64(974),
 			false,
 		},
 		{
@@ -324,21 +325,21 @@ func (s *KeeperTestSuite) TestDecreaseNetFeesCollected() {
 		name          string
 		appID         uint64
 		assetID       uint64
-		fee           sdk.Int
+		fee           sdkmath.Int
 		errorExpected bool
 	}{
 		{
 			"Decrease net fees collected : AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(52),
+			sdkmath.NewIntFromUint64(52),
 			false,
 		},
 		{
 			"Decrease net fees collected : Net fees cannot be negative AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(102),
+			sdkmath.NewIntFromUint64(102),
 			true,
 		},
 	} {
@@ -367,7 +368,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 		name          string
 		appID         uint64
 		assetID       uint64
-		GetAmount     sdk.Int
+		GetAmount     sdkmath.Int
 		FundAmount    uint64
 		denom         string
 		errorExpected bool
@@ -376,7 +377,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 			"Get Amount From Collector : AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(52),
+			sdkmath.NewIntFromUint64(52),
 			100,
 			"ucmst",
 			false,
@@ -385,7 +386,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 			"Get Amount From Collector : Insufficient Balance AppID 1 AssetID 2",
 			1,
 			2,
-			sdk.NewIntFromUint64(101),
+			sdkmath.NewIntFromUint64(101),
 			100,
 			"ucmst",
 			true,
@@ -394,7 +395,7 @@ func (s *KeeperTestSuite) TestGetAmountFromCollector() {
 		s.Run(tc.name, func() {
 			err := auctionKeeper.FundModule(*ctx, "auctionV1", tc.denom, tc.FundAmount)
 			s.Require().NoError(err)
-			err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, "auctionV1", "collectorV1", sdk.NewCoins(sdk.NewCoin(tc.denom, sdk.NewIntFromUint64(tc.FundAmount))))
+			err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, "auctionV1", "collectorV1", sdk.NewCoins(sdk.NewCoin(tc.denom, sdkmath.NewIntFromUint64(tc.FundAmount))))
 			s.Require().NoError(err)
 			beforeCollectorBalance := auctionKeeper.GetModuleAccountBalance(*ctx, "collectorV1", tc.denom)
 			returnAmount, err := collectorKeeper.GetAmountFromCollector(*ctx, tc.appID, tc.assetID, tc.GetAmount)
@@ -427,10 +428,10 @@ func (s *KeeperTestSuite) TestUpdateCollector() {
 			appID:   1,
 			assetID: 2,
 			collectorData: collectorTypes.CollectorData{
-				CollectedStabilityFee:       sdk.NewIntFromUint64(100),
-				CollectedClosingFee:         sdk.NewIntFromUint64(200),
-				CollectedOpeningFee:         sdk.NewIntFromUint64(300),
-				LiquidationRewardsCollected: sdk.NewIntFromUint64(400),
+				CollectedStabilityFee:       sdkmath.NewIntFromUint64(100),
+				CollectedClosingFee:         sdkmath.NewIntFromUint64(200),
+				CollectedOpeningFee:         sdkmath.NewIntFromUint64(300),
+				LiquidationRewardsCollected: sdkmath.NewIntFromUint64(400),
 			},
 			errorExpected: false,
 		},
@@ -439,10 +440,10 @@ func (s *KeeperTestSuite) TestUpdateCollector() {
 			appID:   1,
 			assetID: 3,
 			collectorData: collectorTypes.CollectorData{
-				CollectedStabilityFee:       sdk.NewIntFromUint64(100),
-				CollectedClosingFee:         sdk.NewIntFromUint64(200),
-				CollectedOpeningFee:         sdk.NewIntFromUint64(300),
-				LiquidationRewardsCollected: sdk.NewIntFromUint64(500),
+				CollectedStabilityFee:       sdkmath.NewIntFromUint64(100),
+				CollectedClosingFee:         sdkmath.NewIntFromUint64(200),
+				CollectedOpeningFee:         sdkmath.NewIntFromUint64(300),
+				LiquidationRewardsCollected: sdkmath.NewIntFromUint64(500),
 			},
 			errorExpected: false,
 		},
@@ -482,10 +483,10 @@ func (s *KeeperTestSuite) TestAddUpdateCollector() {
 			appID:   1,
 			assetID: 2,
 			collectorData: collectorTypes.CollectorData{
-				CollectedStabilityFee:       sdk.NewIntFromUint64(100),
-				CollectedClosingFee:         sdk.NewIntFromUint64(200),
-				CollectedOpeningFee:         sdk.NewIntFromUint64(300),
-				LiquidationRewardsCollected: sdk.NewIntFromUint64(400),
+				CollectedStabilityFee:       sdkmath.NewIntFromUint64(100),
+				CollectedClosingFee:         sdkmath.NewIntFromUint64(200),
+				CollectedOpeningFee:         sdkmath.NewIntFromUint64(300),
+				LiquidationRewardsCollected: sdkmath.NewIntFromUint64(400),
 			},
 			errorExpected: false,
 		},

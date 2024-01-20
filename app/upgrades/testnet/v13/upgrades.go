@@ -1,15 +1,19 @@
 package v13
 
 import (
+	"context"
 	"fmt"
+
+	sdkmath "cosmossdk.io/math"
+
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -17,11 +21,10 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
-	bandoraclemodulekeeper "github.com/comdex-official/comdex/x/bandoracle/keeper"
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 )
 
 func CreateUpgradeHandlerV13(
@@ -40,7 +43,7 @@ func CreateUpgradeHandlerV13(
 	SlashingKeeper slashingkeeper.Keeper,
 	bandoracleKeeper bandoraclemodulekeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Applying test net upgrade - v.13.1.0")
 		logger := ctx.Logger().With("upgrade", UpgradeName)
 
@@ -84,7 +87,7 @@ func CreateUpgradeHandlerV13(
 		//TODO: confirm the initial deposit
 		// update gov params to use a 20% initial deposit ratio, allowing us to remote the ante handler
 		govParams := GovKeeper.GetParams(ctx)
-		govParams.MinInitialDepositRatio = sdk.NewDec(20).Quo(sdk.NewDec(100)).String()
+		govParams.MinInitialDepositRatio = sdkmath.LegacyNewDec(20).Quo(sdkmath.LegacyNewDec(100)).String()
 		if err := GovKeeper.SetParams(ctx, govParams); err != nil {
 			return nil, err
 		}

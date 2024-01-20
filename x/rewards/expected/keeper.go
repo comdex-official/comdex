@@ -1,9 +1,10 @@
 package expected
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	lendtypes "github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -17,7 +18,7 @@ import (
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias).
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI
+	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 	// Methods imported from account should be defined here
 }
 
@@ -28,9 +29,9 @@ type LiquidityKeeper interface {
 	TransferFundsForSwapFeeDistribution(ctx sdk.Context, appID, poolID uint64) (sdk.Coin, error)
 	GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (activeFarmer liquiditytypes.ActiveFarmer, found bool)
 	GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (liquiditytypes.PoolTokenDeserializerKit, error)
-	CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit liquiditytypes.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdk.Int, sdk.Int, error)
+	CalculateXYFromPoolCoin(ctx sdk.Context, deserializerKit liquiditytypes.PoolTokenDeserializerKit, poolCoin sdk.Coin) (sdkmath.Int, sdkmath.Int, error)
 	GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sdk.AccAddress) (queuedFarmer liquiditytypes.QueuedFarmer, found bool)
-	GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdk.Int, error)
+	GetAmountFarmedForAssetID(ctx sdk.Context, appID, assetID uint64, farmer sdk.AccAddress) (sdkmath.Int, error)
 }
 
 type AssetKeeper interface {
@@ -45,7 +46,7 @@ type AssetKeeper interface {
 }
 
 type MarketKeeper interface {
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error)
 	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
@@ -67,18 +68,18 @@ type CollectorKeeper interface {
 	GetCollectorLookupTable(ctx sdk.Context, appID, assetID uint64) (collectorLookup collectortypes.CollectorLookupTableData, found bool)
 	GetAppToDenomsMapping(ctx sdk.Context, appID uint64) (appToDenom collectortypes.AppToDenomsMapping, found bool)
 	GetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64) (netFeeData collectortypes.AppAssetIdToFeeCollectedData, found bool)
-	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
-	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdk.Int) error
+	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdkmath.Int) error
+	DecreaseNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, amount sdkmath.Int) error
 }
 
 type VaultKeeper interface {
 	GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []vaulttypes.AppExtendedPairVaultMappingData, found bool)
-	CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
+	CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdkmath.Int, amountOut sdkmath.Int) (sdkmath.LegacyDec, error)
 	GetVault(ctx sdk.Context, id uint64) (vault vaulttypes.Vault, found bool)
 	DeleteVault(ctx sdk.Context, id uint64)
 	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, vaultData vaulttypes.Vault)
-	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
-	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool)
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool)
 	DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault vaulttypes.Vault)
@@ -92,18 +93,18 @@ type VaultKeeper interface {
 }
 
 type BankKeeper interface {
-	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	BurnCoins(ctx context.Context, name string, coins sdk.Coins) error
+	MintCoins(ctx context.Context, name string, coins sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx context.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx context.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
 
 	SendCoinsFromModuleToModule(
-		ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins,
+		ctx context.Context, senderModule, recipientModule string, amt sdk.Coins,
 	) error
 
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
-	GetSupply(ctx sdk.Context, denom string) sdk.Coin
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
+	SpendableCoins(ctx context.Context, address sdk.AccAddress) sdk.Coins
+	GetSupply(ctx context.Context, denom string) sdk.Coin
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin 
 }
 
 type EsmKeeper interface {
@@ -117,5 +118,5 @@ type LendKeeper interface {
 	GetAssetStatsByPoolIDAndAssetID(ctx sdk.Context, poolID, assetID uint64) (PoolAssetLBMapping lendtypes.PoolAssetLBMapping, found bool)
 	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
-	UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdk.Int, bool)
+	UserAssetLends(ctx sdk.Context, addr string, assetID uint64) (sdkmath.Int, bool)
 }

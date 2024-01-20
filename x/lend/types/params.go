@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -9,18 +9,18 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	LendGas                       = sdk.Gas(32763)
-	WithdrawGas                   = sdk.Gas(22763)
-	DepositGas                    = sdk.Gas(22763)
-	CloseLendGas                  = sdk.Gas(22763)
-	BorrowAssetGas                = sdk.Gas(22763)
-	DrawAssetGas                  = sdk.Gas(22763)
-	RepayAssetGas                 = sdk.Gas(22763)
-	DepositBorrowAssetGas         = sdk.Gas(22763)
-	CloseBorrowAssetGas           = sdk.Gas(22763)
-	BorrowAssetAlternateGas       = sdk.Gas(22763)
-	CalculateInterestAndRewardGas = sdk.Gas(22763)
-	RepayWithdrawGas              = sdk.Gas(22763)
+	LendGas                       = storetypes.Gas(32763)
+	WithdrawGas                   = storetypes.Gas(22763)
+	DepositGas                    = storetypes.Gas(22763)
+	CloseLendGas                  = storetypes.Gas(22763)
+	BorrowAssetGas                = storetypes.Gas(22763)
+	DrawAssetGas                  = storetypes.Gas(22763)
+	RepayAssetGas                 = storetypes.Gas(22763)
+	DepositBorrowAssetGas         = storetypes.Gas(22763)
+	CloseBorrowAssetGas           = storetypes.Gas(22763)
+	BorrowAssetAlternateGas       = storetypes.Gas(22763)
+	CalculateInterestAndRewardGas = storetypes.Gas(22763)
+	RepayWithdrawGas              = storetypes.Gas(22763)
 )
 
 const (

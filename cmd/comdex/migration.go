@@ -71,7 +71,10 @@ $ %s migrate v11.3.0 /path/to/genesis.json --chain-id=test-2 --genesis-time=2019
 			}
 
 			// TODO: handler error from migrationFunc call
-			newGenState := migrationFunc(initialState, clientCtx)
+			newGenState, err := migrationFunc(initialState, clientCtx)
+			if err != nil {
+				return err
+			}
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

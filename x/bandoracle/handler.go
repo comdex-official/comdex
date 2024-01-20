@@ -3,6 +3,10 @@ package bandoracle
 import (
 	"fmt"
 
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+
+	errorsmod "cosmossdk.io/errors"
+
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/pkg/errors"
 
@@ -14,12 +18,12 @@ import (
 )
 
 // NewHandler ...
-func NewHandler(k keeper.Keeper) sdk.Handler {
+func NewHandler(k keeper.Keeper) bam.MsgServiceHandler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		switch msg := msg.(type) {
 		default:
 			errMsg := fmt.Sprintf("unrecognized %s message type: %T", types.ModuleName, msg)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnknownRequest, errMsg)
 		}
 	}
 }

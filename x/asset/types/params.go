@@ -1,13 +1,14 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	fmt "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-var DefaultAssetRegistrationFee = sdk.NewCoin("ucmdx", sdk.NewInt(100_000_000))
+var DefaultAssetRegistrationFee = sdk.NewCoin("ucmdx", sdkmath.NewInt(100_000_000))
 
 var KeyAssetRegistrationFee = []byte("AssetRegistrationFee")
 

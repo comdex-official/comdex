@@ -57,12 +57,12 @@ func DateRangeIncludes(startTime, endTime, targetTime time.Time) bool {
 	return endTime.After(targetTime) && !startTime.After(targetTime)
 }
 
-// ParseDec is a shortcut for sdk.MustNewDecFromStr.
+// ParseDec is a shortcut for sdkmath.LegacyMustNewDecFromStr.
 func ParseDec(s string) sdkmath.LegacyDec {
 	return sdkmath.LegacyMustNewDecFromStr(strings.ReplaceAll(s, "_", ""))
 }
 
-// ParseDecP is like ParseDec, but it returns a pointer to sdk.Dec.
+// ParseDecP is like ParseDec, but it returns a pointer to sdkmath.LegacyDec.
 func ParseDecP(s string) *sdkmath.LegacyDec {
 	d := ParseDec(s)
 	return &d
@@ -157,15 +157,15 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins, gas uint64
 		txCtx.SimAccount.PrivKey,
 	)
 	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate mock tx"), nil, err
 	}
 
 	_, _, err = txCtx.App.SimDeliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to deliver tx"), nil, err
 	}
 
-	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
+	return simtypes.NewOperationMsg(txCtx.Msg, true, ""), nil, nil
 }
 
 // GenAndDeliverTxWithFees generates a transaction with given fee and delivers it.
@@ -177,11 +177,11 @@ func GenAndDeliverTxWithFees(txCtx simulation.OperationInput, gas uint64, fees s
 
 	_, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg...)
 	if hasNeg {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "message doesn't leave room for fees"), nil, err
 	}
 
 	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
+		return simtypes.NoOpMsg(txCtx.ModuleName, sdk.MsgTypeURL(txCtx.Msg), "unable to generate fees"), nil, err
 	}
 	return GenAndDeliverTx(txCtx, fees, gas)
 }

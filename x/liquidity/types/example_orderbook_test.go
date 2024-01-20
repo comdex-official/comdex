@@ -1,7 +1,7 @@
 package types_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -10,15 +10,15 @@ import (
 
 func ExampleMakeOrderBookPairResponse() {
 	ob := amm.NewOrderBook(
-		newOrder(amm.Sell, utils.ParseDec("15.0"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("13.0"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("10.01"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("10.0"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("10.01"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("10.0"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("9.0"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("3.0"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("0.1"), sdk.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("15.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("13.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("10.01"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("10.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("10.01"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("10.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("9.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("3.0"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("0.1"), sdkmath.NewInt(10000)),
 	)
 	ov := ob.MakeView()
 	ov.Match()
@@ -47,9 +47,9 @@ func ExampleMakeOrderBookPairResponse() {
 }
 
 func ExampleMakeOrderBookPairResponse_pool() {
-	pool1 := amm.NewBasicPool(sdk.NewInt(1050_000000), sdk.NewInt(1000_000000), sdk.Int{})
+	pool1 := amm.NewBasicPool(sdkmath.NewInt(1050_000000), sdkmath.NewInt(1000_000000), sdkmath.Int{})
 	pool2, err := amm.CreateRangedPool(
-		sdk.NewInt(1000_000000), sdk.NewInt(1000_000000),
+		sdkmath.NewInt(1000_000000), sdkmath.NewInt(1000_000000),
 		utils.ParseDec("0.1"), utils.ParseDec("5.0"), utils.ParseDec("0.95"))
 	if err != nil {
 		panic(err)
@@ -100,7 +100,7 @@ func ExampleMakeOrderBookPairResponse_pool() {
 }
 
 func ExampleMakeOrderBookPairResponse_userOrder() {
-	pool := amm.NewBasicPool(sdk.NewInt(895590740832), sdk.NewInt(675897553075), sdk.Int{})
+	pool := amm.NewBasicPool(sdkmath.NewInt(895590740832), sdkmath.NewInt(675897553075), sdkmath.Int{})
 
 	lastPrice := utils.ParseDec("1.325")
 	lowestPrice := lastPrice.Mul(utils.ParseDec("0.9"))
@@ -108,12 +108,12 @@ func ExampleMakeOrderBookPairResponse_userOrder() {
 	ob := amm.NewOrderBook()
 	ob.AddOrder(amm.PoolOrders(pool, amm.DefaultOrderer, lowestPrice, highestPrice, 4)...)
 	ob.AddOrder(
-		newOrder(amm.Buy, utils.ParseDec("1.316"), sdk.NewInt(111000000)),
-		newOrder(amm.Buy, utils.ParseDec("1.32"), sdk.NewInt(111000000)),
-		newOrder(amm.Buy, utils.ParseDec("1.325"), sdk.NewInt(11000000)),
-		newOrder(amm.Buy, utils.ParseDec("1.325"), sdk.NewInt(111000000)),
-		newOrder(amm.Buy, utils.ParseDec("1.325"), sdk.NewInt(20000000)),
-		newOrder(amm.Buy, utils.ParseDec("1.325"), sdk.NewInt(111000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.316"), sdkmath.NewInt(111000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.32"), sdkmath.NewInt(111000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.325"), sdkmath.NewInt(11000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.325"), sdkmath.NewInt(111000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.325"), sdkmath.NewInt(20000000)),
+		newOrder(amm.Buy, utils.ParseDec("1.325"), sdkmath.NewInt(111000000)),
 	)
 
 	ov := ob.MakeView()
@@ -159,10 +159,10 @@ func ExampleMakeOrderBookPairResponse_userOrder() {
 
 func ExampleMakeOrderBookPairResponse_match() {
 	ob := amm.NewOrderBook(
-		newOrder(amm.Buy, utils.ParseDec("1.000"), sdk.NewInt(3000)),
-		newOrder(amm.Buy, utils.ParseDec("0.999"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("1.001"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("1.000"), sdk.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("1.000"), sdkmath.NewInt(3000)),
+		newOrder(amm.Buy, utils.ParseDec("0.999"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("1.001"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("1.000"), sdkmath.NewInt(10000)),
 	)
 
 	ov := ob.MakeView()
@@ -191,10 +191,10 @@ func ExampleMakeOrderBookPairResponse_match() {
 
 func ExampleMakeOrderBookPairResponse_zigzag() {
 	ob := amm.NewOrderBook(
-		newOrder(amm.Sell, utils.ParseDec("1.002"), sdk.NewInt(10000)),
-		newOrder(amm.Buy, utils.ParseDec("1.001"), sdk.NewInt(5000)),
-		newOrder(amm.Sell, utils.ParseDec("1.000"), sdk.NewInt(50000)),
-		newOrder(amm.Buy, utils.ParseDec("0.999"), sdk.NewInt(100000)),
+		newOrder(amm.Sell, utils.ParseDec("1.002"), sdkmath.NewInt(10000)),
+		newOrder(amm.Buy, utils.ParseDec("1.001"), sdkmath.NewInt(5000)),
+		newOrder(amm.Sell, utils.ParseDec("1.000"), sdkmath.NewInt(50000)),
+		newOrder(amm.Buy, utils.ParseDec("0.999"), sdkmath.NewInt(100000)),
 	)
 	ov := ob.MakeView()
 	ov.Match()
@@ -218,8 +218,8 @@ func ExampleMakeOrderBookPairResponse_zigzag() {
 }
 
 func ExampleMakeOrderBookPairResponse_edgecase1() {
-	basicPool := amm.NewBasicPool(sdk.NewInt(2603170018), sdk.NewInt(2731547352), sdk.Int{})
-	rangedPool := amm.NewRangedPool(sdk.NewInt(9204969), sdk.NewInt(292104465), sdk.Int{}, utils.ParseDec("0.95"), utils.ParseDec("1.05"))
+	basicPool := amm.NewBasicPool(sdkmath.NewInt(2603170018), sdkmath.NewInt(2731547352), sdkmath.Int{})
+	rangedPool := amm.NewRangedPool(sdkmath.NewInt(9204969), sdkmath.NewInt(292104465), sdkmath.Int{}, utils.ParseDec("0.95"), utils.ParseDec("1.05"))
 	lastPrice := utils.ParseDec("0.95299")
 
 	ob := amm.NewOrderBook()
@@ -268,11 +268,11 @@ func ExampleMakeOrderBookPairResponse_edgecase1() {
 
 func ExampleMakeOrderBookPairResponse_edgecase2() {
 	ob := amm.NewOrderBook(
-		newOrder(amm.Buy, utils.ParseDec("1.001"), sdk.NewInt(3000)),
-		newOrder(amm.Buy, utils.ParseDec("1.000"), sdk.NewInt(10000)),
-		newOrder(amm.Sell, utils.ParseDec("0.999"), sdk.NewInt(5000)),
-		newOrder(amm.Sell, utils.ParseDec("0.998"), sdk.NewInt(3000)),
-		newOrder(amm.Sell, utils.ParseDec("0.997"), sdk.NewInt(2000)),
+		newOrder(amm.Buy, utils.ParseDec("1.001"), sdkmath.NewInt(3000)),
+		newOrder(amm.Buy, utils.ParseDec("1.000"), sdkmath.NewInt(10000)),
+		newOrder(amm.Sell, utils.ParseDec("0.999"), sdkmath.NewInt(5000)),
+		newOrder(amm.Sell, utils.ParseDec("0.998"), sdkmath.NewInt(3000)),
+		newOrder(amm.Sell, utils.ParseDec("0.997"), sdkmath.NewInt(2000)),
 	)
 
 	ov := ob.MakeView()
@@ -295,10 +295,10 @@ func ExampleMakeOrderBookPairResponse_edgecase2() {
 
 func ExampleMakeOrderBookPairResponse_edgecase3() {
 	ob := amm.NewOrderBook(
-		newOrder(amm.Sell, utils.ParseDec("1.001"), sdk.NewInt(2000)),
-		newOrder(amm.Sell, utils.ParseDec("1.000"), sdk.NewInt(2000)),
-		newOrder(amm.Buy, utils.ParseDec("1.000"), sdk.NewInt(2000)),
-		newOrder(amm.Buy, utils.ParseDec("0.999"), sdk.NewInt(2000)),
+		newOrder(amm.Sell, utils.ParseDec("1.001"), sdkmath.NewInt(2000)),
+		newOrder(amm.Sell, utils.ParseDec("1.000"), sdkmath.NewInt(2000)),
+		newOrder(amm.Buy, utils.ParseDec("1.000"), sdkmath.NewInt(2000)),
+		newOrder(amm.Buy, utils.ParseDec("0.999"), sdkmath.NewInt(2000)),
 	)
 
 	ov := ob.MakeView()
@@ -325,7 +325,7 @@ func ExampleMakeOrderBookPairResponse_priceUnits1() {
 
 	lastPrice := utils.ParseDec("0.9995")
 	lowestPrice, highestPrice := types.PriceLimits(lastPrice, utils.ParseDec("0.1"), 4)
-	pool := amm.NewBasicPool(sdk.NewInt(9995_000000), sdk.NewInt(10000_000000), sdk.Int{})
+	pool := amm.NewBasicPool(sdkmath.NewInt(9995_000000), sdkmath.NewInt(10000_000000), sdkmath.Int{})
 	ob.AddOrder(amm.PoolOrders(pool, amm.DefaultOrderer, lowestPrice, highestPrice, 4)...)
 
 	ov := ob.MakeView()
@@ -432,7 +432,7 @@ func ExampleMakeOrderBookPairResponse_priceUnits2() {
 
 	lastPrice := utils.ParseDec("0.9999")
 	lowestPrice, highestPrice := types.PriceLimits(lastPrice, utils.ParseDec("0.1"), 4)
-	pool := amm.NewBasicPool(sdk.NewInt(9999_000000), sdk.NewInt(10000_000000), sdk.Int{})
+	pool := amm.NewBasicPool(sdkmath.NewInt(9999_000000), sdkmath.NewInt(10000_000000), sdkmath.Int{})
 	ob.AddOrder(amm.PoolOrders(pool, amm.DefaultOrderer, lowestPrice, highestPrice, 4)...)
 
 	ov := ob.MakeView()

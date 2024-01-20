@@ -3,6 +3,9 @@ package keeper
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -103,7 +106,7 @@ func (k Keeper) LiquidateVaults(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdk.Dec, collateralizationRatio sdk.Dec, appID uint64, totalFees sdk.Int) error {
+func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, totalIn sdkmath.LegacyDec, collateralizationRatio sdkmath.LegacyDec, appID uint64, totalFees sdkmath.Int) error {
 	lockedVaultID := k.GetLockedVaultID(ctx)
 
 	value := types.LockedVault{
@@ -114,7 +117,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 		Owner:                   vault.Owner,
 		AmountIn:                vault.AmountIn,
 		AmountOut:               vault.AmountOut,
-		UpdatedAmountOut:        sdk.ZeroInt(),
+		UpdatedAmountOut:        sdkmath.ZeroInt(),
 		Initiator:               types.ModuleName,
 		IsAuctionComplete:       false,
 		IsAuctionInProgress:     false,
@@ -136,7 +139,7 @@ func (k Keeper) CreateLockedVault(ctx sdk.Context, vault vaulttypes.Vault, total
 	return nil
 }
 
-func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdk.Int {
+func (k Keeper) GetModAccountBalances(ctx sdk.Context, accountName string, denom string) sdkmath.Int {
 	macc := k.account.GetModuleAccount(ctx, accountName)
 	return k.bank.GetBalance(ctx, macc.GetAddress(), denom).Amount
 }
@@ -273,10 +276,10 @@ func (k Keeper) GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault 
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKeyByApp(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -294,10 +297,10 @@ func (k Keeper) GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault 
 func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVault) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -371,10 +374,10 @@ func (k Keeper) GetAppIDByAppForLiquidation(ctx sdk.Context, appID uint64) (uint
 func (k Keeper) GetAppIdsForLiquidation(ctx sdk.Context) (appIds []uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppIdsKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppIdsKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

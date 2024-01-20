@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
@@ -104,7 +106,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 		return nil, err
 	}
 	// Take amount from user
-	if msg.AmountIn.GT(sdk.ZeroInt()) {
+	if msg.AmountIn.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.AmountIn))); err != nil {
 			return nil, err
 		}
@@ -121,21 +123,21 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 
 	// Send Fees to Accumulator
 	// Deducting Opening Fee if 0 opening fee then act accordingly
-	if extendedPairVault.DrawDownFee.IsZero() && msg.AmountOut.GT(sdk.ZeroInt()) { // Send Rest to user
+	if extendedPairVault.DrawDownFee.IsZero() && msg.AmountOut.GT(sdkmath.ZeroInt()) { // Send Rest to user
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.AmountOut))); err != nil {
 			return nil, err
 		}
 	} else {
 		// If not zero deduct send to collector//////////
 		// one approach could be
-		collectorShare := sdk.NewDecFromInt(msg.AmountOut).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+		collectorShare := sdkmath.LegacyNewDecFromInt(msg.AmountOut).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
-		if collectorShare.GT(sdk.ZeroInt()) {
+		if collectorShare.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
 
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdkmath.ZeroInt(), sdkmath.ZeroInt(), collectorShare, sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
@@ -143,7 +145,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 
 		// and send the rest to the user
 		amountToUser := msg.AmountOut.Sub(collectorShare)
-		if amountToUser.GT(sdk.ZeroInt()) {
+		if amountToUser.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
 			}
@@ -157,14 +159,14 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 
 	// If all correct  create vault
 	oldID := k.GetIDForVault(ctx)
-	zeroVal := sdk.ZeroInt()
+	zeroVal := sdkmath.ZeroInt()
 	var newVault types.Vault
 	updatedID := oldID + 1
 	newVault.Id = updatedID
 	newVault.AmountIn = msg.AmountIn
 
-	// closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-	closingFeeVal := sdk.NewDecFromInt(msg.AmountOut).Mul(extendedPairVault.ClosingFee).TruncateInt()
+	// closingFeeVal := msg.AmountOut.Mul(sdkmath.Int(extendedPairVault.ClosingFee)).Quo(sdkmath.Int(sdkmath.LegacyOneDec()))
+	closingFeeVal := sdkmath.LegacyNewDecFromInt(msg.AmountOut).Mul(extendedPairVault.ClosingFee).TruncateInt()
 
 	newVault.ClosingFeeAccumulated = closingFeeVal
 	newVault.AmountOut = msg.AmountOut
@@ -292,7 +294,7 @@ func (k msgServer) MsgDeposit(c context.Context, msg *types.MsgDepositRequest) (
 		return nil, types.ErrorInvalidAmount
 	}
 
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
@@ -410,7 +412,7 @@ func (k msgServer) MsgWithdraw(c context.Context, msg *types.MsgWithdrawRequest)
 	if err := k.VerifyCollaterlizationRatio(ctx, extendedPairVault.Id, userVault.AmountIn, totalDebtCalculation, extendedPairVault.MinCr, status); err != nil {
 		return nil, err
 	}
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
@@ -500,7 +502,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
-	if msg.Amount.LTE(sdk.NewInt(0)) {
+	if msg.Amount.LTE(sdkmath.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -540,7 +542,7 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 		return nil, err
 	}
 
-	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
+	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdkmath.ZeroInt()) {
 		// Send Rest to user
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 			return nil, err
@@ -548,21 +550,21 @@ func (k msgServer) MsgDraw(c context.Context, msg *types.MsgDrawRequest) (*types
 	} else {
 		// If not zero deduct send to collector//////////
 		// one approach could be
-		collectorShare := sdk.NewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+		collectorShare := sdkmath.LegacyNewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
-		if collectorShare.GT(sdk.ZeroInt()) {
+		if collectorShare.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
 
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdkmath.ZeroInt(), sdkmath.ZeroInt(), collectorShare, sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
 		}
 		// and send the rest to the user
 		amountToUser := msg.Amount.Sub(collectorShare)
-		if amountToUser.GT(sdk.ZeroInt()) {
+		if amountToUser.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
 			}
@@ -653,7 +655,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 	if extendedPairVault.Id != userVault.ExtendedPairVaultID {
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
-	if msg.Amount.LTE(sdk.NewInt(0)) {
+	if msg.Amount.LTE(sdkmath.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -670,7 +672,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 
 	newAmount := userVault.AmountOut.Add(userVault.InterestAccumulated)
 	newAmount = newAmount.Sub(msg.Amount)
-	if newAmount.LT(sdk.NewInt(0)) {
+	if newAmount.LT(sdkmath.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
 
@@ -680,7 +682,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		reducedFees := userVault.InterestAccumulated.Sub(msg.Amount)
 		userVault.InterestAccumulated = reducedFees
 		// and send it to the collector module
-		if msg.Amount.GT(sdk.ZeroInt()) {
+		if msg.Amount.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 				return nil, err
 			}
@@ -688,7 +690,7 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 				return nil, err
 			}
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, msg.Amount, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, msg.Amount, sdkmath.ZeroInt(), sdkmath.ZeroInt(), sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
@@ -706,12 +708,12 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 		if !updatedUserDebt.GTE(extendedPairVault.DebtFloor) {
 			return nil, types.ErrorAmountOutLessThanDebtFloor
 		}
-		if msg.Amount.GT(sdk.ZeroInt()) {
+		if msg.Amount.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 				return nil, err
 			}
 		}
-		if updatedUserSentAmountAfterFeesDeduction.GT(sdk.ZeroInt()) {
+		if updatedUserSentAmountAfterFeesDeduction.GT(sdkmath.ZeroInt()) {
 			burnCoin := sdk.NewCoin(assetOutData.Denom, updatedUserSentAmountAfterFeesDeduction)
 			if burnCoin.IsZero() {
 				return nil, types.BurnCoinValueInVaultIsZero
@@ -721,18 +723,18 @@ func (k msgServer) MsgRepay(c context.Context, msg *types.MsgRepayRequest) (*typ
 			}
 		}
 		//			SEND TO COLLECTOR----userVault.InterestAccumulated
-		if userVault.InterestAccumulated.GT(sdk.ZeroInt()) {
+		if userVault.InterestAccumulated.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, userVault.InterestAccumulated))); err != nil {
 				return nil, err
 			}
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, sdk.ZeroInt(), sdk.ZeroInt(), sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, sdkmath.ZeroInt(), sdkmath.ZeroInt(), sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		userVault.AmountOut = updatedUserDebt
-		zeroVal := sdk.ZeroInt()
+		zeroVal := sdkmath.ZeroInt()
 		userVault.InterestAccumulated = zeroVal
 		userVault.BlockHeight = ctx.BlockHeight()
 		userVault.BlockTime = ctx.BlockTime()
@@ -834,7 +836,7 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 
 	totalUserDebt := userVault.AmountOut.Add(userVault.InterestAccumulated)
 	totalUserDebt = totalUserDebt.Add(userVault.ClosingFeeAccumulated)
-	if totalUserDebt.GT(sdk.ZeroInt()) {
+	if totalUserDebt.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, totalUserDebt))); err != nil {
 			return nil, err
 		}
@@ -842,21 +844,21 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 
 	//			SEND TO COLLECTOR----userVault.InterestAccumulated & userVault.ClosingFees
 
-	err = k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, userVault.ClosingFeeAccumulated, sdk.ZeroInt(), sdk.ZeroInt())
+	err = k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, userVault.InterestAccumulated, userVault.ClosingFeeAccumulated, sdkmath.ZeroInt(), sdkmath.ZeroInt())
 	if err != nil {
 		return nil, err
 	}
-	if userVault.InterestAccumulated.GT(sdk.ZeroInt()) {
+	if userVault.InterestAccumulated.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, userVault.InterestAccumulated))); err != nil {
 			return nil, err
 		}
 	}
-	if userVault.ClosingFeeAccumulated.GT(sdk.ZeroInt()) {
+	if userVault.ClosingFeeAccumulated.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, userVault.ClosingFeeAccumulated))); err != nil {
 			return nil, err
 		}
 	}
-	if userVault.AmountOut.GT(sdk.ZeroInt()) {
+	if userVault.AmountOut.GT(sdkmath.ZeroInt()) {
 		burnCoin := sdk.NewCoin(assetOutData.Denom, userVault.AmountOut)
 		if burnCoin.IsZero() {
 			return nil, types.BurnCoinValueInVaultIsZero
@@ -865,7 +867,7 @@ func (k msgServer) MsgClose(c context.Context, msg *types.MsgCloseRequest) (*typ
 			return nil, err
 		}
 	}
-	if userVault.AmountIn.GT(sdk.ZeroInt()) {
+	if userVault.AmountIn.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, userVault.AmountIn))); err != nil {
 			return nil, err
 		}
@@ -1003,7 +1005,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	}
 	// Call CheckAppExtendedPairVaultMapping function to get counter - it also initialised the kv store if appMapping_id does not exists, or extendedPairVault_id does not exists.
 
-	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetInData.Id, sdk.OneDec(), msg.Amount, assetOutData.Id, sdk.OneDec())
+	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetInData.Id, sdkmath.LegacyOneDec(), msg.Amount, assetOutData.Id, sdkmath.LegacyOneDec())
 	if err != nil {
 		return nil, err
 	}
@@ -1026,9 +1028,9 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
-	var amountToUser sdk.Int
+	var amountToUser sdkmath.Int
 
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		// Take amount from user
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
 			return nil, err
@@ -1044,7 +1046,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 		}
 	}
 
-	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
+	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdkmath.ZeroInt()) {
 		// Send Rest to user
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 			return nil, err
@@ -1052,14 +1054,14 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 	} else {
 		// If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
-		// collectorShare := (tokenOutAmount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		collectorShare := sdk.NewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+		// collectorShare := (tokenOutAmount.Mul(sdkmath.Int(extendedPairVault.DrawDownFee))).Quo(sdkmath.Int(sdkmath.LegacyOneDec()))
+		collectorShare := sdkmath.LegacyNewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
-		if collectorShare.GT(sdk.ZeroInt()) {
+		if collectorShare.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdkmath.ZeroInt(), sdkmath.ZeroInt(), collectorShare, sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
@@ -1068,7 +1070,7 @@ func (k msgServer) MsgCreateStableMint(c context.Context, msg *types.MsgCreateSt
 		// and send the rest to the user
 		// amountToUser := msg.Amount.Sub(collectorShare)
 		amountToUser = tokenOutAmount.Sub(collectorShare)
-		if amountToUser.GT(sdk.ZeroInt()) {
+		if amountToUser.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
 			}
@@ -1179,7 +1181,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	// Looking for a case where apart from create function , this function creates new vaults and its data.
 	tokenMintedStatistics, _ := k.CheckAppExtendedPairVaultMapping(ctx, appMapping.Id, extendedPairVault.Id)
 
-	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetInData.Id, sdk.OneDec(), msg.Amount, assetOutData.Id, sdk.OneDec())
+	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetInData.Id, sdkmath.LegacyOneDec(), msg.Amount, assetOutData.Id, sdkmath.LegacyOneDec())
 	if err != nil {
 		return nil, err
 	}
@@ -1194,9 +1196,9 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 	if currentMintedStatistics.GTE(extendedPairVault.DebtCeiling) {
 		return nil, types.ErrorAmountOutGreaterThanDebtCeiling
 	}
-	var amountToUser sdk.Int
+	var amountToUser sdkmath.Int
 
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		// Take amount from user
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetInData.Denom, msg.Amount))); err != nil {
 			return nil, err
@@ -1211,7 +1213,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 			return nil, err
 		}
 	}
-	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
+	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdkmath.ZeroInt()) {
 		// Send Rest to user
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, tokenOutAmount))); err != nil {
 			return nil, err
@@ -1221,13 +1223,13 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		//			COLLECTOR FUNCTION
 		/////////////////////////////////////////////////
 
-		collectorShare := sdk.NewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+		collectorShare := sdkmath.LegacyNewDecFromInt(tokenOutAmount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
-		if collectorShare.GT(sdk.ZeroInt()) {
+		if collectorShare.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdkmath.ZeroInt(), sdkmath.ZeroInt(), collectorShare, sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
@@ -1236,7 +1238,7 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 		// and send the rest to the user
 		// amountToUser := msg.Amount.Sub(collectorShare)
 		amountToUser = tokenOutAmount.Sub(collectorShare)
-		if amountToUser.GT(sdk.ZeroInt()) {
+		if amountToUser.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositorAddress, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, amountToUser))); err != nil {
 				return nil, err
 			}
@@ -1333,26 +1335,26 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		return nil, types.ErrorInvalidExtendedPairMappingData
 	}
 
-	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdk.OneDec(), msg.Amount, assetInData.Id, sdk.OneDec())
+	_, tokenOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdkmath.LegacyOneDec(), msg.Amount, assetInData.Id, sdkmath.LegacyOneDec())
 	if err != nil {
 		return nil, nil
 	}
 
 	// stableAmountIn := stableVault.AmountIn.Sub(msg.Amount)
 	stableAmountIn := stableVault.AmountIn.Sub(tokenOutAmount)
-	if stableAmountIn.LT(sdk.NewInt(0)) {
+	if stableAmountIn.LT(sdkmath.NewInt(0)) {
 		return nil, types.ErrorInvalidAmount
 	}
 	// updated amount is the CMST amount
-	var updatedAmount sdk.Int
+	var updatedAmount sdkmath.Int
 	// Take amount from user
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositorAddress, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
 	}
 
-	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdk.ZeroInt()) {
+	if extendedPairVault.DrawDownFee.IsZero() && msg.Amount.GT(sdkmath.ZeroInt()) {
 		// BurnTokens for user
 		burnCoin := sdk.NewCoin(assetOutData.Denom, msg.Amount)
 		if burnCoin.IsZero() {
@@ -1371,14 +1373,14 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 		//If not zero deduct send to collector//////////
 		//			COLLECTOR FUNCTION
 		/////////////////////////////////////////////////
-		//collectorShare := (msg.Amount.Mul(sdk.Int(extendedPairVault.DrawDownFee))).Quo(sdk.Int(sdk.OneDec()))
-		collectorShare := sdk.NewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
+		//collectorShare := (msg.Amount.Mul(sdkmath.Int(extendedPairVault.DrawDownFee))).Quo(sdkmath.Int(sdkmath.LegacyOneDec()))
+		collectorShare := sdkmath.LegacyNewDecFromInt(msg.Amount).Mul(extendedPairVault.DrawDownFee).TruncateInt()
 
-		if collectorShare.GT(sdk.ZeroInt()) {
+		if collectorShare.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin(assetOutData.Denom, collectorShare))); err != nil {
 				return nil, err
 			}
-			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdk.ZeroInt(), sdk.ZeroInt(), collectorShare, sdk.ZeroInt())
+			err := k.collector.UpdateCollector(ctx, appMapping.Id, pairData.AssetOut, sdkmath.ZeroInt(), sdkmath.ZeroInt(), collectorShare, sdkmath.ZeroInt())
 			if err != nil {
 				return nil, err
 			}
@@ -1386,7 +1388,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 
 		updatedAmount = msg.Amount.Sub(collectorShare)
 
-		if updatedAmount.GT(sdk.ZeroInt()) {
+		if updatedAmount.GT(sdkmath.ZeroInt()) {
 			// BurnTokens for user
 			burnCoin := sdk.NewCoin(assetOutData.Denom, updatedAmount)
 			if burnCoin.IsZero() {
@@ -1397,7 +1399,7 @@ func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdr
 			}
 
 			// and send the rest to the user
-			_, newOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdk.OneDec(), updatedAmount, assetInData.Id, sdk.OneDec())
+			_, newOutAmount, err := k.GetAmountOfOtherToken(ctx, assetOutData.Id, sdkmath.LegacyOneDec(), updatedAmount, assetInData.Id, sdkmath.LegacyOneDec())
 			if err != nil {
 				return nil, err
 			}

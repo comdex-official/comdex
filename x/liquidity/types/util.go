@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
@@ -69,10 +71,10 @@ func (op *BulkSendCoinsOperation) Run(ctx sdk.Context, bankKeeper expected.BankK
 }
 
 // NewPoolResponse returns a new PoolResponse from given information.
-func NewPoolResponse(pool Pool, rx, ry sdk.Coin, poolCoinSupply sdk.Int) PoolResponse {
-	var price *sdk.Dec
+func NewPoolResponse(pool Pool, rx, ry sdk.Coin, poolCoinSupply sdkmath.Int) PoolResponse {
+	var price *sdkmath.LegacyDec
 	if !pool.Disabled {
-		p := pool.AMMPool(rx.Amount, ry.Amount, sdk.Int{}).Price()
+		p := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{}).Price()
 		price = &p
 	}
 	return PoolResponse{
@@ -99,15 +101,15 @@ func NewPoolResponse(pool Pool, rx, ry sdk.Coin, poolCoinSupply sdk.Int) PoolRes
 
 // IsTooSmallOrderAmount returns whether the order amount is too small for
 // matching, based on the order price.
-func IsTooSmallOrderAmount(amt sdk.Int, price sdk.Dec) bool {
+func IsTooSmallOrderAmount(amt sdkmath.Int, price sdkmath.LegacyDec) bool {
 	return amt.LT(amm.MinCoinAmount) || price.MulInt(amt).LT(amm.MinCoinAmount.ToLegacyDec())
 }
 
 // PriceLimits returns the lowest and the highest price limits with given last price
 // and price limit ratio.
-func PriceLimits(lastPrice, priceLimitRatio sdk.Dec, tickPrec int) (lowestPrice, highestPrice sdk.Dec) {
-	lowestPrice = amm.PriceToUpTick(lastPrice.Mul(sdk.OneDec().Sub(priceLimitRatio)), tickPrec)
-	highestPrice = amm.PriceToDownTick(lastPrice.Mul(sdk.OneDec().Add(priceLimitRatio)), tickPrec)
+func PriceLimits(lastPrice, priceLimitRatio sdkmath.LegacyDec, tickPrec int) (lowestPrice, highestPrice sdkmath.LegacyDec) {
+	lowestPrice = amm.PriceToUpTick(lastPrice.Mul(sdkmath.LegacyOneDec().Sub(priceLimitRatio)), tickPrec)
+	highestPrice = amm.PriceToDownTick(lastPrice.Mul(sdkmath.LegacyOneDec().Add(priceLimitRatio)), tickPrec)
 	return
 }
 
@@ -130,13 +132,13 @@ func (index MMOrderIndex) GetOrderer() sdk.AccAddress {
 
 // MMOrderTick holds information about each tick's price and amount of an MMOrder.
 type MMOrderTick struct {
-	OfferCoinAmount sdk.Int
-	Price           sdk.Dec
-	Amount          sdk.Int
+	OfferCoinAmount sdkmath.Int
+	Price           sdkmath.LegacyDec
+	Amount          sdkmath.Int
 }
 
 // MMOrderTicks returns fairly distributed tick information with given parameters.
-func MMOrderTicks(dir OrderDirection, minPrice, maxPrice sdk.Dec, amt sdk.Int, maxNumTicks, tickPrec int) (ticks []MMOrderTick) {
+func MMOrderTicks(dir OrderDirection, minPrice, maxPrice sdkmath.LegacyDec, amt sdkmath.Int, maxNumTicks, tickPrec int) (ticks []MMOrderTick) {
 	ammDir := amm.OrderDirection(dir)
 	if minPrice.Equal(maxPrice) {
 		return []MMOrderTick{{OfferCoinAmount: amm.OfferCoinAmount(ammDir, minPrice, amt), Price: minPrice, Amount: amt}}
@@ -144,7 +146,7 @@ func MMOrderTicks(dir OrderDirection, minPrice, maxPrice sdk.Dec, amt sdk.Int, m
 	gap := maxPrice.Sub(minPrice).QuoInt64(int64(maxNumTicks - 1))
 	switch dir {
 	case OrderDirectionBuy:
-		var prevP sdk.Dec
+		var prevP sdkmath.LegacyDec
 		for i := 0; i < maxNumTicks-1; i++ {
 			p := amm.PriceToDownTick(minPrice.Add(gap.MulInt64(int64(i))), tickPrec)
 			if prevP.IsNil() || !p.Equal(prevP) {
@@ -166,7 +168,7 @@ func MMOrderTicks(dir OrderDirection, minPrice, maxPrice sdk.Dec, amt sdk.Int, m
 			Amount:          amt,
 		})
 	case OrderDirectionSell:
-		var prevP sdk.Dec
+		var prevP sdkmath.LegacyDec
 		for i := 0; i < maxNumTicks-1; i++ {
 			p := amm.PriceToUpTick(maxPrice.Sub(gap.MulInt64(int64(i))), tickPrec)
 			if prevP.IsNil() || !p.Equal(prevP) {

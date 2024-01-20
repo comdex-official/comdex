@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"encoding/binary"
 	"strings"
 	"testing"
@@ -19,7 +20,6 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	chain "github.com/comdex-official/comdex/app"
@@ -49,7 +49,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.assetKeeper = s.app.AssetKeeper
 	s.lockerKeeper = s.app.LockerKeeper
 	s.querier = rewardsKeeper.QueryServer{Keeper: s.rewardsKeeper}
@@ -103,7 +103,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             strings.ToLower(appName),
 		ShortName:        strings.ToLower(appName),
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -128,7 +128,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})
@@ -172,15 +172,15 @@ func (s *KeeperTestSuite) CreateNewExtendedVaultPair(
 	err := s.app.AssetKeeper.WasmAddExtendedPairsVaultRecords(s.ctx, &bindings.MsgAddExtendedPairsVault{
 		AppID:               appMappingID,
 		PairID:              pairID,
-		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
-		ClosingFee:          sdk.NewDec(0),
-		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
-		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
+		StabilityFee:        sdkmath.LegacyNewDecWithPrec(2, 2), // 0.02
+		ClosingFee:          sdkmath.LegacyNewDec(0),
+		LiquidationPenalty:  sdkmath.LegacyNewDecWithPrec(15, 2), // 0.15
+		DrawDownFee:         sdkmath.LegacyNewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       isVaultActive,
-		DebtCeiling:         sdk.NewInt(1000000000000000000),
-		DebtFloor:           sdk.NewInt(100000000),
+		DebtCeiling:         sdkmath.NewInt(1000000000000000000),
+		DebtFloor:           sdkmath.NewInt(100000000),
 		IsStableMintVault:   isStableMintVault,
-		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
+		MinCr:               sdkmath.LegacyNewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
 		AssetOutOraclePrice: true,
 		AssetOutPrice:       1000000,

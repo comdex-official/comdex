@@ -6,12 +6,11 @@ import (
 	bandoraclemoduletypes "github.com/comdex-official/comdex/x/bandoracle/types"
 	"github.com/comdex-official/comdex/x/market/keeper"
 	"github.com/comdex-official/comdex/x/market/types"
-	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, bandKeeper bandkeeper.Keeper, assetKeeper assetkeeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper, bandKeeper bandkeeper.Keeper, assetKeeper assetkeeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	if bandKeeper.GetOracleValidationResult(ctx) {

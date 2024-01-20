@@ -3,6 +3,8 @@ package wasm
 import (
 	"encoding/json"
 
+	errorsmod "cosmossdk.io/errors"
+
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 
@@ -71,7 +73,7 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		// leave everything else for the wrapped version
 		var comdexMsg bindings.ComdexMessages
 		if err := json.Unmarshal(msg.Custom, &comdexMsg); err != nil {
-			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
+			return nil, nil, errorsmod.Wrap(err, "comdex msg error")
 		}
 		if comdexMsg.MsgWhiteListAssetLocker != nil {
 			return m.whitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgWhiteListAssetLocker)
@@ -149,7 +151,7 @@ func (m *CustomMessenger) whitelistAssetLocker(ctx sdk.Context, contractAddr sdk
 	}
 	err := WhiteListAsset(m.lockerKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "white list asset")
+		return nil, nil, errorsmod.Wrap(err, "white list asset")
 	}
 	return nil, nil, nil
 }
@@ -182,7 +184,7 @@ func (m *CustomMessenger) whitelistAppIDLockerRewards(ctx sdk.Context, contractA
 	}
 	err := WhitelistAppIDLockerRewards(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "white list appId locker rewards")
+		return nil, nil, errorsmod.Wrap(err, "white list appId locker rewards")
 	}
 	return nil, nil, nil
 }
@@ -215,7 +217,7 @@ func (m *CustomMessenger) whitelistAppIDVaultInterest(ctx sdk.Context, contractA
 	}
 	err := WhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr.String(), whiteListAsset)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "white list appId vault Interest")
+		return nil, nil, errorsmod.Wrap(err, "white list appId vault Interest")
 	}
 	return nil, nil, nil
 }
@@ -247,7 +249,7 @@ func (m *CustomMessenger) AddExtendedPairsVault(ctx sdk.Context, contractAddr sd
 	}
 	err := MsgAddExtendedPairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "AddExtendedPairsVault error")
+		return nil, nil, errorsmod.Wrap(err, "AddExtendedPairsVault error")
 	}
 	return nil, nil, nil
 }
@@ -274,7 +276,7 @@ func (m *CustomMessenger) SetCollectorLookupTable(ctx sdk.Context, contractAddr 
 	}
 	err := MsgSetCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "SetCollectorLookupTable error")
+		return nil, nil, errorsmod.Wrap(err, "SetCollectorLookupTable error")
 	}
 	return nil, nil, nil
 }
@@ -301,7 +303,7 @@ func (m *CustomMessenger) SetAuctionMappingForApp(ctx sdk.Context, contractAddr 
 	}
 	err := MsgSetAuctionMappingForApp(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "SetAuctionMappingForApp error")
+		return nil, nil, errorsmod.Wrap(err, "SetAuctionMappingForApp error")
 	}
 	return nil, nil, nil
 }
@@ -328,7 +330,7 @@ func (m *CustomMessenger) UpdatePairsVault(ctx sdk.Context, contractAddr sdk.Acc
 	}
 	err := MsgUpdatePairsVault(m.assetKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "UpdatePairsVault error")
+		return nil, nil, errorsmod.Wrap(err, "UpdatePairsVault error")
 	}
 	return nil, nil, nil
 }
@@ -355,7 +357,7 @@ func (m *CustomMessenger) UpdateCollectorLookupTable(ctx sdk.Context, contractAd
 	}
 	err := MsgUpdateCollectorLookupTable(m.collectorKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "UpdateCollectorLookupTable error")
+		return nil, nil, errorsmod.Wrap(err, "UpdateCollectorLookupTable error")
 	}
 	return nil, nil, nil
 }
@@ -382,7 +384,7 @@ func (m *CustomMessenger) RemoveWhitelistAssetLocker(ctx sdk.Context, contractAd
 	}
 	err := MsgRemoveWhitelistAssetLocker(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetRewards error")
+		return nil, nil, errorsmod.Wrap(err, "RemoveWhitelistAssetRewards error")
 	}
 	return nil, nil, nil
 }
@@ -409,7 +411,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIDVaultInterest(ctx sdk.Context, con
 	}
 	err := MsgRemoveWhitelistAppIDVaultInterest(m.rewardsKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterest error")
+		return nil, nil, errorsmod.Wrap(err, "RemoveWhitelistAppIdVaultInterest error")
 	}
 	return nil, nil, nil
 }
@@ -436,7 +438,7 @@ func (m *CustomMessenger) WhitelistAppIDLiquidation(ctx sdk.Context, contractAdd
 	}
 	err := MsgWhitelistAppIDLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "WhitelistAppIdLiquidation error")
+		return nil, nil, errorsmod.Wrap(err, "WhitelistAppIdLiquidation error")
 	}
 	return nil, nil, nil
 }
@@ -463,7 +465,7 @@ func (m *CustomMessenger) RemoveWhitelistAppIDLiquidation(ctx sdk.Context, contr
 	}
 	err := MsgRemoveWhitelistAppIDLiquidation(m.liquidationKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdLiquidation error")
+		return nil, nil, errorsmod.Wrap(err, "RemoveWhitelistAppIdLiquidation error")
 	}
 	return nil, nil, nil
 }
@@ -490,7 +492,7 @@ func (m *CustomMessenger) AddAuctionParams(ctx sdk.Context, contractAddr sdk.Acc
 	}
 	err := MsgAddAuctionParams(m.auctionKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "AddAuctionParams error")
+		return nil, nil, errorsmod.Wrap(err, "AddAuctionParams error")
 	}
 	return nil, nil, nil
 }
@@ -517,7 +519,7 @@ func (m *CustomMessenger) BurnGovTokensForApp(ctx sdk.Context, contractAddr sdk.
 	}
 	err := MsgBurnGovTokensForApp(m.tokenMintKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
+		return nil, nil, errorsmod.Wrap(err, "BurnGovTokensForApp error")
 	}
 	return nil, nil, nil
 }
@@ -544,7 +546,7 @@ func (m *CustomMessenger) AddESMTriggerParams(ctx sdk.Context, contractAddr sdk.
 	}
 	err := MsgAddESMTriggerParams(m.esmKeeper, ctx, contractAddr, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "BurnGovTokensForApp error")
+		return nil, nil, errorsmod.Wrap(err, "BurnGovTokensForApp error")
 	}
 	return nil, nil, nil
 }
@@ -564,14 +566,14 @@ func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAdd
 		if contractAddr.String() != comdex1[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}
-	}else if ctx.ChainID() == "comdex-test3" {
+	} else if ctx.ChainID() == "comdex-test3" {
 		if contractAddr.String() != testnet3[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}
 	}
 	err := MsgAddEmissionRewards(m.vaultKeeper, ctx, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "Emission rewards error")
+		return nil, nil, errorsmod.Wrap(err, "Emission rewards error")
 	}
 	return nil, nil, nil
 }
@@ -588,7 +590,7 @@ func (m *CustomMessenger) ExecuteAddEmissionPoolRewards(ctx sdk.Context, contrac
 	}
 	err := MsgAddEmissionPoolRewards(m.liquiditykeeper, ctx, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "Emission pool rewards error")
+		return nil, nil, errorsmod.Wrap(err, "Emission pool rewards error")
 	}
 	return nil, nil, nil
 }
@@ -625,7 +627,7 @@ func (m *CustomMessenger) ExecuteFoundationEmission(ctx sdk.Context, contractAdd
 	}
 	err := MsgFoundationEmission(m.tokenMintKeeper, ctx, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+		return nil, nil, errorsmod.Wrap(err, "Foundation Emission rewards error")
 	}
 	return nil, nil, nil
 }
@@ -652,7 +654,7 @@ func (m *CustomMessenger) ExecuteMsgRebaseMint(ctx sdk.Context, contractAddr sdk
 	}
 	err := MsgRebaseMint(m.tokenMintKeeper, ctx, a)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "Foundation Emission rewards error")
+		return nil, nil, errorsmod.Wrap(err, "Foundation Emission rewards error")
 	}
 	return nil, nil, nil
 }
@@ -679,7 +681,7 @@ func (m *CustomMessenger) ExecuteMsgGetSurplusFund(ctx sdk.Context, contractAddr
 	}
 	err := MsgGetSurplusFund(m.collectorKeeper, ctx, a, contractAddr)
 	if err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "Execute surplus fund rewards error")
+		return nil, nil, errorsmod.Wrap(err, "Execute surplus fund rewards error")
 	}
 	return nil, nil, nil
 }

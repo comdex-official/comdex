@@ -3,16 +3,16 @@ package keeper
 import (
 	"fmt"
 
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
 
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	"github.com/comdex-official/comdex/x/bandoracle/expected"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 

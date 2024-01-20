@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
@@ -31,10 +31,10 @@ func (m *MsgLiquidateVaultRequest) Type() string {
 
 func (m *MsgLiquidateVaultRequest) ValidateBasic() error {
 	if m.AppId == 0 {
-		return errors.Wrap(ErrAppIDInvalid, "app_id cannot be zero")
+		return errorsmod.Wrap(ErrAppIDInvalid, "app_id cannot be zero")
 	}
 	if m.VaultId == 0 {
-		return errors.Wrap(ErrVaultIDInvalid, "vault_id cannot be nil")
+		return errorsmod.Wrap(ErrVaultIDInvalid, "vault_id cannot be nil")
 	}
 
 	return nil
@@ -73,7 +73,7 @@ func (m *MsgLiquidateBorrowRequest) Type() string {
 
 func (m *MsgLiquidateBorrowRequest) ValidateBasic() error {
 	if m.BorrowId == 0 {
-		return errors.Wrap(ErrVaultIDInvalid, "borrow_id cannot be zero")
+		return errorsmod.Wrap(ErrVaultIDInvalid, "borrow_id cannot be zero")
 	}
 
 	return nil

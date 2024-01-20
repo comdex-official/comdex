@@ -1,8 +1,10 @@
 package keeper
 
 import (
-	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
+	sdkmath "cosmossdk.io/math"
 	"time"
+
+	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
 
 	utils "github.com/comdex-official/comdex/types"
 
@@ -68,7 +70,7 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 	//Premium : Initial Price i.e price of the collateral at which the auction will start
 	//Discount: Final Price , i.e less than the oracle price of the collateral asset and at this , auction would end
 	//Decrement Factor:     Linear decrease in the price of the collateral every block is governed by this.
-	CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
+	CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdkmath.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
 
 	// CollateralTokenEndPrice := k.getOutflowTokenEndPrice(CollateralTokenInitialPrice, dutchAuctionParams.Cusp)
 	auctionParams, _ := k.GetAuctionParams(ctx)
@@ -79,8 +81,8 @@ func (k Keeper) DutchAuctionActivator(ctx sdk.Context, liquidationData liquidati
 		CollateralToken:             liquidationData.CollateralToken,
 		DebtToken:                   liquidationData.TargetDebt,
 		CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
-		CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
-		DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
+		CollateralTokenOraclePrice:  sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataCollateral.Twa))),
+		DebtTokenOraclePrice:        sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataDebt.Twa))),
 		LockedVaultId:               liquidationData.LockedVaultId,
 		StartTime:                   ctx.BlockTime(),
 		EndTime:                     ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
@@ -122,8 +124,8 @@ func (k Keeper) EnglishAuctionActivator(ctx sdk.Context, liquidationData liquida
 		CollateralToken: liquidationData.CollateralToken,
 		DebtToken:       liquidationData.TargetDebt,
 		// CollateralTokenAuctionPrice: CollateralTokenInitialPrice,
-		// CollateralTokenOraclePrice:  sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa))),
-		// DebtTokenOraclePrice:        sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa))),
+		// CollateralTokenOraclePrice:  sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataCollateral.Twa))),
+		// DebtTokenOraclePrice:        sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataDebt.Twa))),
 		LockedVaultId:     liquidationData.LockedVaultId,
 		StartTime:         ctx.BlockTime(),
 		EndTime:           ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
@@ -263,7 +265,7 @@ func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction)
 	//Premium : Initial Price i.e price of the collateral at which the auction will start
 	//Discount: Final Price , i.e less than the oracle price of the collateral asset and at this , auction would end
 	//Decrement Factor:     Linear decrease in the price of the collateral every block is governed by this.
-	CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdk.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
+	CollateralTokenInitialPrice := k.GetCollalteralTokenInitialPrice(sdkmath.NewIntFromUint64(twaDataCollateral.Twa), dutchAuctionParams.Premium)
 	// CollateralTokenEndPrice := k.getOutflowTokenEndPrice(CollateralTokenInitialPrice, dutchAuctionParams.Cusp)
 
 	//Saving liquidation data to the auction struct
@@ -271,8 +273,8 @@ func (k Keeper) RestartDutchAuction(ctx sdk.Context, dutchAuction types.Auction)
 
 	dutchAuction.CollateralTokenAuctionPrice = CollateralTokenInitialPrice
 	dutchAuction.CollateralTokenInitialPrice = CollateralTokenInitialPrice
-	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
-	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
+	dutchAuction.CollateralTokenOraclePrice = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataCollateral.Twa)))
+	dutchAuction.DebtTokenOraclePrice = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataDebt.Twa)))
 	dutchAuction.StartTime = ctx.BlockTime()
 	dutchAuction.EndTime = ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds))
 
@@ -305,10 +307,10 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auction) 
 	}
 
 	//Now calculating the auction price of the Collateral Token
-	dutchAuction.CollateralTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataCollateral.Twa)))
-	dutchAuction.DebtTokenOraclePrice = sdk.NewDecFromInt(sdk.NewInt(int64(twaDataDebt.Twa)))
+	dutchAuction.CollateralTokenOraclePrice = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataCollateral.Twa)))
+	dutchAuction.DebtTokenOraclePrice = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(twaDataDebt.Twa)))
 
-	numerator := dutchAuction.CollateralTokenInitialPrice.Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
+	numerator := dutchAuction.CollateralTokenInitialPrice.Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(auctionParams.AuctionDurationSeconds))) //cmdx
 	CollateralTokenAuctionEndPrice := k.GetCollateralTokenEndPrice(dutchAuction.CollateralTokenInitialPrice, dutchAuctionParams.Discount)
 	denominator := dutchAuction.CollateralTokenInitialPrice.Sub(CollateralTokenAuctionEndPrice)
 	timeToReachZeroPrice := numerator.Quo(denominator)
@@ -324,7 +326,7 @@ func (k Keeper) UpdateDutchAuction(ctx sdk.Context, dutchAuction types.Auction) 
 	// timeDifference = 33.3- 0 = 33.3
 	// resultantPrice = 1.2 *33.3
 	// currentPrice = 1.2*33.3/33.3 = 1.2 unit
-	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenInitialPrice, sdk.NewInt(timeToReachZeroPrice.TruncateInt64()), sdk.NewInt(int64(timeElapsed.Seconds())))
+	collateralTokenAuctionPrice := k.GetPriceFromLinearDecreaseFunction(dutchAuction.CollateralTokenInitialPrice, sdkmath.NewInt(timeToReachZeroPrice.TruncateInt64()), sdkmath.NewInt(int64(timeElapsed.Seconds())))
 	dutchAuction.CollateralTokenAuctionPrice = collateralTokenAuctionPrice
 
 	err := k.SetAuction(ctx, dutchAuction)
@@ -496,7 +498,7 @@ func (k Keeper) TriggerEsm(ctx sdk.Context, auctionData types.Auction, liquidati
 		tokensToTransfer = sdk.NewCoin(auctionData.DebtToken.Denom, liquidationData.FeeToBeCollected)
 		//burning rest collected tokens
 		tokensToBurn := debtCollected.Amount.Sub(liquidationData.FeeToBeCollected)
-		if tokensToBurn.GT(sdk.ZeroInt()) {
+		if tokensToBurn.GT(sdkmath.ZeroInt()) {
 			err := k.bankKeeper.BurnCoins(ctx, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, tokensToBurn)))
 			if err != nil {
 				return err
@@ -541,7 +543,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 		_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {
 			if auction.CollateralTokenOraclePrice.GT(auction.CollateralTokenAuctionPrice) {
 				premium := (auction.CollateralTokenOraclePrice.Sub(auction.CollateralTokenAuctionPrice)).Quo(auction.CollateralTokenOraclePrice)
-				premiumPerc := premium.Mul(sdk.NewDecFromInt(sdk.NewInt(100)))
+				premiumPerc := premium.Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(100)))
 				biddingData, found := k.GetUserLimitBidDataByPremium(ctx, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
 				if !found {
 					return nil
@@ -580,7 +582,7 @@ func (k Keeper) LimitOrderBid(ctx sdk.Context) error {
 							return err
 						}
 						debtAmount := individualBids.DebtToken.Amount
-						individualBids.DebtToken.Amount = sdk.ZeroInt()
+						individualBids.DebtToken.Amount = sdkmath.ZeroInt()
 						individualBids.BiddingId = append(individualBids.BiddingId, biddingId)
 						k.SetUserLimitBidData(ctx, individualBids, auction.DebtAssetId, auction.CollateralAssetId, premiumPerc.TruncateInt())
 						// delete limit order bid

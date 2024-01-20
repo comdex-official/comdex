@@ -1,13 +1,16 @@
 package app
 
 import (
-	"cosmossdk.io/math"
 	"encoding/json"
-	dbm "github.com/cometbft/cometbft-db"
+	"testing"
+	"time"
+
+	"cosmossdk.io/log"
+	sdkmath "cosmossdk.io/math"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+	dbm "github.com/cosmos/cosmos-db"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -18,8 +21,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
+
 	// simappparams "cosmossdk.io/simapp/params"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 )
@@ -55,7 +57,7 @@ func MakeTestEncodingConfig() moduletestutil.TestEncodingConfig {
 func setup(t *testing.T, withGenesis bool) (*App, GenesisState) {
 	db := dbm.NewMemDB()
 	//encCdc := MakeTestEncodingConfig()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
+	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, EmptyWasmOpts)
 	if withGenesis {
 		return app, NewDefaultGenesisState(app.AppCodec())
 	}
@@ -79,7 +81,7 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin("ucmdx", sdkmath.NewInt(100000000000000))),
 	}
 
 	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
@@ -97,25 +99,22 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-			Time:            time.Now().UTC(),
-			InitialHeight:   1,
-		},
-	)
+	_, err = app.InitChain(&abci.RequestInitChain{
+		ChainId:         app.ChainID(),
+		Time:            time.Now().UTC(),
+		Validators:      []abci.ValidatorUpdate{},
+		ConsensusParams: DefaultConsensusParams,
+		InitialHeight:   app.LastBlockHeight() + 1,
+		AppStateBytes:   stateBytes,
+	})
+	require.NoError(t, err)
 
-	// commit genesis changes
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+	_, err = app.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height:             app.LastBlockHeight() + 1,
-		AppHash:            app.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
+		Hash:               app.LastCommitID().Hash,
 		NextValidatorsHash: valSet.Hash(),
-		Time:               time.Now().UTC(),
-	}})
+	})
+	require.NoError(t, err)
 
 	return app
 }
@@ -147,15 +146,15 @@ func genesisStateWithValSet(t *testing.T,
 			Jailed:            false,
 			Status:            stakingtypes.Bonded,
 			Tokens:            bondAmt,
-			DelegatorShares:   math.LegacyOneDec(),
+			DelegatorShares:   sdkmath.LegacyOneDec(),
 			Description:       stakingtypes.Description{},
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
-			Commission:        stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
-			MinSelfDelegation: math.ZeroInt(),
+			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
+			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), math.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec()))
 
 	}
 

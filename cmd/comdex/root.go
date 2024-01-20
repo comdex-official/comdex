@@ -7,16 +7,22 @@ import (
 	"path/filepath"
 	"time"
 
+	storetypes "cosmossdk.io/store/types"
+	confixcmd "cosmossdk.io/tools/confix/cmd"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/prometheus/client_golang/prometheus"
 
-	tmdb "github.com/cometbft/cometbft-db"
-	tmcfg "github.com/cometbft/cometbft/config"
+	"cosmossdk.io/log"
+	"cosmossdk.io/store"
+	"cosmossdk.io/store/snapshots"
+	snapshottypes "cosmossdk.io/store/snapshots/types"
+	cmtcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
-	"github.com/cometbft/cometbft/libs/log"
 	tmtypes "github.com/cometbft/cometbft/types"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -28,17 +34,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/snapshots"
-	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
@@ -60,9 +64,11 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 
 	cobra.EnableCommandSorting = false
 	root := &cobra.Command{
-		Use:   "comdex",
-		Short: "Comdex - DeFi Infrastructure layer for the Cosmos ecosystem",
+		Use:           "comdex",
+		Short:         "Comdex - DeFi Infrastructure layer for the Cosmos ecosystem",
+		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			initClientCtx = initClientCtx.WithCmdContext(cmd.Context())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -70,6 +76,25 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 			initClientCtx, err = config.ReadFromClientConfig(initClientCtx)
 			if err != nil {
 				return err
+			}
+			// This needs to go after ReadFromClientConfig, as that function
+			// sets the RPC client needed for SIGN_MODE_TEXTUAL. This sign mode
+			// is only available if the client is online.
+			if !initClientCtx.Offline {
+				enabledSignModes := append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL)
+				txConfigOpts := tx.ConfigOptions{
+					EnabledSignModes:           enabledSignModes,
+					TextualCoinMetadataQueryFn: txmodule.NewGRPCCoinMetadataQueryFn(initClientCtx),
+				}
+				txConfig, err := tx.NewTxConfigWithOptions(
+					initClientCtx.Codec,
+					txConfigOpts,
+				)
+				if err != nil {
+					return err
+				}
+
+				initClientCtx = initClientCtx.WithTxConfig(txConfig)
 			}
 
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
@@ -79,12 +104,12 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 			timeoutCommit := 2 * time.Second
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig(timeoutCommit)
+			customCMTConfig := initCometBFTConfig(timeoutCommit)
 
 			// Force faster block times
 			os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCMTConfig)
 		},
 	}
 
@@ -92,8 +117,8 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 	return root, encodingConfig
 }
 
-func initTendermintConfig(timeoutCommit time.Duration) *tmcfg.Config {
-	cfg := tmcfg.DefaultConfig()
+func initCometBFTConfig(timeoutCommit time.Duration) *cmtcfg.Config {
+	cfg := cmtcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory
 	// cfg.P2P.MaxNumInboundPeers = 100
@@ -131,28 +156,27 @@ func initAppConfig() (string, interface{}) {
 func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
-	
-	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
+
+	// gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator),
-		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
+		// genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator, txConfig.SigningContext().ValidatorAddressCodec()),
+		// genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, txConfig.SigningContext().ValidatorAddressCodec()),
 		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
 		AddGenesisAccountCmd(comdex.DefaultNodeHome),
-		// AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(comdex.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		MigrateStoreCmd(),
 		debug.Cmd(),
-		config.Cmd(),
+		confixcmd.ConfigCommand(),
 	)
 
 	server.AddCommands(rootCmd, comdex.DefaultNodeHome, appCreatorFunc, appExportFunc, addModuleInitFlags)
 	rootCmd.AddCommand(
-		rpc.StatusCommand(),
+		server.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(comdex.DefaultNodeHome),
+		keys.Commands(),
 	)
 }
 
@@ -171,11 +195,13 @@ func queryCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authcli.GetAccountCmd(),
 		rpc.ValidatorCommand(),
-		rpc.BlockCommand(),
-		authcli.QueryTxsByEventsCmd(),
-		authcli.QueryTxCmd(),
+		rpc.QueryEventForTxCmd(),
+		server.QueryBlockCmd(),
+		authcmd.QueryTxsByEventsCmd(),
+		server.QueryBlocksCmd(),
+		authcmd.QueryTxCmd(),
+		server.QueryBlockResultsCmd(),
 	)
 
 	comdex.ModuleBasics.AddQueryCommands(cmd)
@@ -202,6 +228,7 @@ func txCommand() *cobra.Command {
 		authcli.GetBroadcastCommand(),
 		authcli.GetEncodeCommand(),
 		authcli.GetDecodeCommand(),
+		authcmd.GetSimulateCmd(),
 	)
 
 	comdex.ModuleBasics.AddTxCommands(cmd)
@@ -210,8 +237,8 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
-func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options servertypes.AppOptions) servertypes.Application {
-	var cache sdk.MultiStorePersistentCache
+func appCreatorFunc(logger log.Logger, db dbm.DB, tracer io.Writer, options servertypes.AppOptions) servertypes.Application {
+	var cache storetypes.MultiStorePersistentCache
 	if cast.ToBool(options.Get(server.FlagInterBlockCache)) {
 		cache = store.NewCommitKVStoreCacheManager()
 	}
@@ -227,7 +254,7 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(options.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := tmdb.NewDB("metadata", tmdb.GoLevelDBBackend, snapshotDir)
+	snapshotDB, err := dbm.NewDB("metadata", dbm.GoLevelDBBackend, snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -262,7 +289,6 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
 		comdex.MakeEncodingConfig(),
 		options,
-		comdex.GetWasmEnabledProposals(),
 		wasmOpts,
 		baseapp.SetPruning(pruningOptions),
 		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
@@ -277,7 +303,7 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	)
 }
 
-func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
+func appExportFunc(logger log.Logger, db dbm.DB, tracer io.Writer, height int64,
 	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	config := comdex.MakeEncodingConfig()
@@ -289,13 +315,13 @@ func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64
 	var emptyWasmOpts []wasm.Option
 	var app *comdex.App
 	if height != -1 {
-		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
+		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 
 		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
+		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, emptyWasmOpts)
 	}
 
 	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)

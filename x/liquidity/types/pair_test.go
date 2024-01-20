@@ -1,9 +1,9 @@
 package types_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
@@ -51,7 +51,7 @@ func TestPair_Validate(t *testing.T) {
 		{
 			"",
 			func(pair *types.Pair) {
-				p := sdk.NewDec(-1)
+				p := sdkmath.LegacyNewDec(-1)
 				pair.LastPrice = &p
 			},
 			"last price must be positive: -1.000000000000000000",

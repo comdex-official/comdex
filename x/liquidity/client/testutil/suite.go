@@ -10,16 +10,15 @@ import (
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 
+	pruningtypes "cosmossdk.io/store/pruning/types"
 	"github.com/comdex-official/comdex/testutil/network"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	dbm "github.com/cometbft/cometbft-db"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 )
 
 type LiquidityIntegrationTestSuite struct {
@@ -37,7 +36,7 @@ func NewAppConstructor() networkI.AppConstructor {
 	return func(val networkI.ValidatorI) servertypes.Application {
 		return chain.New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
-			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.GetWasmEnabledProposals(), chain.EmptyWasmOpts,
+			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.EmptyWasmOpts,
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 		)
@@ -52,7 +51,7 @@ func (s *LiquidityIntegrationTestSuite) SetupSuite() {
 	}
 
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.msgServer = liquidityKeeper.NewMsgServerImpl(s.app.LiquidityKeeper)
 
 	cfg := network.DefaultConfig()

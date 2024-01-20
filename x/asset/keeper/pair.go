@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -66,10 +67,10 @@ func (k Keeper) GetPair(ctx sdk.Context, id uint64) (pair types.Pair, found bool
 func (k Keeper) GetPairs(ctx sdk.Context) (pairs []types.Pair) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.PairKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.PairKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

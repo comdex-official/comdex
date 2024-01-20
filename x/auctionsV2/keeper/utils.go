@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -222,10 +223,10 @@ func (k Keeper) GetAuctionHistorical(ctx sdk.Context, auctionID uint64) (auction
 func (k Keeper) GetAuctions(ctx sdk.Context) (auctions []types.Auction) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AuctionKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AuctionKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -244,10 +245,10 @@ func (k Keeper) GetAuctions(ctx sdk.Context) (auctions []types.Auction) {
 func (k Keeper) GetAuctionHistoricals(ctx sdk.Context) (auctions []types.AuctionHistorical) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AuctionHistoricalKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AuctionHistoricalKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -266,10 +267,10 @@ func (k Keeper) GetAuctionHistoricals(ctx sdk.Context) (auctions []types.Auction
 func (k Keeper) GetUserBids(ctx sdk.Context) (userBids []types.Bid) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.UserBidKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.UserBidKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -327,10 +328,10 @@ func (k Keeper) SetLimitBidProtocolData(ctx sdk.Context, data types.LimitBidProt
 func (k Keeper) GetAllLimitBidProtocolData(ctx sdk.Context) (bidData []types.LimitBidProtocolData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.MarketBidProtocolKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.MarketBidProtocolKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

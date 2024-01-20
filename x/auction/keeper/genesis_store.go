@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -33,7 +34,7 @@ func (k Keeper) SetGenDutchAuction(ctx sdk.Context, auction auctiontypes.DutchAu
 	store.Set(key, value)
 }
 
-func (k Keeper) SetGenProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdk.Dec) {
+func (k Keeper) SetGenProtocolStatistics(ctx sdk.Context, appID, assetID uint64, amount sdkmath.LegacyDec) {
 	var (
 		store = k.Store(ctx)
 		key   = auctiontypes.ProtocolStatisticsKey(appID, assetID)

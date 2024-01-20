@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"time"
 
@@ -63,7 +64,7 @@ func (m MsgCreateGauge) ValidateBasic() error {
 		return fmt.Errorf("invalid coin amount: %s < 0", m.DepositAmount.Amount)
 	}
 
-	if m.DepositAmount.Amount.LT(sdk.NewIntFromUint64(m.TotalTriggers)) {
+	if m.DepositAmount.Amount.LT(sdkmath.NewIntFromUint64(m.TotalTriggers)) {
 		return fmt.Errorf("deposit amount : %s smaller than total triggers %d", m.DepositAmount.Amount, m.TotalTriggers)
 	}
 

@@ -17,12 +17,12 @@ message Locker {
       (gogoproto.moretags) = "yaml:\"depositor\""
   ]; 
   string returns_accumulated = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"returns_accumulated\"",
     (gogoproto.nullable)   = false
   ];
   string net_balance = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"net_balance\"",
     (gogoproto.nullable)   = false
   ];
@@ -68,12 +68,12 @@ message UserAppAssetLockerMapping{
 message UserTxData{
   string tx_type =1 [(gogoproto.moretags) = "yaml:\"tx_type\""];
   string amount = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
   string balance = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"balance\"",
     (gogoproto.nullable)   = false
   ];
@@ -92,7 +92,7 @@ message LockerLookupTableData {
   (gogoproto.moretags) = "yaml:\"addresses\""
    ];
    string deposited_amount = 4 [
-     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+     (gogoproto.customtype) = "cosmossdk.io/math.Int",
      (gogoproto.moretags)   = "yaml:\"deposited_amount\"",
      (gogoproto.nullable)   = false
    ]; 
@@ -113,7 +113,7 @@ message LockedDepositedAmountDataMap
 {
   uint64 asset_id = 1 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
   string deposited_amount= 2 [ (gogoproto.moretags) = "yaml:\"deposited_amount\"",
-         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.customtype) = "cosmossdk.io/math.Int",
          (gogoproto.nullable)   = false];
 }
 
@@ -121,6 +121,6 @@ message LockerTotalRewardsByAssetAppWise {
   uint64 app_id = 1 [ (gogoproto.moretags) = "yaml:\"app_id\"" ];
   uint64 asset_id = 2 [ (gogoproto.moretags) = "yaml:\"asset_id\"" ];
   string total_rewards= 3 [ (gogoproto.moretags) = "yaml:\"total_rewards\"",
-         (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+         (gogoproto.customtype) = "cosmossdk.io/math.Int",
          (gogoproto.nullable)   = false];
 }

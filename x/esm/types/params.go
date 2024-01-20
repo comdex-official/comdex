@@ -1,10 +1,11 @@
 package types
 
 import (
+	storetypes "cosmossdk.io/store/types"
+	errorsmod "cosmossdk.io/errors"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -16,10 +17,10 @@ var (
 )
 
 const (
-	DepositESMGas              = sdk.Gas(36329)
-	ExecuteESMGas              = sdk.Gas(23554)
-	MsgKillSwitchGas           = sdk.Gas(76473)
-	MsgCollateralRedemptionGas = sdk.Gas(37559)
+	DepositESMGas              = storetypes.Gas(36329)
+	ExecuteESMGas              = storetypes.Gas(23554)
+	MsgKillSwitchGas           = storetypes.Gas(76473)
+	MsgCollateralRedemptionGas = storetypes.Gas(37559)
 )
 
 func NewParams(admin []string) Params {
@@ -52,7 +53,7 @@ func (k Params) Validate() error {
 	}
 	for _, addr := range k.Admin {
 		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
-			return errors.Wrapf(err, "invalid admin %s", addr)
+			return errorsmod.Wrapf(err, "invalid admin %s", addr)
 		}
 	}
 

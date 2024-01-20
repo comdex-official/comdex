@@ -10,7 +10,6 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	chain "github.com/comdex-official/comdex/app"
@@ -38,7 +37,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.lockerKeeper = s.app.LockerKeeper
 	s.assetKeeper = s.app.AssetKeeper
 	s.querier = lockerKeeper.QueryServer{Keeper: s.lockerKeeper}

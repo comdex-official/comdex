@@ -1,6 +1,9 @@
 package v5
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
@@ -21,12 +24,11 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 )
 
 func InitializeStates(
@@ -41,7 +43,7 @@ func InitializeStates(
 ) {
 	genesisToken := assettypes.MintGenesisToken{
 		AssetId:       9,
-		GenesisSupply: sdk.NewIntFromUint64(500000000000000),
+		GenesisSupply: sdkmath.NewIntFromUint64(500000000000000),
 		IsGovToken:    true,
 		Recipient:     "comdex1tadhnvwa0sqzwr3m60f7dsjw4ua77qsz3ptcyw",
 	}
@@ -49,8 +51,8 @@ func InitializeStates(
 	gToken = append(gToken, genesisToken)
 
 	apps := []assettypes.AppData{
-		{Name: "cswap", ShortName: "cswap", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
-		{Name: "harbor", ShortName: "hbr", MinGovDeposit: sdk.NewInt(10000000000), GovTimeInSeconds: 259200, GenesisToken: gToken},
+		{Name: "cswap", ShortName: "cswap", MinGovDeposit: sdkmath.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}},
+		{Name: "harbor", ShortName: "hbr", MinGovDeposit: sdkmath.NewInt(10000000000), GovTimeInSeconds: 259200, GenesisToken: gToken},
 	}
 	for _, app := range apps {
 		err := assetKeeper.AddAppRecords(ctx, app)
@@ -61,16 +63,16 @@ func InitializeStates(
 	assetKeeper.SetGenesisTokenForApp(ctx, 2, 9)
 
 	assets := []assettypes.Asset{
-		{Name: "ATOM", Denom: "ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
-		{Name: "CMDX", Denom: "ucmdx", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
-		{Name: "CMST", Denom: "ucmst", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: true, IsCdpMintable: true},
-		{Name: "OSMO", Denom: "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
-		{Name: "CATOM", Denom: "ucatom", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
-		{Name: "CCMDX", Denom: "uccmdx", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
-		{Name: "CCMST", Denom: "uccmst", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
-		{Name: "COSMO", Denom: "ucosmo", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
-		{Name: "HARBOR", Denom: "uharbor", Decimals: sdk.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: false},
-		{Name: "AXLUSDC", Denom: "ibc/E1616E7C19EA474C565737709A628D6F8A23FF9D3E9A7A6871306CF5E0A5341E", Decimals: sdk.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
+		{Name: "ATOM", Denom: "ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352", Decimals: sdkmath.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
+		{Name: "CMDX", Denom: "ucmdx", Decimals: sdkmath.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
+		{Name: "CMST", Denom: "ucmst", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: true, IsCdpMintable: true},
+		{Name: "OSMO", Denom: "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B", Decimals: sdkmath.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
+		{Name: "CATOM", Denom: "ucatom", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
+		{Name: "CCMDX", Denom: "uccmdx", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
+		{Name: "CCMST", Denom: "uccmst", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
+		{Name: "COSMO", Denom: "ucosmo", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: true},
+		{Name: "HARBOR", Denom: "uharbor", Decimals: sdkmath.NewInt(1000000), IsOnChain: true, IsOraclePriceRequired: false, IsCdpMintable: false},
+		{Name: "AXLUSDC", Denom: "ibc/E1616E7C19EA474C565737709A628D6F8A23FF9D3E9A7A6871306CF5E0A5341E", Decimals: sdkmath.NewInt(1000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false},
 	}
 
 	for _, asset := range assets {
@@ -97,8 +99,8 @@ func InitializeStates(
 	// add extended pairs
 	extPairs := []*bindings.MsgAddExtendedPairsVault{
 		{
-			AppID: 2, PairID: 4, StabilityFee: sdk.ZeroDec(), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.ZeroDec(),
-			DrawDownFee: sdk.MustNewDecFromStr("0.001"), IsVaultActive: true, DebtCeiling: sdk.NewInt(40000000000000), DebtFloor: sdk.NewInt(1000000), IsStableMintVault: true, MinCr: sdk.MustNewDecFromStr("1"),
+			AppID: 2, PairID: 4, StabilityFee: sdkmath.LegacyZeroDec(), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyZeroDec(),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.001"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(40000000000000), DebtFloor: sdkmath.NewInt(1000000), IsStableMintVault: true, MinCr: sdkmath.LegacyMustNewDecFromStr("1"),
 			PairName: "AXL-USDC-CMST", AssetOutOraclePrice: false, AssetOutPrice: 1000000, MinUsdValueLeft: 10000000000,
 		},
 	}
@@ -114,12 +116,12 @@ func InitializeStates(
 		AppID:            2,
 		CollectorAssetID: 3,
 		SecondaryAssetID: 9,
-		SurplusThreshold: sdk.NewInt(50000000000),
-		DebtThreshold:    sdk.NewInt(0),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.00"),
-		LotSize:          sdk.NewInt(10000000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(1000000000000),
+		SurplusThreshold: sdkmath.NewInt(50000000000),
+		DebtThreshold:    sdkmath.NewInt(0),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.00"),
+		LotSize:          sdkmath.NewInt(10000000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(1000000000000),
 	}
 
 	err := collectorKeeper.WasmSetCollectorLookupTable(ctx, &collector)
@@ -133,8 +135,8 @@ func InitializeStates(
 		AppID:                  2,
 		AuctionDurationSeconds: 21600,
 		BidDurationSeconds:     3600,
-		Buffer:                 sdk.MustNewDecFromStr("1.2"),
-		Cusp:                   sdk.MustNewDecFromStr("0.75"),
+		Buffer:                 sdkmath.LegacyMustNewDecFromStr("1.2"),
+		Cusp:                   sdkmath.LegacyMustNewDecFromStr("0.75"),
 		DebtID:                 2,
 		DutchID:                3,
 		PriceFunctionType:      1,
@@ -232,7 +234,7 @@ func CreateUpgradeHandler(
 	rewardsKeeper rewardskeeper.Keeper,
 	liquidationKeeper liquidationkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// Refs:
 		// - https://docs.cosmos.network/master/building-modules/upgrade.html#registering-migrations
 		// - https://docs.cosmos.network/master/migrations/chain-upgrade-guide-044.html#chain-upgrade

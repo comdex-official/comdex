@@ -1,15 +1,16 @@
 package locker
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/comdex-official/comdex/x/locker/keeper"
 	"github.com/comdex-official/comdex/x/locker/types"
 )
 
 // NewHandler ...
-func NewHandler(k keeper.Keeper) sdk.Handler {
+func NewHandler(k keeper.Keeper) bam.MsgServiceHandler {
 	server := keeper.NewMsgServer(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
@@ -32,7 +33,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := server.MsgLockerRewardCalc(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, sdkerrors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
+			return nil, errorsmod.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}
 	}
 }

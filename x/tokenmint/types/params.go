@@ -1,7 +1,7 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -9,7 +9,7 @@ import (
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	TokenmintGas = sdk.Gas(36329)
+	TokenmintGas = storetypes.Gas(36329)
 )
 
 // ParamKeyTable the param key table for launch module.

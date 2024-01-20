@@ -1,11 +1,13 @@
 package v9
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func UpdateDenomAndAddAsset(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
@@ -15,7 +17,7 @@ func UpdateDenomAndAddAsset(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 		assetKeeper.SetAsset(ctx, asset)
 	}
 
-	assetGDAI := assettypes.Asset{Name: "GDAI", Denom: "ibc/109DD45CF4093BEB472784A0C5B5F4643140900020B74B102B842A4BE2AE45DA", Decimals: sdk.NewInt(1000000000000000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false}
+	assetGDAI := assettypes.Asset{Name: "GDAI", Denom: "ibc/109DD45CF4093BEB472784A0C5B5F4643140900020B74B102B842A4BE2AE45DA", Decimals: sdkmath.NewInt(1000000000000000000), IsOnChain: false, IsOraclePriceRequired: true, IsCdpMintable: false}
 
 	err := assetKeeper.AddAssetRecords(ctx, assetGDAI)
 	if err != nil {
@@ -60,7 +62,7 @@ func CreateUpgradeHandlerV900(
 	configurator module.Configurator,
 	assetKeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return nil, err

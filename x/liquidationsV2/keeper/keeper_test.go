@@ -1,6 +1,9 @@
 package keeper_test
 
 import (
+	"testing"
+
+	sdkmath "cosmossdk.io/math"
 	chain "github.com/comdex-official/comdex/app"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -15,10 +18,8 @@ import (
 	markettypes "github.com/comdex-official/comdex/x/market/types"
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaultTypes "github.com/comdex-official/comdex/x/vault/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type KeeperTestSuite struct {
@@ -47,7 +48,7 @@ func TestKeeperTestSuite(t *testing.T) {
 
 func (s *KeeperTestSuite) SetupTest() {
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.vaultKeeper = s.app.VaultKeeper
 	s.liquidationKeeper = s.app.NewliqKeeper
 	s.assetKeeper = s.app.AssetKeeper
@@ -67,7 +68,7 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, twa uint64) uint64 
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 		IsCdpMintable:         true,
@@ -97,16 +98,16 @@ func (s *KeeperTestSuite) CreateNewAsset(name, denom string, twa uint64) uint64 
 	return assetID
 }
 
-func newInt(i int64) sdk.Int {
-	return sdk.NewInt(i)
+func newInt(i int64) sdkmath.Int {
+	return sdkmath.NewInt(i)
 }
 
-func newDec(i string) sdk.Dec {
-	dec, _ := sdk.NewDecFromStr(i)
+func newDec(i string) sdkmath.LegacyDec {
+	dec, _ := sdkmath.LegacyNewDecFromStr(i)
 	return dec
 }
 
-func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64) uint64 {
+func (s *KeeperTestSuite) AddAssetRatesStats(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdkmath.LegacyDec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdkmath.LegacyDec, CAssetID uint64) uint64 {
 	err := s.app.LendKeeper.AddAssetRatesParams(s.ctx, lendtypes.AssetRatesParams{
 		AssetID:              AssetID,
 		UOptimal:             UOptimal,
@@ -132,7 +133,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        shortName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -153,7 +154,7 @@ func (s *KeeperTestSuite) CreateNewApp(appName, shortName string) uint64 {
 	return appID
 }
 
-func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdk.Dec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdk.Dec, CAssetID uint64, moduleName, cPoolName string, assetData []*lendtypes.AssetDataPoolMapping, MinUsdValueLeft uint64, IsIsolated bool) uint64 {
+func (s *KeeperTestSuite) AddAssetRatesPoolPairs(AssetID uint64, UOptimal, Base, Slope1, Slope2 sdkmath.LegacyDec, EnableStableBorrow bool, StableBase, StableSlope1, StableSlope2, LTV, LiquidationThreshold, LiquidationPenalty, LiquidationBonus, ReserveFactor sdkmath.LegacyDec, CAssetID uint64, moduleName, cPoolName string, assetData []*lendtypes.AssetDataPoolMapping, MinUsdValueLeft uint64, IsIsolated bool) uint64 {
 	err := s.app.LendKeeper.AddAssetRatesPoolPairs(s.ctx, lendtypes.AssetRatesPoolPairs{
 		AssetID:              AssetID,
 		UOptimal:             UOptimal,

@@ -1,6 +1,7 @@
 package wasm
 
 import (
+	sdkmath "cosmossdk.io/math"
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
@@ -57,7 +58,7 @@ func NewQueryPlugin(
 	}
 }
 
-func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (sdk.Int, int64, uint64, error) {
+func (qp QueryPlugin) GetAppInfo(ctx sdk.Context, appID uint64) (sdkmath.Int, int64, uint64, error) {
 	MinGovDeposit, GovTimeInSeconds, AssetID, err := qp.assetKeeper.GetAppWasmQuery(ctx, appID)
 	if err != nil {
 		return MinGovDeposit, GovTimeInSeconds, AssetID, nil
@@ -109,7 +110,7 @@ func (qp QueryPlugin) CollectorLookupTableQueryCheck(ctx sdk.Context, appID, col
 	return found, err
 }
 
-func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, DebtCeiling, DebtFloor sdk.Int, PairName string) (found bool, err string) {
+func (qp QueryPlugin) ExtendedPairsVaultRecordsQueryCheck(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdkmath.LegacyDec, DebtCeiling, DebtFloor sdkmath.Int, PairName string) (found bool, err string) {
 	found, err = qp.assetKeeper.WasmAddExtendedPairsVaultRecordsQuery(ctx, appID, pairID, StabilityFee, ClosingFee, DrawDownFee, DebtCeiling, DebtFloor, PairName)
 	return found, err
 }
@@ -209,7 +210,7 @@ func (qp QueryPlugin) WasmGetPools(ctx sdk.Context, appID uint64) (pools []uint6
 
 func (qp QueryPlugin) WasmGetAssetPrice(ctx sdk.Context, assetID uint64) (twa uint64, found bool) {
 	assetTwa, found := qp.marketKeeper.GetTwa(ctx, assetID)
-	if found && assetTwa.IsPriceActive{
+	if found && assetTwa.IsPriceActive {
 		return assetTwa.Twa, true
 	}
 	return 0, false

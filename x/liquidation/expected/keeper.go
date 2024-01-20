@@ -1,8 +1,9 @@
 package expected
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
@@ -15,15 +16,15 @@ import (
 )
 
 type AccountKeeper interface {
-	GetModuleAccount(ctx sdk.Context, name string) authtypes.ModuleAccountI
+	GetModuleAccount(ctx context.Context, name string) sdk.ModuleAccountI
 }
 
 type BankKeeper interface {
-	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	SendCoinsFromModuleToModule(ctx sdk.Context, senderModule string, recipientModule string, amt sdk.Coins) error
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
-	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	BurnCoins(ctx context.Context, name string, coins sdk.Coins) error
+	MintCoins(ctx context.Context, name string, coins sdk.Coins) error
+	SendCoinsFromModuleToModule(ctx context.Context, senderModule string, recipientModule string, amt sdk.Coins) error
+	GetBalance(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin 
+	SendCoinsFromModuleToAccount(ctx context.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
 }
 
 type AssetKeeper interface {
@@ -35,7 +36,7 @@ type AssetKeeper interface {
 
 type VaultKeeper interface {
 	GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData, found bool)
-	CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error)
+	CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdkmath.Int, amountOut sdkmath.Int) (sdkmath.LegacyDec, error)
 	GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found bool)
 	GetVaults(ctx sdk.Context) (vaults []types.Vault)
 	GetIDForVault(ctx sdk.Context) uint64
@@ -43,15 +44,15 @@ type VaultKeeper interface {
 	GetLengthOfVault(ctx sdk.Context) uint64
 	SetLengthOfVault(ctx sdk.Context, length uint64)
 	UpdateAppExtendedPairVaultMappingDataOnMsgCreate(ctx sdk.Context, vaultData types.Vault)
-	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
-	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool)
+	UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool)
+	UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool)
 	DeleteUserVaultExtendedPairMapping(ctx sdk.Context, address string, appID uint64, pairVaultID uint64)
 	DeleteAddressFromAppExtendedPairVaultMapping(ctx sdk.Context, extendedPairID uint64, userVaultID uint64, appMappingID uint64)
 	SetVault(ctx sdk.Context, vault types.Vault)
 }
 
 type MarketKeeper interface {
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error)
 	GetTwa(ctx sdk.Context, id uint64) (twa markettypes.TimeWeightedAverage, found bool)
 }
 
@@ -71,8 +72,8 @@ type LendKeeper interface {
 	GetBorrow(ctx sdk.Context, id uint64) (borrow lendtypes.BorrowAsset, found bool)
 	GetLendPair(ctx sdk.Context, id uint64) (pair lendtypes.Extended_Pair, found bool)
 	GetAssetRatesParams(ctx sdk.Context, assetID uint64) (assetRatesStats lendtypes.AssetRatesParams, found bool)
-	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset, liquidationThreshold sdk.Dec) error
-	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdk.Int, assetIn assettypes.Asset, amountOut sdk.Int, assetOut assettypes.Asset) (sdk.Dec, error)
+	VerifyCollateralizationRatio(ctx sdk.Context, amountIn sdkmath.Int, assetIn assettypes.Asset, amountOut sdkmath.Int, assetOut assettypes.Asset, liquidationThreshold sdkmath.LegacyDec) error
+	CalculateCollateralizationRatio(ctx sdk.Context, amountIn sdkmath.Int, assetIn assettypes.Asset, amountOut sdkmath.Int, assetOut assettypes.Asset) (sdkmath.LegacyDec, error)
 	GetLend(ctx sdk.Context, id uint64) (lend lendtypes.LendAsset, found bool)
 	CreteNewBorrow(ctx sdk.Context, liqBorrow liquidationtypes.LockedVault)
 	GetPool(ctx sdk.Context, id uint64) (pool lendtypes.Pool, found bool)
@@ -88,7 +89,7 @@ type LendKeeper interface {
 	DeleteIDFromAssetStatsMapping(ctx sdk.Context, poolID, assetID, id uint64, typeOfID bool)
 	DeleteBorrowIDFromUserMapping(ctx sdk.Context, owner string, lendID, borrowID uint64)
 	DeleteBorrowInterestTracker(ctx sdk.Context, ID uint64)
-	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool)
+	UpdateBorrowStats(ctx sdk.Context, pair lendtypes.Extended_Pair, isStableBorrow bool, amount sdkmath.Int, inc bool)
 	GetBorrowInterestTracker(ctx sdk.Context, ID uint64) (interest lendtypes.BorrowInterestTracker, found bool)
 	SetBorrowInterestTracker(ctx sdk.Context, interest lendtypes.BorrowInterestTracker)
 	SetAllReserveStatsByAssetID(ctx sdk.Context, allReserveStats lendtypes.AllReserveStats)
@@ -97,6 +98,6 @@ type LendKeeper interface {
 }
 
 type RewardsKeeper interface {
-	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
+	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdkmath.Int, blockHeight int64, lockerBlockTime int64) error
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
 }

@@ -1,17 +1,19 @@
 package v6
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-func Dec(s string) sdk.Dec {
-	dec, err := sdk.NewDecFromStr(s)
+func Dec(s string) sdkmath.LegacyDec {
+	dec, err := sdkmath.LegacyNewDecFromStr(s)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +32,7 @@ func InitializeLendStates(
 	// Add Lend Asset Pair
 
 	// Adding Commodo App
-	app := assettypes.AppData{Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdk.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}}
+	app := assettypes.AppData{Name: "commodo", ShortName: "cmdo", MinGovDeposit: sdkmath.ZeroInt(), GovTimeInSeconds: 0, GenesisToken: []assettypes.MintGenesisToken{}}
 	err := assetKeeper.AddAppRecords(ctx, app)
 	if err != nil {
 		panic(err)
@@ -100,17 +102,17 @@ func InitializeLendStates(
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          1,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          2,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          3,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 
 	assetDataCMDXPool = append(assetDataCMDXPool, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -217,7 +219,7 @@ func InitializeLendStates(
 		AuctionDurationSeconds: 21600,
 		Buffer:                 Dec("1.2"),
 		Cusp:                   Dec("0.7"),
-		Step:                   sdk.NewInt(360),
+		Step:                   sdkmath.NewInt(360),
 		PriceFunctionType:      1,
 		DutchId:                3,
 		BidDurationSeconds:     3600,
@@ -235,7 +237,7 @@ func CreateUpgradeHandler(
 	assetKeeper assetkeeper.Keeper,
 	lendKeeper lendkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running revert of tombstoning")
 
 		ctx.Logger().Info("Running module migrations for v6.0.0...")

@@ -1,7 +1,6 @@
 package rewards
 
 import (
-	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -10,7 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {

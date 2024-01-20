@@ -27,7 +27,7 @@ message AssetPair {
   string denom = 3 [(gogoproto.moretags) = "yaml:\"denom\""];
   string decimals = 4 [
     (gogoproto.moretags) = "yaml:\"decimals\"",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false];
   bool is_on_chain = 5 [(gogoproto.moretags) = "yaml:\"is_on_chain\""];
   bool is_oracle_price_required = 6 [(gogoproto.moretags) = "yaml:\"is_oracle_price_required\""];

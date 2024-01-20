@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	utils "github.com/comdex-official/comdex/types"
 	"github.com/comdex-official/comdex/x/liquidity/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	_ "github.com/stretchr/testify/suite"
 )
 
@@ -28,7 +29,7 @@ func (s *KeeperTestSuite) TestUpdateGenericParams() {
 			appID:  69,
 			Keys:   []string{},
 			Values: []string{},
-			ExpErr: sdkerrors.Wrapf(types.ErrInvalidAppID, "app id 69 not found"),
+			ExpErr: errorsmod.Wrapf(types.ErrInvalidAppID, "app id 69 not found"),
 		},
 		{
 			Name:   "error key-value length mismatch",

@@ -3,6 +3,9 @@ package keeper
 import (
 	"regexp"
 
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -71,10 +74,10 @@ func (k Keeper) GetPairsVault(ctx sdk.Context, id uint64) (pairs types.ExtendedP
 func (k Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -96,10 +99,10 @@ func (k Keeper) GetPairsVaults(ctx sdk.Context) (apps []types.ExtendedPairVault,
 func (k Keeper) WasmExtendedPairByAppQuery(ctx sdk.Context, appID uint64) (extID []uint64, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.PairsVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -153,13 +156,13 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	if DebtFloor.GTE(DebtCeiling) {
 		return types.ErrorDebtFloorIsGreaterThanDebtCeiling
 	}
-	if !(pairVaultBinding.StabilityFee.GTE(sdk.ZeroDec()) && pairVaultBinding.StabilityFee.LT(sdk.OneDec())) {
+	if !(pairVaultBinding.StabilityFee.GTE(sdkmath.LegacyZeroDec()) && pairVaultBinding.StabilityFee.LT(sdkmath.LegacyOneDec())) {
 		return types.ErrorFeeShouldNotBeGTOne
 	}
-	if !(pairVaultBinding.ClosingFee.GTE(sdk.ZeroDec()) && pairVaultBinding.ClosingFee.LT(sdk.OneDec())) {
+	if !(pairVaultBinding.ClosingFee.GTE(sdkmath.LegacyZeroDec()) && pairVaultBinding.ClosingFee.LT(sdkmath.LegacyOneDec())) {
 		return types.ErrorFeeShouldNotBeGTOne
 	}
-	if !(pairVaultBinding.DrawDownFee.GTE(sdk.ZeroDec()) && pairVaultBinding.DrawDownFee.LT(sdk.OneDec())) {
+	if !(pairVaultBinding.DrawDownFee.GTE(sdkmath.LegacyZeroDec()) && pairVaultBinding.DrawDownFee.LT(sdkmath.LegacyOneDec())) {
 		return types.ErrorFeeShouldNotBeGTOne
 	}
 	assetOut, _ := k.GetAsset(ctx, pair.AssetOut)
@@ -200,7 +203,7 @@ func (k Keeper) WasmAddExtendedPairsVaultRecords(ctx sdk.Context, pairVaultBindi
 	return nil
 }
 
-func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdk.Dec, debtCeiling, debtFloor sdk.Int, PairName string) (bool, string) {
+func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pairID uint64, StabilityFee, ClosingFee, DrawDownFee sdkmath.LegacyDec, debtCeiling, debtFloor sdkmath.Int, PairName string) (bool, string) {
 	DebtCeiling := debtCeiling
 	DebtFloor := debtFloor
 
@@ -224,13 +227,13 @@ func (k Keeper) WasmAddExtendedPairsVaultRecordsQuery(ctx sdk.Context, appID, pa
 	if DebtFloor.GTE(DebtCeiling) {
 		return false, types.ErrorDebtFloorIsGreaterThanDebtCeiling.Error()
 	}
-	if !(StabilityFee.GTE(sdk.ZeroDec()) && StabilityFee.LT(sdk.OneDec())) {
+	if !(StabilityFee.GTE(sdkmath.LegacyZeroDec()) && StabilityFee.LT(sdkmath.LegacyOneDec())) {
 		return false, types.ErrorFeeShouldNotBeGTOne.Error()
 	}
-	if !(ClosingFee.GTE(sdk.ZeroDec()) && ClosingFee.LT(sdk.OneDec())) {
+	if !(ClosingFee.GTE(sdkmath.LegacyZeroDec()) && ClosingFee.LT(sdkmath.LegacyOneDec())) {
 		return false, types.ErrorFeeShouldNotBeGTOne.Error()
 	}
-	if !(DrawDownFee.GTE(sdk.ZeroDec()) && DrawDownFee.LT(sdk.OneDec())) {
+	if !(DrawDownFee.GTE(sdkmath.LegacyZeroDec()) && DrawDownFee.LT(sdkmath.LegacyOneDec())) {
 		return false, types.ErrorFeeShouldNotBeGTOne.Error()
 	}
 
@@ -254,7 +257,7 @@ func (k Keeper) WasmUpdatePairsVault(ctx sdk.Context, updatePairVault *bindings.
 				// do nothing
 				ExtPairVaultData.BlockHeight = ctx.BlockHeight()
 				ExtPairVaultData.BlockTime = ctx.BlockTime()
-			} else if ExtPairVaultData.StabilityFee.GT(sdk.ZeroDec()) && updatePairVault.StabilityFee.GT(sdk.ZeroDec()) {
+			} else if ExtPairVaultData.StabilityFee.GT(sdkmath.LegacyZeroDec()) && updatePairVault.StabilityFee.GT(sdkmath.LegacyZeroDec()) {
 				// run script to distribute
 				k.VaultIterateRewards(ctx, ExtPairVaultData.StabilityFee, ExtPairVaultData.BlockHeight, ExtPairVaultData.BlockTime.Unix(), updatePairVault.AppID, ExtPairVaultData.Id, true)
 				ExtPairVaultData.BlockHeight = ctx.BlockHeight()
@@ -300,7 +303,7 @@ func (k Keeper) WasmCheckWhitelistedAssetQuery(ctx sdk.Context, denom string) (f
 	return found
 }
 
-func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, collectorBh, collectorBt int64, appID, pairVaultID uint64, changeTypes bool) {
+func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdkmath.LegacyDec, collectorBh, collectorBt int64, appID, pairVaultID uint64, changeTypes bool) {
 	extPairVault, found := k.vault.GetAppExtendedPairVaultMappingData(ctx, appID, pairVaultID)
 	if found {
 		for _, valID := range extPairVault.VaultIds {
@@ -308,7 +311,7 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			if !found {
 				continue
 			}
-			var interest sdk.Dec
+			var interest sdkmath.LegacyDec
 			var err error
 			if vaultData.BlockHeight == 0 {
 				interest, err = k.rewards.CalculationOfRewards(ctx, vaultData.AmountOut, collectorLsr, collectorBt)
@@ -332,9 +335,9 @@ func (k Keeper) VaultIterateRewards(ctx sdk.Context, collectorLsr sdk.Dec, colle
 			} else {
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Add(interest)
 			}
-			if vaultInterestTracker.InterestAccumulated.GTE(sdk.OneDec()) {
+			if vaultInterestTracker.InterestAccumulated.GTE(sdkmath.LegacyOneDec()) {
 				newInterest := vaultInterestTracker.InterestAccumulated.TruncateInt()
-				newInterestDec := sdk.NewDecFromInt(newInterest)
+				newInterestDec := sdkmath.LegacyNewDecFromInt(newInterest)
 				vaultInterestTracker.InterestAccumulated = vaultInterestTracker.InterestAccumulated.Sub(newInterestDec)
 
 				// updating user rewards data

@@ -7,7 +7,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 
 	"github.com/comdex-official/comdex/x/asset/expected"
 )
@@ -52,6 +52,6 @@ func NewKeeper(
 	}
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.key)
 }

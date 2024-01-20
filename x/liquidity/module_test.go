@@ -5,7 +5,8 @@ import (
 	"testing"
 	"time"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -36,7 +37,7 @@ func TestModuleTestSuite(t *testing.T) {
 
 func (suite *ModuleTestSuite) SetupTest() {
 	app := chain.Setup(suite.T(), false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(false)
 
 	suite.app = app
 	suite.ctx = ctx
@@ -72,7 +73,7 @@ func (s *ModuleTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -97,7 +98,7 @@ func (s *ModuleTestSuite) CreateNewAsset(name, denom string, price uint64) asset
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})
@@ -184,8 +185,8 @@ func (s *ModuleTestSuite) LimitOrder(
 	orderer sdk.AccAddress,
 	pairId uint64,
 	dir types.OrderDirection,
-	price sdk.Dec,
-	amt sdk.Int,
+	price sdkmath.LegacyDec,
+	amt sdkmath.Int,
 	orderLifespan time.Duration,
 ) types.Order {
 	s.T().Helper()
@@ -207,7 +208,7 @@ func (s *ModuleTestSuite) LimitOrder(
 	params, err := s.keeper.GetGenericParams(s.ctx, appID)
 	s.Require().NoError(err)
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdkmath.LegacyNewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgLimitOrder(
@@ -224,7 +225,7 @@ func (s *ModuleTestSuite) MarketOrder(
 	orderer sdk.AccAddress,
 	pairId uint64,
 	dir types.OrderDirection,
-	amt sdk.Int,
+	amt sdkmath.Int,
 	orderLifespan time.Duration,
 ) types.Order {
 	s.T().Helper()
@@ -238,7 +239,7 @@ func (s *ModuleTestSuite) MarketOrder(
 	var demandCoinDenom string
 	switch dir {
 	case types.OrderDirectionBuy:
-		maxPrice := lastPrice.Mul(sdk.OneDec().Add(params.MaxPriceLimitRatio))
+		maxPrice := lastPrice.Mul(sdkmath.LegacyOneDec().Add(params.MaxPriceLimitRatio))
 		offerCoin = sdk.NewCoin(pair.QuoteCoinDenom, amm.OfferCoinAmount(amm.Buy, maxPrice, amt))
 		demandCoinDenom = pair.BaseCoinDenom
 	case types.OrderDirectionSell:
@@ -246,7 +247,7 @@ func (s *ModuleTestSuite) MarketOrder(
 		demandCoinDenom = pair.QuoteCoinDenom
 	}
 
-	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdk.NewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
+	offerCoin = offerCoin.Add(sdk.NewCoin(offerCoin.Denom, sdkmath.LegacyNewDec(offerCoin.Amount.Int64()).Mul(params.SwapFeeRate).RoundInt()))
 	s.fundAddr(orderer, sdk.NewCoins(offerCoin))
 
 	msg := types.NewMsgMarketOrder(
