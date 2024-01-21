@@ -21,6 +21,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
+	"github.com/cosmos/cosmos-sdk/types/module"
 
 	// simappparams "cosmossdk.io/simapp/params"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
@@ -45,19 +46,19 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func MakeTestEncodingConfig() moduletestutil.TestEncodingConfig {
+func MakeTestEncodingConfig(modules ...module.AppModuleBasic) moduletestutil.TestEncodingConfig {
+	mb := module.NewBasicManager(modules...)
 	encodingConfig := moduletestutil.MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	mb.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	mb.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	return encodingConfig
 }
 
 func setup(t *testing.T, withGenesis bool) (*App, GenesisState) {
-	db := dbm.NewMemDB()
 	//encCdc := MakeTestEncodingConfig()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, EmptyWasmOpts)
+	app := NewComdexApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, simtestutil.EmptyAppOptions{}, EmptyWasmOpts)
 	if withGenesis {
 		return app, NewDefaultGenesisState(app.AppCodec())
 	}

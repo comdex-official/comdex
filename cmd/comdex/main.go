@@ -12,7 +12,7 @@ import (
 func main() {
 	comdex.SetAccountAddressPrefixes()
 
-	root, _ := NewRootCmd() //TODO: check wasmd root
+	root := NewRootCmd() //TODO: check wasmd root
 	if err := servercmd.Execute(root, "", comdex.DefaultNodeHome); err != nil {
 		log.NewLogger(root.OutOrStderr()).Error("failure when running app", "err", err)
 		os.Exit(1)

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"cosmossdk.io/x/tx/signing"
 	"fmt"
 	dbm "github.com/cosmos/cosmos-db"
 	"io"
@@ -9,7 +10,12 @@ import (
 	"path/filepath"
 	"sort"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/server"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	"github.com/cosmos/gogoproto/proto"
+	"cosmossdk.io/client/v2/autocli"
+	"cosmossdk.io/core/appmodule"
 
 	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	"github.com/gorilla/mux"
@@ -22,7 +28,7 @@ import (
 	ibchookskeeper "github.com/cosmos/ibc-apps/modules/ibc-hooks/v8/keeper"
 	ibchookstypes "github.com/cosmos/ibc-apps/modules/ibc-hooks/v8/types"
 
-	consensus "github.com/cosmos/cosmos-sdk/x/consensus"
+	// consensus "github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 
@@ -37,7 +43,7 @@ import (
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
-	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
+	// ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	storetypes "cosmossdk.io/store/types"
 	"cosmossdk.io/x/evidence"
@@ -202,7 +208,10 @@ import (
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v8/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v8/types"
 
+	"github.com/cosmos/cosmos-sdk/std"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
+	"github.com/cosmos/cosmos-sdk/codec/address"
 
 	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
 	tv14 "github.com/comdex-official/comdex/app/upgrades/testnet/v14"
@@ -245,50 +254,50 @@ var (
 	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
-	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-		bank.AppModuleBasic{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(GetGovProposalHandlers()),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		authzmodule.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		ibctransfer.AppModuleBasic{},
-		consensus.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		vault.AppModuleBasic{},
-		asset.AppModuleBasic{},
-		esm.AppModuleBasic{},
-		lend.AppModuleBasic{},
+	// ModuleBasics = module.NewBasicManager(
+	// 	auth.AppModuleBasic{},
+	// 	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+	// 	bank.AppModuleBasic{},
+	// 	capability.AppModuleBasic{},
+	// 	staking.AppModuleBasic{},
+	// 	mint.AppModuleBasic{},
+	// 	distr.AppModuleBasic{},
+	// 	gov.NewAppModuleBasic(GetGovProposalHandlers()),
+	// 	params.AppModuleBasic{},
+	// 	crisis.AppModuleBasic{},
+	// 	slashing.AppModuleBasic{},
+	// 	authzmodule.AppModuleBasic{},
+	// 	ibc.AppModuleBasic{},
+	// 	ibctm.AppModuleBasic{},
+	// 	upgrade.AppModuleBasic{},
+	// 	evidence.AppModuleBasic{},
+	// 	ibctransfer.AppModuleBasic{},
+	// 	consensus.AppModuleBasic{},
+	// 	vesting.AppModuleBasic{},
+	// 	vault.AppModuleBasic{},
+	// 	asset.AppModuleBasic{},
+	// 	esm.AppModuleBasic{},
+	// 	lend.AppModuleBasic{},
 
-		market.AppModuleBasic{},
-		locker.AppModuleBasic{},
-		bandoraclemodule.AppModuleBasic{},
-		collector.AppModuleBasic{},
-		liquidation.AppModuleBasic{},
-		auction.AppModuleBasic{},
-		tokenmint.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		liquidity.AppModuleBasic{},
-		rewards.AppModuleBasic{},
-		ica.AppModuleBasic{},
-		ibcfee.AppModuleBasic{},
-		liquidationsV2.AppModuleBasic{},
-		auctionsV2.AppModuleBasic{},
-		common.AppModuleBasic{},
-		icq.AppModuleBasic{},
-		ibchooks.AppModuleBasic{},
-		packetforward.AppModuleBasic{},
-	)
+	// 	market.AppModuleBasic{},
+	// 	locker.AppModuleBasic{},
+	// 	bandoraclemodule.AppModuleBasic{},
+	// 	collector.AppModuleBasic{},
+	// 	liquidation.AppModuleBasic{},
+	// 	auction.AppModuleBasic{},
+	// 	tokenmint.AppModuleBasic{},
+	// 	wasm.AppModuleBasic{},
+	// 	liquidity.AppModuleBasic{},
+	// 	rewards.AppModuleBasic{},
+	// 	ica.AppModuleBasic{},
+	// 	ibcfee.AppModuleBasic{},
+	// 	liquidationsV2.AppModuleBasic{},
+	// 	auctionsV2.AppModuleBasic{},
+	// 	common.AppModuleBasic{},
+	// 	icq.AppModuleBasic{},
+	// 	ibchooks.AppModuleBasic{},
+	// 	packetforward.AppModuleBasic{},
+	// )
 )
 
 var _ servertypes.Application = (*App)(nil)
@@ -308,8 +317,9 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	amino *codec.LegacyAmino
-	cdc   codec.Codec
+	amino    *codec.LegacyAmino
+	cdc      codec.Codec
+	txConfig client.TxConfig
 
 	interfaceRegistry codectypes.InterfaceRegistry
 
@@ -382,25 +392,42 @@ type App struct {
 	ContractKeeper *wasmkeeper.PermissionedKeeper
 	// the module manager
 	mm *module.Manager
+	BasicModuleManager module.BasicManager
 	// Module configurator
 	configurator module.Configurator
 }
 
 // New returns a reference to an initialized App.
-func New(
+func NewComdexApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
 	loadLatest bool,
-	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
-	encoding EncodingConfig,
 	appOptions servertypes.AppOptions,
 	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	appCodec := encoding.Marshaler
+	interfaceRegistry, err := codectypes.NewInterfaceRegistryWithOptions(codectypes.InterfaceRegistryOptions{
+		ProtoFiles: proto.HybridResolver,
+		SigningOptions: signing.Options{
+			AddressCodec: address.Bech32Codec{
+				Bech32Prefix: sdk.GetConfig().GetBech32AccountAddrPrefix(),
+			},
+			ValidatorAddressCodec: address.Bech32Codec{
+				Bech32Prefix: sdk.GetConfig().GetBech32ValidatorAddrPrefix(),
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	appCodec := codec.NewProtoCodec(interfaceRegistry)
+	legacyAmino := codec.NewLegacyAmino()
+	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
+
+	std.RegisterLegacyAminoCodec(legacyAmino)
+	std.RegisterInterfaces(interfaceRegistry)
+
 	var (
 		tkeys = storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
 		mkeys = storetypes.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -417,17 +444,18 @@ func New(
 		)
 	)
 
-	baseApp := baseapp.NewBaseApp(Name, logger, db, encoding.TxConfig.TxDecoder(), baseAppOptions...)
+	baseApp := baseapp.NewBaseApp(Name, logger, db, txConfig.TxDecoder(), baseAppOptions...)
 	baseApp.SetCommitMultiStoreTracer(traceStore)
 	baseApp.SetVersion(version.Version)
-	baseApp.SetInterfaceRegistry(encoding.InterfaceRegistry)
+	baseApp.SetInterfaceRegistry(interfaceRegistry)
+	baseApp.SetTxEncoder(txConfig.TxEncoder())
 
 	app := &App{
 		BaseApp:           baseApp,
-		amino:             encoding.Amino,
-		cdc:               encoding.Marshaler,
-		interfaceRegistry: encoding.InterfaceRegistry,
-		invCheckPeriod:    invCheckPeriod,
+		amino:             legacyAmino,
+		cdc:               appCodec,
+		txConfig:          txConfig,
+		interfaceRegistry: interfaceRegistry,
 		keys:              keys,
 		tkeys:             tkeys,
 		mkeys:             mkeys,
@@ -547,11 +575,12 @@ func New(
 	)
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		app.cdc,
-		encoding.Amino,
+		legacyAmino,
 		runtime.NewKVStoreService(keys[slashingtypes.StoreKey]),
 		stakingKeeper,
 		govModAddress,
 	)
+	invCheckPeriod := cast.ToUint(appOptions.Get(server.FlagInvCheckPeriod))
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
 		app.cdc,
 		runtime.NewKVStoreService(keys[crisistypes.StoreKey]),
@@ -568,6 +597,13 @@ func New(
 		baseApp.MsgServiceRouter(),
 		app.AccountKeeper,
 	)
+
+	// get skipUpgradeHeights from the app options
+	skipUpgradeHeights := map[int64]bool{}
+	for _, h := range cast.ToIntSlice(appOptions.Get(server.FlagUnsafeSkipUpgrades)) {
+		skipUpgradeHeights[int64(h)] = true
+	}
+	homePath := cast.ToString(appOptions.Get(flags.FlagHome))
 
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
@@ -1014,7 +1050,7 @@ func New(
 	// must be passed by reference here.
 
 	app.mm = module.NewManager(
-		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app, encoding.TxConfig),
+		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app, txConfig),
 		auth.NewAppModule(app.cdc, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(app.cdc, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
@@ -1055,6 +1091,23 @@ func New(
 		icq.NewAppModule(*app.ICQKeeper, app.GetSubspace(icqtypes.ModuleName)),
 		packetforward.NewAppModule(app.PacketForwardKeeper, app.GetSubspace(packetforwardtypes.ModuleName)),
 	)
+
+	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration and genesis verification.
+	// By default it is composed of all the module from the module manager.
+	// Additionally, app module basics can be overwritten by passing them as argument.
+	app.BasicModuleManager = module.NewBasicManagerFromManager(
+		app.mm,
+		map[string]module.AppModuleBasic{
+			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+			govtypes.ModuleName: gov.NewAppModuleBasic(
+				[]govclient.ProposalHandler{
+					paramsclient.ProposalHandler,
+				},
+			),
+		})
+	app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
+	app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	// NOTE: upgrade module is required to be prioritized
 	app.mm.SetOrderPreBlockers(
@@ -1227,7 +1280,7 @@ func New(
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeegrantKeeper,
-				SignModeHandler: encoding.TxConfig.SignModeHandler(),
+				SignModeHandler: txConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			GovKeeper:             app.GovKeeper,
@@ -1351,6 +1404,32 @@ func (a *App) InterfaceRegistry() codectypes.InterfaceRegistry {
 	return a.interfaceRegistry
 }
 
+// TxConfig returns WasmApp's TxConfig
+func (a *App) TxConfig() client.TxConfig {
+	return a.txConfig
+}
+
+// AutoCliOpts returns the autocli options for the app.
+func (a *App) AutoCliOpts() autocli.AppOptions {
+	modules := make(map[string]appmodule.AppModule, 0)
+	for _, m := range a.mm.Modules {
+		if moduleWithName, ok := m.(module.HasName); ok {
+			moduleName := moduleWithName.Name()
+			if appModule, ok := moduleWithName.(appmodule.AppModule); ok {
+				modules[moduleName] = appModule
+			}
+		}
+	}
+
+	return autocli.AppOptions{
+		Modules:               modules,
+		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(a.mm.Modules),
+		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+	}
+}
+
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
@@ -1390,7 +1469,7 @@ func (a *App) RegisterAPIRoutes(server *api.Server, apiConfig serverconfig.APICo
 	cmtservice.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
+	a.BasicModuleManager.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 	nodeservice.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily

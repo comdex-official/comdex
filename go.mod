@@ -6,6 +6,7 @@ go 1.21
 
 require (
 	cosmossdk.io/api v0.7.2
+	cosmossdk.io/client/v2 v2.0.0-beta.1
 	cosmossdk.io/core v0.11.0
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.3.0
@@ -14,6 +15,7 @@ require (
 	cosmossdk.io/tools/confix v0.1.0
 	cosmossdk.io/x/evidence v0.1.0
 	cosmossdk.io/x/feegrant v0.1.0
+	cosmossdk.io/x/tx v0.13.0
 	cosmossdk.io/x/upgrade v0.1.1
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/CosmWasm/wasmvm v1.5.1
@@ -33,6 +35,7 @@ require (
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.8.0
+	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20231120223509-83a465c0220f
 	google.golang.org/grpc v1.60.1
@@ -60,7 +63,6 @@ require (
 	cloud.google.com/go/storage v1.30.1 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
-	cosmossdk.io/x/tx v0.13.0 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
@@ -284,7 +286,6 @@ require (
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/sourcegraph/go-diff v0.7.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
-	github.com/spf13/viper v1.17.0 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
@@ -346,11 +347,11 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	//TODO: to be replaced from comdex fork of bandchain-packet
 	github.com/bandprotocol/bandchain-packet => github.com/InjectiveLabs/bandchain-packet v0.0.4-0.20230327115226-35199d4659d5
+
+	////////// TODO: Remove hooks replace post stable release by ibc-apps //////////////////////
+	github.com/cosmos/ibc-apps/modules/ibc-hooks/v8 => /Users/chandragupta/go/src/github.com/cosmos/ibc-apps/modules/ibc-hooks
 	// https://github.com/cosmos/cosmos-sdk/blob/v0.47.5/UPGRADING.md#protobuf
 	// TODO: this should be removed, revisit
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-	
-	////////// TODO: Remove hooks replace post stable release by ibc-apps //////////////////////
-	github.com/cosmos/ibc-apps/modules/ibc-hooks/v8 => /Users/chandragupta/go/src/github.com/cosmos/ibc-apps/modules/ibc-hooks
 )

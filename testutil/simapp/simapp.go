@@ -21,7 +21,7 @@ func New(dir string) *comdex.App {
 		encoding = comdex.MakeEncodingConfig()
 	)
 
-	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
+	a := comdex.NewComdexApp(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
 		simtestutil.EmptyAppOptions{}, comdex.EmptyWasmOpts)
 	// InitChain updates deliverState which is required when app.NewContext is called
 	a.InitChain(&abcitypes.RequestInitChain{

@@ -1,43 +1,33 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	"testing"
+
+	dbm "github.com/cosmos/cosmos-db"
+
+	"cosmossdk.io/log"
+
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+
+	"github.com/CosmWasm/wasmd/app/params"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 )
 
-type EncodingConfig struct {
-	InterfaceRegistry codectypes.InterfaceRegistry
-	Marshaler         codec.Codec
-	TxConfig          client.TxConfig
-	Amino             *codec.LegacyAmino
+// MakeEncodingConfig creates a new EncodingConfig with all modules registered. For testing only
+func MakeEncodingConfig(t testing.TB) params.EncodingConfig {
+	t.Helper()
+	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
+	// note, this is not necessary when using app wiring, as depinject can be directly used (see root_v2.go)
+	tempApp := NewComdexApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, simtestutil.NewAppOptionsWithFlagHome(t.TempDir()), []wasmkeeper.Option{})
+	return makeEncodingConfig(tempApp)
 }
 
-func NewEncodingConfig() EncodingConfig {
-	var (
-		amino             = codec.NewLegacyAmino()
-		interfaceRegistry = codectypes.NewInterfaceRegistry()
-		marshaler         = codec.NewProtoCodec(interfaceRegistry)
-		txConfig          = tx.NewTxConfig(marshaler, tx.DefaultSignModes)
-	)
-
-	return EncodingConfig{
-		Amino:             amino,
-		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          txConfig,
+func makeEncodingConfig(tempApp *App) params.EncodingConfig {
+	encodingConfig := params.EncodingConfig{
+		InterfaceRegistry: tempApp.InterfaceRegistry(),
+		Codec:             tempApp.AppCodec(),
+		TxConfig:          tempApp.TxConfig(),
+		Amino:             tempApp.LegacyAmino(),
 	}
-}
-
-func MakeEncodingConfig() EncodingConfig {
-	config := NewEncodingConfig()
-
-	std.RegisterLegacyAminoCodec(config.Amino)
-	std.RegisterInterfaces(config.InterfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(config.Amino)
-	ModuleBasics.RegisterInterfaces(config.InterfaceRegistry)
-
-	return config
+	return encodingConfig
 }
