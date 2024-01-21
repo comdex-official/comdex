@@ -42,7 +42,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
@@ -113,7 +115,7 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 		},
 	}
 
-	initRootCmd(root, encodingConfig)
+	initRootCmd(root, encodingConfig, initClientCtx)
 	return root, encodingConfig
 }
 
@@ -153,15 +155,15 @@ func initAppConfig() (string, interface{}) {
 	return customAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
+func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig, clientCtx client.Context) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
-	// gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
+	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
-		// genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator, txConfig.SigningContext().ValidatorAddressCodec()),
-		// genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, txConfig.SigningContext().ValidatorAddressCodec()),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator, clientCtx.TxConfig.SigningContext().ValidatorAddressCodec()),
+		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, clientCtx.TxConfig.SigningContext().ValidatorAddressCodec()),
 		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
 		AddGenesisAccountCmd(comdex.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
