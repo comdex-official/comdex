@@ -40,9 +40,9 @@ type VaultIntegrationTestSuite struct {
 
 func NewAppConstructor() networkI.AppConstructor {
 	return func(val networkI.ValidatorI) servertypes.Application {
-		return chain.New(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
-			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.EmptyWasmOpts,
+		return chain.NewComdexApp(
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true,
+			simtestutil.EmptyAppOptions{}, chain.EmptyWasmOpts,
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 		)
@@ -62,7 +62,7 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 
 	cfg := network.DefaultConfig()
 	cfg.AppConstructor = NewAppConstructor()
-	cfg.GenesisState = chain.ModuleBasics.DefaultGenesis(cfg.Codec)
+	cfg.GenesisState = chain.NewDefaultGenesisState(cfg.Codec)
 	cfg.NumValidators = 1
 
 	s.cfg = cfg

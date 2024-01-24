@@ -2,6 +2,7 @@ package app
 
 import (
 	"cosmossdk.io/x/tx/signing"
+	"encoding/json"
 	"fmt"
 	dbm "github.com/cosmos/cosmos-db"
 	"io"
@@ -1428,6 +1429,11 @@ func (a *App) AutoCliOpts() autocli.AppOptions {
 		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
 		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	}
+}
+
+// DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
+func (a *App) DefaultGenesis() map[string]json.RawMessage {
+	return a.BasicModuleManager.DefaultGenesis(a.cdc)
 }
 
 // GetKey returns the KVStoreKey for the provided store key.

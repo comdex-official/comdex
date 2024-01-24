@@ -18,10 +18,9 @@ func New(dir string) *comdex.App {
 	var (
 		db       = dbm.NewMemDB()
 		logger   = log.NewNopLogger()
-		encoding = comdex.MakeEncodingConfig()
 	)
 
-	a := comdex.NewComdexApp(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
+	a := comdex.NewComdexApp(logger, db, nil, true,
 		simtestutil.EmptyAppOptions{}, comdex.EmptyWasmOpts)
 	// InitChain updates deliverState which is required when app.NewContext is called
 	a.InitChain(&abcitypes.RequestInitChain{
