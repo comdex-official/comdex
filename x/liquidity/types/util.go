@@ -9,7 +9,6 @@ import (
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/comdex-official/comdex/x/liquidity/amm"
 	"github.com/comdex-official/comdex/x/liquidity/expected"
@@ -57,15 +56,12 @@ func (op *BulkSendCoinsOperation) QueueSendCoins(
 // Run runs BankKeeper.InputOutputCoins once for queued operations.
 func (op *BulkSendCoinsOperation) Run(ctx sdk.Context, bankKeeper expected.BankKeeper) error {
 	if len(op.txs) > 0 {
-		var (
-			inputs  []banktypes.Input
-			outputs []banktypes.Output
-		)
 		for _, tx := range op.txs {
-			inputs = append(inputs, banktypes.NewInput(tx.from, tx.amt))
-			outputs = append(outputs, banktypes.NewOutput(tx.to, tx.amt))
+			if err := bankKeeper.SendCoins(ctx, tx.from, tx.to, tx.amt); err != nil {
+				return err
+			}
 		}
-		return bankKeeper.InputOutputCoins(ctx, inputs, outputs)
+		return nil
 	}
 	return nil
 }

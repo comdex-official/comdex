@@ -6,6 +6,8 @@ package types
 import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	cosmossdk_io_math "cosmossdk.io/math"
+	cosmossdk_io_store "cosmossdk.io/store"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
@@ -72,19 +74,19 @@ type GenericParams struct {
 	TickPrecision            uint64                                   `protobuf:"varint,2,opt,name=tick_precision,json=tickPrecision,proto3" json:"tick_precision,omitempty"`
 	FeeCollectorAddress      string                                   `protobuf:"bytes,3,opt,name=fee_collector_address,json=feeCollectorAddress,proto3" json:"fee_collector_address,omitempty"`
 	DustCollectorAddress     string                                   `protobuf:"bytes,4,opt,name=dust_collector_address,json=dustCollectorAddress,proto3" json:"dust_collector_address,omitempty"`
-	MinInitialPoolCoinSupply github_com_cosmos_cosmos_sdk_types.Int   `protobuf:"bytes,5,opt,name=min_initial_pool_coin_supply,json=minInitialPoolCoinSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"min_initial_pool_coin_supply"`
+	MinInitialPoolCoinSupply cosmossdk_io_math.Int   `protobuf:"bytes,5,opt,name=min_initial_pool_coin_supply,json=minInitialPoolCoinSupply,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"min_initial_pool_coin_supply"`
 	PairCreationFee          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=pair_creation_fee,json=pairCreationFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"pair_creation_fee"`
 	PoolCreationFee          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,7,rep,name=pool_creation_fee,json=poolCreationFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"pool_creation_fee"`
-	MinInitialDepositAmount  github_com_cosmos_cosmos_sdk_types.Int   `protobuf:"bytes,8,opt,name=min_initial_deposit_amount,json=minInitialDepositAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"min_initial_deposit_amount"`
-	MaxPriceLimitRatio       github_com_cosmos_cosmos_sdk_types.Dec   `protobuf:"bytes,9,opt,name=max_price_limit_ratio,json=maxPriceLimitRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_price_limit_ratio"`
+	MinInitialDepositAmount  cosmossdk_io_math.Int   `protobuf:"bytes,8,opt,name=min_initial_deposit_amount,json=minInitialDepositAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"min_initial_deposit_amount"`
+	MaxPriceLimitRatio       cosmossdk_io_math.LegacyDec   `protobuf:"bytes,9,opt,name=max_price_limit_ratio,json=maxPriceLimitRatio,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max_price_limit_ratio"`
 	MaxOrderLifespan         time.Duration                            `protobuf:"bytes,10,opt,name=max_order_lifespan,json=maxOrderLifespan,proto3,stdduration" json:"max_order_lifespan"`
-	SwapFeeRate              github_com_cosmos_cosmos_sdk_types.Dec   `protobuf:"bytes,11,opt,name=swap_fee_rate,json=swapFeeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"swap_fee_rate"`
-	WithdrawFeeRate          github_com_cosmos_cosmos_sdk_types.Dec   `protobuf:"bytes,12,opt,name=withdraw_fee_rate,json=withdrawFeeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"withdraw_fee_rate"`
-	DepositExtraGas          github_com_cosmos_cosmos_sdk_types.Gas   `protobuf:"varint,13,opt,name=deposit_extra_gas,json=depositExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"deposit_extra_gas"`
-	WithdrawExtraGas         github_com_cosmos_cosmos_sdk_types.Gas   `protobuf:"varint,14,opt,name=withdraw_extra_gas,json=withdrawExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"withdraw_extra_gas"`
-	OrderExtraGas            github_com_cosmos_cosmos_sdk_types.Gas   `protobuf:"varint,15,opt,name=order_extra_gas,json=orderExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"order_extra_gas"`
+	SwapFeeRate              cosmossdk_io_math.LegacyDec   `protobuf:"bytes,11,opt,name=swap_fee_rate,json=swapFeeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"swap_fee_rate"`
+	WithdrawFeeRate          cosmossdk_io_math.LegacyDec   `protobuf:"bytes,12,opt,name=withdraw_fee_rate,json=withdrawFeeRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"withdraw_fee_rate"`
+	DepositExtraGas          cosmossdk_io_store.Gas   `protobuf:"varint,13,opt,name=deposit_extra_gas,json=depositExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"deposit_extra_gas"`
+	WithdrawExtraGas         cosmossdk_io_store.Gas   `protobuf:"varint,14,opt,name=withdraw_extra_gas,json=withdrawExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"withdraw_extra_gas"`
+	OrderExtraGas            cosmossdk_io_store.Gas   `protobuf:"varint,15,opt,name=order_extra_gas,json=orderExtraGas,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Gas" json:"order_extra_gas"`
 	SwapFeeDistrDenom        string                                   `protobuf:"bytes,16,opt,name=swap_fee_distr_denom,json=swapFeeDistrDenom,proto3" json:"swap_fee_distr_denom,omitempty"`
-	SwapFeeBurnRate          github_com_cosmos_cosmos_sdk_types.Dec   `protobuf:"bytes,17,opt,name=swap_fee_burn_rate,json=swapFeeBurnRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"swap_fee_burn_rate"`
+	SwapFeeBurnRate          cosmossdk_io_math.LegacyDec   `protobuf:"bytes,17,opt,name=swap_fee_burn_rate,json=swapFeeBurnRate,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"swap_fee_burn_rate"`
 	AppId                    uint64                                   `protobuf:"varint,18,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 }
 
@@ -928,7 +930,7 @@ func (m *GenericParams) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.DepositExtraGas |= github_com_cosmos_cosmos_sdk_types.Gas(b&0x7F) << shift
+				m.DepositExtraGas |= cosmossdk_io_store.Gas(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -947,7 +949,7 @@ func (m *GenericParams) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.WithdrawExtraGas |= github_com_cosmos_cosmos_sdk_types.Gas(b&0x7F) << shift
+				m.WithdrawExtraGas |= cosmossdk_io_store.Gas(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -966,7 +968,7 @@ func (m *GenericParams) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.OrderExtraGas |= github_com_cosmos_cosmos_sdk_types.Gas(b&0x7F) << shift
+				m.OrderExtraGas |= cosmossdk_io_store.Gas(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
