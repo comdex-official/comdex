@@ -11,12 +11,12 @@ import (
 	"path/filepath"
 	"sort"
 
+	"cosmossdk.io/client/v2/autocli"
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	"github.com/cosmos/gogoproto/proto"
-	"cosmossdk.io/client/v2/autocli"
-	"cosmossdk.io/core/appmodule"
 
 	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	"github.com/gorilla/mux"
@@ -116,6 +116,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/v8/modules/core/02-client"
+	ibcconnectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
 
 	// ibcclientclient "github.com/cosmos/ibc-go/v8/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -392,7 +393,7 @@ type App struct {
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
 	// the module manager
-	mm *module.Manager
+	mm                 *module.Manager
 	BasicModuleManager module.BasicManager
 	// Module configurator
 	configurator module.Configurator
@@ -468,6 +469,9 @@ func NewComdexApp(
 		app.keys[paramstypes.StoreKey],
 		app.tkeys[paramstypes.TStoreKey],
 	)
+	// register the key tables for legacy param subspaces
+	keyTable := ibcclienttypes.ParamKeyTable()
+	keyTable.RegisterParamSet(&ibcconnectiontypes.Params{})
 
 	//nolint:godox  //TODO: refactor this code
 	app.ParamsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())
@@ -478,9 +482,9 @@ func NewComdexApp(
 	app.ParamsKeeper.Subspace(slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypesv1.ParamKeyTable())
 	app.ParamsKeeper.Subspace(crisistypes.ModuleName).WithKeyTable(crisistypes.ParamKeyTable())
-	app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
-	app.ParamsKeeper.Subspace(ibchost.ModuleName)
-	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName)
+	app.ParamsKeeper.Subspace(ibctransfertypes.ModuleName).WithKeyTable(ibctransfertypes.ParamKeyTable())
+	app.ParamsKeeper.Subspace(ibchost.ModuleName).WithKeyTable(keyTable)
+	app.ParamsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
 	app.ParamsKeeper.Subspace(vaulttypes.ModuleName)
 	app.ParamsKeeper.Subspace(assettypes.ModuleName)
 	app.ParamsKeeper.Subspace(collectortypes.ModuleName)
