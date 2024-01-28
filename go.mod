@@ -350,8 +350,9 @@ replace (
 
 	////////// TODO: Remove hooks replace post stable release by ibc-apps //////////////////////
 	github.com/cosmos/ibc-apps/modules/ibc-hooks/v8 => /Users/chandragupta/go/src/github.com/cosmos/ibc-apps/modules/ibc-hooks
+
 	// https://github.com/cosmos/cosmos-sdk/blob/v0.47.5/UPGRADING.md#protobuf
-	// TODO: this should be removed, revisit
+	// TODO: this should be removed, revisit, but added again in ibc-apps v8, so keep it unless they remove
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
