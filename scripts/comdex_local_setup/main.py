@@ -219,7 +219,7 @@ def StoreAndIntantiateWasmContract():
     contractAddresses = {}
     for index, contractData in enumerate(WASM_CONTRACTS):
         print(f"fetching test {contractData['name']} ....")
-        # wget.download(contractData['contractLink'], contractData['contractPath'])
+        wget.download(contractData['contractLink'], contractData['contractPath'])
         time.sleep(6)
         command = f"comdex tx wasm store {contractData['contractPath']} --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test  -y  --output json"
         output = subprocess.getstatusoutput(command)[1]
@@ -255,20 +255,20 @@ def ExecuteWasmGovernanceProposal(contractAddress, proposalID):
             "proposal_id":proposalID
         }
     }
-    command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+    command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y --output json"""
     output = subprocess.getstatusoutput(command)[1]
-    if "code: 0" in output:
-        print("success")
-    else:
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
         exit(f"error while executing wasm prop with id {proposalID} ")
     print(f"Proposal with ID {proposalID} executed successfully ✔️")
 
 def ProposeWasmProposal(contractAddress, proposal, proposlID):
-    command = f"""comdex tx wasm execute {contractAddress}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+    command = f"""comdex tx wasm execute {contractAddress}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y --output json"""
     output = subprocess.getstatusoutput(command)[1]
-    if "code: 0" in output:
-        print("success")
-    else:
+    output = json.loads(output)
+    if int(output["code"]) != 0:
+        print(output)
         exit(f"error while proposing prop {proposlID} ")
     print(f"Proposal {proposlID} raised successfully ✔️")
 
@@ -375,6 +375,7 @@ def CreateState():
         Vote("yes")
 
     AddAssetInAppsAndVote(1, 9)
+    time.sleep(6)
 
     for liquidityPair in LIQUIDITY_PAIRS:
         if len(liquidityPair) != 3:
