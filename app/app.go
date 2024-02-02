@@ -195,6 +195,9 @@ import (
 	icq "github.com/cosmos/ibc-apps/modules/async-icq/v7"
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
+	"github.com/larry0x/abstract-account/x/abstractaccount"
+	abstractaccountkeeper "github.com/larry0x/abstract-account/x/abstractaccount/keeper"
+	abstractaccounttypes "github.com/larry0x/abstract-account/x/abstractaccount/types"
 
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
@@ -309,6 +312,7 @@ var (
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		abstractaccount.AppModuleBasic{},
 	)
 )
 
@@ -397,6 +401,7 @@ type App struct {
 	ICQKeeper           *icqkeeper.Keeper
 
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
+	AbstractAccountKeeper abstractaccountkeeper.Keeper
 
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
@@ -434,7 +439,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, abstractaccounttypes.StoreKey,
 		)
 	)
 
@@ -895,6 +900,17 @@ func New(
 	)
 	app.ICQKeeper = &icqKeeper
 
+	app.AbstractAccountKeeper = abstractaccountkeeper.NewKeeper(
+		app.cdc,
+		keys[abstractaccounttypes.StoreKey],
+		app.AccountKeeper,
+		// we don't really need this strong permission (we don't need to store code
+		// or modify code access config) but wasm module doesn't seem to allow us
+		// to create our own authorization policy
+		wasmkeeper.NewGovPermissionKeeper(app.WasmKeeper),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	// Create Async ICQ module
 	icqModule := icq.NewIBCModule(*app.ICQKeeper)
 
@@ -1055,6 +1071,7 @@ func New(
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		abstractaccount.NewAppModule(app.AbstractAccountKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1102,6 +1119,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		abstractaccounttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -1145,6 +1163,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		abstractaccounttypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1192,6 +1211,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		abstractaccounttypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
@@ -1221,13 +1241,14 @@ func New(
 				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeegrantKeeper,
 				SignModeHandler: encoding.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  abstractaccount.SigVerificationGasConsumer,
 			},
 			GovKeeper:         app.GovKeeper,
 			wasmConfig:        wasmConfig,
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
 			Cdc:               appCodec,
+			AbstractAccountKeeper: app.AbstractAccountKeeper,
 		},
 	)
 	if err != nil {

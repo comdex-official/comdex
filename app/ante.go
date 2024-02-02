@@ -5,24 +5,27 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/comdex-official/comdex/app/decorators"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/larry0x/abstract-account/x/abstractaccount"
+	abstractaccountkeeper "github.com/larry0x/abstract-account/x/abstractaccount/keeper"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	wasmConfig        wasm.Config
-	txCounterStoreKey storetypes.StoreKey
-	IBCChannelKeeper  *ibckeeper.Keeper
-	GovKeeper         govkeeper.Keeper
-	Cdc               codec.BinaryCodec
+	wasmConfig            wasm.Config
+	txCounterStoreKey     storetypes.StoreKey
+	IBCChannelKeeper      *ibckeeper.Keeper
+	GovKeeper             govkeeper.Keeper
+	Cdc                   codec.BinaryCodec
+	AbstractAccountKeeper abstractaccountkeeper.Keeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -57,6 +60,12 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		// BeforeTxDecorator replaces the default NewSigVerificationDecorator
+		abstractaccount.NewBeforeTxDecorator(
+			options.AbstractAccountKeeper,
+			options.AccountKeeper,
+			options.SignModeHandler,
+		),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCChannelKeeper),
 	}
