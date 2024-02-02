@@ -255,6 +255,7 @@ def ExecuteWasmGovernanceProposal(contractAddress, proposalID):
             "proposal_id":proposalID
         }
     }
+    time.sleep(3)
     command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y --output json"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
@@ -277,7 +278,7 @@ def AddAssetRates(assetName, jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-legacy-proposal add-asset-rates-params --add-asset-rates-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-asset-rates-params --add-asset-rates-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 9000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
     if "code: 0" in output:
         print("success")
@@ -292,7 +293,7 @@ def AddLendPool(jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-legacy-proposal add-lend-pool --add-lend-pool-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-lend-pool --add-lend-pool-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 9000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
     if "code: 0" in output:
         print("success")
@@ -382,28 +383,28 @@ def CreateState():
             exit("Invalid liquidity pair configs")
         CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
         Vote("yes")
-
+    time.sleep(20)
     for liquidityPool in LIQUIDITY_POOLS:
         if len(liquidityPool) != 3:
             exit("Invalid liquidity pool configs")
         CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
-
+    time.sleep(20)
     for assetRate in ADD_ASSET_RATES:
         if len(assetRate) != 2:
             exit("Invalid add asset rate configs")
         AddAssetRates(assetRate[0], assetRate[1])
         Vote("yes")
-    
+    time.sleep(20)
     for lenPoolData in ADD_LEND_POOL:
         AddLendPool(lenPoolData)
         Vote("yes")
-    
+    time.sleep(20)
     for lendPair in ADD_LEND_PAIR:
         if len(lendPair) != 2:
             exit("Invalid lend pair configs")
         AddLendPair(lendPair[0], lendPair[1])
         Vote("yes")
-    
+    time.sleep(20)
     for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
         if len(lenAssetPairMap) != 3:
             exit("Invalid lend asset pair map configs")
