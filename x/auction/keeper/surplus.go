@@ -3,11 +3,14 @@ package keeper
 import (
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	sdkmath "cosmossdk.io/math"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
@@ -93,8 +96,8 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartSurplusAuction(ctx sdk.Cont
 	return auctiontypes.NoAuction, nil
 }
 
-func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellID uint64, lotSize sdk.Int) (status uint64, sellToken, buyToken sdk.Coin) {
-	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
+func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellID uint64, lotSize sdkmath.Int) (status uint64, sellToken, buyToken sdk.Coin) {
+	emptyCoin := sdk.NewCoin("empty", sdkmath.NewIntFromUint64(1))
 	sellingAsset, found1 := k.asset.GetAsset(ctx, AssetSellID)
 	buyingAsset, found2 := k.asset.GetAsset(ctx, AssetBuyID)
 	if !found1 || !found2 {
@@ -103,7 +106,7 @@ func (k Keeper) getSurplusBuyTokenAmount(ctx sdk.Context, AssetBuyID, AssetSellI
 
 	// outflow token will be of lot size
 	sellToken = sdk.NewCoin(sellingAsset.Denom, lotSize)
-	buyToken = sdk.NewCoin(buyingAsset.Denom, sdk.ZeroInt())
+	buyToken = sdk.NewCoin(buyingAsset.Denom, sdkmath.ZeroInt())
 	return 5, sellToken, buyToken
 }
 
@@ -111,7 +114,7 @@ func (k Keeper) StartSurplusAuction(
 	ctx sdk.Context,
 	sellToken sdk.Coin,
 	buyToken sdk.Coin,
-	bidFactor sdk.Dec,
+	bidFactor sdkmath.LegacyDec,
 	appID, assetID uint64,
 	assetInID, assetOutID uint64,
 ) error {
@@ -298,7 +301,7 @@ func (k Keeper) PlaceSurplusAuctionBid(ctx sdk.Context, appID, auctionMappingID,
 		change := auction.BidFactor.MulInt(auction.Bid.Amount).Ceil().TruncateInt()
 		minBidAmount := auction.Bid.Amount.Add(change)
 		if bid.Amount.LT(minBidAmount) {
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", minBidAmount)
+			return errorsmod.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", minBidAmount)
 		}
 	} else {
 		if bid.Amount.LTE(auction.Bid.Amount) {

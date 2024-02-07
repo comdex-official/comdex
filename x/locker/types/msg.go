@@ -1,8 +1,9 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
@@ -13,7 +14,7 @@ var (
 	_ sdk.Msg = (*MsgLockerRewardCalcRequest)(nil)
 )
 
-func NewMsgCreateLockerRequest(from string, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
+func NewMsgCreateLockerRequest(from string, amount sdkmath.Int, assetID uint64, appMappingID uint64) *MsgCreateLockerRequest {
 	return &MsgCreateLockerRequest{
 		Depositor: from,
 		AppId:     appMappingID,
@@ -32,20 +33,20 @@ func (m *MsgCreateLockerRequest) Type() string {
 
 func (m *MsgCreateLockerRequest) ValidateBasic() error {
 	if m.Depositor == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	if m.Amount.IsNil() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
 	}
 	if m.Amount.IsNegative() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
 	}
 	if m.Amount.IsZero() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
 	}
 
 	return nil
@@ -64,7 +65,7 @@ func (m *MsgCreateLockerRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgDepositAssetRequest(from string, lockerID uint64, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgDepositAssetRequest {
+func NewMsgDepositAssetRequest(from string, lockerID uint64, amount sdkmath.Int, assetID uint64, appMappingID uint64) *MsgDepositAssetRequest {
 	return &MsgDepositAssetRequest{
 		Depositor: from,
 		LockerId:  lockerID,
@@ -84,23 +85,23 @@ func (m *MsgDepositAssetRequest) Type() string {
 
 func (m *MsgDepositAssetRequest) ValidateBasic() error {
 	if m.Depositor == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	if m.LockerId <= 0 {
-		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 	if m.Amount.IsNil() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
 	}
 	if m.Amount.IsNegative() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
 	}
 	if m.Amount.IsZero() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
 	}
 
 	return nil
@@ -119,7 +120,7 @@ func (m *MsgDepositAssetRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgWithdrawAssetRequest(from string, lockerID uint64, amount sdk.Int, assetID uint64, appMappingID uint64) *MsgWithdrawAssetRequest {
+func NewMsgWithdrawAssetRequest(from string, lockerID uint64, amount sdkmath.Int, assetID uint64, appMappingID uint64) *MsgWithdrawAssetRequest {
 	return &MsgWithdrawAssetRequest{
 		Depositor: from,
 		LockerId:  lockerID,
@@ -139,23 +140,23 @@ func (m *MsgWithdrawAssetRequest) Type() string {
 
 func (m *MsgWithdrawAssetRequest) ValidateBasic() error {
 	if m.Depositor == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	if m.LockerId <= 0 {
-		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 	if m.Amount.IsNil() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be nil")
 	}
 	if m.Amount.IsNegative() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be negative")
 	}
 	if m.Amount.IsZero() {
-		return errors.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
+		return errorsmod.Wrap(ErrorInvalidAmountOut, "amount_out cannot be zero")
 	}
 
 	return nil
@@ -226,14 +227,14 @@ func (m *MsgCloseLockerRequest) Type() string {
 
 func (m *MsgCloseLockerRequest) ValidateBasic() error {
 	if m.Depositor == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Depositor); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	if m.LockerId <= 0 {
-		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 
 	return nil
@@ -270,14 +271,14 @@ func (m *MsgLockerRewardCalcRequest) Type() string {
 
 func (m *MsgLockerRewardCalcRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	if m.LockerId <= 0 {
-		return errors.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidLockerID, "lockerID  cannot be negative")
 	}
 
 	return nil

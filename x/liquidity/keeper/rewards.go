@@ -6,9 +6,10 @@ import (
 	"strconv"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/liquidity/amm"
@@ -34,17 +35,17 @@ func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (pri
 func (k Keeper) GetPoolTokenDesrializerKit(ctx sdk.Context, appID, poolID uint64) (types.PoolTokenDeserializerKit, error) {
 	pool, found := k.GetPool(ctx, appID, poolID)
 	if !found {
-		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrInvalidPoolID, "pool %d is invalid", poolID)
+		return types.PoolTokenDeserializerKit{}, errorsmod.Wrapf(types.ErrInvalidPoolID, "pool %d is invalid", poolID)
 	}
 	if pool.Disabled {
-		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolID)
+		return types.PoolTokenDeserializerKit{}, errorsmod.Wrapf(types.ErrDisabledPool, "pool %d is disabled", poolID)
 	}
 	pair, _ := k.GetPair(ctx, pool.AppId, pool.PairId)
 	rx, ry := k.getPoolBalances(ctx, pool, pair)
 	ps := k.GetPoolCoinSupply(ctx, pool)
 	ammPool := pool.AMMPool(rx.Amount, ry.Amount, ps)
 	if ammPool.IsDepleted() {
-		return types.PoolTokenDeserializerKit{}, sdkerrors.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolID)
+		return types.PoolTokenDeserializerKit{}, errorsmod.Wrapf(types.ErrDepletedPool, "pool %d is depleted", poolID)
 	}
 
 	deserializerKit := types.PoolTokenDeserializerKit{
@@ -171,7 +172,7 @@ func (k Keeper) GetFarmingRewardsData(ctx sdk.Context, appID uint64, coinsToDist
 	pool := deserializerKit.Pool
 
 	if pool.Disabled {
-		return nil, sdkerrors.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", pool.Id))
+		return nil, errorsmod.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", pool.Id))
 	}
 
 	asset, err := k.GetAssetWhoseOraclePriceExists(ctx, pair.QuoteCoinDenom, pair.BaseCoinDenom)
@@ -306,19 +307,19 @@ func (k Keeper) ValidateMsgFarm(ctx sdk.Context, msg *types.MsgFarm) (sdk.AccAdd
 
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	pool, found := k.GetPool(ctx, msg.AppId, msg.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
 	if msg.FarmingPoolCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.FarmingPoolCoin.Denom)
+		return nil, errorsmod.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.FarmingPoolCoin.Denom)
 	}
 	if !msg.FarmingPoolCoin.Amount.IsPositive() {
-		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
+		return nil, errorsmod.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
 	}
 	return farmer, nil
 }
@@ -373,19 +374,19 @@ func (k Keeper) ValidateMsgUnfarm(ctx sdk.Context, msg *types.MsgUnfarm) (sdk.Ac
 
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	pool, found := k.GetPool(ctx, msg.AppId, msg.PoolId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidPoolID, "no pool exists with id : %d", msg.PoolId)
 	}
 
 	if msg.UnfarmingPoolCoin.Denom != pool.PoolCoinDenom {
-		return nil, sdkerrors.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
+		return nil, errorsmod.Wrapf(types.ErrWrongPoolCoinDenom, "expected pool coin denom %s, found %s", pool.PoolCoinDenom, msg.UnfarmingPoolCoin.Denom)
 	}
 	if !msg.UnfarmingPoolCoin.Amount.IsPositive() {
-		return nil, sdkerrors.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
+		return nil, errorsmod.Wrapf(types.ErrorNotPositiveAmont, "pool coin amount should be positive")
 	}
 	return farmer, nil
 }
@@ -400,7 +401,7 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 	queuedFarmer, qfound := k.GetQueuedFarmer(ctx, msg.AppId, msg.PoolId, farmer)
 
 	if !afound && !qfound {
-		return sdkerrors.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", msg.PoolId)
+		return errorsmod.Wrapf(types.ErrorFarmerNotFound, "no active farm found for given pool id %d", msg.PoolId)
 	}
 
 	farmedCoinAmount := sdkmath.NewInt(0)
@@ -416,7 +417,7 @@ func (k Keeper) Unfarm(ctx sdk.Context, msg *types.MsgUnfarm) error {
 	}
 
 	if farmedCoinAmount.LT(msg.UnfarmingPoolCoin.Amount) {
-		return sdkerrors.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount %d%s smaller than requested unfarming pool coin amount %d%s", farmedCoinAmount.Int64(), msg.UnfarmingPoolCoin.Denom, msg.UnfarmingPoolCoin.Amount.Int64(), msg.UnfarmingPoolCoin.Denom)
+		return errorsmod.Wrapf(types.ErrInvalidUnfarmAmount, "farmed pool coin amount %d%s smaller than requested unfarming pool coin amount %d%s", farmedCoinAmount.Int64(), msg.UnfarmingPoolCoin.Denom, msg.UnfarmingPoolCoin.Amount.Int64(), msg.UnfarmingPoolCoin.Denom)
 	}
 
 	unFarmingCoin := msg.UnfarmingPoolCoin

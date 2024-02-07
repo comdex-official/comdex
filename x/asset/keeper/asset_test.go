@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	"github.com/comdex-official/comdex/x/asset/keeper"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
@@ -18,7 +19,7 @@ func (k Keeper) WhitelistAppId(ctx sdk.Context, appMappingId uint64) error
 func (s *KeeperTestSuite) TestAddApp() {
 	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 
-	genesisSupply := sdk.NewIntFromUint64(1000000)
+	genesisSupply := sdkmath.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 
 	for _, tc := range []struct {
@@ -32,7 +33,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "cswap",
 				ShortName:        "cswap",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -43,7 +44,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 					},
 					{
 						2,
-						sdk.ZeroInt(),
+						sdkmath.ZeroInt(),
 						true,
 						userAddress1,
 					},
@@ -57,7 +58,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "cswap",
 				ShortName:        "werd",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -76,7 +77,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "cswap",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -95,7 +96,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "cswap.",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -114,7 +115,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "cswap" + " ",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -133,7 +134,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "cswaps",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -152,7 +153,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "cswappp",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -171,7 +172,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werdwerdwerd",
 				ShortName:        "cswapp",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -190,7 +191,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "werd",
 				ShortName:        "Cswap",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -209,7 +210,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 0,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -228,7 +229,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -247,7 +248,7 @@ func (s *KeeperTestSuite) TestAddApp() {
 			assetTypes.AppData{
 				Name:             "harby",
 				ShortName:        "harby",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken:     nil,
 			},
@@ -271,11 +272,11 @@ func (s *KeeperTestSuite) TestAddApp() {
 				s.Require().Equal(res.App.ShortName, tc.msg.ShortName)
 				s.Require().Equal(res.App.GovTimeInSeconds, tc.msg.GovTimeInSeconds)
 				s.Require().Equal(res.App.MinGovDeposit, tc.msg.MinGovDeposit)
-				err = assetKeeper.UpdateGovTimeInApp(*ctx, assetTypes.AppAndGovTime{AppId: tc.appID, GovTimeInSeconds: 653, MinGovDeposit: sdk.NewIntFromUint64(5000000)})
+				err = assetKeeper.UpdateGovTimeInApp(*ctx, assetTypes.AppAndGovTime{AppId: tc.appID, GovTimeInSeconds: 653, MinGovDeposit: sdkmath.NewIntFromUint64(5000000)})
 				s.Require().NoError(err)
 				//minGovDeposit, govTimeInSeconds, _, err := assetKeeper.GetAppWasmQuery(*ctx, tc.appID)
 				//s.Require().NoError(err)
-				//s.Require().Equal(minGovDeposit, sdk.NewIntFromUint64(10000000))
+				//s.Require().Equal(minGovDeposit, sdkmath.NewIntFromUint64(10000000))
 				//s.Require().Equal(govTimeInSeconds, int64(653))
 			}
 		})
@@ -307,7 +308,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    11,
 				Name:                  "CMRT",
 				Denom:                 "ucmrt",
-				Decimals:              sdk.NewInt(100),
+				Decimals:              sdkmath.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -321,7 +322,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    1,
 				Name:                  "CMRTCMRTCMRT",
 				Denom:                 "ucmrt",
-				Decimals:              sdk.NewInt(100),
+				Decimals:              sdkmath.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -335,7 +336,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    1,
 				Name:                  "CMST",
 				Denom:                 "ucmrt",
-				Decimals:              sdk.NewInt(100),
+				Decimals:              sdkmath.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -349,7 +350,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    1,
 				Name:                  "CMKT",
 				Denom:                 "ucmst",
-				Decimals:              sdk.NewInt(100),
+				Decimals:              sdkmath.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -363,7 +364,7 @@ func (s *KeeperTestSuite) TestUpdateAssetRecords() {
 				Id:                    1,
 				Name:                  "CMRT",
 				Denom:                 "ucmrt",
-				Decimals:              sdk.NewInt(100),
+				Decimals:              sdkmath.NewInt(100),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 			},
@@ -406,7 +407,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMDX",
 				Denom:                 "ucmdx",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
 				IsCdpMintable:         false,
@@ -419,7 +420,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "OSMO",
 				Denom:                 "ucmdx",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -432,7 +433,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMST",
 				Denom:                 "ucmst",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         true,
@@ -445,7 +446,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "HARBOR",
 				Denom:                 "uharbor",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: true,
 				IsCdpMintable:         false,
@@ -458,7 +459,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "CMDO",
 				Denom:                 "ucmdo",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             true,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -471,7 +472,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "SPX",
 				Denom:                 "uspx",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -484,7 +485,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "SPX",
 				Denom:                 "uspx",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -497,7 +498,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "SPXz",
 				Denom:                 "uspxz",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -510,7 +511,7 @@ func (s *KeeperTestSuite) TestAddAssetRecords() {
 			assetTypes.Asset{
 				Name:                  "HUAHUAHUAHUA",
 				Denom:                 "uspxz",
-				Decimals:              sdk.NewInt(1000000),
+				Decimals:              sdkmath.NewInt(1000000),
 				IsOnChain:             false,
 				IsOraclePriceRequired: false,
 				IsCdpMintable:         false,
@@ -820,14 +821,14 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 			bindings.MsgUpdatePairsVault{
 				AppID:              1,
 				ExtPairID:          5,
-				StabilityFee:       sdk.MustNewDecFromStr("0.4"),
-				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
-				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
-				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
+				StabilityFee:       sdkmath.LegacyMustNewDecFromStr("0.4"),
+				ClosingFee:         sdkmath.LegacyMustNewDecFromStr("233.23"),
+				LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.56"),
+				DrawDownFee:        sdkmath.LegacyMustNewDecFromStr("0.29"),
 				IsVaultActive:      true,
-				DebtCeiling:        sdk.NewInt(1000000000),
-				DebtFloor:          sdk.NewInt(1000),
-				MinCr:              sdk.MustNewDecFromStr("1.8"),
+				DebtCeiling:        sdkmath.NewInt(1000000000),
+				DebtFloor:          sdkmath.NewInt(1000),
+				MinCr:              sdkmath.LegacyMustNewDecFromStr("1.8"),
 				MinUsdValueLeft:    100000000,
 			},
 			"ucmdx",
@@ -842,14 +843,14 @@ func (s *KeeperTestSuite) TestWasmUpdatePairsVault() {
 			bindings.MsgUpdatePairsVault{
 				AppID:              1,
 				ExtPairID:          1,
-				StabilityFee:       sdk.MustNewDecFromStr("0.4"),
-				ClosingFee:         sdk.MustNewDecFromStr("233.23"),
-				LiquidationPenalty: sdk.MustNewDecFromStr("0.56"),
-				DrawDownFee:        sdk.MustNewDecFromStr("0.29"),
+				StabilityFee:       sdkmath.LegacyMustNewDecFromStr("0.4"),
+				ClosingFee:         sdkmath.LegacyMustNewDecFromStr("233.23"),
+				LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.56"),
+				DrawDownFee:        sdkmath.LegacyMustNewDecFromStr("0.29"),
 				IsVaultActive:      true,
-				DebtCeiling:        sdk.NewInt(1000000000),
-				DebtFloor:          sdk.NewInt(1000),
-				MinCr:              sdk.MustNewDecFromStr("1.8"),
+				DebtCeiling:        sdkmath.NewInt(1000000000),
+				DebtFloor:          sdkmath.NewInt(1000),
+				MinCr:              sdkmath.LegacyMustNewDecFromStr("1.8"),
 				MinUsdValueLeft:    100000000,
 			},
 			"ucmdx",
@@ -903,15 +904,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              1,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-A",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -929,15 +930,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-A",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -956,15 +957,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              1,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -982,15 +983,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               11,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1008,15 +1009,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              21,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1034,15 +1035,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B ",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1060,15 +1061,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("2"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("2"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1086,15 +1087,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0"),
-				ClosingFee:          sdk.MustNewDecFromStr("2"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("2"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1112,15 +1113,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("2.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("2.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1138,15 +1139,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(10000000000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(10000000000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1164,15 +1165,15 @@ func (s *KeeperTestSuite) TestAddExtendedPairVault() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              2,
-				StabilityFee:        sdk.MustNewDecFromStr("0"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-Y",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -1238,7 +1239,7 @@ func (s *KeeperTestSuite) TestQueryExtendedPairVaults() {
 func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 	userAddress1 := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 
-	genesisSupply := sdk.NewIntFromUint64(1000000)
+	genesisSupply := sdkmath.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	s.TestAddApp()
 	s.TestAddAssetRecords()
@@ -1256,7 +1257,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               4,
 				Name:             "sake",
 				ShortName:        "sake",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1277,7 +1278,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               1,
 				Name:             "sake",
 				ShortName:        "sake",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1298,7 +1299,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               1,
 				Name:             "sake",
 				ShortName:        "sake",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1319,7 +1320,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               1,
 				Name:             "sake",
 				ShortName:        "sake",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken:     nil,
 			},
@@ -1333,7 +1334,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               2,
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1354,7 +1355,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               2,
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.ZeroInt(),
+				MinGovDeposit:    sdkmath.ZeroInt(),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1375,7 +1376,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               2,
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{
@@ -1396,7 +1397,7 @@ func (s *KeeperTestSuite) TestAddAssetInAppRecords() {
 				Id:               3,
 				Name:             "commodo",
 				ShortName:        "comdo",
-				MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+				MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 				GovTimeInSeconds: 900,
 				GenesisToken: []assetTypes.MintGenesisToken{
 					{

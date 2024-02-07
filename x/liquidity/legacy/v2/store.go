@@ -1,16 +1,16 @@
 package v2
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	expected "github.com/comdex-official/comdex/x/liquidity/expected"
 	v1liquidity "github.com/comdex-official/comdex/x/liquidity/legacy/v1"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
 
-func MigrateGenericParams(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateGenericParams(appID uint64, store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	var oldGenericLiquidityParams v1liquidity.GenericParams
 	if err := cdc.Unmarshal(store.Get(types.GetGenericParamsKey(appID)), &oldGenericLiquidityParams); err != nil {
 		return err
@@ -46,9 +46,9 @@ func MigrateGenericParams(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec
 	return nil
 }
 
-func MigratePools(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec) error {
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
-	defer func(iter sdk.Iterator) {
+func MigratePools(appID uint64, store storetypes.KVStore, cdc codec.BinaryCodec) error {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -82,9 +82,9 @@ func MigratePools(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec) error 
 	return nil
 }
 
-func MigrateOrders(appID uint64, store sdk.KVStore, cdc codec.BinaryCodec) error {
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
-	defer func(iter sdk.Iterator) {
+func MigrateOrders(appID uint64, store storetypes.KVStore, cdc codec.BinaryCodec) error {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

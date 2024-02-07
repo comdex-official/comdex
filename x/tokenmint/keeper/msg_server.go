@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,7 +50,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		if err != nil {
 			return nil, err
 		}
-		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
+		if assetDataInApp.GenesisSupply.GT(sdkmath.ZeroInt()) {
 			if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 				return nil, err
 			}
@@ -74,7 +75,7 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 		if err != nil {
 			return nil, err
 		}
-		if assetDataInApp.GenesisSupply.GT(sdk.ZeroInt()) {
+		if assetDataInApp.GenesisSupply.GT(sdkmath.ZeroInt()) {
 			if err = k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, assetDataInApp.GenesisSupply))); err != nil {
 				return nil, err
 			}

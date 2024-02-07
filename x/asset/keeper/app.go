@@ -4,9 +4,11 @@ import (
 	"regexp"
 	"strings"
 
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/asset/types"
 )
 
@@ -66,7 +68,7 @@ func (k Keeper) GetApp(ctx sdk.Context, id uint64) (app types.AppData, found boo
 	return app, true
 }
 
-func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (sdk.Int, int64, uint64, error) {
+func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (sdkmath.Int, int64, uint64, error) {
 	appData, _ := k.GetApp(ctx, id)
 	minGovDeposit := appData.MinGovDeposit
 	var assetID uint64
@@ -83,10 +85,10 @@ func (k Keeper) GetAppWasmQuery(ctx sdk.Context, id uint64) (sdk.Int, int64, uin
 func (k Keeper) GetApps(ctx sdk.Context) (apps []types.AppData, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -236,7 +238,7 @@ func (k Keeper) AddAppRecords(ctx sdk.Context, msg types.AppData) error {
 		}
 	}
 
-	if msg.MinGovDeposit.LT(sdk.ZeroInt()) {
+	if msg.MinGovDeposit.LT(sdkmath.ZeroInt()) {
 		return types.ErrorValueCantBeNegative
 	}
 
@@ -293,7 +295,7 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 		if err != nil {
 			return types.ErrorInvalidFrom
 		}
-		if data.GenesisSupply.LTE(sdk.ZeroInt()) {
+		if data.GenesisSupply.LTE(sdkmath.ZeroInt()) {
 			return types.ErrorInvalidGenesisSupply
 		}
 		hasAsset := k.GetGenesisTokenForApp(ctx, msg.Id)
@@ -301,7 +303,7 @@ func (k Keeper) AddAssetInAppRecords(ctx sdk.Context, msg types.AppData) error {
 			return types.ErrorGenesisTokenExistForApp
 		}
 
-		if data.IsGovToken && appdata.MinGovDeposit.Equal(sdk.ZeroInt()) {
+		if data.IsGovToken && appdata.MinGovDeposit.Equal(sdkmath.ZeroInt()) {
 			return types.ErrorMinGovDepositIsZero
 		}
 

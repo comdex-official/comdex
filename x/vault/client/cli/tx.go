@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/vault/types"
 )
@@ -62,12 +63,12 @@ func Create() *cobra.Command {
 				return err
 			}
 
-			amountIn, ok := sdk.NewIntFromString(args[2])
+			amountIn, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
 
-			amountOut, ok := sdk.NewIntFromString(args[3])
+			amountOut, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmountOut
 			}
@@ -112,7 +113,7 @@ func Deposit() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[3])
+			amount, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -155,7 +156,7 @@ func Withdraw() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[3])
+			amount, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -198,7 +199,7 @@ func DrawDebt() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[3])
+			amount, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -240,7 +241,7 @@ func RepayDebt() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[3])
+			amount, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -319,7 +320,7 @@ func DepositAndDraw() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[3])
+			amount, ok := sdkmath.NewIntFromString(args[3])
 			if !ok {
 				return types.ErrorInvalidAmount
 			}
@@ -357,7 +358,7 @@ func CreateStableMint() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
@@ -397,7 +398,7 @@ func DepositStableMint() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
@@ -442,7 +443,7 @@ func WithdrawStableMint() *cobra.Command {
 				return err
 			}
 
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}

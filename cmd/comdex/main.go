@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/cosmos/cosmos-sdk/server"
+	"cosmossdk.io/log"
 	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	comdex "github.com/comdex-official/comdex/app"
@@ -12,13 +12,9 @@ import (
 func main() {
 	comdex.SetAccountAddressPrefixes()
 
-	root, _ := NewRootCmd()
+	root := NewRootCmd() //TODO: check wasmd root
 	if err := servercmd.Execute(root, "", comdex.DefaultNodeHome); err != nil {
-		switch e := err.(type) {
-		case server.ErrorCode:
-			os.Exit(e.Code)
-		default:
-			os.Exit(1)
-		}
+		log.NewLogger(root.OutOrStderr()).Error("failure when running app", "err", err)
+		os.Exit(1)
 	}
 }

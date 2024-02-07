@@ -1,26 +1,36 @@
 package app
 
 import (
-	"cosmossdk.io/math"
 	"encoding/json"
-	dbm "github.com/cometbft/cometbft-db"
+	"testing"
+	"time"
+
+	"cosmossdk.io/log"
+	sdkmath "cosmossdk.io/math"
+	"cosmossdk.io/store/snapshots"
+	snapshottypes "cosmossdk.io/store/snapshots/types"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+	dbm "github.com/cosmos/cosmos-db"
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/std"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
+	"path/filepath"
+
 	// simappparams "cosmossdk.io/simapp/params"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 )
 
@@ -43,27 +53,39 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func MakeTestEncodingConfig() moduletestutil.TestEncodingConfig {
+func MakeTestEncodingConfig(modules ...module.AppModuleBasic) moduletestutil.TestEncodingConfig {
+	mb := module.NewBasicManager(modules...)
 	encodingConfig := moduletestutil.MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	mb.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	mb.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	return encodingConfig
 }
 
-func setup(t *testing.T, withGenesis bool) (*App, GenesisState) {
+func setup(t testing.TB, chainID string, withGenesis bool, invCheckPeriod uint, opts ...wasmkeeper.Option) (*App, GenesisState) {
 	db := dbm.NewMemDB()
-	//encCdc := MakeTestEncodingConfig()
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, GetWasmEnabledProposals(), EmptyWasmOpts)
+	nodeHome := t.TempDir()
+	snapshotDir := filepath.Join(nodeHome, "data", "snapshots")
+
+	snapshotDB, err := dbm.NewDB("metadata", dbm.GoLevelDBBackend, snapshotDir)
+	require.NoError(t, err)
+	t.Cleanup(func() { snapshotDB.Close() })
+	snapshotStore, err := snapshots.NewStore(snapshotDB, snapshotDir)
+	require.NoError(t, err)
+
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = nodeHome // ensure unique folder
+	appOptions[server.FlagInvCheckPeriod] = invCheckPeriod
+	app := NewComdexApp(log.NewNopLogger(), db, nil, true, appOptions, opts, bam.SetChainID(chainID), bam.SetSnapshot(snapshotStore, snapshottypes.SnapshotOptions{KeepRecent: 2}))
 	if withGenesis {
-		return app, NewDefaultGenesisState(app.AppCodec())
+		return app, app.DefaultGenesis()
 	}
 	return app, GenesisState{}
 }
 
 // Setup initializes a new App. A Nop logger is set in App.
-func Setup(t *testing.T, isCheckTx bool) *App {
+func Setup(t *testing.T, isCheckTx bool, opts ...wasmkeeper.Option) *App {
 	t.Helper()
 
 	privVal := NewPV()
@@ -79,43 +101,41 @@ func Setup(t *testing.T, isCheckTx bool) *App {
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin("ucmdx", sdkmath.NewInt(100000000000000))),
 	}
+	chainID := "testing"
 
-	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
+	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, chainID, opts, balance)
 
 	return app
 }
 
-func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *App {
+func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, chainID string, opts []wasmkeeper.Option, balances ...banktypes.Balance) *App {
 	t.Helper()
 
-	app, genesisState := setup(t, true)
+	app, genesisState := setup(t, chainID, true, 5, opts...)
 	genesisState = genesisStateWithValSet(t, app, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	app.InitChain(
-		abci.RequestInitChain{
-			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: DefaultConsensusParams,
-			AppStateBytes:   stateBytes,
-			Time:            time.Now().UTC(),
-			InitialHeight:   1,
-		},
-	)
+	_, err = app.InitChain(&abci.RequestInitChain{
+		ChainId:         chainID,
+		Time:            time.Now().UTC(),
+		Validators:      []abci.ValidatorUpdate{},
+		ConsensusParams: DefaultConsensusParams,
+		InitialHeight:   app.LastBlockHeight() + 1,
+		AppStateBytes:   stateBytes,
+	})
+	require.NoError(t, err)
 
-	// commit genesis changes
-	app.Commit()
-	app.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+	_, err = app.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height:             app.LastBlockHeight() + 1,
-		AppHash:            app.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
+		Hash:               app.LastCommitID().Hash,
 		NextValidatorsHash: valSet.Hash(),
-		Time:               time.Now().UTC(),
-	}})
+	})
+	require.NoError(t, err)
 
 	return app
 }
@@ -147,15 +167,15 @@ func genesisStateWithValSet(t *testing.T,
 			Jailed:            false,
 			Status:            stakingtypes.Bonded,
 			Tokens:            bondAmt,
-			DelegatorShares:   math.LegacyOneDec(),
+			DelegatorShares:   sdkmath.LegacyOneDec(),
 			Description:       stakingtypes.Description{},
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
-			Commission:        stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
-			MinSelfDelegation: math.ZeroInt(),
+			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
+			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), math.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec()))
 
 	}
 

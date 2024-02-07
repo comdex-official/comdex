@@ -1,6 +1,7 @@
 package vault
 
 import (
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/pkg/errors"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/comdex-official/comdex/x/vault/types"
 )
 
-func NewHandler(k keeper.Keeper) sdk.Handler {
+func NewHandler(k keeper.Keeper) bam.MsgServiceHandler {
 	server := keeper.NewMsgServer(k)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {

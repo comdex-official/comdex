@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
@@ -28,7 +30,7 @@ var commonArgs = []string{
 func MsgCreate(
 	clientCtx client.Context,
 	appMappingID, extendedPairVaultID uint64,
-	amountIn, amountOut sdk.Int,
+	amountIn, amountOut sdkmath.Int,
 	from string,
 	extraArgs ...string,
 ) (testutil.BufferWriter, error) {
@@ -68,7 +70,7 @@ func (s *VaultIntegrationTestSuite) CreateNewApp(appName string) uint64 {
 	err := s.app.AssetKeeper.AddAppRecords(s.ctx, assettypes.AppData{
 		Name:             appName,
 		ShortName:        appName,
-		MinGovDeposit:    sdk.NewInt(0),
+		MinGovDeposit:    sdkmath.NewInt(0),
 		GovTimeInSeconds: 0,
 		GenesisToken:     []assettypes.MintGenesisToken{},
 	})
@@ -93,7 +95,7 @@ func (s *VaultIntegrationTestSuite) CreateNewAsset(name, denom string, price uin
 	err := s.app.AssetKeeper.AddAssetRecords(s.ctx, assettypes.Asset{
 		Name:                  name,
 		Denom:                 denom,
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: true,
 	})
@@ -170,15 +172,15 @@ func (s *VaultIntegrationTestSuite) CreateNewExtendedVaultPair(pairName string, 
 	err := s.app.AssetKeeper.WasmAddExtendedPairsVaultRecords(s.ctx, &bindings.MsgAddExtendedPairsVault{
 		AppID:               appMappingID,
 		PairID:              pairID,
-		StabilityFee:        sdk.NewDecWithPrec(2, 2), // 0.02
-		ClosingFee:          sdk.NewDec(0),
-		LiquidationPenalty:  sdk.NewDecWithPrec(15, 2), // 0.15
-		DrawDownFee:         sdk.NewDecWithPrec(1, 2),  // 0.01
+		StabilityFee:        sdkmath.LegacyNewDecWithPrec(2, 2), // 0.02
+		ClosingFee:          sdkmath.LegacyNewDec(0),
+		LiquidationPenalty:  sdkmath.LegacyNewDecWithPrec(15, 2), // 0.15
+		DrawDownFee:         sdkmath.LegacyNewDecWithPrec(1, 2),  // 0.01
 		IsVaultActive:       true,
-		DebtCeiling:         sdk.NewInt(1000000000000000000),
-		DebtFloor:           sdk.NewInt(100000000),
+		DebtCeiling:         sdkmath.NewInt(1000000000000000000),
+		DebtFloor:           sdkmath.NewInt(100000000),
 		IsStableMintVault:   false,
-		MinCr:               sdk.NewDecWithPrec(23, 1), // 2.3
+		MinCr:               sdkmath.LegacyNewDecWithPrec(23, 1), // 2.3
 		PairName:            pairName,
 		AssetOutOraclePrice: true,
 		AssetOutPrice:       1000000,

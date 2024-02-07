@@ -1,6 +1,7 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"strconv"
 
@@ -630,9 +631,6 @@ func NewCreateNewMultipleLendPairs(clientCtx client.Context, txf tx.Factory, fs 
 		return txf, nil, err
 	}
 
-	if err = msg.ValidateBasic(); err != nil {
-		return txf, nil, err
-	}
 	return txf, msg, nil
 }
 
@@ -943,19 +941,19 @@ func NewCreateassetRatesParams(clientCtx client.Context, txf tx.Factory, fs *fla
 		return txf, nil, err
 	}
 
-	newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
-	newBase, _ := sdk.NewDecFromStr(base)
-	newSlope1, _ := sdk.NewDecFromStr(slope1)
-	newSlope2, _ := sdk.NewDecFromStr(slope2)
+	newUOptimal, _ := sdkmath.LegacyNewDecFromStr(uOptimal)
+	newBase, _ := sdkmath.LegacyNewDecFromStr(base)
+	newSlope1, _ := sdkmath.LegacyNewDecFromStr(slope1)
+	newSlope2, _ := sdkmath.LegacyNewDecFromStr(slope2)
 	newEnableStableBorrow := ParseBoolFromString(enableStableBorrow)
-	newStableBase, _ := sdk.NewDecFromStr(stableBase)
-	newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1)
-	newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2)
-	newLTV, _ := sdk.NewDecFromStr(ltv)
-	newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
-	newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
-	newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
-	newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
+	newStableBase, _ := sdkmath.LegacyNewDecFromStr(stableBase)
+	newStableSlope1, _ := sdkmath.LegacyNewDecFromStr(stableSlope1)
+	newStableSlope2, _ := sdkmath.LegacyNewDecFromStr(stableSlope2)
+	newLTV, _ := sdkmath.LegacyNewDecFromStr(ltv)
+	newLiquidationThreshold, _ := sdkmath.LegacyNewDecFromStr(liquidationThreshold)
+	newLiquidationPenalty, _ := sdkmath.LegacyNewDecFromStr(liquidationPenalty)
+	newLiquidationBonus, _ := sdkmath.LegacyNewDecFromStr(liquidationBonus)
+	newReserveFactor, _ := sdkmath.LegacyNewDecFromStr(reserveFactor)
 
 	assetRatesParams := types.AssetRatesParams{
 		AssetID:              assetID,
@@ -1037,11 +1035,11 @@ func NewAddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.Flag
 	if err != nil {
 		return txf, nil, err
 	}
-	buffer, _ := sdk.NewDecFromStr(auctionParamsInput.Buffer)
+	buffer, _ := sdkmath.LegacyNewDecFromStr(auctionParamsInput.Buffer)
 
-	cusp, _ := sdk.NewDecFromStr(auctionParamsInput.Cusp)
+	cusp, _ := sdkmath.LegacyNewDecFromStr(auctionParamsInput.Cusp)
 
-	step, _ := sdk.NewIntFromString(auctionParamsInput.Step)
+	step, _ := sdkmath.NewIntFromString(auctionParamsInput.Step)
 
 	priceFunctionType, err := strconv.ParseUint(auctionParamsInput.PriceFunctionType, 10, 64)
 	if err != nil {
@@ -1306,19 +1304,19 @@ func NewCreateAssetRatesPoolPairs(clientCtx client.Context, txf tx.Factory, fs *
 	if err != nil {
 		return txf, nil, err
 	}
-	newUOptimal, _ := sdk.NewDecFromStr(uOptimal)
-	newBase, _ := sdk.NewDecFromStr(base)
-	newSlope1, _ := sdk.NewDecFromStr(slope1)
-	newSlope2, _ := sdk.NewDecFromStr(slope2)
+	newUOptimal, _ := sdkmath.LegacyNewDecFromStr(uOptimal)
+	newBase, _ := sdkmath.LegacyNewDecFromStr(base)
+	newSlope1, _ := sdkmath.LegacyNewDecFromStr(slope1)
+	newSlope2, _ := sdkmath.LegacyNewDecFromStr(slope2)
 	newEnableStableBorrow := ParseBoolFromString(enableStableBorrow)
-	newStableBase, _ := sdk.NewDecFromStr(stableBase)
-	newStableSlope1, _ := sdk.NewDecFromStr(stableSlope1)
-	newStableSlope2, _ := sdk.NewDecFromStr(stableSlope2)
-	newLTV, _ := sdk.NewDecFromStr(ltv)
-	newLiquidationThreshold, _ := sdk.NewDecFromStr(liquidationThreshold)
-	newLiquidationPenalty, _ := sdk.NewDecFromStr(liquidationPenalty)
-	newLiquidationBonus, _ := sdk.NewDecFromStr(liquidationBonus)
-	newReserveFactor, _ := sdk.NewDecFromStr(reserveFactor)
+	newStableBase, _ := sdkmath.LegacyNewDecFromStr(stableBase)
+	newStableSlope1, _ := sdkmath.LegacyNewDecFromStr(stableSlope1)
+	newStableSlope2, _ := sdkmath.LegacyNewDecFromStr(stableSlope2)
+	newLTV, _ := sdkmath.LegacyNewDecFromStr(ltv)
+	newLiquidationThreshold, _ := sdkmath.LegacyNewDecFromStr(liquidationThreshold)
+	newLiquidationPenalty, _ := sdkmath.LegacyNewDecFromStr(liquidationPenalty)
+	newLiquidationBonus, _ := sdkmath.LegacyNewDecFromStr(liquidationBonus)
+	newReserveFactor, _ := sdkmath.LegacyNewDecFromStr(reserveFactor)
 	newIsIsolated := ParseBoolFromString(isIsolated)
 
 	moduleName := assetRatesPoolPairs.ModuleName
@@ -1406,7 +1404,7 @@ func CmdDepreciatePoolsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf =txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewDepreciatePools(clientCtx, txf, cmd.Flags())
 			if err != nil {
@@ -1468,7 +1466,7 @@ func CmdAddEModePairsProposal() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			txf =txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
+			txf = txf.WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
 
 			txf, msg, err := NewAddEModePairs(clientCtx, txf, cmd.Flags())
 			if err != nil {

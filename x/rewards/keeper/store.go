@@ -3,6 +3,8 @@ package keeper
 import (
 	"time"
 
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
 
@@ -48,9 +50,9 @@ func (k Keeper) DeleteEpochInfoByDuration(ctx sdk.Context, duration time.Duratio
 func (k Keeper) GetAllEpochInfos(ctx sdk.Context) (epochInfos []types.EpochInfo) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.EpochInfoByDurationKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.EpochInfoByDurationKeyPrefix)
 	)
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -132,9 +134,9 @@ func (k Keeper) GetGaugeByID(ctx sdk.Context, id uint64) (gauge types.Gauge, fou
 func (k Keeper) GetAllGauges(ctx sdk.Context) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
 	)
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -175,9 +177,9 @@ func (k Keeper) GetGaugeIdsByTriggerDuration(ctx sdk.Context, triggerDuration ti
 func (k Keeper) GetAllGaugeIdsByTriggerDuration(ctx sdk.Context) (gaugeByTriggerDuration []types.GaugeByTriggerDuration) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GaugeIdsByTriggerDurationKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.GaugeIdsByTriggerDurationKeyPrefix)
 	)
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -195,9 +197,9 @@ func (k Keeper) GetAllGaugeIdsByTriggerDuration(ctx sdk.Context) (gaugeByTrigger
 func (k Keeper) GetAllGaugesByGaugeTypeID(ctx sdk.Context, gaugeTypeID uint64) (gauges []types.Gauge) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.GaugeKeyPrefix)
 	)
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

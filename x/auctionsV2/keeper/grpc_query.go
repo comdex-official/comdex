@@ -1,9 +1,11 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"context"
+
+	"cosmossdk.io/store/prefix"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
@@ -187,7 +189,7 @@ func (q QueryServer) UserLimitBidsByAssetID(c context.Context, req *types.QueryU
 		items  []types.LimitOrderBid
 		ctx    = sdk.UnwrapSDKContext(c)
 		key    []byte
-		amount = sdk.NewInt(0)
+		amount = sdkmath.NewInt(0)
 	)
 	key = types.LimitBidKeyForAssetID(req.DebtTokenId, req.CollateralTokenId)
 
@@ -374,7 +376,7 @@ func (q QueryServer) LimitBidProtocolDataWithUser(c context.Context, req *types.
 				debtAsset, _ := q.asset.GetAsset(ctx, item.DebtAssetId)
 				userBidValue, found := q.GetUserLimitBidsByAssetID(ctx, req.Bidder, item.DebtAssetId, item.CollateralAssetId)
 				if !found {
-					userBidValue = sdk.ZeroInt()
+					userBidValue = sdkmath.ZeroInt()
 				}
 				data = types.LimitBidProtocolDataWithUserForQuery{
 					CollateralAssetId:    item.CollateralAssetId,

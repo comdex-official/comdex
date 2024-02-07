@@ -1,7 +1,11 @@
 package v13
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionV2keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
@@ -18,12 +22,11 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
-	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
-	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
+	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v8/keeper"
+	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v8/types"
+	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 )
 
 func CreateUpgradeHandlerV13(
@@ -40,15 +43,15 @@ func CreateUpgradeHandlerV13(
 	liquidationV2Keeper liquidationV2keeper.Keeper,
 	auctionV2Keeper auctionV2keeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying main net upgrade - v.13.3.0")
-		logger := ctx.Logger().With("upgrade", UpgradeName)
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Applying main net upgrade - v.13.3.0")
+		logger := sdk.UnwrapSDKContext(ctx).Logger().With("upgrade", UpgradeName)
 
 		// Migrate Tendermint consensus parameters from x/params module to a deprecated x/consensus module.
 		// The old params module is required to still be imported in your app.go in order to handle this migration.
-		ctx.Logger().Info("Migrating tendermint consensus params from x/params to x/consensus...")
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Migrating tendermint consensus params from x/params to x/consensus...")
 		legacyParamSubspace := paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-		baseapp.MigrateParams(ctx, legacyParamSubspace, &consensusParamsKeeper)
+		baseapp.MigrateParams(sdk.UnwrapSDKContext(ctx), legacyParamSubspace, consensusParamsKeeper.ParamsStore)
 
 		// ibc v4-to-v5
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v4-to-v5.md
@@ -59,23 +62,23 @@ func CreateUpgradeHandlerV13(
 		// ibc v6-to-v7
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v6-to-v7.md#chains
 		// (optional) prune expired tendermint consensus states to save storage space
-		ctx.Logger().Info("Pruning expired tendermint consensus states...")
-		if _, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, IBCKeeper.ClientKeeper); err != nil {
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Pruning expired tendermint consensus states...")
+		if _, err := ibctmmigrations.PruneExpiredConsensusStates(sdk.UnwrapSDKContext(ctx), cdc, IBCKeeper.ClientKeeper); err != nil {
 			return nil, err
 		}
 
 		// ibc v7-to-v7.1
 		// https://github.com/cosmos/ibc-go/blob/v7.1.0/docs/migrations/v7-to-v7_1.md#09-localhost-migration
 		// explicitly update the IBC 02-client params, adding the localhost client type
-		params := IBCKeeper.ClientKeeper.GetParams(ctx)
+		params := IBCKeeper.ClientKeeper.GetParams(sdk.UnwrapSDKContext(ctx))
 		params.AllowedClients = append(params.AllowedClients, exported.Localhost)
-		IBCKeeper.ClientKeeper.SetParams(ctx, params)
+		IBCKeeper.ClientKeeper.SetParams(sdk.UnwrapSDKContext(ctx), params)
 		logger.Info(fmt.Sprintf("updated ibc client params %v", params))
 
 		// icq params set
 		icqparams := icqtypes.DefaultParams()
 		icqparams.AllowQueries = append(icqparams.AllowQueries, "/cosmwasm.wasm.v1.Query/SmartContractState")
-		icqkeeper.SetParams(ctx, icqparams)
+		icqkeeper.SetParams(sdk.UnwrapSDKContext(ctx), icqparams)
 
 		// Run migrations
 		logger.Info(fmt.Sprintf("pre migrate version map: %v", fromVM))
@@ -86,15 +89,18 @@ func CreateUpgradeHandlerV13(
 		logger.Info(fmt.Sprintf("post migrate version map: %v", vm))
 
 		// update gov params to use a 20% initial deposit ratio, allowing us to remote the ante handler
-		govParams := GovKeeper.GetParams(ctx)
-		govParams.MinInitialDepositRatio = sdk.NewDec(20).Quo(sdk.NewDec(100)).String()
-		if err := GovKeeper.SetParams(ctx, govParams); err != nil {
+		govParams, err := GovKeeper.Params.Get(ctx)
+		if err !=nil {
+			return nil, err
+		}
+		govParams.MinInitialDepositRatio = sdkmath.LegacyNewDec(20).Quo(sdkmath.LegacyNewDec(100)).String()
+		if err := GovKeeper.Params.Set(ctx, govParams); err != nil {
 			return nil, err
 		}
 		logger.Info(fmt.Sprintf("updated gov params to %v", govParams))
 
-		UpdateLendParams(ctx, lendKeeper, assetKeeper)
-		InitializeStates(ctx, liquidationV2Keeper, auctionV2Keeper)
+		UpdateLendParams(sdk.UnwrapSDKContext(ctx), lendKeeper, assetKeeper)
+		InitializeStates(sdk.UnwrapSDKContext(ctx), liquidationV2Keeper, auctionV2Keeper)
 
 		return vm, err
 	}
@@ -109,7 +115,7 @@ func UpdateLendParams(
 	cSTATOM := assettypes.Asset{
 		Name:                  "CSTATOM",
 		Denom:                 "ucstatom",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -150,7 +156,7 @@ func UpdateLendParams(
 	cAXLUSDC := assettypes.Asset{
 		Name:                  "CAXLUSDC",
 		Denom:                 "ucaxlusdc",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -169,9 +175,9 @@ func InitializeStates(
 	dutchAuctionParams := liquidationV2types.DutchAuctionParam{
 		Premium:         newDec("1.15"),
 		Discount:        newDec("0.7"),
-		DecrementFactor: sdk.NewInt(1),
+		DecrementFactor: sdkmath.NewInt(1),
 	}
-	englishAuctionParams := liquidationV2types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
+	englishAuctionParams := liquidationV2types.EnglishAuctionParam{DecrementFactor: sdkmath.NewInt(1)}
 
 	harborParams := liquidationV2types.LiquidationWhiteListing{
 		AppId:               2,
@@ -180,7 +186,7 @@ func InitializeStates(
 		DutchAuctionParam:   &dutchAuctionParams,
 		IsEnglishActivated:  true,
 		EnglishAuctionParam: &englishAuctionParams,
-		KeeeperIncentive:    sdk.ZeroDec(),
+		KeeeperIncentive:    sdkmath.LegacyZeroDec(),
 	}
 
 	commodoParams := liquidationV2types.LiquidationWhiteListing{
@@ -190,7 +196,7 @@ func InitializeStates(
 		DutchAuctionParam:   &dutchAuctionParams,
 		IsEnglishActivated:  false,
 		EnglishAuctionParam: nil,
-		KeeeperIncentive:    sdk.ZeroDec(),
+		KeeeperIncentive:    sdkmath.LegacyZeroDec(),
 	}
 
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, harborParams)
@@ -227,7 +233,7 @@ func InitializeStates(
 
 }
 
-func newDec(i string) sdk.Dec {
-	dec, _ := sdk.NewDecFromStr(i)
+func newDec(i string) sdkmath.LegacyDec {
+	dec, _ := sdkmath.LegacyNewDecFromStr(i)
 	return dec
 }

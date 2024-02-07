@@ -1,68 +1,58 @@
 package main
 
 import (
-	"errors"
-	"io"
 	"os"
-	"path/filepath"
-	// "time"
+	"time"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	"cosmossdk.io/log"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/prometheus/client_golang/prometheus"
-
-	tmdb "github.com/cometbft/cometbft-db"
-	tmcfg "github.com/cometbft/cometbft/config"
-	tmcli "github.com/cometbft/cometbft/libs/cli"
-	"github.com/cometbft/cometbft/libs/log"
-	tmtypes "github.com/cometbft/cometbft/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
-	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
-	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/snapshots"
-	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
-	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	comdex "github.com/comdex-official/comdex/app"
+	"github.com/comdex-official/comdex/app"
+	"github.com/comdex-official/comdex/app/params"
 )
 
-func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
-	encodingConfig := comdex.MakeEncodingConfig()
+func NewRootCmd() *cobra.Command {
+	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
+	// note, this is not necessary when using app wiring, as depinject can be directly used (see root_v2.go)
+	tempApp := app.NewComdexApp(log.NewNopLogger(), dbm.NewMemDB(), nil, false, simtestutil.NewAppOptionsWithFlagHome(tempDir()), []wasmkeeper.Option{})
+	encodingConfig := params.EncodingConfig{
+		InterfaceRegistry: tempApp.InterfaceRegistry(),
+		Codec:             tempApp.AppCodec(),
+		TxConfig:          tempApp.TxConfig(),
+		Amino:             tempApp.LegacyAmino(),
+	}
+
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Marshaler).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(authtypes.AccountRetriever{}).
 		WithBroadcastMode(flags.FlagBroadcastMode).
-		WithHomeDir(comdex.DefaultNodeHome).
-		WithViper("")
+		WithHomeDir(app.DefaultNodeHome).
+		WithViper("") // In wasmd, we don't use any prefix for env variables.
 
 	cobra.EnableCommandSorting = false
 	root := &cobra.Command{
-		Use:   "comdex",
-		Short: "Comdex - DeFi Infrastructure layer for the Cosmos ecosystem",
+		Use:           "comdex",
+		Short:         "Comdex - DeFi Infrastructure layer for the Cosmos ecosystem",
+		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			initClientCtx = initClientCtx.WithCmdContext(cmd.Context())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -71,232 +61,52 @@ func NewRootCmd() (*cobra.Command, comdex.EncodingConfig) {
 			if err != nil {
 				return err
 			}
+			// This needs to go after ReadFromClientConfig, as that function
+			// sets the RPC client needed for SIGN_MODE_TEXTUAL. This sign mode
+			// is only available if the client is online.
+			if !initClientCtx.Offline {
+				enabledSignModes := append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL)
+				txConfigOpts := tx.ConfigOptions{
+					EnabledSignModes:           enabledSignModes,
+					TextualCoinMetadataQueryFn: txmodule.NewGRPCCoinMetadataQueryFn(initClientCtx),
+				}
+				txConfig, err := tx.NewTxConfigWithOptions(
+					initClientCtx.Codec,
+					txConfigOpts,
+				)
+				if err != nil {
+					return err
+				}
+
+				initClientCtx = initClientCtx.WithTxConfig(txConfig)
+			}
 
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
 			}
 			// 2 seconds + 1 second tendermint = 3 second blocks
-			// timeoutCommit := 2 * time.Second
+			timeoutCommit := 2 * time.Second
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig()
+			customCMTConfig := initCometBFTConfig(timeoutCommit)
 
 			// Force faster block times
-			// os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
+			os.Setenv("COMDEX_CONSENSUS_TIMEOUT_COMMIT", cast.ToString(timeoutCommit))
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCMTConfig)
 		},
 	}
 
-	initRootCmd(root, encodingConfig)
-	return root, encodingConfig
-}
+	initRootCmd(root, encodingConfig.TxConfig, encodingConfig.InterfaceRegistry, encodingConfig.Codec, tempApp.BasicModuleManager)
 
-func initTendermintConfig() *tmcfg.Config {
-	cfg := tmcfg.DefaultConfig()
+	// add keyring to autocli opts
+	autoCliOpts := tempApp.AutoCliOpts()
+	initClientCtx, _ = config.ReadFromClientConfig(initClientCtx)
+	autoCliOpts.Keyring, _ = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
+	autoCliOpts.ClientCtx = initClientCtx
 
-	// these values put a higher strain on node memory
-	// cfg.P2P.MaxNumInboundPeers = 100
-	// cfg.P2P.MaxNumOutboundPeers = 40
-
-	// While this is set, it only applies to new configs.
-	// cfg.Consensus.TimeoutCommit = timeoutCommit
-
-	return cfg
-}
-
-// initAppConfig helps to override default appConfig template and configs.
-// return "", nil if no custom configuration is required for the application.
-func initAppConfig() (string, interface{}) {
-	type CustomAppConfig struct {
-		serverconfig.Config
-
-		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
-	}
-
-	// Optionally allow the chain developer to overwrite the SDK's default
-	// server config.
-	srvCfg := serverconfig.DefaultConfig()
-
-	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultWasmConfig(),
-	}
-
-	customAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
-
-	return customAppTemplate, customAppConfig
-}
-
-func initRootCmd(rootCmd *cobra.Command, encoding comdex.EncodingConfig) {
-	cfg := sdk.GetConfig()
-	cfg.Seal()
-	
-	gentxModule := comdex.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
-	rootCmd.AddCommand(
-		genutilcli.InitCmd(comdex.ModuleBasics, comdex.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome, gentxModule.GenTxValidator),
-		genutilcli.GenTxCmd(comdex.ModuleBasics, encoding.TxConfig, banktypes.GenesisBalancesIterator{}, comdex.DefaultNodeHome),
-		genutilcli.ValidateGenesisCmd(comdex.ModuleBasics),
-		AddGenesisAccountCmd(comdex.DefaultNodeHome),
-		// AddGenesisWasmMsgCmd(comdex.DefaultNodeHome),
-		tmcli.NewCompletionCmd(rootCmd, true),
-		testnetCmd(comdex.ModuleBasics, banktypes.GenesisBalancesIterator{}),
-		MigrateStoreCmd(),
-		debug.Cmd(),
-		config.Cmd(),
-	)
-
-	server.AddCommands(rootCmd, comdex.DefaultNodeHome, appCreatorFunc, appExportFunc, addModuleInitFlags)
-	rootCmd.AddCommand(
-		rpc.StatusCommand(),
-		queryCommand(),
-		txCommand(),
-		keys.Commands(comdex.DefaultNodeHome),
-	)
-}
-
-func addModuleInitFlags(cmd *cobra.Command) {
-	crisis.AddModuleInitFlags(cmd)
-}
-
-func queryCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                        "query",
-		Aliases:                    []string{"q"},
-		Short:                      "Querying subcommands",
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
-	}
-
-	cmd.AddCommand(
-		authcli.GetAccountCmd(),
-		rpc.ValidatorCommand(),
-		rpc.BlockCommand(),
-		authcli.QueryTxsByEventsCmd(),
-		authcli.QueryTxCmd(),
-	)
-
-	comdex.ModuleBasics.AddQueryCommands(cmd)
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
-
-	return cmd
-}
-
-func txCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                        "tx",
-		Short:                      "Transactions subcommands",
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
-	}
-
-	cmd.AddCommand(
-		authcli.GetSignCommand(),
-		authcli.GetSignBatchCommand(),
-		authcli.GetMultiSignCommand(),
-		authcli.GetMultiSignBatchCmd(),
-		authcli.GetValidateSignaturesCommand(),
-		authcli.GetBroadcastCommand(),
-		authcli.GetEncodeCommand(),
-		authcli.GetDecodeCommand(),
-	)
-
-	comdex.ModuleBasics.AddTxCommands(cmd)
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
-
-	return cmd
-}
-
-func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options servertypes.AppOptions) servertypes.Application {
-	var cache sdk.MultiStorePersistentCache
-	if cast.ToBool(options.Get(server.FlagInterBlockCache)) {
-		cache = store.NewCommitKVStoreCacheManager()
-	}
-
-	skipUpgradeHeights := make(map[int64]bool)
-	for _, height := range cast.ToIntSlice(options.Get(server.FlagUnsafeSkipUpgrades)) {
-		skipUpgradeHeights[int64(height)] = true
-	}
-
-	pruningOptions, err := server.GetPruningOptionsFromFlags(options)
-	if err != nil {
+	if err := autoCliOpts.EnhanceRootCommand(root); err != nil {
 		panic(err)
 	}
-
-	snapshotDir := filepath.Join(cast.ToString(options.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := tmdb.NewDB("metadata", tmdb.GoLevelDBBackend, snapshotDir)
-	if err != nil {
-		panic(err)
-	}
-	snapshotStore, err := snapshots.NewStore(snapshotDB, snapshotDir)
-	if err != nil {
-		panic(err)
-	}
-	var wasmOpts []wasm.Option
-	if cast.ToBool(options.Get("telemetry.enabled")) {
-		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
-	}
-	snapshotOptions := snapshottypes.NewSnapshotOptions(
-		cast.ToUint64(options.Get(server.FlagStateSyncSnapshotInterval)),
-		cast.ToUint32(options.Get(server.FlagStateSyncSnapshotKeepRecent)),
-	)
-
-	homeDir := cast.ToString(options.Get(flags.FlagHome))
-	chainID := cast.ToString(options.Get(flags.FlagChainID))
-	if chainID == "" {
-		// fallback to genesis chain-id
-		appGenesis, err := tmtypes.GenesisDocFromFile(filepath.Join(homeDir, "config", "genesis.json"))
-		if err != nil {
-			panic(err)
-		}
-
-		chainID = appGenesis.ChainID
-	}
-
-	return comdex.New(
-		logger, db, tracer, true, skipUpgradeHeights,
-		cast.ToString(options.Get(flags.FlagHome)),
-		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
-		comdex.MakeEncodingConfig(),
-		options,
-		comdex.GetWasmEnabledProposals(),
-		wasmOpts,
-		baseapp.SetPruning(pruningOptions),
-		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
-		baseapp.SetHaltHeight(cast.ToUint64(options.Get(server.FlagHaltHeight))),
-		baseapp.SetHaltTime(cast.ToUint64(options.Get(server.FlagHaltTime))),
-		baseapp.SetMinRetainBlocks(cast.ToUint64(options.Get(server.FlagMinRetainBlocks))),
-		baseapp.SetInterBlockCache(cache),
-		baseapp.SetTrace(cast.ToBool(options.Get(server.FlagTrace))),
-		baseapp.SetIndexEvents(cast.ToStringSlice(options.Get(server.FlagIndexEvents))),
-		baseapp.SetSnapshot(snapshotStore, snapshotOptions),
-		baseapp.SetChainID(chainID),
-	)
-}
-
-func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
-	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions, modulesToExport []string,
-) (servertypes.ExportedApp, error) {
-	config := comdex.MakeEncodingConfig()
-	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
-	homePath, ok := options.Get(flags.FlagHome).(string)
-	if !ok || homePath == "" {
-		return servertypes.ExportedApp{}, errors.New("application home is not set")
-	}
-	var emptyWasmOpts []wasm.Option
-	var app *comdex.App
-	if height != -1 {
-		app = comdex.New(logger, db, tracer, false, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
-
-		if err := app.LoadHeight(height); err != nil {
-			return servertypes.ExportedApp{}, err
-		}
-	} else {
-		app = comdex.New(logger, db, tracer, true, map[int64]bool{}, homePath, cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options, comdex.GetWasmEnabledProposals(), emptyWasmOpts)
-	}
-
-	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+	return root
 }

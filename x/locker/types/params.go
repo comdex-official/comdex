@@ -1,17 +1,17 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var _ paramtypes.ParamSet = (*Params)(nil)
 
 const (
-	CreateLockerGas   = sdk.Gas(32640)
-	DepositLockerGas  = sdk.Gas(26688)
-	WithdrawLockerGas = sdk.Gas(26473)
-	CloseLockerGas    = sdk.Gas(16473)
+	CreateLockerGas   = storetypes.Gas(32640)
+	DepositLockerGas  = storetypes.Gas(26688)
+	WithdrawLockerGas = storetypes.Gas(26473)
+	CloseLockerGas    = storetypes.Gas(16473)
 )
 
 // ParamKeyTable the param key table for launch module.

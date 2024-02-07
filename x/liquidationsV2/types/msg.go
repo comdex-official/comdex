@@ -1,8 +1,9 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgLiquidateInternalKeeperRequest(
@@ -26,7 +27,7 @@ func (m *MsgLiquidateInternalKeeperRequest) Type() string {
 
 func (m *MsgLiquidateInternalKeeperRequest) ValidateBasic() error {
 	if m.Id == 0 {
-		return errors.Wrap(ErrVaultIDInvalid, "id cannot be zero")
+		return errorsmod.Wrap(ErrVaultIDInvalid, "id cannot be zero")
 	}
 
 	return nil
@@ -63,8 +64,8 @@ func (m *MsgAppReserveFundsRequest) Type() string {
 }
 
 func (m *MsgAppReserveFundsRequest) ValidateBasic() error {
-	if m.AppId == 0 || m.AssetId == 0 || m.TokenQuantity.Amount == sdk.NewInt(0) {
-		return errors.Wrap(ErrVaultIDInvalid, "id cannot be zero")
+	if m.AppId == 0 || m.AssetId == 0 || m.TokenQuantity.Amount == sdkmath.NewInt(0) {
+		return errorsmod.Wrap(ErrVaultIDInvalid, "id cannot be zero")
 	}
 
 	return nil
@@ -113,7 +114,7 @@ func (m *MsgLiquidateExternalKeeperRequest) Type() string {
 
 func (m *MsgLiquidateExternalKeeperRequest) ValidateBasic() error {
 	if m.AppId == 0 {
-		return errors.Wrap(ErrVaultIDInvalid, "app_id cannot be zero")
+		return errorsmod.Wrap(ErrVaultIDInvalid, "app_id cannot be zero")
 	}
 
 	return nil

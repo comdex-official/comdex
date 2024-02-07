@@ -6,6 +6,7 @@ package types
 import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	cosmossdk_io_math "cosmossdk.io/math"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
@@ -180,7 +181,7 @@ type Pair struct {
 	QuoteCoinDenom          string                                  `protobuf:"bytes,3,opt,name=quote_coin_denom,json=quoteCoinDenom,proto3" json:"quote_coin_denom,omitempty"`
 	EscrowAddress           string                                  `protobuf:"bytes,4,opt,name=escrow_address,json=escrowAddress,proto3" json:"escrow_address,omitempty"`
 	LastOrderId             uint64                                  `protobuf:"varint,5,opt,name=last_order_id,json=lastOrderId,proto3" json:"last_order_id,omitempty"`
-	LastPrice               *github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=last_price,json=lastPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"last_price,omitempty"`
+	LastPrice               *cosmossdk_io_math.LegacyDec `protobuf:"bytes,6,opt,name=last_price,json=lastPrice,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"last_price,omitempty"`
 	CurrentBatchId          uint64                                  `protobuf:"varint,7,opt,name=current_batch_id,json=currentBatchId,proto3" json:"current_batch_id,omitempty"`
 	SwapFeeCollectorAddress string                                  `protobuf:"bytes,8,opt,name=swap_fee_collector_address,json=swapFeeCollectorAddress,proto3" json:"swap_fee_collector_address,omitempty"`
 	AppId                   uint64                                  `protobuf:"varint,9,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
@@ -385,9 +386,9 @@ type Order struct {
 	// received_coin specifies the received coin after the swap
 	ReceivedCoin types.Coin `protobuf:"bytes,8,opt,name=received_coin,json=receivedCoin,proto3" json:"received_coin"`
 	// price specifies the price that an orderer is willing to swap
-	Price      github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"price"`
-	Amount     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,10,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount"`
-	OpenAmount github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,11,opt,name=open_amount,json=openAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"open_amount"`
+	Price      cosmossdk_io_math.LegacyDec `protobuf:"bytes,9,opt,name=price,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"price"`
+	Amount     cosmossdk_io_math.Int `protobuf:"bytes,10,opt,name=amount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount"`
+	OpenAmount cosmossdk_io_math.Int `protobuf:"bytes,11,opt,name=open_amount,json=openAmount,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"open_amount"`
 	// batch_id specifies the pair's batch id when the request is stored
 	BatchId  uint64      `protobuf:"varint,12,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
 	ExpireAt time.Time   `protobuf:"bytes,13,opt,name=expire_at,json=expireAt,proto3,stdtime" json:"expire_at"`
@@ -1725,7 +1726,7 @@ func (m *Pair) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			var v github_com_cosmos_cosmos_sdk_types.Dec
+			var v cosmossdk_io_math.LegacyDec
 			m.LastPrice = &v
 			if err := m.LastPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

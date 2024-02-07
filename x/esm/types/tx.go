@@ -1,8 +1,8 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgDeposit(depositor string, appID uint64, amount sdk.Coin) *MsgDepositESM {
@@ -22,7 +22,7 @@ func (msg *MsgDepositESM) ValidateBasic() error {
 	}
 
 	if asset := msg.GetAmount(); !asset.IsValid() {
-		return sdkerrors.Wrap(ErrInvalidAsset, asset.String())
+		return errorsmod.Wrap(ErrInvalidAsset, asset.String())
 	}
 
 	return nil
@@ -80,19 +80,19 @@ func (msg MsgCollateralRedemptionRequest) Route() string { return ModuleName }
 
 func (msg *MsgCollateralRedemptionRequest) ValidateBasic() error {
 	if msg.From == "" {
-		return sdkerrors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.From); err != nil {
-		return sdkerrors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 	if msg.Amount.IsNil() {
-		return sdkerrors.Wrap(ErrorInvalidAmount, "amount cannot be nil")
+		return errorsmod.Wrap(ErrorInvalidAmount, "amount cannot be nil")
 	}
 	if msg.Amount.IsNegative() {
-		return sdkerrors.Wrap(ErrorInvalidAmount, "amount cannot be negative")
+		return errorsmod.Wrap(ErrorInvalidAmount, "amount cannot be negative")
 	}
 	if msg.Amount.IsZero() {
-		return sdkerrors.Wrap(ErrorInvalidAmount, "amount cannot be zero")
+		return errorsmod.Wrap(ErrorInvalidAmount, "amount cannot be zero")
 	}
 	return nil
 }

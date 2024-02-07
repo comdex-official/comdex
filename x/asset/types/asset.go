@@ -1,10 +1,11 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -19,9 +20,9 @@ func (m *Asset) Validate() error {
 		return fmt.Errorf("name length cannot be greater than %d", MaxAssetNameLength)
 	}
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return errors.Wrapf(err, "invalid denom %s", m.Denom)
+		return errorsmod.Wrapf(err, "invalid denom %s", m.Denom)
 	}
-	if m.Decimals.LTE(sdk.ZeroInt()) {
+	if m.Decimals.LTE(sdkmath.ZeroInt()) {
 		return fmt.Errorf("decimals cannot be less than or equal to zero")
 	}
 
@@ -36,9 +37,9 @@ func (m *AssetPair) Validate() error {
 		return fmt.Errorf("name length cannot be greater than %d", MaxAssetNameLength)
 	}
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return errors.Wrapf(err, "invalid denom %s", m.Denom)
+		return errorsmod.Wrapf(err, "invalid denom %s", m.Denom)
 	}
-	if m.Decimals.LTE(sdk.ZeroInt()) {
+	if m.Decimals.LTE(sdkmath.ZeroInt()) {
 		return fmt.Errorf("decimals cannot be less than or equal to zero")
 	}
 

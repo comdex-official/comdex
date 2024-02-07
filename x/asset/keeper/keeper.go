@@ -7,7 +7,7 @@ import (
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "cosmossdk.io/store/types"
 
 	"github.com/comdex-official/comdex/x/asset/expected"
 )
@@ -21,6 +21,7 @@ type Keeper struct {
 	rewards    expected.RewardsKeeper
 	vault      expected.VaultKeeper
 	bandoracle expected.Bandoraclekeeper
+	authority  string
 }
 
 func NewKeeper(
@@ -32,6 +33,7 @@ func NewKeeper(
 	rewards expected.RewardsKeeper,
 	vault expected.VaultKeeper,
 	bandoracle expected.Bandoraclekeeper,
+	authority string,
 ) Keeper {
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(assettypes.ParamKeyTable())
@@ -46,9 +48,10 @@ func NewKeeper(
 		rewards:    rewards,
 		vault:      vault,
 		bandoracle: bandoracle,
+		authority:  authority,
 	}
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.key)
 }

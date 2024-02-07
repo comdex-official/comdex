@@ -3,9 +3,10 @@ package wasm
 import (
 	"encoding/json"
 
+	errorsmod "cosmossdk.io/errors"
+
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 )
@@ -14,7 +15,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 		var comdexQuery bindings.ComdexQuery
 		if err := json.Unmarshal(request, &comdexQuery); err != nil {
-			return nil, sdkerrors.Wrap(err, "app query")
+			return nil, errorsmod.Wrap(err, "app query")
 		}
 		if comdexQuery.AppData != nil {
 			appID := comdexQuery.AppData.AppID
@@ -26,7 +27,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "App data query response")
+				return nil, errorsmod.Wrap(err, "App data query response")
 			}
 			return bz, nil
 		} else if comdexQuery.AssetData != nil {
@@ -37,7 +38,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "App data query response")
+				return nil, errorsmod.Wrap(err, "App data query response")
 			}
 			return bz, nil
 		} else if comdexQuery.MintedToken != nil {
@@ -49,7 +50,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "tokenMint query response")
+				return nil, errorsmod.Wrap(err, "tokenMint query response")
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhiteListAssetLocker != nil {
@@ -63,7 +64,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "RemoveWhiteListAssetLocker query response")
+				return nil, errorsmod.Wrap(err, "RemoveWhiteListAssetLocker query response")
 			}
 			return bz, nil
 		} else if comdexQuery.WhitelistAppIDLockerRewards != nil {
@@ -77,7 +78,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "WhitelistAppIdLockerRewards query response")
+				return nil, errorsmod.Wrap(err, "WhitelistAppIdLockerRewards query response")
 			}
 			return bz, nil
 		} else if comdexQuery.WhitelistAppIDVaultInterest != nil {
@@ -90,7 +91,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "WhitelistAppIdVaultInterest query response")
+				return nil, errorsmod.Wrap(err, "WhitelistAppIdVaultInterest query response")
 			}
 			return bz, nil
 		} else if comdexQuery.ExternalLockerRewards != nil {
@@ -104,7 +105,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "GetExternalLockerRewardsCheck query response")
+				return nil, errorsmod.Wrap(err, "GetExternalLockerRewardsCheck query response")
 			}
 			return bz, nil
 		} else if comdexQuery.ExternalVaultRewards != nil {
@@ -118,7 +119,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+				return nil, errorsmod.Wrap(err, "ExternalVaultRewards query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CollectorLookupTableQuery != nil {
@@ -132,7 +133,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+				return nil, errorsmod.Wrap(err, "ExternalVaultRewards query response")
 			}
 			return bz, nil
 		} else if comdexQuery.ExtendedPairsVaultRecordsQuery != nil {
@@ -152,7 +153,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "ExternalVaultRewards query response")
+				return nil, errorsmod.Wrap(err, "ExternalVaultRewards query response")
 			}
 			return bz, nil
 		} else if comdexQuery.AuctionMappingForAppQuery != nil {
@@ -164,7 +165,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "AuctionMappingForAppQuery query response")
+				return nil, errorsmod.Wrap(err, "AuctionMappingForAppQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.WhiteListedAssetQuery != nil {
@@ -177,7 +178,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "WhiteListedAssetQueryCheck query response")
+				return nil, errorsmod.Wrap(err, "WhiteListedAssetQueryCheck query response")
 			}
 			return bz, nil
 		} else if comdexQuery.UpdatePairsVaultQuery != nil {
@@ -190,7 +191,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
+				return nil, errorsmod.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.UpdateCollectorLookupTableQuery != nil {
@@ -203,7 +204,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "UpdatePairsVaultQuery query response")
+				return nil, errorsmod.Wrap(err, "UpdatePairsVaultQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAppIDVaultInterestQuery != nil {
@@ -215,7 +216,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIdVaultInterestQuery query response")
+				return nil, errorsmod.Wrap(err, "RemoveWhitelistAppIdVaultInterestQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAssetLockerQuery != nil {
@@ -229,7 +230,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAssetLockerQuery query response")
+				return nil, errorsmod.Wrap(err, "RemoveWhitelistAssetLockerQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.WhitelistAppIDLiquidationQuery != nil {
@@ -242,7 +243,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "WhitelistAppIDLiquidationQuery query response")
+				return nil, errorsmod.Wrap(err, "WhitelistAppIDLiquidationQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.RemoveWhitelistAppIDLiquidationQuery != nil {
@@ -255,7 +256,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "RemoveWhitelistAppIDLiquidationQuery query response")
+				return nil, errorsmod.Wrap(err, "RemoveWhitelistAppIDLiquidationQuery query response")
 			}
 			return bz, nil
 		} else if comdexQuery.AddESMTriggerParamsForAppQuery != nil {
@@ -268,7 +269,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "AddESMTriggerParamsForAppResponse query response")
+				return nil, errorsmod.Wrap(err, "AddESMTriggerParamsForAppResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.ExtendedPairByApp != nil {
@@ -280,7 +281,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "ExtendedPairByAppResponse query response")
+				return nil, errorsmod.Wrap(err, "ExtendedPairByAppResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CheckSurplusReward != nil {
@@ -292,7 +293,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "CheckSurplusRewardResponse query response")
+				return nil, errorsmod.Wrap(err, "CheckSurplusRewardResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CheckWhitelistedAsset != nil {
@@ -304,7 +305,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "CheckWhitelistedAssetResponse query response")
+				return nil, errorsmod.Wrap(err, "CheckWhitelistedAssetResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CheckVaultCreated != nil {
@@ -316,7 +317,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "VaultCreatedResponse query response")
+				return nil, errorsmod.Wrap(err, "VaultCreatedResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CheckBorrowed != nil {
@@ -328,7 +329,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "BorrowedResponse query response")
+				return nil, errorsmod.Wrap(err, "BorrowedResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.CheckLiquidityProvided != nil {
@@ -341,7 +342,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "LiquidityProvidedResponse query response")
+				return nil, errorsmod.Wrap(err, "LiquidityProvidedResponse query response")
 			}
 			return bz, nil
 		} else if comdexQuery.GetPoolByApp != nil {
@@ -352,7 +353,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "GetPoolByApp query response")
+				return nil, errorsmod.Wrap(err, "GetPoolByApp query response")
 			}
 			return bz, nil
 		} else if comdexQuery.GetAssetPrice != nil {
@@ -363,7 +364,7 @@ func CustomQuerier(queryPlugin *QueryPlugin) func(ctx sdk.Context, request json.
 			}
 			bz, err := json.Marshal(res)
 			if err != nil {
-				return nil, sdkerrors.Wrap(err, "GetAssetPrice query response")
+				return nil, errorsmod.Wrap(err, "GetAssetPrice query response")
 			}
 			return bz, nil
 		}

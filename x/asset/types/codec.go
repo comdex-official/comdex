@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,6 +22,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&AddAssetInAppProposal{}, "comdex/asset/AddAssetInAppProposal", nil)
 	cdc.RegisterConcrete(&UpdateGovTimeInAppProposal{}, "comdex/asset/UpdateGovTimeInAppProposal", nil)
 	cdc.RegisterConcrete(&AddMultipleAssetsPairsProposal{}, "comdex/asset/AddMultipleAssetsPairsProposal", nil)
+	cdc.RegisterConcrete(&Params{}, "comdex/asset/Params", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "comdex/asset/MsgUpdateParams")
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -41,6 +44,7 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgAddAsset{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
@@ -54,6 +58,5 @@ var (
 func init() {
 	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
-	// sdk.RegisterLegacyAminoCodec(amino)
 	amino.Seal()
 }

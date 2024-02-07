@@ -1,15 +1,17 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	flag "github.com/spf13/pflag"
-	"strconv"
-	"time"
 
 	"github.com/spf13/cobra"
 
@@ -100,7 +102,7 @@ func txDepositLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
-			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			premiumDiscount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
 			}
@@ -142,7 +144,7 @@ func txCancelLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
-			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			premiumDiscount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
 			}
@@ -179,7 +181,7 @@ func txWithdrawLimitDutchBid() *cobra.Command {
 				return fmt.Errorf("debtTokenID '%s' not a valid uint", args[1])
 			}
 
-			premiumDiscount, ok := sdk.NewIntFromString(args[2])
+			premiumDiscount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return fmt.Errorf("premiumDiscount '%s' not a valid int", args[2])
 			}
@@ -246,17 +248,17 @@ func AddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet
 		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
 	}
 
-	step, err := sdk.NewDecFromStr(auctionParams.Step)
+	step, err := sdkmath.LegacyNewDecFromStr(auctionParams.Step)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	withdrawalFee, err := sdk.NewDecFromStr(auctionParams.WithdrawalFee)
+	withdrawalFee, err := sdkmath.LegacyNewDecFromStr(auctionParams.WithdrawalFee)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	closingFee, err := sdk.NewDecFromStr(auctionParams.ClosingFee)
+	closingFee, err := sdkmath.LegacyNewDecFromStr(auctionParams.ClosingFee)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -266,17 +268,17 @@ func AddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet
 		return txf, nil, fmt.Errorf("failed to parse appId: %w", err)
 	}
 
-	bidFactor, err := sdk.NewDecFromStr(auctionParams.BidFactor)
+	bidFactor, err := sdkmath.LegacyNewDecFromStr(auctionParams.BidFactor)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	liquidationPenalty, err := sdk.NewDecFromStr(auctionParams.LiquidationPenalty)
+	liquidationPenalty, err := sdkmath.LegacyNewDecFromStr(auctionParams.LiquidationPenalty)
 	if err != nil {
 		return txf, nil, err
 	}
 
-	auctionBonus, err := sdk.NewDecFromStr(auctionParams.AuctionBonus)
+	auctionBonus, err := sdkmath.LegacyNewDecFromStr(auctionParams.AuctionBonus)
 	if err != nil {
 		return txf, nil, err
 	}
@@ -301,10 +303,6 @@ func AddAuctionParams(clientCtx client.Context, txf tx.Factory, fs *flag.FlagSet
 
 	msg, err := govtypes.NewMsgSubmitProposal(content, deposit, from)
 	if err != nil {
-		return txf, nil, err
-	}
-
-	if err = msg.ValidateBasic(); err != nil {
 		return txf, nil, err
 	}
 

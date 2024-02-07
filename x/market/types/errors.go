@@ -1,11 +1,11 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 var (
-	ErrorAssetDoesNotExist = errors.Register(ModuleName, 1001, "asset does not exist")
-	ErrorUnknownMsgType    = errors.Register(ModuleName, 1002, "unknown message type")
-	ErrorPriceNotActive    = errors.Register(ModuleName, 1003, "Price inactive")
+	ErrorAssetDoesNotExist = errorsmod.Register(ModuleName, 1001, "asset does not exist")
+	ErrorUnknownMsgType    = errorsmod.Register(ModuleName, 1002, "unknown message type")
+	ErrorPriceNotActive    = errorsmod.Register(ModuleName, 1003, "Price inactive")
 )

@@ -3,13 +3,13 @@ package keeper
 import (
 	"fmt"
 
+	"cosmossdk.io/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cometbft/cometbft/libs/log"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/vault/expected"
 	"github.com/comdex-official/comdex/x/vault/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 type Keeper struct {
@@ -42,6 +42,6 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.key)
 }

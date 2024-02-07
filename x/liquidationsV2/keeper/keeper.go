@@ -3,13 +3,13 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
 	"github.com/comdex-official/comdex/x/liquidationsV2/expected"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 
+	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -29,6 +29,7 @@ type Keeper struct {
 	lend       expected.LendKeeper
 	auctionsV2 expected.AuctionsV2Keeper
 	collector  expected.CollectorKeeper
+	authority  string
 }
 
 func NewKeeper(
@@ -46,6 +47,7 @@ func NewKeeper(
 	lend expected.LendKeeper,
 	auctionsV2Keeper expected.AuctionsV2Keeper,
 	collector expected.CollectorKeeper,
+	authority string,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -67,6 +69,7 @@ func NewKeeper(
 		lend:       lend,
 		auctionsV2: auctionsV2Keeper,
 		collector:  collector,
+		authority:  authority,
 	}
 }
 
@@ -74,7 +77,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 

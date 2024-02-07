@@ -2,14 +2,17 @@ package keeper_test
 
 import (
 	"fmt"
+	"time"
+
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
+
 	utils "github.com/comdex-official/comdex/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/pkg/errors"
-	"time"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (s *KeeperTestSuite) TestMsgLend() {
@@ -29,22 +32,22 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolTwo, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
@@ -122,7 +125,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 	}{
 		{
 			Name:               "asset does not exist",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 10, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, 1),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 10, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), poolOneID, 1),
 			ExpErr:             types.ErrorAssetDoesNotExist,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -131,7 +134,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "Pool Not Found",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), 3, 1),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), 3, 1),
 			ExpErr:             types.ErrPoolNotFound,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -140,7 +143,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "App Mapping Id does not exists",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, 10),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), poolOneID, 10),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -149,7 +152,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "App Mapping Id mismatch, use the correct App Mapping ID in request",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, appTwoID),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), poolOneID, appTwoID),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -158,8 +161,8 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "invalid offer coin amount",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset2", sdk.NewInt(100)), poolOneID, appOneID),
-			ExpErr:             sdkerrors.Wrapf(types.ErrBadOfferCoinAmount, "uasset2"),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset2", sdkmath.NewInt(100)), poolOneID, appOneID),
+			ExpErr:             errorsmod.Wrapf(types.ErrBadOfferCoinAmount, "uasset2"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -167,8 +170,8 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "Asset Id not defined in the pool",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, sdk.NewCoin("uasset4", sdk.NewInt(100)), poolOneID, appOneID),
-			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAssetIDForPool, "4"),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, sdk.NewCoin("uasset4", sdkmath.NewInt(100)), poolOneID, appOneID),
+			ExpErr:             errorsmod.Wrapf(types.ErrInvalidAssetIDForPool, "4"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -176,8 +179,8 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "Asset Rates Stats not found",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, sdk.NewCoin("uasset4", sdk.NewInt(100)), poolTwoID, appOneID),
-			ExpErr:             sdkerrors.Wrapf(types.ErrorAssetRatesParamsNotFound, "4"),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, sdk.NewCoin("uasset4", sdkmath.NewInt(100)), poolTwoID, appOneID),
+			ExpErr:             errorsmod.Wrapf(types.ErrorAssetRatesParamsNotFound, "4"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -185,7 +188,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "success valid case",
-			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolTwoID, appOneID),
+			Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), poolTwoID, appOneID),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgLendResponse{},
 			QueryResponseIndex: 0,
@@ -194,9 +197,9 @@ func (s *KeeperTestSuite) TestMsgLend() {
 				AssetID:           assetOneID,
 				PoolID:            poolTwoID,
 				Owner:             "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:          sdk.NewCoin("uasset1", sdk.NewInt(100)),
+				AmountIn:          sdk.NewCoin("uasset1", sdkmath.NewInt(100)),
 				LendingTime:       time.Time{},
-				AvailableToBorrow: sdk.NewInt(100),
+				AvailableToBorrow: sdkmath.NewInt(100),
 				AppID:             appOneID,
 				CPoolName:         "OSMO-ATOM-CMST",
 			},
@@ -204,7 +207,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		{
 			Name:               "success valid case",
-			Msg:                *types.NewMsgLend("cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx", assetTwoID, sdk.NewCoin("uasset2", sdk.NewInt(100)), poolOneID, appOneID),
+			Msg:                *types.NewMsgLend("cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx", assetTwoID, sdk.NewCoin("uasset2", sdkmath.NewInt(100)), poolOneID, appOneID),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgLendResponse{},
 			QueryResponseIndex: 0,
@@ -213,9 +216,9 @@ func (s *KeeperTestSuite) TestMsgLend() {
 				AssetID:           assetOneID,
 				PoolID:            poolOneID,
 				Owner:             "cosmos14edpcw6ptcqd2vct9rkjf7lgyvrlwdtd0rqrtx",
-				AmountIn:          sdk.NewCoin("uasset1", sdk.NewInt(100)),
+				AmountIn:          sdk.NewCoin("uasset1", sdkmath.NewInt(100)),
 				LendingTime:       time.Time{},
-				AvailableToBorrow: sdk.NewInt(100),
+				AvailableToBorrow: sdkmath.NewInt(100),
 				AppID:             appOneID,
 				CPoolName:         "OSMO-ATOM-CMST",
 			},
@@ -223,7 +226,7 @@ func (s *KeeperTestSuite) TestMsgLend() {
 		},
 		//{
 		//	Name:               "Duplicate lend Position",
-		//	Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), poolOneID, appOneID),
+		//	Msg:                *types.NewMsgLend("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), poolOneID, appOneID),
 		//	ExpErr:             types.ErrorDuplicateLend,
 		//	ExpResp:            nil,
 		//	QueryResponseIndex: 0,
@@ -274,22 +277,22 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -350,7 +353,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 	}{
 		{
 			Name:               "Lend Position not found",
-			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 3, sdk.NewCoin("uasset1", sdk.NewInt(100))),
+			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 3, sdk.NewCoin("uasset1", sdkmath.NewInt(100))),
 			ExpErr:             types.ErrLendNotFound,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -358,15 +361,15 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		},
 		{
 			Name:               "invalid offer coin amount",
-			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset2", sdk.NewInt(10))),
-			ExpErr:             sdkerrors.Wrap(types.ErrBadOfferCoinAmount, "uasset2"),
+			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset2", sdkmath.NewInt(10))),
+			ExpErr:             errorsmod.Wrap(types.ErrBadOfferCoinAmount, "uasset2"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
 		},
 		{
 			Name:               "Withdraw Amount Limit Exceeded",
-			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(101))),
+			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdkmath.NewInt(101))),
 			ExpErr:             types.ErrWithdrawAmountLimitExceeds,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -374,14 +377,14 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 		},
 		{
 			Name:               "success valid case",
-			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(10))),
+			Msg:                *types.NewMsgWithdraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdkmath.NewInt(10))),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgWithdrawResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.MsgWithdraw{
 				Lender: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				LendId: 1,
-				Amount: sdk.NewCoin("uasset1", sdk.NewInt(10)),
+				Amount: sdk.NewCoin("uasset1", sdkmath.NewInt(10)),
 			},
 			AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset1", newInt(10)), sdk.NewCoin("ucasset1", newInt(90)), sdk.NewCoin("ucasset2", newInt(100))),
 		},
@@ -406,7 +409,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Lender))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 			}
 		})
 	}
@@ -429,22 +432,22 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -502,7 +505,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 	}{
 		{
 			Name:               "Lend Position not found",
-			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 2, sdk.NewCoin("uasset1", sdk.NewInt(100))),
+			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 2, sdk.NewCoin("uasset1", sdkmath.NewInt(100))),
 			ExpErr:             types.ErrLendNotFound,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -511,8 +514,8 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		},
 		{
 			Name:               "invalid offer coin amount",
-			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset2", sdk.NewInt(100))),
-			ExpErr:             sdkerrors.Wrap(types.ErrBadOfferCoinAmount, "uasset2"),
+			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset2", sdkmath.NewInt(100))),
+			ExpErr:             errorsmod.Wrap(types.ErrBadOfferCoinAmount, "uasset2"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -520,14 +523,14 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 		},
 		{
 			Name:               "success valid case",
-			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(10))),
+			Msg:                *types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdkmath.NewInt(10))),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgDepositResponse{},
 			QueryResponseIndex: 0,
 			QueryResponse: &types.MsgDeposit{
 				Lender: "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				LendId: 1,
-				Amount: sdk.NewCoin("uasset2", sdk.NewInt(10)),
+				Amount: sdk.NewCoin("uasset2", sdkmath.NewInt(10)),
 			},
 			// AvailableBalance: sdk.NewCoins(sdk.NewCoin("ucasset1", newInt(90))),
 		},
@@ -575,22 +578,22 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -673,7 +676,7 @@ func (s *KeeperTestSuite) TestMsgCloseLend() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(100))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Lender), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(100))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -711,22 +714,22 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -851,7 +854,7 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		{
 			Name:               "Stable Borrow Rate Not Enabled for This Asset",
 			Msg:                *types.NewMsgBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 4, true, sdk.NewCoin("ucasset1", newInt(100)), sdk.NewCoin("uasset3", newInt(10))),
-			ExpErr:             sdkerrors.Wrap(types.ErrStableBorrowDisabled, "10uasset3"),
+			ExpErr:             errorsmod.Wrap(types.ErrStableBorrowDisabled, "10uasset3"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -945,8 +948,8 @@ func (s *KeeperTestSuite) TestMsgBorrow() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -984,22 +987,22 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
@@ -1143,8 +1146,8 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -1182,22 +1185,22 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
 	assetDataPoolTwo = append(assetDataPoolOne, assetDataPoolTwoAssetFour, assetDataPoolOneAssetOne, assetDataPoolOneAssetThree)
@@ -1288,7 +1291,7 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 		{
 			Name:               "invalid offer coin amount",
 			Msg:                *types.NewMsgDepositBorrow("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset3", newInt(100))),
-			ExpErr:             sdkerrors.Wrap(types.ErrBadOfferCoinAmount, "uasset3"),
+			ExpErr:             errorsmod.Wrap(types.ErrBadOfferCoinAmount, "uasset3"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1335,8 +1338,8 @@ func (s *KeeperTestSuite) TestMsgDepositBorrow() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -1374,22 +1377,22 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1512,8 +1515,8 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -1551,22 +1554,22 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1693,8 +1696,8 @@ func (s *KeeperTestSuite) TestMsgCloseBorrow() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -1732,22 +1735,22 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -1822,7 +1825,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 	}{
 		{
 			Name:               "asset does not exist",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 10, poolOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdk.NewInt(100)), appOneID),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 10, poolOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), appOneID),
 			ExpErr:             types.ErrorAssetDoesNotExist,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -1831,7 +1834,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "Pool Not Found",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, 3, sdk.NewCoin("uasset1", sdk.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdk.NewInt(100)), appOneID),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, 3, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), appOneID),
 			ExpErr:             types.ErrPoolNotFound,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -1840,7 +1843,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "App Mapping Id does not exists",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdk.NewInt(100)), 3),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), pairOneID, false, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), 3),
 			ExpErr:             types.ErrorAppMappingDoesNotExist,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -1849,7 +1852,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "App Mapping Id mismatch, use the correct App Mapping ID in request",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appTwoID),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdkmath.NewInt(10)), appTwoID),
 			ExpErr:             types.ErrorAppMappingIDMismatch,
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
@@ -1858,8 +1861,8 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "invalid offer coin amount",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset2", sdk.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appOneID),
-			ExpErr:             sdkerrors.Wrapf(types.ErrBadOfferCoinAmount, "uasset2"),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset2", sdkmath.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdkmath.NewInt(10)), appOneID),
+			ExpErr:             errorsmod.Wrapf(types.ErrBadOfferCoinAmount, "uasset2"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1867,7 +1870,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		//{
 		//	Name:               "Duplicate lend Position",
-		//	Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, poolOneID, sdk.NewCoin("uasset3", sdk.NewInt(100)), pairFiveID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appOneID),
+		//	Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetThreeID, poolOneID, sdk.NewCoin("uasset3", sdkmath.NewInt(100)), pairFiveID, false, sdk.NewCoin("uasset2", sdkmath.NewInt(10)), appOneID),
 		//	ExpErr:             types.ErrorDuplicateLend,
 		//	ExpResp:            nil,
 		//	QueryResponseIndex: 0,
@@ -1876,8 +1879,8 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		//},
 		{
 			Name:               "Asset Id not defined in the pool",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, poolOneID, sdk.NewCoin("uasset4", sdk.NewInt(100)), pairSevenID, false, sdk.NewCoin("uasset3", sdk.NewInt(10)), appOneID),
-			ExpErr:             sdkerrors.Wrap(types.ErrInvalidAssetIDForPool, "4"),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, poolOneID, sdk.NewCoin("uasset4", sdkmath.NewInt(100)), pairSevenID, false, sdk.NewCoin("uasset3", sdkmath.NewInt(10)), appOneID),
+			ExpErr:             errorsmod.Wrap(types.ErrInvalidAssetIDForPool, "4"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1885,8 +1888,8 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "Asset Rates Stats not found",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, poolTwoID, sdk.NewCoin("uasset4", sdk.NewInt(100)), pairSevenID, false, sdk.NewCoin("uasset3", sdk.NewInt(10)), appOneID),
-			ExpErr:             sdkerrors.Wrap(types.ErrorAssetRatesParamsNotFound, "4"),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetFourID, poolTwoID, sdk.NewCoin("uasset4", sdkmath.NewInt(100)), pairSevenID, false, sdk.NewCoin("uasset3", sdkmath.NewInt(10)), appOneID),
+			ExpErr:             errorsmod.Wrap(types.ErrorAssetRatesParamsNotFound, "4"),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -1894,7 +1897,7 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 		},
 		{
 			Name:               "success valid case",
-			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdk.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdk.NewInt(10)), appOneID),
+			Msg:                *types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", assetOneID, poolOneID, sdk.NewCoin("uasset1", sdkmath.NewInt(100)), pairThreeID, false, sdk.NewCoin("uasset2", sdkmath.NewInt(10)), appOneID),
 			ExpErr:             nil,
 			ExpResp:            &types.MsgBorrowAlternateResponse{},
 			QueryResponseIndex: 0,
@@ -1902,10 +1905,10 @@ func (s *KeeperTestSuite) TestMsgBorrowAlternate() {
 				Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 				AssetId:        assetOneID,
 				PoolId:         poolOneID,
-				AmountIn:       sdk.NewCoin("uasset1", sdk.NewInt(100)),
+				AmountIn:       sdk.NewCoin("uasset1", sdkmath.NewInt(100)),
 				PairId:         pairThreeID,
 				IsStableBorrow: false,
-				AmountOut:      sdk.NewCoin("uasset2", sdk.NewInt(10)),
+				AmountOut:      sdk.NewCoin("uasset2", sdkmath.NewInt(10)),
 				AppId:          appOneID,
 			},
 			// AvailableBalance: sdk.NewCoins(sdk.NewCoin("uasset2", newInt(90000000010))),
@@ -1951,22 +1954,22 @@ func (s *KeeperTestSuite) TestMsgInitializeLend() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2042,7 +2045,7 @@ func (s *KeeperTestSuite) TestMsgInitializeLend() {
 func (s *KeeperTestSuite) TestMsgCalculateInterestAndRewards() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.TestMsgInitializeLend()
-	msg := types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 1, sdk.NewCoin("uasset1", sdk.NewInt(100000000)), 3, false, sdk.NewCoin("uasset2", sdk.NewInt(10000000)), 1)
+	msg := types.NewMsgBorrowAlternate("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, 1, sdk.NewCoin("uasset1", sdkmath.NewInt(100000000)), 3, false, sdk.NewCoin("uasset2", sdkmath.NewInt(10000000)), 1)
 	_, err := s.msgServer.BorrowAlternate(sdk.WrapSDKContext(s.ctx), msg)
 	s.Require().NoError(err)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2023-03-01T12:00:00Z"))
@@ -2082,7 +2085,7 @@ func (s *KeeperTestSuite) TestMsgCalculateInterestAndRewards() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 				borrowPos, _ := s.keeper.GetBorrow(s.ctx, 1)
-				if borrowPos.InterestAccumulated == sdk.ZeroDec() {
+				if borrowPos.InterestAccumulated == sdkmath.LegacyZeroDec() {
 					s.Error(errors.Wrap(err, "Interest Not Calculated"))
 				}
 			}
@@ -2107,22 +2110,22 @@ func (s *KeeperTestSuite) TestMsgBorrowForIsolatedMode() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2215,8 +2218,8 @@ func (s *KeeperTestSuite) TestMsgBorrowForIsolatedMode() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -2251,22 +2254,22 @@ func (s *KeeperTestSuite) TestMsgBorrowForEMode() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2353,8 +2356,8 @@ func (s *KeeperTestSuite) TestMsgBorrowForEMode() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -2389,22 +2392,22 @@ func (s *KeeperTestSuite) TestMsgRepayWithdraw() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2473,8 +2476,8 @@ func (s *KeeperTestSuite) TestMsgRepayWithdraw() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)
@@ -2488,7 +2491,7 @@ func (s *KeeperTestSuite) TestMsgRepayWithdraw() {
 				s.Require().NotNil(resp)
 				s.Require().Equal(tc.ExpResp, resp)
 				lend, _ := s.keeper.GetLend(s.ctx, 1)
-				s.Require().Equal(lend.AmountIn.Amount, sdk.NewInt(200))
+				s.Require().Equal(lend.AmountIn.Amount, sdkmath.NewInt(200))
 				_, found := s.keeper.GetBorrow(s.ctx, 1)
 				s.Require().Equal(found, false)
 			}
@@ -2513,22 +2516,22 @@ func (s *KeeperTestSuite) TestMsgPoolDepreciate() {
 	assetDataPoolOneAssetOne := &types.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &types.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &types.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &types.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -2572,7 +2575,7 @@ func (s *KeeperTestSuite) TestMsgPoolDepreciate() {
 	})
 	s.PoolDepreciate(individualPool)
 	s.AddAssetRatesPoolPairs(assetFourID, newDec("0.65"), newDec("0.002"), newDec("0.08"), newDec("1.5"), false, newDec("0.0"), newDec("0.0"), newDec("0.0"), newDec("0.6"), newDec("0.65"), newDec("0.05"), newDec("0.05"), newDec("0.2"), cAssetFourID, "osmo", "OSMO-ATOM-CMST", assetDataPoolTwo, 1000000, false)
-	msgDeposit := types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdk.NewInt(100)))
+	msgDeposit := types.NewMsgDeposit("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 1, sdk.NewCoin("uasset1", sdkmath.NewInt(100)))
 	msgDraw := types.NewMsgDraw("cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t", 2, sdk.NewCoin("uasset1", newInt(1)))
 	testCases := []struct {
 		Name               string
@@ -2596,8 +2599,8 @@ func (s *KeeperTestSuite) TestMsgPoolDepreciate() {
 		s.Run(tc.Name, func() {
 			// add funds to acount for valid case
 			if tc.ExpErr == nil {
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdk.NewIntFromUint64(300))))
-				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdk.NewIntFromUint64(1000000000))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("uasset1", sdkmath.NewIntFromUint64(300))))
+				s.fundAddr(sdk.MustAccAddressFromBech32(tc.Msg.Borrower), sdk.NewCoins(sdk.NewCoin("ucasset2", sdkmath.NewIntFromUint64(1000000000))))
 			}
 
 			ctx := sdk.WrapSDKContext(s.ctx)

@@ -5,8 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	storetypes "cosmossdk.io/store/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/comdex-official/comdex/x/market/expected"
 )
 
@@ -30,6 +30,6 @@ func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, params paramstype
 	}
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.key)
 }

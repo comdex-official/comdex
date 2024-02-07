@@ -3,7 +3,8 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdkmath "cosmossdk.io/math"
+	"cosmossdk.io/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -400,7 +401,7 @@ func (q QueryServer) QueryTotalValueLockedByAppAndExtendedPair(c context.Context
 	}
 	var (
 		ctx         = sdk.UnwrapSDKContext(c)
-		valueLocked = sdk.ZeroInt()
+		valueLocked = sdkmath.ZeroInt()
 	)
 	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
@@ -584,7 +585,7 @@ func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRe
 	}
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
-		locked = sdk.ZeroDec()
+		locked = sdkmath.LegacyZeroDec()
 	)
 	_, found := q.asset.GetApp(ctx, req.AppId)
 	if !found {
@@ -602,7 +603,7 @@ func (q QueryServer) QueryTVLByApp(c context.Context, req *types.QueryTVLByAppRe
 		twaData, _ := q.oracle.CalcAssetPrice(ctx, pairID.AssetIn, data.CollateralLockedAmount)
 		locked = twaData.Add(locked)
 	}
-	// locked = locked.Quo(sdk.NewInt(1000000))
+	// locked = locked.Quo(sdkmath.NewInt(1000000))
 
 	return &types.QueryTVLByAppResponse{
 		CollateralLocked: locked.TruncateInt(),
@@ -616,10 +617,10 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 	var (
 		ctx             = sdk.UnwrapSDKContext(c)
 		vaultsIds       []uint64
-		totalLocked     = sdk.ZeroDec()
-		totalDue        = sdk.ZeroDec()
-		availableBorrow = sdk.ZeroDec()
-		averageCr       sdk.Dec
+		totalLocked     = sdkmath.LegacyZeroDec()
+		totalDue        = sdkmath.LegacyZeroDec()
+		availableBorrow = sdkmath.LegacyZeroDec()
+		averageCr       sdkmath.LegacyDec
 	)
 
 	_, err := sdk.AccAddressFromBech32(req.Owner)
@@ -655,13 +656,13 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		}
 
 		assetInTotalPrice, _ := q.oracle.CalcAssetPrice(ctx, pairID.AssetIn, vault.AmountIn)
-		var assetOutTotalPrice sdk.Dec
+		var assetOutTotalPrice sdkmath.LegacyDec
 		totalLocked = assetInTotalPrice.Add(totalLocked)
 
 		if extPairVault.AssetOutOraclePrice {
 			assetOutTotalPrice, _ = q.oracle.CalcAssetPrice(ctx, pairID.AssetOut, vault.AmountOut)
 		} else {
-			assetOutTotalPrice = (sdk.NewDecFromInt(sdk.NewIntFromUint64(extPairVault.AssetOutPrice)).Mul(sdk.NewDecFromInt(vault.AmountOut))).Quo(sdk.NewDecFromInt(assetOutData.Decimals))
+			assetOutTotalPrice = (sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(extPairVault.AssetOutPrice)).Mul(sdkmath.LegacyNewDecFromInt(vault.AmountOut))).Quo(sdkmath.LegacyNewDecFromInt(assetOutData.Decimals))
 		}
 		totalDue = assetOutTotalPrice.Add(totalDue)
 
@@ -673,7 +674,7 @@ func (q QueryServer) QueryUserMyPositionByApp(c context.Context, req *types.Quer
 		av := AmtIn.Quo(minCr)
 		av = av.Sub(AmtOut)
 
-		availableBorrow = av.Quo(sdk.OneDec()).Add(availableBorrow)
+		availableBorrow = av.Quo(sdkmath.LegacyOneDec()).Add(availableBorrow)
 	}
 	averageCr = totalLocked.Quo(totalDue)
 

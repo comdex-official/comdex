@@ -6,13 +6,12 @@ import (
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/vault"
 	"github.com/comdex-official/comdex/x/vault/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
 	comdexApp := app.Setup(t, false)
-	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := comdexApp.BaseApp.NewContext(false)
 
 	genesisState := types.GenesisState{
 		Vaults:                      nil,

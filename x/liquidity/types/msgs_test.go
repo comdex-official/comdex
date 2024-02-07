@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cometbft/cometbft/crypto"
@@ -308,7 +309,7 @@ func TestMsgLimitOrder(t *testing.T) {
 			func(msg *types.MsgLimitOrder) {
 				msg.OfferCoin = utils.ParseCoin("1000000denom2")
 				msg.Price = utils.ParseDec("10")
-				msg.Amount = sdk.NewInt(1000000)
+				msg.Amount = sdkmath.NewInt(1000000)
 			},
 			"1000000denom2 is less than 10000000denom2: insufficient offer coin",
 		},
@@ -337,14 +338,14 @@ func TestMsgLimitOrder(t *testing.T) {
 		{
 			"zero order amount",
 			func(msg *types.MsgLimitOrder) {
-				msg.Amount = sdk.ZeroInt()
+				msg.Amount = sdkmath.ZeroInt()
 			},
 			"order amount 0 is smaller than the min amount 100: invalid request",
 		},
 		{
 			"small order amount",
 			func(msg *types.MsgLimitOrder) {
-				msg.Amount = sdk.NewInt(10)
+				msg.Amount = sdkmath.NewInt(10)
 			},
 			"order amount 10 is smaller than the min amount 100: invalid request",
 		},
@@ -359,7 +360,7 @@ func TestMsgLimitOrder(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			msg := types.NewMsgLimitOrder(
 				1, testAddr, 1, types.OrderDirectionBuy, utils.ParseCoin("1000000denom2"),
-				"denom1", utils.ParseDec("1.0"), sdk.NewInt(1000000), orderLifespan)
+				"denom1", utils.ParseDec("1.0"), sdkmath.NewInt(1000000), orderLifespan)
 			tc.malleate(msg)
 			require.Equal(t, types.TypeMsgLimitOrder, msg.Type())
 			require.Equal(t, types.RouterKey, msg.Route())
@@ -441,14 +442,14 @@ func TestMsgMarketOrder(t *testing.T) {
 		{
 			"zero order amount",
 			func(msg *types.MsgMarketOrder) {
-				msg.Amount = sdk.ZeroInt()
+				msg.Amount = sdkmath.ZeroInt()
 			},
 			"order amount 0 is smaller than the min amount 100: invalid request",
 		},
 		{
 			"small order amount",
 			func(msg *types.MsgMarketOrder) {
-				msg.Amount = sdk.NewInt(10)
+				msg.Amount = sdkmath.NewInt(10)
 			},
 			"order amount 10 is smaller than the min amount 100: invalid request",
 		},
@@ -463,7 +464,7 @@ func TestMsgMarketOrder(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			msg := types.NewMsgMarketOrder(
 				1, testAddr, 1, types.OrderDirectionBuy, utils.ParseCoin("1000000denom1"),
-				"denom2", sdk.NewInt(1000000), orderLifespan)
+				"denom2", sdkmath.NewInt(1000000), orderLifespan)
 			tc.malleate(msg)
 			require.Equal(t, types.TypeMsgMarketOrder, msg.Type())
 			require.Equal(t, types.RouterKey, msg.Route())

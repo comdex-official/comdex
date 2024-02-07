@@ -1,7 +1,9 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	utils "github.com/comdex-official/comdex/types"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
@@ -16,7 +18,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
@@ -25,7 +27,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
@@ -34,7 +36,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg3 := assetTypes.Asset{
 		Name:      "CMDX",
 		Denom:     "ucmdx",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 
@@ -44,7 +46,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg4 := assetTypes.Asset{
 		Name:      "CMST",
 		Denom:     "ucmst",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg4)
@@ -53,7 +55,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg5 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
@@ -66,12 +68,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg1)
 	s.Require().NoError(err)
@@ -80,12 +82,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 2,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err1 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg2)
 	s.Require().NoError(err1)
@@ -94,12 +96,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            2,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err2 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg3)
 	s.Require().NoError(err2)
@@ -161,7 +163,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : App1 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
+				Amount:    sdkmath.NewIntFromUint64(1000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -176,7 +178,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : Duplicate locker App1 Asset1 should fail",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
+				Amount:    sdkmath.NewIntFromUint64(1000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -191,7 +193,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : ErrorAssetDoesNotExist",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
+				Amount:    sdkmath.NewIntFromUint64(1000000),
 				AssetId:   10,
 				AppId:     1,
 			},
@@ -206,7 +208,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : ErrorAppMappingDoesNotExist",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
+				Amount:    sdkmath.NewIntFromUint64(1000000),
 				AssetId:   1,
 				AppId:     10,
 			},
@@ -221,7 +223,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : ErrorAppMappingDoesNotExist",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(1000000),
+				Amount:    sdkmath.NewIntFromUint64(1000000),
 				AssetId:   2,
 				AppId:     2,
 			},
@@ -236,7 +238,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : App1 Asset 2",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(2000000),
+				Amount:    sdkmath.NewIntFromUint64(2000000),
 				AssetId:   2,
 				AppId:     1,
 			},
@@ -251,7 +253,7 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 			"CreateLocker : App2 Asset 1",
 			lockerTypes.MsgCreateLockerRequest{
 				Depositor: userAddress,
-				Amount:    sdk.NewIntFromUint64(9900000),
+				Amount:    sdkmath.NewIntFromUint64(9900000),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -265,9 +267,9 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 	} {
 		s.Run(tc.name, func() {
 			if tc.msg.AssetId == 1 {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(tc.fundAmount)))
 			} else {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(tc.fundAmount)))
 			}
 			_, err := server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &tc.msg)
 			if tc.ExpErr != nil {
@@ -306,7 +308,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   10,
 				AppId:     1,
 			},
@@ -322,7 +324,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     10,
 			},
@@ -338,7 +340,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  10,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -354,7 +356,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   2,
 				AppId:     1,
 			},
@@ -370,7 +372,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress1,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -386,7 +388,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -402,7 +404,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -418,7 +420,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  3,
-				Amount:    sdk.NewIntFromUint64(4000000),
+				Amount:    sdkmath.NewIntFromUint64(4000000),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -434,7 +436,7 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 			lockerTypes.MsgDepositAssetRequest{
 				Depositor: userAddress,
 				LockerId:  3,
-				Amount:    sdk.NewIntFromUint64(9223372036854775807),
+				Amount:    sdkmath.NewIntFromUint64(9223372036854775807),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -448,9 +450,9 @@ func (s *KeeperTestSuite) TestDepositLocker() {
 	} {
 		s.Run(tc.name, func() {
 			if tc.msg.AssetId == 1 {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(tc.fundAmount)))
 			} else {
-				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(tc.fundAmount)))
+				s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(tc.fundAmount)))
 			}
 			lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 			s.Require().NoError(err)
@@ -493,7 +495,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   10,
 				AppId:     1,
 			},
@@ -509,7 +511,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     10,
 			},
@@ -525,7 +527,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  10,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -541,7 +543,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   2,
 				AppId:     1,
 			},
@@ -557,7 +559,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -573,7 +575,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress1,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -589,7 +591,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(9223372036854775807),
+				Amount:    sdkmath.NewIntFromUint64(9223372036854775807),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -605,7 +607,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(100000),
+				Amount:    sdkmath.NewIntFromUint64(100000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -621,7 +623,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  1,
-				Amount:    sdk.NewIntFromUint64(900000),
+				Amount:    sdkmath.NewIntFromUint64(900000),
 				AssetId:   1,
 				AppId:     1,
 			},
@@ -637,7 +639,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 			lockerTypes.MsgWithdrawAssetRequest{
 				Depositor: userAddress,
 				LockerId:  3,
-				Amount:    sdk.NewIntFromUint64(9900000),
+				Amount:    sdkmath.NewIntFromUint64(9900000),
 				AssetId:   1,
 				AppId:     2,
 			},
@@ -667,7 +669,7 @@ func (s *KeeperTestSuite) TestWithdrawLocker() {
 				if tc.partial {
 					s.Require().Equal(lockerInfo.LockerInfo.NetBalance, previousNetAmount.Sub(tc.msg.Amount))
 				} else {
-					s.Require().Equal(lockerInfo.LockerInfo.NetBalance, sdk.NewIntFromUint64(0))
+					s.Require().Equal(lockerInfo.LockerInfo.NetBalance, sdkmath.NewIntFromUint64(0))
 				}
 			}
 		})
@@ -796,14 +798,14 @@ func (s *KeeperTestSuite) TestCloseLocker() {
 
 func (s *KeeperTestSuite) TestSetNetFeeCollectedData() {
 	collectorkeeper, ctx := &s.collector, &s.ctx
-	err := collectorkeeper.SetNetFeeCollectedData(*ctx, 1, 1, sdk.NewInt(1000000000))
+	err := collectorkeeper.SetNetFeeCollectedData(*ctx, 1, 1, sdkmath.NewInt(1000000000))
 	s.Require().NoError(err)
 }
 
 func (s *KeeperTestSuite) TestFundModule() {
-	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	err := s.app.BankKeeper.MintCoins(s.ctx, lockerTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(10000000000))))
 	s.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, lockerTypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(10000000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, lockerTypes.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(10000000000))))
 	s.Require().NoError(err)
 }
 
@@ -869,7 +871,7 @@ func (s *KeeperTestSuite) TestLockerRewardCalc() {
 				s.Require().NoError(err)
 				lockerInfo, err := s.querier.QueryLockerInfo(sdk.WrapSDKContext(*ctx), &tc.query)
 				s.Require().NoError(err)
-				s.Require().NotEqual(lockerInfo.LockerInfo.ReturnsAccumulated, sdk.ZeroInt())
+				s.Require().NotEqual(lockerInfo.LockerInfo.ReturnsAccumulated, sdkmath.ZeroInt())
 				fmt.Println("ReturnsAccumulated", lockerInfo.LockerInfo.ReturnsAccumulated)
 			}
 		})

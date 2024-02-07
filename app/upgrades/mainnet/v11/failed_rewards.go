@@ -1,6 +1,7 @@
 package v11
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"encoding/json"
 	"fmt"
 
@@ -124907,7 +124908,7 @@ func DistributeRewards(
 		panic(err)
 	}
 
-	totalDistributionAmount := sdk.ZeroInt()
+	totalDistributionAmount := sdkmath.ZeroInt()
 
 	for _, item := range rewards {
 		totalDistributionAmount = totalDistributionAmount.Add(item.Reward.Amount)
@@ -124938,7 +124939,7 @@ func DistributeRewards(
 			fmt.Println(warning)
 			continue
 		}
-		epochAmount := gauge.DepositAmount.Amount.Quo(sdk.NewInt(int64(gauge.TotalTriggers)))
+		epochAmount := gauge.DepositAmount.Amount.Quo(sdkmath.NewInt(int64(gauge.TotalTriggers)))
 		gauge.DistributedAmount.Amount = gauge.DistributedAmount.Amount.Add(epochAmount)
 		rewardsKeeper.SetGauge(ctx, gauge)
 	}

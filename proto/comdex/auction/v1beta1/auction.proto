@@ -45,7 +45,7 @@ message SurplusAuction {
     ];
 
     string bid_factor = 8 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"bid_factor\""
     ];
@@ -131,7 +131,7 @@ message DebtAuction {
         (gogoproto.moretags) = "yaml:\"auction_mapping_id\""
     ];
     string bid_factor = 14 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"bid_factor\""
     ];
@@ -174,22 +174,22 @@ message DutchAuction {
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.Coin"
     ];
     string outflow_token_initial_price = 6 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"outflow_token_initial_price\""
     ];
     string outflow_token_current_price = 7 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"outflow_token_current_price\""
     ];
     string outflow_token_end_price = 8 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"outflow_token_end_price\""
     ];
     string inflow_token_current_price = 9 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"inflow_token_current_price\""
     ];
@@ -230,7 +230,7 @@ message DutchAuction {
         (gogoproto.casttype)  = "github.com/cosmos/cosmos-sdk/types.AccAddress"
     ];
     string liquidation_penalty = 20 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"liquidatin_penalty\""
     ];
@@ -249,7 +249,7 @@ message ProtocolStatistics {
         (gogoproto.moretags) = "yaml:\"asset_id\""
     ];
     string loss = 3[
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"loss\""
     ];
@@ -263,17 +263,17 @@ message AuctionParams{
         (gogoproto.moretags) = "yaml:\"auction_duration_seconds\""
     ];
     string buffer = 3 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"buffer\""
     ];
     string cusp = 4 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+        (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"cusp\""
     ];
     string step = 5 [
-        (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+        (gogoproto.customtype) = "cosmossdk.io/math.Int",
         (gogoproto.nullable)   = false,
         (gogoproto.moretags)   = "yaml:\"step\""
     ];

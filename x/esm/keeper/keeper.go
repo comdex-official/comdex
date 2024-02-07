@@ -4,18 +4,20 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/comdex-official/comdex/x/esm/expected"
 
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	storetypes "cosmossdk.io/store/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/types"
 	tokenminttypes "github.com/comdex-official/comdex/x/tokenmint/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 type (
@@ -30,6 +32,7 @@ type (
 		market     expected.MarketKeeper
 		tokenmint  expected.Tokenmint
 		collector  expected.Collector
+		authority  string
 	}
 )
 
@@ -44,6 +47,7 @@ func NewKeeper(
 	market expected.MarketKeeper,
 	tokenmint expected.Tokenmint,
 	collector expected.Collector,
+	authority string,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -61,6 +65,7 @@ func NewKeeper(
 		market:     market,
 		tokenmint:  tokenmint,
 		collector:  collector,
+		authority:  authority,
 	}
 }
 
@@ -68,7 +73,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k Keeper) Store(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
 
@@ -227,8 +232,8 @@ func (k Keeper) CalculateCollateral(ctx sdk.Context, appID uint64, amount sdk.Co
 			}
 			tokenShare := totalDebtAssetWorth.Mul(tokenData.Share) //$CMST Multiplied with Share of collateral give $share of collateral
 			// To calculate quantity of collateral token from the $share of tokenShare
-			collateralQuantity := tokenShare.Quo(sdk.NewDecFromInt(sdk.NewIntFromUint64(unitRate)))
-			collateralQuantity = collateralQuantity.Mul(sdk.NewDecFromInt(assetData.Decimals))
+			collateralQuantity := tokenShare.Quo(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(unitRate)))
+			collateralQuantity = collateralQuantity.Mul(sdkmath.LegacyNewDecFromInt(assetData.Decimals))
 			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, userAddress, sdk.NewCoins(sdk.NewCoin(assetData.Denom, collateralQuantity.TruncateInt())))
 			if err != nil {
 				return err

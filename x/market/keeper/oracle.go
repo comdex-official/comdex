@@ -3,6 +3,10 @@ package keeper
 import (
 	"strconv"
 
+	storetypes "cosmossdk.io/store/types"
+
+	sdkmath "cosmossdk.io/math"
+
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/market/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -36,10 +40,10 @@ func (k Keeper) GetTwa(ctx sdk.Context, id uint64) (twa types.TimeWeightedAverag
 func (k Keeper) GetAllTwa(ctx sdk.Context) (twa []types.TimeWeightedAverage) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.TwaKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.TwaKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -155,16 +159,16 @@ func (k Keeper) GetLatestPrice(ctx sdk.Context, id uint64) (price uint64, err er
 	return 0, types.ErrorPriceNotActive
 }
 
-func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error) {
+func (k Keeper) CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error) {
 	asset, found := k.assetKeeper.GetAsset(ctx, id)
 	if !found {
-		return sdk.ZeroDec(), assetTypes.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), assetTypes.ErrorAssetDoesNotExist
 	}
 	twa, found := k.GetTwa(ctx, id)
 	if found && twa.IsPriceActive {
-		numerator := sdk.NewDecFromInt(amt).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(twa.Twa)))
-		denominator := sdk.NewDecFromInt(asset.Decimals)
+		numerator := sdkmath.LegacyNewDecFromInt(amt).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(twa.Twa)))
+		denominator := sdkmath.LegacyNewDecFromInt(asset.Decimals)
 		return numerator.Quo(denominator), nil
 	}
-	return sdk.ZeroDec(), types.ErrorPriceNotActive
+	return sdkmath.LegacyZeroDec(), types.ErrorPriceNotActive
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"context"
 	"sort"
 
@@ -72,7 +73,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	if err != nil {
 		return nil, err
 	}
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
@@ -92,7 +93,7 @@ func (k msgServer) MsgCreateLocker(c context.Context, msg *types.MsgCreateLocker
 	userLocker.CreatedAt = ctx.BlockTime()
 	userLocker.IsLocked = false
 	userLocker.NetBalance = msg.Amount
-	userLocker.ReturnsAccumulated = sdk.ZeroInt()
+	userLocker.ReturnsAccumulated = sdkmath.ZeroInt()
 	userLocker.AppId = appMapping.Id
 	userLocker.BlockHeight = blockHeight
 	userLocker.BlockTime = blockTime
@@ -179,7 +180,7 @@ func (k msgServer) MsgDepositAsset(c context.Context, msg *types.MsgDepositAsset
 	}
 	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
@@ -258,7 +259,7 @@ func (k msgServer) MsgWithdrawAsset(c context.Context, msg *types.MsgWithdrawAss
 
 	lockerData.NetBalance = lockerData.NetBalance.Sub(msg.Amount)
 
-	if msg.Amount.GT(sdk.ZeroInt()) {
+	if msg.Amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(asset.Denom, msg.Amount))); err != nil {
 			return nil, err
 		}
@@ -332,7 +333,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 
 	lockerData, _ = k.GetLocker(ctx, msg.LockerId)
 
-	if lockerData.NetBalance.GT(sdk.ZeroInt()) {
+	if lockerData.NetBalance.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, depositor, sdk.NewCoins(sdk.NewCoin(asset.Denom, lockerData.NetBalance))); err != nil {
 			return nil, err
 		}
@@ -344,7 +345,7 @@ func (k msgServer) MsgCloseLocker(c context.Context, msg *types.MsgCloseLockerRe
 
 	userTxData.TxType = "Close"
 	userTxData.Amount = lockerData.NetBalance
-	userTxData.Balance = sdk.ZeroInt()
+	userTxData.Balance = sdkmath.ZeroInt()
 	userTxData.TxTime = ctx.BlockTime()
 	userLockerAssetMappingData.UserData = append(userLockerAssetMappingData.UserData, &userTxData)
 

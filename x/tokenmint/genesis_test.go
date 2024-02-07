@@ -5,7 +5,6 @@ import (
 
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/tokenmint"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 	"github.com/stretchr/testify/require"
@@ -13,7 +12,7 @@ import (
 
 func TestGenesis(t *testing.T) {
 	comdexApp := app.Setup(t, false)
-	ctx := comdexApp.BaseApp.NewContext(false, tmproto.Header{})
+	ctx := comdexApp.BaseApp.NewContext(false)
 
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),

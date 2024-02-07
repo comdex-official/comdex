@@ -1,9 +1,10 @@
 package v5
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,12 +21,12 @@ func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.Binar
 	return err
 }
 
-func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateValueApps(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	app1 := assettypes.AppData{
 		Id:               1,
 		Name:             "CSWAP",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.ZeroInt(),
+		MinGovDeposit:    sdkmath.ZeroInt(),
 		GovTimeInSeconds: 300,
 		GenesisToken:     nil,
 	}
@@ -35,7 +36,7 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 
 	genesisToken := assettypes.MintGenesisToken{
 		AssetId:       9,
-		GenesisSupply: sdk.NewIntFromUint64(1000000000000000),
+		GenesisSupply: sdkmath.NewIntFromUint64(1000000000000000),
 		IsGovToken:    true,
 		Recipient:     "comdex1unvvj23q89dlgh82rdtk5su7akdl5932reqarg",
 	}
@@ -45,7 +46,7 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:               2,
 		Name:             "HARBOR",
 		ShortName:        "hbr",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 300,
 		GenesisToken:     gToken,
 	}
@@ -57,7 +58,7 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:               3,
 		Name:             "commodo",
 		ShortName:        "cmdo",
-		MinGovDeposit:    sdk.ZeroInt(),
+		MinGovDeposit:    sdkmath.ZeroInt(),
 		GovTimeInSeconds: 0,
 		GenesisToken:     nil,
 	}
@@ -67,12 +68,12 @@ func MigrateValueApps(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
+func MigrateValueAsset(store storetypes.KVStore, cdc codec.BinaryCodec) error {
 	asset1 := assettypes.Asset{
 		Id:                    1,
 		Name:                  "ATOM",
 		Denom:                 "ibc/2E5D0AC026AC1AFA65A23023BA4F24BB8DDF94F118EDC0BAD6F625BFC557CDED",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -84,7 +85,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    2,
 		Name:                  "CMDX",
 		Denom:                 "ucmdx",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -96,7 +97,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    3,
 		Name:                  "CMST",
 		Denom:                 "ucmst",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -108,7 +109,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    4,
 		Name:                  "OSMO",
 		Denom:                 "ibc/868AF0A32D53849B6093348F5A47BB969A98E71A3F0CD2D3BE406EA25DA7F836",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -120,7 +121,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    5,
 		Name:                  "cATOM",
 		Denom:                 "ucatom",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
 	}
@@ -132,7 +133,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    6,
 		Name:                  "cCMDX",
 		Denom:                 "uccmdx",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
 	}
@@ -144,7 +145,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    7,
 		Name:                  "cCMST",
 		Denom:                 "uccmst",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
 	}
@@ -156,7 +157,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    8,
 		Name:                  "cOSMO",
 		Denom:                 "ucosmo",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: false,
 	}
@@ -168,7 +169,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    9,
 		Name:                  "HARBOR",
 		Denom:                 "uharbor",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 	}
@@ -180,7 +181,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    10,
 		Name:                  "USDC",
 		Denom:                 "ibc/EF8A76D0FD3F3F45D8DB7FEBFCF921206DF58CA41493ED16D69BF7B4E061C60C",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -192,7 +193,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 		Id:                    11,
 		Name:                  "WETH",
 		Denom:                 "ibc/A99459944FD67B5711735B4B4D3FE30BA45328E94D437C78E47CA8DEFA781E49",
-		Decimals:              sdk.NewInt(1000000000000000000),
+		Decimals:              sdkmath.NewInt(1000000000000000000),
 		IsOnChain:             false,
 		IsOraclePriceRequired: true,
 	}
@@ -203,7 +204,7 @@ func MigrateValueAsset(store sdk.KVStore, cdc codec.BinaryCodec) error {
 	return nil
 }
 
-func SetApp(store sdk.KVStore, cdc codec.BinaryCodec, app assettypes.AppData) {
+func SetApp(store storetypes.KVStore, cdc codec.BinaryCodec, app assettypes.AppData) {
 	var (
 		key   = assettypes.AppKey(app.Id)
 		value = cdc.MustMarshal(&app)
@@ -212,7 +213,7 @@ func SetApp(store sdk.KVStore, cdc codec.BinaryCodec, app assettypes.AppData) {
 	store.Set(key, value)
 }
 
-func SetAsset(store sdk.KVStore, cdc codec.BinaryCodec, asset assettypes.Asset) {
+func SetAsset(store storetypes.KVStore, cdc codec.BinaryCodec, asset assettypes.Asset) {
 	var (
 		key   = assettypes.AssetKey(asset.Id)
 		value = cdc.MustMarshal(&asset)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/auction"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	auctionKeeper "github.com/comdex-official/comdex/x/auction/keeper"
 	auctionTypes "github.com/comdex-official/comdex/x/auction/types"
@@ -15,7 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (s *KeeperTestSuite) WasmUpdateCollectorLookupTable(surplusThreshhold, debtThreshhold, lotsize, debtlotsize sdk.Int) {
+func (s *KeeperTestSuite) WasmUpdateCollectorLookupTable(surplusThreshhold, debtThreshhold, lotsize, debtlotsize sdkmath.Int) {
 	collectorKeeper, ctx := &s.collectorKeeper, &s.ctx
 
 	msg1 := bindings.MsgUpdateCollectorLookupTable{
@@ -23,9 +24,9 @@ func (s *KeeperTestSuite) WasmUpdateCollectorLookupTable(surplusThreshhold, debt
 		AssetID:          2,
 		SurplusThreshold: surplusThreshhold,
 		DebtThreshold:    debtThreshhold,
-		LSR:              sdk.MustNewDecFromStr("0.001"),
+		LSR:              sdkmath.LegacyMustNewDecFromStr("0.001"),
 		LotSize:          lotsize,
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
 		DebtLotSize:      debtlotsize,
 	}
 	err := collectorKeeper.WasmUpdateCollectorLookupTable(*ctx, &msg1)
@@ -37,7 +38,7 @@ func (s *KeeperTestSuite) TestSurplusActivatorBetweenThreshholdAndLotsize() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
-	s.WasmUpdateCollectorLookupTable(sdk.NewInt(19500), sdk.NewInt(1000), sdk.NewInt(501), sdk.NewInt(300))
+	s.WasmUpdateCollectorLookupTable(sdkmath.NewInt(19500), sdkmath.NewInt(1000), sdkmath.NewInt(501), sdkmath.NewInt(300))
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -65,7 +66,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	auctionMappingId := uint64(1)
 	auctionId := uint64(1)
 
-	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(100000000))
+	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdkmath.NewIntFromUint64(100000000))
 	s.Require().NoError(err)
 	collectorLookUp, found := collectorKeeper.GetCollectorLookupTable(*ctx, 1, 2)
 	s.Require().True(found)
@@ -77,7 +78,7 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	}
 	err2 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 1000000000)
 	s.Require().NoError(err2)
-	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewIntFromUint64(1000000000))))
+	err3 := s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(1000000000))))
 	s.Require().NoError(err3)
 	err1 := k.SurplusActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
@@ -208,8 +209,8 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
 			s.Require().NoError(err)
 			previousUserAddress := ""
-			bidToken := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
-			beforeHarborBalance2 := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
+			bidToken := sdk.NewCoin("zero", sdkmath.NewIntFromUint64(10))
+			beforeHarborBalance2 := sdk.NewCoin("zero", sdkmath.NewIntFromUint64(10))
 			if tc.bidID != uint64(1) {
 				previousUserAddress = beforeAuction.Bidder.String()
 				beforeHarborBalance2, err = s.getBalance(previousUserAddress, "uharbor")
@@ -250,7 +251,7 @@ func (s *KeeperTestSuite) TestSurplusBid() {
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidId, tc.bidID)
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidOwner, tc.msg.Bidder)
 				if tc.bidID != uint64(1) {
-					s.Require().True(afterAuction.Bid.Amount.GTE(sdk.NewDec(beforeAuction.Bid.Amount.Int64()).Mul(sdk.MustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
+					s.Require().True(afterAuction.Bid.Amount.GTE(sdkmath.LegacyNewDecFromInt(beforeAuction.Bid.Amount).Mul(sdkmath.LegacyMustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
 				}
 				s.Require().Equal(beforeCmstBalance, afterCmstBalance)
 				s.Require().Equal(beforeHarborBalance.Sub(bid), afterHarborBalance)

@@ -138,7 +138,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 			Msg: *types.NewMsgCreateRequest(
 				addr1, appID1, extendedVaultPairID1, newInt(1000000000), newInt(200000000),
 			),
-			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance  is smaller than %duasset1: insufficient funds", 1000000000)),
+			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance 0uasset1 is smaller than %duasset1: insufficient funds", 1000000000)),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -249,7 +249,7 @@ func (s *KeeperTestSuite) TestMsgCreate() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Equal(tc.QueryResponse.Id, vaults[tc.QueryResponseIndex].Id)
@@ -399,7 +399,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 			Msg: *types.NewMsgDepositRequest(
 				addr1, appID1, extendedVaultPairID1, 1, newInt(69000000),
 			),
-			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance  is smaller than %duasset1: insufficient funds", 69000000)),
+			ExpErr:             fmt.Errorf(fmt.Sprintf("spendable balance 0uasset1 is smaller than %duasset1: insufficient funds", 69000000)),
 			ExpResp:            nil,
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -463,7 +463,7 @@ func (s *KeeperTestSuite) TestMsgDeposit() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Len(vaults, 2)
@@ -673,7 +673,7 @@ func (s *KeeperTestSuite) TestMsgWithdraw() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Len(vaults, 2)
@@ -883,7 +883,7 @@ func (s *KeeperTestSuite) TestMsgDraw() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Len(vaults, 2)
@@ -1094,7 +1094,7 @@ func (s *KeeperTestSuite) TestMsgRepay() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Len(vaults, 2)
@@ -1256,7 +1256,7 @@ func (s *KeeperTestSuite) TestMsgClose() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				vaults := s.keeper.GetVaults(s.ctx)
 				s.Require().Len(vaults, int(tc.AvailableVaultsLen))
@@ -1532,7 +1532,7 @@ func (s *KeeperTestSuite) TestMsgCreateStableMint() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
@@ -1742,7 +1742,7 @@ func (s *KeeperTestSuite) TestMsgDepositStableMint() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)
@@ -1999,7 +1999,7 @@ func (s *KeeperTestSuite) TestMsgWithdrawStableMint() {
 				s.Require().Equal(tc.ExpResp, resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.From))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				stableMintVaults := s.querier.GetStableMintVaults(s.ctx)
 				s.Require().Equal(tc.QueryResponse.Id, stableMintVaults[tc.QueryRespIndex].Id)

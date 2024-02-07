@@ -6,6 +6,9 @@ import (
 	"strings"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -21,18 +24,18 @@ const (
 
 // Liquidity params default values.
 var (
-	DefaultMinInitialPoolCoinSupply = sdk.NewInt(1_000_000_000_000)
+	DefaultMinInitialPoolCoinSupply = sdkmath.NewInt(1_000_000_000_000)
 	DefaultPairCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 2000_000_000))
 	DefaultPoolCreationFee          = sdk.NewCoins(sdk.NewInt64Coin(DefaultFeeDenom, 2000_000_000))
-	DefaultMinInitialDepositAmount  = sdk.NewInt(1000000)
-	DefaultMaxPriceLimitRatio       = sdk.NewDecWithPrec(1, 1) // 10%
-	DefaultSwapFeeRate              = sdk.NewDecWithPrec(3, 3) // 0.3%
-	DefaultWithdrawFeeRate          = sdk.ZeroDec()
-	DefaultDepositExtraGas          = sdk.Gas(60000)
-	DefaultWithdrawExtraGas         = sdk.Gas(64000)
-	DefaultOrderExtraGas            = sdk.Gas(37000)
+	DefaultMinInitialDepositAmount  = sdkmath.NewInt(1000000)
+	DefaultMaxPriceLimitRatio       = sdkmath.LegacyNewDecWithPrec(1, 1) // 10%
+	DefaultSwapFeeRate              = sdkmath.LegacyNewDecWithPrec(3, 3) // 0.3%
+	DefaultWithdrawFeeRate          = sdkmath.LegacyZeroDec()
+	DefaultDepositExtraGas          = storetypes.Gas(60000)
+	DefaultWithdrawExtraGas         = storetypes.Gas(64000)
+	DefaultOrderExtraGas            = storetypes.Gas(37000)
 	DefaultSwapFeeDistrDenom        = DefaultFeeDenom
-	DefaultSwapFeeBurnRate          = sdk.NewDecWithPrec(0, 0) // 0%
+	DefaultSwapFeeBurnRate          = sdkmath.LegacyNewDecWithPrec(0, 0) // 0%
 )
 
 var (
@@ -187,9 +190,9 @@ func ParseStringToUint(value string) (interface{}, error) {
 }
 
 func ParseStringToInt(value string) (interface{}, error) {
-	parsedValue, ok := sdk.NewIntFromString(value)
+	parsedValue, ok := sdkmath.NewIntFromString(value)
 	if !ok {
-		return sdk.Int{}, fmt.Errorf("invalid parameter type: %T", value)
+		return sdkmath.Int{}, fmt.Errorf("invalid parameter type: %T", value)
 	}
 	return parsedValue, nil
 }
@@ -199,7 +202,7 @@ func ParseStringToCoins(value string) (interface{}, error) {
 }
 
 func ParseStringToDec(value string) (interface{}, error) {
-	return sdk.NewDecFromStr(value)
+	return sdkmath.LegacyNewDecFromStr(value)
 }
 
 func ParseStringToDuration(value string) (interface{}, error) {
@@ -209,7 +212,7 @@ func ParseStringToDuration(value string) (interface{}, error) {
 func ParseStringToGas(value string) (interface{}, error) {
 	gas, err := ParseStringToUint(value)
 	if err != nil {
-		return sdk.Gas(0), nil
+		return storetypes.Gas(0), nil
 	}
 	g, _ := gas.(uint64)
 	return g, nil
@@ -277,7 +280,7 @@ func validateDustCollectorAddress(i interface{}) error {
 }
 
 func validateMinInitialPoolCoinSupply(i interface{}) error {
-	v, ok := i.(sdk.Int)
+	v, ok := i.(sdkmath.Int)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -320,7 +323,7 @@ func validatePoolCreationFee(i interface{}) error {
 }
 
 func validateMinInitialDepositAmount(i interface{}) error {
-	v, ok := i.(sdk.Int)
+	v, ok := i.(sdkmath.Int)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -333,7 +336,7 @@ func validateMinInitialDepositAmount(i interface{}) error {
 }
 
 func validateMaxPriceLimitRatio(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -359,7 +362,7 @@ func validateMaxOrderLifespan(i interface{}) error {
 }
 
 func validateSwapFeeRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -368,7 +371,7 @@ func validateSwapFeeRate(i interface{}) error {
 		return fmt.Errorf("swap fee rate must not be negative: %s", v)
 	}
 
-	if v.GTE(sdk.OneDec()) {
+	if v.GTE(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("swap fee rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 
@@ -376,7 +379,7 @@ func validateSwapFeeRate(i interface{}) error {
 }
 
 func validateWithdrawFeeRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -384,7 +387,7 @@ func validateWithdrawFeeRate(i interface{}) error {
 	if v.IsNegative() {
 		return fmt.Errorf("withdraw fee rate must not be negative: %s", v)
 	}
-	if v.GTE(sdk.OneDec()) {
+	if v.GTE(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("withdraw fee rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 
@@ -392,7 +395,7 @@ func validateWithdrawFeeRate(i interface{}) error {
 }
 
 func validateExtraGas(i interface{}) error {
-	_, ok := i.(sdk.Gas)
+	_, ok := i.(storetypes.Gas)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -410,7 +413,7 @@ func validateSwapFeeDistrDenom(i interface{}) error {
 }
 
 func validateSwapFeeBurnRate(i interface{}) error {
-	v, ok := i.(sdk.Dec)
+	v, ok := i.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
@@ -419,7 +422,7 @@ func validateSwapFeeBurnRate(i interface{}) error {
 		return fmt.Errorf("swap fee burn rate must not be negative: %s", v)
 	}
 
-	if v.GTE(sdk.OneDec()) {
+	if v.GTE(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("swap fee burn rate cannot exceed 1 i.e 100 perc. : %s", v)
 	}
 

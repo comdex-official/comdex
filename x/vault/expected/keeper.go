@@ -1,6 +1,8 @@
 package expected
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -9,16 +11,16 @@ import (
 )
 
 type BankKeeper interface {
-	BurnCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	MintCoins(ctx sdk.Context, name string, coins sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
+	BurnCoins(ctx context.Context, name string, coins sdk.Coins) error
+	MintCoins(ctx context.Context, name string, coins sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx context.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
+	SendCoinsFromModuleToAccount(ctx context.Context, name string, address sdk.AccAddress, coins sdk.Coins) error
 
 	SendCoinsFromModuleToModule(
-		ctx sdk.Context, senderModule, recipientModule string, amt sdk.Coins,
+		ctx context.Context, senderModule, recipientModule string, amt sdk.Coins,
 	) error
 
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx context.Context, address sdk.AccAddress) sdk.Coins
 }
 
 type AssetKeeper interface {
@@ -29,11 +31,11 @@ type AssetKeeper interface {
 }
 
 type MarketKeeper interface {
-	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdk.Int) (price sdk.Dec, err error)
+	CalcAssetPrice(ctx sdk.Context, id uint64, amt sdkmath.Int) (price sdkmath.LegacyDec, err error)
 }
 
 type CollectorKeeper interface {
-	UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdk.Int) error
+	UpdateCollector(ctx sdk.Context, appID, assetID uint64, CollectedStabilityFee, CollectedClosingFee, CollectedOpeningFee, LiquidationRewardsCollected sdkmath.Int) error
 }
 
 type EsmKeeper interface {
@@ -44,11 +46,11 @@ type EsmKeeper interface {
 }
 
 type TokenMintKeeper interface {
-	UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int)
+	UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdkmath.Int)
 }
 
 type RewardsKeeper interface {
-	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdk.Int, blockHeight int64, lockerBlockTime int64) error
+	CalculateVaultInterest(ctx sdk.Context, appID, assetID, lockerID uint64, NetBalance sdkmath.Int, blockHeight int64, lockerBlockTime int64) error
 	DeleteVaultInterestTracker(ctx sdk.Context, vault rewardstypes.VaultInterestTracker)
 	GetExternalRewardStableVaultByApp(ctx sdk.Context, appID uint64) (VaultExternalRewards rewardstypes.StableVaultExternalRewards, found bool)
 	VerifyAppIDInRewards(ctx sdk.Context, appID uint64) bool

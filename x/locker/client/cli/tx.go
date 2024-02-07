@@ -1,6 +1,7 @@
 package cli
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/locker/types"
 )
@@ -33,7 +33,7 @@ func txCreateLocker() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			amount, ok := sdk.NewIntFromString(args[2])
+			amount, ok := sdkmath.NewIntFromString(args[2])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
@@ -67,7 +67,7 @@ func txDepositAssetLocker() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			amount, ok := sdk.NewIntFromString(args[1])
+			amount, ok := sdkmath.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}
@@ -108,7 +108,7 @@ func txWithdrawAssetLocker() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			amount, ok := sdk.NewIntFromString(args[1])
+			amount, ok := sdkmath.NewIntFromString(args[1])
 			if !ok {
 				return types.ErrorInvalidAmountIn
 			}

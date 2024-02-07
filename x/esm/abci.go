@@ -3,7 +3,6 @@ package esm
 import (
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/esm/expected"
-	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -12,7 +11,7 @@ import (
 	"github.com/comdex-official/comdex/x/esm/types"
 )
 
-func BeginBlocker(ctx sdk.Context, _ abci.RequestBeginBlock, k keeper.Keeper, assetKeeper expected.AssetKeeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper, assetKeeper expected.AssetKeeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, ctx.BlockTime(), telemetry.MetricKeyBeginBlocker)
 
 	_ = utils.ApplyFuncIfNoError(ctx, func(ctx sdk.Context) error {

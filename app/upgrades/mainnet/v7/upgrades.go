@@ -1,15 +1,17 @@
 package v7
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func ReturnAtomToVaultOwners(ctx sdk.Context,
@@ -48,7 +50,7 @@ func ReturnAtomToVaultOwners(ctx sdk.Context,
 		},
 	}
 	for i := 0; i < 5; i++ {
-		atomCoins := sdk.NewCoin("ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352", sdk.NewInt(auctionData[i].amount))
+		atomCoins := sdk.NewCoin("ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352", sdkmath.NewInt(auctionData[i].amount))
 		addr1, err := sdk.AccAddressFromBech32(auctionData[i].address)
 		if err != nil {
 			fmt.Println("error in address", auctionData[i].address, err)
@@ -73,45 +75,45 @@ func InitializeLendReservesStates(
 ) {
 	dataAsset1, found := lendKeeper.GetReserveBuybackAssetData(ctx, 1)
 	if !found {
-		dataAsset1.BuybackAmount = sdk.NewInt(0)
-		dataAsset1.ReserveAmount = sdk.NewInt(0)
+		dataAsset1.BuybackAmount = sdkmath.NewInt(0)
+		dataAsset1.ReserveAmount = sdkmath.NewInt(0)
 	}
 	dataAsset2, found := lendKeeper.GetReserveBuybackAssetData(ctx, 2)
 	if !found {
-		dataAsset2.BuybackAmount = sdk.NewInt(0)
-		dataAsset2.ReserveAmount = sdk.NewInt(0)
+		dataAsset2.BuybackAmount = sdkmath.NewInt(0)
+		dataAsset2.ReserveAmount = sdkmath.NewInt(0)
 	}
 	dataAsset3, found := lendKeeper.GetReserveBuybackAssetData(ctx, 3)
 	if !found {
-		dataAsset3.BuybackAmount = sdk.NewInt(0)
-		dataAsset3.ReserveAmount = sdk.NewInt(0)
+		dataAsset3.BuybackAmount = sdkmath.NewInt(0)
+		dataAsset3.ReserveAmount = sdkmath.NewInt(0)
 	}
 
 	reserveStat1 := types.AllReserveStats{
 		AssetID:                        1,
-		AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-		AmountOutFromReserveForAuction: sdk.ZeroInt(),
-		AmountInFromLiqPenalty:         sdk.ZeroInt(),
+		AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+		AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+		AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
 		AmountInFromRepayments:         dataAsset1.BuybackAmount.Add(dataAsset1.ReserveAmount),
-		TotalAmountOutToLenders:        sdk.ZeroInt(),
+		TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 	}
 
 	reserveStat2 := types.AllReserveStats{
 		AssetID:                        2,
-		AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-		AmountOutFromReserveForAuction: sdk.ZeroInt(),
-		AmountInFromLiqPenalty:         sdk.ZeroInt(),
+		AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+		AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+		AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
 		AmountInFromRepayments:         dataAsset2.BuybackAmount.Add(dataAsset2.ReserveAmount),
-		TotalAmountOutToLenders:        sdk.ZeroInt(),
+		TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 	}
 
 	reserveStat3 := types.AllReserveStats{
 		AssetID:                        3,
-		AmountOutFromReserveToLenders:  sdk.ZeroInt(),
-		AmountOutFromReserveForAuction: sdk.ZeroInt(),
-		AmountInFromLiqPenalty:         sdk.ZeroInt(),
+		AmountOutFromReserveToLenders:  sdkmath.ZeroInt(),
+		AmountOutFromReserveForAuction: sdkmath.ZeroInt(),
+		AmountInFromLiqPenalty:         sdkmath.ZeroInt(),
 		AmountInFromRepayments:         dataAsset3.BuybackAmount.Add(dataAsset3.ReserveAmount),
-		TotalAmountOutToLenders:        sdk.ZeroInt(),
+		TotalAmountOutToLenders:        sdkmath.ZeroInt(),
 	}
 	lendKeeper.SetAllReserveStatsByAssetID(ctx, reserveStat1)
 	lendKeeper.SetAllReserveStatsByAssetID(ctx, reserveStat2)
@@ -133,10 +135,10 @@ func CreateUpgradeHandler700(
 	lendKeeper lendkeeper.Keeper,
 	bankKeeper bankkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		InitializeLendReservesStates(ctx, lendKeeper)
-		ReturnAtomToVaultOwners(ctx, bankKeeper)
+		InitializeLendReservesStates(sdk.UnwrapSDKContext(ctx), lendKeeper)
+		ReturnAtomToVaultOwners(sdk.UnwrapSDKContext(ctx), bankKeeper)
 		return newVM, err
 	}
 }

@@ -1,7 +1,9 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
@@ -33,22 +35,22 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	assetDataPoolOneAssetOne := &lendtypes.AssetDataPoolMapping{
 		AssetID:          assetOneID,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolOneAssetTwo := &lendtypes.AssetDataPoolMapping{
 		AssetID:          assetTwoID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000000000),
 	}
 	assetDataPoolOneAssetThree := &lendtypes.AssetDataPoolMapping{
 		AssetID:          assetThreeID,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000000000),
 	}
 	assetDataPoolTwoAssetFour := &lendtypes.AssetDataPoolMapping{
 		AssetID:          assetFourID,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(3000000000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(3000000000000000000),
 	}
 
 	assetDataPoolOne = append(assetDataPoolOne, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -104,15 +106,15 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	extendedPairVault := bindings.MsgAddExtendedPairsVault{
 		AppID:               2,
 		PairID:              1,
-		StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-		ClosingFee:          sdk.MustNewDecFromStr("0"),
-		LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-		DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+		StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+		LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+		DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 		IsVaultActive:       true,
-		DebtCeiling:         sdk.NewInt(1000000000000),
-		DebtFloor:           sdk.NewInt(1000000),
+		DebtCeiling:         sdkmath.NewInt(1000000000000),
+		DebtFloor:           sdkmath.NewInt(1000000),
 		IsStableMintVault:   false,
-		MinCr:               sdk.MustNewDecFromStr("1.5"),
+		MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 		PairName:            "CMDX-B",
 		AssetOutOraclePrice: true,
 		AssetOutPrice:       1000000,
@@ -130,9 +132,9 @@ func (s *KeeperTestSuite) AddAppAssets() {
 	dutchAuctionParams := types.DutchAuctionParam{
 		Premium:         newDec("0.1"),
 		Discount:        newDec("0.1"),
-		DecrementFactor: sdk.NewInt(1),
+		DecrementFactor: sdkmath.NewInt(1),
 	}
-	englishAuctionParams := types.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
+	englishAuctionParams := types.EnglishAuctionParam{DecrementFactor: sdkmath.NewInt(1)}
 
 	liqWhitelistingHbr := types.LiquidationWhiteListing{
 		AppId:               2,
@@ -188,8 +190,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress1,
 				AppId:               2,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 		{
@@ -198,8 +200,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress2,
 				AppId:               2,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 	} {
@@ -281,8 +283,8 @@ func (s *KeeperTestSuite) TestLiquidateVaults() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdkmath.LegacyNewDecFromInt(beforeVault.AmountOut).Mul(newDec("0.12")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdkmath.LegacyNewDecFromInt(beforeVault.AmountOut).Mul(newDec("0.12")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
@@ -312,14 +314,14 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	assetStatsLend, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
 	s.Require().Equal(len(assetStatsLend.LendIds), 2)
 	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
-	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdkmath.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdkmath.NewInt(13000000000))
 
 	assetStatsBorrow, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
 	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
 	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
-	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(770000000))
-	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdkmath.NewInt(770000000))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdkmath.NewInt(10000000000))
 
 	modBalInitial, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
 
@@ -337,8 +339,8 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
 	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
-	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt()))
-	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt())
+	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdkmath.LegacyNewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt()))
+	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdkmath.LegacyNewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt())
 	s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 	s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
 	s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
@@ -347,21 +349,21 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	assetStatsLend, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
 	s.Require().Equal(len(assetStatsLend.LendIds), 2)
 	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
-	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(11900000000))
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdkmath.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdkmath.NewInt(11900000000))
 
 	assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
 	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
 	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
-	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdkmath.NewInt(0))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdkmath.NewInt(10000000000))
 
 	afterBorrow, found := s.lendKeeper.GetBorrow(*ctx, 1)
 	s.Require().True(found)
 	s.Require().Equal(afterBorrow.IsLiquidated, true)
 
 	modBalFinal, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
-	s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdk.NewInt(1100000000))
+	s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdkmath.NewInt(1100000000))
 }
 
 func (s *KeeperTestSuite) TestLiquidateInternalKeeperForVault() {
@@ -434,8 +436,8 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForVault() {
 				s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeVault.AmountIn)
 				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeVault.AmountOut)
-				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt()))
-				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeVault.AmountOut.Int64()).Mul(newDec("0.12")).TruncateInt())
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdkmath.LegacyNewDecFromInt(beforeVault.AmountOut).Mul(newDec("0.12")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdkmath.LegacyNewDecFromInt(beforeVault.AmountOut).Mul(newDec("0.12")).TruncateInt())
 				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(2))
 				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(3))
@@ -471,14 +473,14 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 	assetStatsLend, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 1)
 	s.Require().Equal(len(assetStatsLend.LendIds), 2)
 	s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
-	s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-	s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(13000000000))
+	s.Require().Equal(assetStatsLend.TotalBorrowed, sdkmath.NewInt(0))
+	s.Require().Equal(assetStatsLend.TotalLend, sdkmath.NewInt(13000000000))
 
 	assetStatsBorrow, _ := s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(*ctx, 1, 2)
 	s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
 	s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
-	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(770000000))
-	s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+	s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdkmath.NewInt(770000000))
+	s.Require().Equal(assetStatsBorrow.TotalLend, sdkmath.NewInt(10000000000))
 
 	modBalInitial, _ := s.lendKeeper.GetModuleBalanceByPoolID(*ctx, 1)
 	s.ChangeOraclePrice(1)
@@ -533,8 +535,8 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 				s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
 				s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 				s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
-				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt()))
-				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDec(beforeBorrow.AmountOut.Amount.Int64()).Mul(newDec("0.05")).TruncateInt())
+				s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdkmath.LegacyNewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt()))
+				s.Require().Equal(lockedVault[0].FeeToBeCollected, sdkmath.LegacyNewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt())
 				s.Require().Equal(lockedVault[0].IsDebtCmst, false)
 				s.Require().Equal(lockedVault[0].CollateralAssetId, uint64(1))
 				s.Require().Equal(lockedVault[0].DebtAssetId, uint64(2))
@@ -543,21 +545,21 @@ func (s *KeeperTestSuite) TestLiquidateInternalKeeperForBorrow() {
 				assetStatsLend, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(s.ctx, 1, 1)
 				s.Require().Equal(len(assetStatsLend.LendIds), 2)
 				s.Require().Equal(len(assetStatsLend.BorrowIds), 0)
-				s.Require().Equal(assetStatsLend.TotalBorrowed, sdk.NewInt(0))
-				s.Require().Equal(assetStatsLend.TotalLend, sdk.NewInt(12900000000))
+				s.Require().Equal(assetStatsLend.TotalBorrowed, sdkmath.NewInt(0))
+				s.Require().Equal(assetStatsLend.TotalLend, sdkmath.NewInt(12900000000))
 
 				assetStatsBorrow, _ = s.lendKeeper.GetAssetStatsByPoolIDAndAssetID(s.ctx, 1, 2)
 				s.Require().Equal(len(assetStatsBorrow.LendIds), 1)
 				s.Require().Equal(len(assetStatsBorrow.BorrowIds), 2)
-				s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdk.NewInt(700000000))
-				s.Require().Equal(assetStatsBorrow.TotalLend, sdk.NewInt(10000000000))
+				s.Require().Equal(assetStatsBorrow.TotalBorrowed, sdkmath.NewInt(700000000))
+				s.Require().Equal(assetStatsBorrow.TotalLend, sdkmath.NewInt(10000000000))
 
 				afterBorrow, found := s.lendKeeper.GetBorrow(s.ctx, 1)
 				s.Require().True(found)
 				s.Require().Equal(afterBorrow.IsLiquidated, true)
 
 				modBalFinal, _ := s.lendKeeper.GetModuleBalanceByPoolID(s.ctx, 1)
-				s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdk.NewInt(100000000))
+				s.Require().Equal(modBalInitial.ModuleBalanceStats[0].Balance.Amount.Sub(modBalFinal.ModuleBalanceStats[0].Balance.Amount), sdkmath.NewInt(100000000))
 
 				s.Require().Equal(lockedVault[0].IsInternalKeeper, true)
 				s.Require().Equal(lockedVault[0].InternalKeeperAddress, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
@@ -578,31 +580,31 @@ func (s *KeeperTestSuite) TestAppReserveFunds() {
 	}{
 		{
 			Name:    "asset does not exist",
-			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 10, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 10, sdk.NewCoin("uasset1", sdkmath.NewInt(100000000))),
 			ExpErr:  assetTypes.ErrorAssetDoesNotExist,
 			ExpResp: nil,
 		},
 		{
 			Name:    "wrong denom",
-			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 1, sdk.NewCoin("uasset2", sdk.NewInt(100000000))),
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 1, 1, sdk.NewCoin("uasset2", sdkmath.NewInt(100000000))),
 			ExpErr:  assetTypes.ErrorInvalidDenom,
 			ExpResp: nil,
 		},
 		{
 			Name:    "wrong app",
-			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 10, 1, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 10, 1, sdk.NewCoin("uasset1", sdkmath.NewInt(100000000))),
 			ExpErr:  assetTypes.ErrorUnknownAppType,
 			ExpResp: nil,
 		},
 		{
 			Name:    "success valid case 1",
-			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 1, sdk.NewCoin("uasset1", sdk.NewInt(100000000))),
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 1, sdk.NewCoin("uasset1", sdkmath.NewInt(100000000))),
 			ExpErr:  nil,
 			ExpResp: &types.MsgAppReserveFundsResponse{},
 		},
 		{
 			Name:    "success valid case 2",
-			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 2, sdk.NewCoin("uasset2", sdk.NewInt(100000000))),
+			Msg:     *types.NewMsgAppReserveFundsRequest("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 2, 2, sdk.NewCoin("uasset2", sdkmath.NewInt(100000000))),
 			ExpErr:  nil,
 			ExpResp: &types.MsgAppReserveFundsResponse{},
 		},
@@ -624,7 +626,7 @@ func (s *KeeperTestSuite) TestAppReserveFunds() {
 				s.Require().Equal(found, true)
 				s.Require().Equal(appResFunds.AppId, uint64(2))
 				s.Require().Equal(appResFunds.AssetId, uint64(1))
-				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset1", sdk.NewInt(100000000)))
+				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset1", sdkmath.NewInt(100000000)))
 
 				_, found = liquidationKeeper.GetAppReserveFundsTxData(s.ctx, 2)
 				s.Require().Equal(found, true)
@@ -637,7 +639,7 @@ func (s *KeeperTestSuite) TestLiquidateExternal() {
 	addr, _ := sdk.AccAddressFromBech32("cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7")
 	liquidationKeeper := &s.liquidationKeeper
 	s.AddAppAssets()
-	err := liquidationKeeper.MsgAppReserveFundsFn(s.ctx, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 3, 2, sdk.NewCoin("uasset2", sdk.NewInt(100000000)))
+	err := liquidationKeeper.MsgAppReserveFundsFn(s.ctx, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", 3, 2, sdk.NewCoin("uasset2", sdkmath.NewInt(100000000)))
 	if err != nil {
 		return
 	}
@@ -650,13 +652,13 @@ func (s *KeeperTestSuite) TestLiquidateExternal() {
 	}{
 		{
 			Name:    "asset does not exist",
-			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), 10, 2, false),
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdkmath.NewInt(100000000)), sdk.NewCoin("uasset2", sdkmath.NewInt(100000000)), 10, 2, false),
 			ExpErr:  assetTypes.ErrorAssetDoesNotExist,
 			ExpResp: nil,
 		},
 		{
 			Name:    "success valid case",
-			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdk.NewInt(100000000)), sdk.NewCoin("uasset2", sdk.NewInt(100000000)), 1, 2, false),
+			Msg:     *types.NewMsgLiquidateExternalKeeperRequest(addr, 3, "cosmos1hm7w7dnvdnra78pz9qxysy7u4tuhc3fnpjmyj7", sdk.NewCoin("uasset1", sdkmath.NewInt(100000000)), sdk.NewCoin("uasset2", sdkmath.NewInt(100000000)), 1, 2, false),
 			ExpErr:  nil,
 			ExpResp: &types.MsgLiquidateExternalKeeperResponse{},
 		},
@@ -678,7 +680,7 @@ func (s *KeeperTestSuite) TestLiquidateExternal() {
 				s.Require().Equal(found, true)
 				s.Require().Equal(appResFunds.AppId, uint64(3))
 				s.Require().Equal(appResFunds.AssetId, uint64(2))
-				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset2", sdk.NewInt(100000000)))
+				s.Require().Equal(appResFunds.TokenQuantity, sdk.NewCoin("uasset2", sdkmath.NewInt(100000000)))
 
 				_, found = liquidationKeeper.GetAppReserveFundsTxData(s.ctx, 3)
 				s.Require().Equal(found, true)
@@ -703,12 +705,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 				AppID:            2,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(200000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {
@@ -775,12 +777,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 				AppID:            2,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(1000000000000000000),
-				DebtThreshold:    sdk.NewInt(282078000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(25000000000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(13157894000000),
+				SurplusThreshold: sdkmath.NewInt(1000000000000000000),
+				DebtThreshold:    sdkmath.NewInt(282078000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(25000000000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(13157894000000),
 			},
 		},
 	} {
@@ -839,7 +841,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 	s.AddAppAssets()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
 
-	err := collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(4700000))
+	err := collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdkmath.NewIntFromUint64(4700000))
 	s.Require().NoError(err)
 	k, ctx := &s.liquidationKeeper, &s.ctx
 	err = k.Liquidate(*ctx)
@@ -859,12 +861,12 @@ func (s *KeeperTestSuite) TestSurplusActivator() {
 	liquidationKeeper := &s.liquidationKeeper
 	s.AddAppAssets()
 	s.WasmSetCollectorLookupTableAndAuctionControlForSurplus()
-	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	err := s.app.BankKeeper.MintCoins(s.ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdkmath.NewInt(10000000))))
 	s.Require().NoError(err)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdk.NewInt(10000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(sdk.NewCoin("uasset2", sdkmath.NewInt(10000000))))
 	s.Require().NoError(err)
 
-	err = collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdk.NewIntFromUint64(100000000))
+	err = collectorKeeper.SetNetFeeCollectedData(s.ctx, uint64(2), 2, sdkmath.NewIntFromUint64(100000000))
 	s.Require().NoError(err)
 	k, ctx := &s.liquidationKeeper, &s.ctx
 	err = k.Liquidate(*ctx)

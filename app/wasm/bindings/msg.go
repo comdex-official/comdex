@@ -1,6 +1,7 @@
 package bindings
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -42,33 +43,33 @@ type MsgWhitelistAppIDLockerRewards struct {
 }
 
 type MsgAddExtendedPairsVault struct {
-	AppID               uint64  `json:"app_id"`
-	PairID              uint64  `json:"pair_id"`
-	StabilityFee        sdk.Dec `json:"stability_fee"`
-	ClosingFee          sdk.Dec `json:"closing_fee"`
-	LiquidationPenalty  sdk.Dec `json:"liquidation_penalty"`
-	DrawDownFee         sdk.Dec `json:"draw_down_fee"`
-	IsVaultActive       bool    `json:"is_vault_active"`
-	DebtCeiling         sdk.Int `json:"debt_ceiling"`
-	DebtFloor           sdk.Int `json:"debt_floor"`
-	IsStableMintVault   bool    `json:"is_stable_mint_vault"`
-	MinCr               sdk.Dec `json:"min_cr"`
-	PairName            string  `json:"pair_name"`
-	AssetOutOraclePrice bool    `json:"asset_out_oracle_price"`
-	AssetOutPrice       uint64  `json:"asset_out_price"`
-	MinUsdValueLeft     uint64  `json:"min_usd_value_left"`
+	AppID               uint64            `json:"app_id"`
+	PairID              uint64            `json:"pair_id"`
+	StabilityFee        sdkmath.LegacyDec `json:"stability_fee"`
+	ClosingFee          sdkmath.LegacyDec `json:"closing_fee"`
+	LiquidationPenalty  sdkmath.LegacyDec `json:"liquidation_penalty"`
+	DrawDownFee         sdkmath.LegacyDec `json:"draw_down_fee"`
+	IsVaultActive       bool              `json:"is_vault_active"`
+	DebtCeiling         sdkmath.Int       `json:"debt_ceiling"`
+	DebtFloor           sdkmath.Int       `json:"debt_floor"`
+	IsStableMintVault   bool              `json:"is_stable_mint_vault"`
+	MinCr               sdkmath.LegacyDec `json:"min_cr"`
+	PairName            string            `json:"pair_name"`
+	AssetOutOraclePrice bool              `json:"asset_out_oracle_price"`
+	AssetOutPrice       uint64            `json:"asset_out_price"`
+	MinUsdValueLeft     uint64            `json:"min_usd_value_left"`
 }
 
 type MsgSetCollectorLookupTable struct {
-	AppID            uint64  `json:"app_id"`
-	CollectorAssetID uint64  `json:"collector_asset_id"`
-	SecondaryAssetID uint64  `json:"secondary_asset_id"`
-	SurplusThreshold sdk.Int `json:"surplus_threshold"`
-	DebtThreshold    sdk.Int `json:"debt_threshold"`
-	LockerSavingRate sdk.Dec `json:"locker_saving_rate"`
-	LotSize          sdk.Int `json:"lot_size"`
-	BidFactor        sdk.Dec `json:"bid_factor"`
-	DebtLotSize      sdk.Int `json:"debt_lot_size"`
+	AppID            uint64            `json:"app_id"`
+	CollectorAssetID uint64            `json:"collector_asset_id"`
+	SecondaryAssetID uint64            `json:"secondary_asset_id"`
+	SurplusThreshold sdkmath.Int       `json:"surplus_threshold"`
+	DebtThreshold    sdkmath.Int       `json:"debt_threshold"`
+	LockerSavingRate sdkmath.LegacyDec `json:"locker_saving_rate"`
+	LotSize          sdkmath.Int       `json:"lot_size"`
+	BidFactor        sdkmath.LegacyDec `json:"bid_factor"`
+	DebtLotSize      sdkmath.Int       `json:"debt_lot_size"`
 }
 
 type MsgSetAuctionMappingForApp struct {
@@ -82,28 +83,28 @@ type MsgSetAuctionMappingForApp struct {
 }
 
 type MsgUpdatePairsVault struct {
-	AppID              uint64  `json:"app_id"`
-	ExtPairID          uint64  `json:"ext_pair_id"`
-	StabilityFee       sdk.Dec `json:"stability_fee"`
-	ClosingFee         sdk.Dec `json:"closing_fee"`
-	LiquidationPenalty sdk.Dec `json:"liquidation_penalty"`
-	DrawDownFee        sdk.Dec `json:"draw_down_fee"`
-	IsVaultActive      bool    `json:"is_vault_active"`
-	MinCr              sdk.Dec `json:"min_cr"`
-	DebtCeiling        sdk.Int `json:"debt_ceiling"`
-	DebtFloor          sdk.Int `json:"debt_floor"`
-	MinUsdValueLeft    uint64  `json:"min_usd_value_left"`
+	AppID              uint64            `json:"app_id"`
+	ExtPairID          uint64            `json:"ext_pair_id"`
+	StabilityFee       sdkmath.LegacyDec `json:"stability_fee"`
+	ClosingFee         sdkmath.LegacyDec `json:"closing_fee"`
+	LiquidationPenalty sdkmath.LegacyDec `json:"liquidation_penalty"`
+	DrawDownFee        sdkmath.LegacyDec `json:"draw_down_fee"`
+	IsVaultActive      bool              `json:"is_vault_active"`
+	MinCr              sdkmath.LegacyDec `json:"min_cr"`
+	DebtCeiling        sdkmath.Int       `json:"debt_ceiling"`
+	DebtFloor          sdkmath.Int       `json:"debt_floor"`
+	MinUsdValueLeft    uint64            `json:"min_usd_value_left"`
 }
 
 type MsgUpdateCollectorLookupTable struct {
-	AppID            uint64  `json:"app_id"`
-	AssetID          uint64  `json:"asset_id"`
-	DebtThreshold    sdk.Int `json:"debt_threshold"`
-	SurplusThreshold sdk.Int `json:"surplus_threshold"`
-	LotSize          sdk.Int `json:"lot_size"`
-	DebtLotSize      sdk.Int `json:"debt_lot_size"`
-	BidFactor        sdk.Dec `json:"bid_factor"`
-	LSR              sdk.Dec `json:"lsr"`
+	AppID            uint64            `json:"app_id"`
+	AssetID          uint64            `json:"asset_id"`
+	DebtThreshold    sdkmath.Int       `json:"debt_threshold"`
+	SurplusThreshold sdkmath.Int       `json:"surplus_threshold"`
+	LotSize          sdkmath.Int       `json:"lot_size"`
+	DebtLotSize      sdkmath.Int       `json:"debt_lot_size"`
+	BidFactor        sdkmath.LegacyDec `json:"bid_factor"`
+	LSR              sdkmath.LegacyDec `json:"lsr"`
 }
 
 type MsgRemoveWhitelistAssetLocker struct {
@@ -124,16 +125,16 @@ type MsgRemoveWhitelistAppIDLiquidation struct {
 }
 
 type MsgAddAuctionParams struct {
-	AppID                  uint64  `json:"app_id"`
-	AuctionDurationSeconds uint64  `json:"auction_duration_seconds"`
-	Buffer                 sdk.Dec `json:"buffer"`
-	Cusp                   sdk.Dec `json:"cusp"`
-	Step                   uint64  `json:"step"`
-	PriceFunctionType      uint64  `json:"price_function_type"`
-	SurplusID              uint64  `json:"surplus_id"`
-	DebtID                 uint64  `json:"debt_id"`
-	DutchID                uint64  `json:"dutch_id"`
-	BidDurationSeconds     uint64  `json:"bid_duration_seconds"`
+	AppID                  uint64            `json:"app_id"`
+	AuctionDurationSeconds uint64            `json:"auction_duration_seconds"`
+	Buffer                 sdkmath.LegacyDec `json:"buffer"`
+	Cusp                   sdkmath.LegacyDec `json:"cusp"`
+	Step                   uint64            `json:"step"`
+	PriceFunctionType      uint64            `json:"price_function_type"`
+	SurplusID              uint64            `json:"surplus_id"`
+	DebtID                 uint64            `json:"debt_id"`
+	DutchID                uint64            `json:"dutch_id"`
+	BidDurationSeconds     uint64            `json:"bid_duration_seconds"`
 }
 
 type MsgBurnGovTokensForApp struct {
@@ -151,22 +152,22 @@ type MsgAddESMTriggerParams struct {
 }
 
 type MsgEmissionRewards struct {
-	AppID          uint64    `json:"app_id"`
-	Amount         sdk.Int   `json:"amount"`
-	EmissionAmount uint64    `json:"emission_amount"`
-	ExtendedPair   []uint64  `json:"extended_pair"`
-	VotingRatio    []sdk.Int `json:"voting_ratio"`
+	AppID          uint64        `json:"app_id"`
+	Amount         sdkmath.Int   `json:"amount"`
+	EmissionAmount uint64        `json:"emission_amount"`
+	ExtendedPair   []uint64      `json:"extended_pair"`
+	VotingRatio    []sdkmath.Int `json:"voting_ratio"`
 }
 
 type MsgFoundationEmission struct {
-	AppID             uint64   `json:"app_id"`
-	Amount            sdk.Int  `json:"amount"`
-	FoundationAddress []string `json:"foundation_address"`
+	AppID             uint64      `json:"app_id"`
+	Amount            sdkmath.Int `json:"amount"`
+	FoundationAddress []string    `json:"foundation_address"`
 }
 
 type MsgRebaseMint struct {
 	AppID        uint64         `json:"app_id"`
-	Amount       sdk.Int        `json:"amount"`
+	Amount       sdkmath.Int    `json:"amount"`
 	ContractAddr sdk.AccAddress `json:"contract_addr"`
 }
 
@@ -178,9 +179,9 @@ type MsgGetSurplusFund struct {
 }
 
 type MsgEmissionPoolRewards struct {
-	AppID       uint64    `json:"app_id"`
-	CswapAppID  uint64    `json:"cswap_app_id"`
-	Amount      sdk.Int   `json:"amount"`
-	Pools       []uint64  `json:"pools"`
-	VotingRatio []sdk.Int `json:"voting_ratio"`
+	AppID       uint64        `json:"app_id"`
+	CswapAppID  uint64        `json:"cswap_app_id"`
+	Amount      sdkmath.Int   `json:"amount"`
+	Pools       []uint64      `json:"pools"`
+	VotingRatio []sdkmath.Int `json:"voting_ratio"`
 }

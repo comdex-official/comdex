@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/comdex-official/comdex/x/rewards/types"
 )
@@ -32,7 +34,7 @@ func (k Keeper) ValidateMsgCreateGauge(ctx sdk.Context, msg *types.MsgCreateGaug
 		return types.ErrInvalidDepositAmount
 	}
 
-	if msg.DepositAmount.Amount.LT(sdk.NewIntFromUint64(msg.TotalTriggers)) {
+	if msg.DepositAmount.Amount.LT(sdkmath.NewIntFromUint64(msg.TotalTriggers)) {
 		return types.ErrDepositSmallThanEpoch
 	}
 
@@ -59,13 +61,13 @@ func (k Keeper) OraclePrice(ctx sdk.Context, denom string) (uint64, bool) {
 func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairID uint64) error {
 	pair, found := k.liquidityKeeper.GetPair(ctx, appID, pairID)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
+		return errorsmod.Wrapf(types.ErrPairNotExists, "pair does not exists for given pool id")
 	}
 
 	_, baseCoinPriceFound := k.OraclePrice(ctx, pair.BaseCoinDenom)
 	_, quoteCoinPriceFound := k.OraclePrice(ctx, pair.QuoteCoinDenom)
 	if !(baseCoinPriceFound || quoteCoinPriceFound) {
-		return sdkerrors.Wrapf(types.ErrPriceNotFound, "oracle price required for atleast %s or %s but not found", pair.QuoteCoinDenom, pair.BaseCoinDenom)
+		return errorsmod.Wrapf(types.ErrPriceNotFound, "oracle price required for atleast %s or %s but not found", pair.QuoteCoinDenom, pair.BaseCoinDenom)
 	}
 
 	return nil
@@ -75,7 +77,7 @@ func (k Keeper) ValidateIfOraclePricesExists(ctx sdk.Context, appID, pairID uint
 func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID uint64, kind *types.MsgCreateGauge_LiquidityMetaData, forSwapFee bool) error {
 	_, found := k.asset.GetApp(ctx, appID)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
+		return errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", appID)
 	}
 
 	pool, found := k.liquidityKeeper.GetPool(ctx, appID, kind.LiquidityMetaData.PoolId)
@@ -93,14 +95,14 @@ func (k Keeper) ValidateMsgCreateGaugeLiquidityMetaData(ctx sdk.Context, appID u
 	childPoolIds := kind.LiquidityMetaData.ChildPoolIds
 	for _, poolID := range childPoolIds {
 		if poolID == kind.LiquidityMetaData.PoolId {
-			return sdkerrors.Wrap(types.ErrSamePoolID, fmt.Sprintf("pool id : %d", poolID))
+			return errorsmod.Wrap(types.ErrSamePoolID, fmt.Sprintf("pool id : %d", poolID))
 		}
 		pool, found := k.liquidityKeeper.GetPool(ctx, appID, poolID)
 		if !found {
-			return sdkerrors.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))
+			return errorsmod.Wrap(types.ErrInvalidPoolID, fmt.Sprintf("invalid child pool id : %d", poolID))
 		}
 		if pool.Disabled {
-			return sdkerrors.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", poolID))
+			return errorsmod.Wrap(types.ErrDisabledPool, fmt.Sprintf("pool is disabled : %d", poolID))
 		}
 	}
 
@@ -119,7 +121,7 @@ func (k Keeper) NewGauge(ctx sdk.Context, msg *types.MsgCreateGauge, forSwapFee 
 		DepositAmount:     msg.DepositAmount,
 		TotalTriggers:     msg.TotalTriggers,
 		TriggeredCount:    0,
-		DistributedAmount: sdk.NewCoin(msg.DepositAmount.Denom, sdk.NewInt(0)),
+		DistributedAmount: sdk.NewCoin(msg.DepositAmount.Denom, sdkmath.NewInt(0)),
 		IsActive:          true,
 		ForSwapFee:        false,
 		Kind:              nil,
@@ -170,7 +172,7 @@ func (k Keeper) GetUpdatedGaugeIdsByTriggerDurationObj(ctx sdk.Context, triggerD
 	}
 
 	if gaugeIDAlreadyExists {
-		return types.GaugeByTriggerDuration{}, sdkerrors.Wrapf(types.ErrInvalidGaugeID, "gauge id already exists in map : %d", newGaugeID)
+		return types.GaugeByTriggerDuration{}, errorsmod.Wrapf(types.ErrInvalidGaugeID, "gauge id already exists in map : %d", newGaugeID)
 	}
 	gaugeIdsByTriggerDuration.GaugeIds = append(gaugeIdsByTriggerDuration.GaugeIds, newGaugeID)
 	return gaugeIdsByTriggerDuration, nil
@@ -211,7 +213,7 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 	logger := k.Logger(ctx)
 	gaugesForDuration, found := k.GetGaugeIdsByTriggerDuration(ctx, triggerDuration)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrNoGaugeForDuration, "duration : %d", triggerDuration)
+		return errorsmod.Wrapf(types.ErrNoGaugeForDuration, "duration : %d", triggerDuration)
 	}
 
 	for _, gaugeID := range gaugesForDuration.GaugeIds {
@@ -239,12 +241,12 @@ func (k Keeper) InitateGaugesForDuration(ctx sdk.Context, triggerDuration time.D
 			availableDeposits := gauge.DepositAmount.Amount.Sub(gauge.DistributedAmount.Amount)
 
 			// just in case (exception handelled), but this will never pass
-			if availableDeposits.LT(sdk.NewIntFromUint64(amountToDistribute)) {
+			if availableDeposits.LT(sdkmath.NewIntFromUint64(amountToDistribute)) {
 				continue
 			}
 
 			ongoingEpochCount := gauge.TriggeredCount + 1
-			coinToDistribute := sdk.NewCoin(gauge.DepositAmount.Denom, sdk.NewIntFromUint64(amountToDistribute))
+			coinToDistribute := sdk.NewCoin(gauge.DepositAmount.Denom, sdkmath.NewIntFromUint64(amountToDistribute))
 
 			coinsDistributed, err := k.BeginRewardDistributions(ctx, gauge, coinToDistribute, ongoingEpochCount, triggerDuration)
 			if err != nil {

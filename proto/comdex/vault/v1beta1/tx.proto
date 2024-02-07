@@ -15,12 +15,12 @@ message MsgCreateRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount_in = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount_in\"",
     (gogoproto.nullable)   = false
   ];
   string amount_out = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount_out\"",
     (gogoproto.nullable)   = false
   ];
@@ -39,7 +39,7 @@ message MsgDepositRequest {
   uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -56,7 +56,7 @@ message MsgWithdrawRequest {
   uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -73,7 +73,7 @@ message MsgDrawRequest {
   uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -90,7 +90,7 @@ message MsgRepayRequest {
   uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -119,7 +119,7 @@ message MsgDepositAndDrawRequest {
   uint64 user_vault_id   = 4
       [ (gogoproto.moretags) = "yaml:\"user_vault_id\"" ];
   string amount = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -134,7 +134,7 @@ message MsgCreateStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"Amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -150,7 +150,7 @@ message MsgDepositStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];
@@ -171,7 +171,7 @@ message MsgWithdrawStableMintRequest {
     (gogoproto.moretags)   = "yaml:\"extended_pair_vault_id\""
   ];
   string amount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.moretags)   = "yaml:\"amount\"",
     (gogoproto.nullable)   = false
   ];

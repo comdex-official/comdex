@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/esm/types"
@@ -41,10 +42,10 @@ func (k Keeper) GetKillSwitchData(ctx sdk.Context, appID uint64) (switchParams t
 func (k Keeper) GetAllKillSwitchData(ctx sdk.Context) (killSwitchParams []types.KillSwitchParams) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.KillSwitchDataKey)
+		iter  = storetypes.KVStorePrefixIterator(store, types.KillSwitchDataKey)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

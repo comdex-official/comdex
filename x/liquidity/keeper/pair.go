@@ -3,8 +3,9 @@ package keeper
 import (
 	"strconv"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/comdex-official/comdex/x/liquidity/types"
 )
@@ -28,15 +29,15 @@ func (k Keeper) getNextOrderIDWithUpdate(ctx sdk.Context, pair types.Pair) uint6
 func (k Keeper) ValidateMsgCreatePair(ctx sdk.Context, msg *types.MsgCreatePair) error {
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+		return errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	if !k.assetKeeper.HasAssetForDenom(ctx, msg.BaseCoinDenom) {
-		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.BaseCoinDenom)
+		return errorsmod.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.BaseCoinDenom)
 	}
 
 	if !k.assetKeeper.HasAssetForDenom(ctx, msg.QuoteCoinDenom) {
-		return sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.QuoteCoinDenom)
+		return errorsmod.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", msg.QuoteCoinDenom)
 	}
 
 	if _, found := k.GetPairByDenoms(ctx, msg.AppId, msg.BaseCoinDenom, msg.QuoteCoinDenom); found {
@@ -53,7 +54,7 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair, isViaProp 
 
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return types.Pair{}, sdkerrors.Wrap(err, "params retreval failed")
+		return types.Pair{}, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	// ignore fee collection if the request is from proposal
@@ -61,7 +62,7 @@ func (k Keeper) CreatePair(ctx sdk.Context, msg *types.MsgCreatePair, isViaProp 
 		// Send the pair creation fee to the fee collector.
 		feeCollectorAddr, _ := sdk.AccAddressFromBech32(params.FeeCollectorAddress)
 		if err := k.bankKeeper.SendCoins(ctx, msg.GetCreator(), feeCollectorAddr, params.PairCreationFee); err != nil {
-			return types.Pair{}, sdkerrors.Wrap(err, "insufficient pair creation fee")
+			return types.Pair{}, errorsmod.Wrap(err, "insufficient pair creation fee")
 		}
 	}
 

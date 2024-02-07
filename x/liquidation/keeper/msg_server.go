@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"context"
 	"fmt"
 
@@ -109,7 +110,7 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	if err != nil {
 		return nil, err
 	}
-	if !borrowPos.StableBorrowRate.Equal(sdk.ZeroDec()) {
+	if !borrowPos.StableBorrowRate.Equal(sdkmath.LegacyZeroDec()) {
 		borrowPos, err = k.lend.ReBalanceStableRates(ctx, borrowPos)
 		if err != nil {
 			return nil, err
@@ -125,7 +126,7 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	assetIn, _ := k.asset.GetAsset(ctx, lendPair.AssetIn)
 	assetOut, _ := k.asset.GetAsset(ctx, lendPair.AssetOut)
 
-	var currentCollateralizationRatio sdk.Dec
+	var currentCollateralizationRatio sdkmath.LegacyDec
 	var firstTransitAssetID, secondTransitAssetID uint64
 	// for getting transit assets details
 	for _, data := range pool.AssetData {
@@ -145,12 +146,12 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	// 	a. if borrow is from same pool
 	//  b. if borrow is from first transit asset
 	//  c. if borrow is from second transit asset
-	if borrowPos.BridgedAssetAmount.Amount.Equal(sdk.ZeroInt()) { // first condition
+	if borrowPos.BridgedAssetAmount.Amount.Equal(sdkmath.ZeroInt()) { // first condition
 		currentCollateralizationRatio, err = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
 		if err != nil {
 			return nil, err
 		}
-		if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
+		if sdkmath.LegacyDec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold) {
 			// after checking the currentCollateralizationRatio with LiquidationThreshold if borrow is to be liquidated then
 			// CreateLockedBorrow function is called
 			lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
@@ -167,7 +168,7 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 	} else {
 		if borrowPos.BridgedAssetAmount.Denom == firstBridgedAsset.Denom {
 			currentCollateralizationRatio, _ = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
-			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
+			if sdkmath.LegacyDec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetOne.LiquidationThreshold)) {
 				lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 				if err != nil {
 					return nil, err
@@ -182,7 +183,7 @@ func (k msgServer) MsgLiquidateBorrow(c context.Context, msg *types.MsgLiquidate
 		} else {
 			currentCollateralizationRatio, _ = k.lend.CalculateCollateralizationRatio(ctx, borrowPos.AmountIn.Amount, assetIn, borrowPos.AmountOut.Amount.Add(borrowPos.InterestAccumulated.TruncateInt()), assetOut)
 
-			if sdk.Dec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
+			if sdkmath.LegacyDec.GT(currentCollateralizationRatio, liqThreshold.LiquidationThreshold.Mul(liqThresholdBridgedAssetTwo.LiquidationThreshold)) {
 				lockedVault, err := k.CreateLockedBorrow(ctx, borrowPos, currentCollateralizationRatio, lendPos.AppID)
 				if err != nil {
 					return nil, err

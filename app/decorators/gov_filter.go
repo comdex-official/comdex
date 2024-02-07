@@ -1,6 +1,8 @@
 package decorators
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -9,7 +11,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
-var MiniumInitialDepositRate = sdk.NewDecWithPrec(25, 2)
+var MiniumInitialDepositRate = sdkmath.LegacyNewDecWithPrec(25, 2)
 
 type GovPreventSpamDecorator struct {
 	govKeeper govkeeper.Keeper
@@ -42,10 +44,13 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 	validMsg := func(m sdk.Msg) error {
 		if msg, ok := m.(*govtypes.MsgSubmitProposal); ok {
 			// prevent spam gov msg
-			depositParams := gpsd.govKeeper.GetParams(ctx)
+			depositParams, err := gpsd.govKeeper.Params.Get(ctx)
+			if err != nil {
+				return err
+			}
 			miniumInitialDeposit := gpsd.calcMiniumInitialDeposit(depositParams.MinDeposit)
 			if msg.InitialDeposit.IsAllLT(miniumInitialDeposit) {
-				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "not enough initial deposit. required: %v", miniumInitialDeposit)
+				return errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "not enough initial deposit. required: %v", miniumInitialDeposit)
 			}
 		}
 		return nil
@@ -59,7 +64,7 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 			for _, v := range msg.Msgs {
 				err := gpsd.cdc.UnpackAny(v, &innerMsg)
 				if err != nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
+					return errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
 				}
 
 				err = validMsg(innerMsg)

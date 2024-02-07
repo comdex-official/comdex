@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/x/liquidity/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,7 +31,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				69, addr1, asset1.Denom, asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
+			ExpErr:             errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", 69),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -41,7 +42,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, "dummy1", "dummy2",
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy1"),
+			ExpErr:             errorsmod.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy1"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -52,7 +53,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, "dummy1", asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy1"),
+			ExpErr:             errorsmod.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy1"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -63,7 +64,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, asset1.Denom, "dummy2",
 			),
-			ExpErr:             sdkerrors.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy2"),
+			ExpErr:             errorsmod.Wrapf(types.ErrAssetNotWhiteListed, "asset with denom  %s is not white listed", "dummy2"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -74,7 +75,7 @@ func (s *KeeperTestSuite) TestCreatePair() {
 			Msg: *types.NewMsgCreatePair(
 				appID1, addr1, asset1.Denom, asset2.Denom,
 			),
-			ExpErr:             sdkerrors.Wrap(sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance  is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
+			ExpErr:             errorsmod.Wrap(errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds, "spendable balance 0ucmdx is smaller than 2000000000ucmdx"), "insufficient pair creation fee"),
 			ExpResp:            &types.Pair{},
 			QueryResponseIndex: 0,
 			QueryResponse:      nil,
@@ -229,12 +230,12 @@ func (s *KeeperTestSuite) TestCreatePair() {
 				s.Require().Equal(tc.ExpResp, &resp)
 
 				availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(tc.Msg.Creator))
-				s.Require().True(tc.AvailableBalance.IsEqual(availableBalances))
+				s.Require().True(tc.AvailableBalance.Equal(availableBalances))
 
 				params, err := s.keeper.GetGenericParams(s.ctx, tc.Msg.AppId)
 				s.Require().NoError(err)
 				collectedPairCreationFee := s.getBalances(sdk.MustAccAddressFromBech32(params.FeeCollectorAddress))
-				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))).IsEqual(collectedPairCreationFee))
+				s.Require().True(sdk.NewCoins(sdk.NewCoin(params.PairCreationFee[0].Denom, params.PairCreationFee[0].Amount.Mul(sdkmath.NewInt(int64(tc.QueryResponseIndex+1))))).Equal(collectedPairCreationFee))
 
 				pairs := s.keeper.GetAllPairs(s.ctx, tc.Msg.AppId)
 				s.Require().Len(pairs, int(tc.QueryResponseIndex)+1)

@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	auctionsV2types "github.com/comdex-official/comdex/x/auctionsV2/types"
@@ -13,7 +16,7 @@ import (
 
 func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder string, bid sdk.Coin, auctionData types.Auction, isAutoBid bool) (bidId uint64, err error) {
 	auctionParams, _ := k.GetAuctionParams(ctx)
-	if bid.Amount.Equal(sdk.ZeroInt()) {
+	if bid.Amount.Equal(sdkmath.ZeroInt()) {
 		return bidId, types.ErrBidCannotBeZero
 	}
 
@@ -30,10 +33,10 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 	}
 	//Price data of the token from market module
 	debtToken, _ := k.market.GetTwa(ctx, auctionData.DebtAssetId)
-	debtPrice := sdk.NewDecFromInt(sdk.NewInt(int64(debtToken.Twa)))
+	debtPrice := sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(debtToken.Twa)))
 	//only if debt token is CMST , we consider it as $1
 	if liquidationData.IsDebtCmst {
-		debtPrice = sdk.NewDecFromInt(sdk.NewInt(int64(1000000)))
+		debtPrice = sdkmath.LegacyNewDecFromInt(sdkmath.NewInt(int64(1000000)))
 	}
 	//Check to update bid.Amount
 	fullBid := false
@@ -70,7 +73,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		//Take Debt Token from user ,
 
 		if !isAutoBid {
-			if bid.Amount.GT(sdk.ZeroInt()) {
+			if bid.Amount.GT(sdkmath.ZeroInt()) {
 				err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidderAddr, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, bid.Amount)))
 				if err != nil {
 					return bidId, err
@@ -80,7 +83,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		}
 
 		//Send Collateral To bidder
-		if totalCollateralTokenQuanitity.GT(sdk.ZeroInt()) {
+		if totalCollateralTokenQuanitity.GT(sdkmath.ZeroInt()) {
 			err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidderAddr, sdk.NewCoins(sdk.NewCoin(auctionData.CollateralToken.Denom, totalCollateralTokenQuanitity)))
 			if err != nil {
 				return bidId, err
@@ -91,7 +94,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		var tokensToBurn sdk.Coin
 		if liquidationData.InitiatorType == "vault" {
 			tokensToBurn = liquidationData.TargetDebt.Sub(liquidationPenalty)
-			if tokensToBurn.Amount.GT(sdk.ZeroInt()) {
+			if tokensToBurn.Amount.GT(sdkmath.ZeroInt()) {
 				err := k.bankKeeper.BurnCoins(ctx, auctionsV2types.ModuleName, sdk.NewCoins(tokensToBurn))
 				if err != nil {
 					return bidId, err
@@ -102,7 +105,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 
 		//Send rest tokens to the user
 		OwnerLeftOverCapital := auctionData.CollateralToken.Amount.Sub(totalCollateralTokenQuanitity)
-		if OwnerLeftOverCapital.GT(sdk.ZeroInt()) {
+		if OwnerLeftOverCapital.GT(sdkmath.ZeroInt()) {
 			ownerAddr, _ := sdk.AccAddressFromBech32(liquidationData.Owner)
 			err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, ownerAddr, sdk.NewCoins(sdk.NewCoin(auctionData.CollateralToken.Denom, OwnerLeftOverCapital)))
 			if err != nil {
@@ -123,8 +126,8 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//Send Liquidation penalty to the comdex protocol  --  create a kv store like SetAuctionLimitBidFeeData with name SetAuctionExternalFeeData
 			//Send debt to the initiator address of the auction
 			finalDebtToInitiator := liquidationData.TargetDebt.Sub(liquidationPenalty)
-			keeperIncentive := (liquidationWhitelistingAppData.KeeeperIncentive.Mul(sdk.NewDecFromInt(liquidationPenalty.Amount))).TruncateInt()
-			if keeperIncentive.GT(sdk.ZeroInt()) {
+			keeperIncentive := (liquidationWhitelistingAppData.KeeeperIncentive.Mul(sdkmath.LegacyNewDecFromInt(liquidationPenalty.Amount))).TruncateInt()
+			if keeperIncentive.GT(sdkmath.ZeroInt()) {
 				liquidationPenalty = liquidationPenalty.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive))
 				addr, _ := sdk.AccAddressFromBech32(liquidationData.InternalKeeperAddress)
 				err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive)))
@@ -162,8 +165,8 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			//Check if they are initiated through a keeper, if so they will be incentivised
 			if liquidationData.IsInternalKeeper {
 
-				keeperIncentive := (liquidationWhitelistingAppData.KeeeperIncentive.Mul(sdk.NewDecFromInt(liquidationPenalty.Amount))).TruncateInt()
-				if keeperIncentive.GT(sdk.ZeroInt()) {
+				keeperIncentive := (liquidationWhitelistingAppData.KeeeperIncentive.Mul(sdkmath.LegacyNewDecFromInt(liquidationPenalty.Amount))).TruncateInt()
+				if keeperIncentive.GT(sdkmath.ZeroInt()) {
 					liquidationPenalty = liquidationPenalty.Sub(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive))
 					addr, _ := sdk.AccAddressFromBech32(liquidationData.InternalKeeperAddress)
 					err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, keeperIncentive)))
@@ -173,7 +176,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 				}
 			}
 			//Send Liquidation Penalty to the Collector Module
-			if liquidationPenalty.Amount.GT(sdk.ZeroInt()) {
+			if liquidationPenalty.Amount.GT(sdkmath.ZeroInt()) {
 				err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, auctionsV2types.ModuleName, collectortypes.ModuleName, sdk.NewCoins(liquidationPenalty))
 				if err != nil {
 					return bidId, err
@@ -237,7 +240,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		_, collateralTokenQuantity, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.DebtAssetId, debtPrice, bid.Amount, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice)
 		debtLeft := auctionData.DebtToken.Amount.Sub(bid.Amount)
 		debtuDollar, _ := k.CalcDollarValueForToken(ctx, auctionData.DebtAssetId, debtPrice, debtLeft)
-		if !(debtuDollar).GT(sdk.NewDecFromInt(sdk.NewIntFromUint64(auctionParams.MinUsdValueLeft))) {
+		if !(debtuDollar).GT(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(auctionParams.MinUsdValueLeft))) {
 			return bidId, types.ErrCannotLeaveDebtLessThanDust
 		}
 
@@ -255,7 +258,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 		_, collateralTokenQuantityForBonus, _ := k.vault.GetAmountOfOtherToken(ctx, auctionData.DebtAssetId, debtPrice, expectedBonusShareForCurrentBid, auctionData.CollateralAssetId, auctionData.CollateralTokenAuctionPrice)
 		totalCollateralTokenQuantity := collateralTokenQuantity.Add(collateralTokenQuantityForBonus)
 		if !isAutoBid {
-			if bid.Amount.GT(sdk.ZeroInt()) {
+			if bid.Amount.GT(sdkmath.ZeroInt()) {
 				err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidderAddr, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(auctionData.DebtToken.Denom, bid.Amount)))
 				if err != nil {
 					return bidId, err
@@ -263,7 +266,7 @@ func (k Keeper) PlaceDutchAuctionBid(ctx sdk.Context, auctionID uint64, bidder s
 			}
 		}
 		//Send Collateral To bidder
-		if totalCollateralTokenQuantity.GT(sdk.ZeroInt()) {
+		if totalCollateralTokenQuantity.GT(sdkmath.ZeroInt()) {
 			err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, auctionsV2types.ModuleName, bidderAddr, sdk.NewCoins(sdk.NewCoin(auctionData.CollateralToken.Denom, totalCollateralTokenQuantity)))
 			if err != nil {
 				return bidId, err
@@ -320,7 +323,7 @@ func (k Keeper) CreateUserBid(ctx sdk.Context, appID uint64, BidderAddress strin
 
 func (k Keeper) PlaceEnglishAuctionBid(ctx sdk.Context, auctionID uint64, bidder string, bid sdk.Coin, auctionData types.Auction) error {
 	auctionParams, _ := k.GetAuctionParams(ctx)
-	if bid.Amount.Equal(sdk.ZeroInt()) {
+	if bid.Amount.Equal(sdkmath.ZeroInt()) {
 		return types.ErrBidCannotBeZero
 	}
 	bidderAddr, _ := sdk.AccAddressFromBech32(bidder)
@@ -351,11 +354,11 @@ func (k Keeper) PlaceEnglishAuctionBid(ctx sdk.Context, auctionID uint64, bidder
 		if liquidationData.InitiatorType == "debt" {
 			bidAmount = tokenLastBid.Amount.Sub(change)
 			if bid.Amount.GT(bidAmount) {
-				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", bidAmount.Uint64())
+				return errorsmod.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", bidAmount.Uint64())
 			}
 		} else {
 			if bid.Amount.LT(bidAmount) {
-				return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", bidAmount.Uint64())
+				return errorsmod.Wrapf(sdkerrors.ErrNotFound, "bid should be greater than or equal to %d ", bidAmount.Uint64())
 			}
 		}
 	} else {
@@ -433,7 +436,7 @@ func (k Keeper) GetLimitAuctionBidID(ctx sdk.Context) uint64 {
 	return id.GetValue()
 }
 
-func (k Keeper) SetUserLimitBidData(ctx sdk.Context, userLimitBidData types.LimitOrderBid, debtTokenID, collateralTokenID uint64, premium sdk.Int) {
+func (k Keeper) SetUserLimitBidData(ctx sdk.Context, userLimitBidData types.LimitOrderBid, debtTokenID, collateralTokenID uint64, premium sdkmath.Int) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLimitBidKey(debtTokenID, collateralTokenID, premium, userLimitBidData.BidderAddress)
@@ -443,7 +446,7 @@ func (k Keeper) SetUserLimitBidData(ctx sdk.Context, userLimitBidData types.Limi
 	store.Set(key, value)
 }
 
-func (k Keeper) GetUserLimitBidData(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdk.Int, address string) (mappingData types.LimitOrderBid, found bool) {
+func (k Keeper) GetUserLimitBidData(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdkmath.Int, address string) (mappingData types.LimitOrderBid, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLimitBidKey(debtTokenID, collateralTokenID, premium, address)
@@ -458,7 +461,7 @@ func (k Keeper) GetUserLimitBidData(ctx sdk.Context, debtTokenID, collateralToke
 	return mappingData, true
 }
 
-func (k Keeper) DeleteUserLimitBidData(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdk.Int, address string) {
+func (k Keeper) DeleteUserLimitBidData(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdkmath.Int, address string) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLimitBidKey(debtTokenID, collateralTokenID, premium, address)
@@ -467,14 +470,14 @@ func (k Keeper) DeleteUserLimitBidData(ctx sdk.Context, debtTokenID, collateralT
 	store.Delete(key)
 }
 
-func (k Keeper) GetUserLimitBidDataByPremium(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdk.Int) (biddingData []types.LimitOrderBid, found bool) {
+func (k Keeper) GetUserLimitBidDataByPremium(ctx sdk.Context, debtTokenID, collateralTokenID uint64, premium sdkmath.Int) (biddingData []types.LimitOrderBid, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.UserLimitBidKeyForPremium(debtTokenID, collateralTokenID, premium)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -493,14 +496,14 @@ func (k Keeper) GetUserLimitBidDataByPremium(ctx sdk.Context, debtTokenID, colla
 	return biddingData, true
 }
 
-func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount sdk.Int, amount sdk.Coin) error {
+func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount sdkmath.Int, amount sdk.Coin) error {
 	id := k.GetLimitAuctionBidID(ctx)
 	bidderAddr, err := sdk.AccAddressFromBech32(bidder)
 	if err != nil {
 		return nil
 	}
 
-	if PremiumDiscount.GT(sdk.NewIntFromUint64(types.MaxPremiumDiscount)) {
+	if PremiumDiscount.GT(sdkmath.NewIntFromUint64(types.MaxPremiumDiscount)) {
 		return types.ErrorDiscountGreaterThanMaxDiscount
 	}
 
@@ -536,7 +539,7 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 	}
 
 	// send tokens from user to the auction module
-	if amount.Amount.GT(sdk.ZeroInt()) {
+	if amount.Amount.GT(sdkmath.ZeroInt()) {
 		err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidderAddr, types.ModuleName, sdk.NewCoins(amount))
 		if err != nil {
 			return err
@@ -553,7 +556,7 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 			CollateralAssetId: CollateralTokenId,
 			DebtAssetId:       DebtTokenId,
 			BidValue:          amount.Amount,
-			MaxDiscount:       sdk.NewDecFromInt(sdk.NewIntFromUint64(types.MaxPremiumDiscount)),
+			MaxDiscount:       sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(types.MaxPremiumDiscount)),
 		}
 	} else {
 		protocolData.BidValue = protocolData.BidValue.Add(amount.Amount)
@@ -566,7 +569,7 @@ func (k Keeper) DepositLimitAuctionBid(ctx sdk.Context, bidder string, Collatera
 	return nil
 }
 
-func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenId, CollateralTokenId uint64, PremiumDiscount sdk.Int) error {
+func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenId, CollateralTokenId uint64, PremiumDiscount sdkmath.Int) error {
 	userLimitBid, found := k.GetUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
 	if !found {
 		// return err not found
@@ -580,8 +583,8 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 		return err
 	}
 	// return all the tokens back to the user
-	if userLimitBid.DebtToken.Amount.GT(sdk.ZeroInt()) {
-		feesToBeCollected := auctionParams.ClosingFee.Mul(sdk.NewDecFromInt(userLimitBid.DebtToken.Amount)).TruncateInt()
+	if userLimitBid.DebtToken.Amount.GT(sdkmath.ZeroInt()) {
+		feesToBeCollected := auctionParams.ClosingFee.Mul(sdkmath.LegacyNewDecFromInt(userLimitBid.DebtToken.Amount)).TruncateInt()
 		userLimitBid.DebtToken.Amount = userLimitBid.DebtToken.Amount.Sub(feesToBeCollected)
 
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(userLimitBid.DebtToken))
@@ -617,7 +620,7 @@ func (k Keeper) CancelLimitAuctionBid(ctx sdk.Context, bidder string, DebtTokenI
 	return nil
 }
 
-func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount sdk.Int, amount sdk.Coin) error {
+func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, CollateralTokenId, DebtTokenId uint64, PremiumDiscount sdkmath.Int, amount sdk.Coin) error {
 	userLimitBid, found := k.GetUserLimitBidData(ctx, DebtTokenId, CollateralTokenId, PremiumDiscount, bidder)
 	if !found {
 		return types.ErrBidNotFound
@@ -638,8 +641,8 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	}
 
 	// return all the tokens back to the user
-	if userLimitBid.DebtToken.Amount.GT(sdk.ZeroInt()) {
-		feesToBeCollected := auctionParams.WithdrawalFee.Mul(sdk.NewDecFromInt(amount.Amount)).TruncateInt()
+	if userLimitBid.DebtToken.Amount.GT(sdkmath.ZeroInt()) {
+		feesToBeCollected := auctionParams.WithdrawalFee.Mul(sdkmath.LegacyNewDecFromInt(amount.Amount)).TruncateInt()
 		updatedAmount := amount.Amount.Sub(feesToBeCollected)
 
 		err = k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidderAddr, sdk.NewCoins(sdk.NewCoin(amount.Denom, updatedAmount)))
@@ -674,10 +677,10 @@ func (k Keeper) WithdrawLimitAuctionBid(ctx sdk.Context, bidder string, Collater
 	return nil
 }
 
-func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdk.Dec, amt sdk.Int) (price sdk.Dec, err error) {
+func (k Keeper) CalcDollarValueForToken(ctx sdk.Context, id uint64, rate sdkmath.LegacyDec, amt sdkmath.Int) (price sdkmath.LegacyDec, err error) {
 	asset, _ := k.asset.GetAsset(ctx, id)
-	numerator := sdk.NewDecFromInt(amt).Mul(rate)
-	denominator := sdk.NewDecFromInt(asset.Decimals)
+	numerator := sdkmath.LegacyNewDecFromInt(amt).Mul(rate)
+	denominator := sdkmath.LegacyNewDecFromInt(asset.Decimals)
 	return numerator.Quo(denominator), nil
 }
 
@@ -734,15 +737,15 @@ func (k Keeper) GetUserLimitBidDataByAddress(ctx sdk.Context, address string) (m
 	return mappingData, true
 }
 
-func (k Keeper) GetUserLimitBidsByAssetID(ctx sdk.Context, address string, debtAssetId, collateralAssetId uint64) (sdk.Int, bool) {
+func (k Keeper) GetUserLimitBidsByAssetID(ctx sdk.Context, address string, debtAssetId, collateralAssetId uint64) (sdkmath.Int, bool) {
 	var (
 		store  = k.Store(ctx)
 		key    = types.LimitBidKeyForAssetID(debtAssetId, collateralAssetId)
-		iter   = sdk.KVStorePrefixIterator(store, key)
-		amount = sdk.ZeroInt()
+		iter   = storetypes.KVStorePrefixIterator(store, key)
+		amount = sdkmath.ZeroInt()
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

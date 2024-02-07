@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/auctionsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -30,10 +31,10 @@ func (k Keeper) SetGenAuctionLimitBidFeeData(ctx sdk.Context, feeData types.Auct
 func (k Keeper) GetGenAuctionLimitBidFeeData(ctx sdk.Context) (auctionFeesCollectionFromLimitBidTx []types.AuctionFeesCollectionFromLimitBidTx) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AuctionLimitBidFeeKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AuctionLimitBidFeeKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

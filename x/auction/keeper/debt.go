@@ -3,11 +3,14 @@ package keeper
 import (
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	sdkmath "cosmossdk.io/math"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
 	collectortypes "github.com/comdex-official/comdex/x/collector/types"
 )
@@ -86,8 +89,8 @@ func (k Keeper) checkStatusOfNetFeesCollectedAndStartDebtAuction(ctx sdk.Context
 	return auctiontypes.NoAuction, nil
 }
 
-func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetOutID uint64, lotSize sdk.Int) (status uint64, sellToken, buyToken sdk.Coin) {
-	emptyCoin := sdk.NewCoin("empty", sdk.NewIntFromUint64(1))
+func (k Keeper) getDebtSellTokenAmount(ctx sdk.Context, appID, AssetInID, AssetOutID uint64, lotSize sdkmath.Int) (status uint64, sellToken, buyToken sdk.Coin) {
+	emptyCoin := sdk.NewCoin("empty", sdkmath.NewIntFromUint64(1))
 	sellAsset, found1 := k.asset.GetAsset(ctx, AssetOutID)
 	buyAsset, found2 := k.asset.GetAsset(ctx, AssetInID)
 	if !found1 || !found2 {
@@ -106,7 +109,7 @@ func (k Keeper) StartDebtAuction(
 	ctx sdk.Context,
 	auctionToken sdk.Coin, // sell token
 	expectedUserToken sdk.Coin, // buy token
-	bidFactor sdk.Dec,
+	bidFactor sdkmath.LegacyDec,
 	appID, assetID uint64,
 	assetInID, assetOutID uint64,
 ) error {
@@ -122,7 +125,7 @@ func (k Keeper) StartDebtAuction(
 		Bidder:              nil,
 		EndTime:             ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
 		BidEndTime:          ctx.BlockTime().Add(time.Second * time.Duration(auctionParams.AuctionDurationSeconds)),
-		CurrentBidAmount:    sdk.NewCoin(auctionToken.Denom, sdk.NewInt(0)),
+		CurrentBidAmount:    sdk.NewCoin(auctionToken.Denom, sdkmath.NewInt(0)),
 		AuctionStatus:       auctiontypes.AuctionStartNoBids,
 		AppId:               appID,
 		AssetId:             assetID,
@@ -293,7 +296,7 @@ func (k Keeper) PlaceDebtAuctionBid(ctx sdk.Context, appID, auctionMappingID, au
 		change := auction.BidFactor.MulInt(auction.ExpectedMintedToken.Amount).Ceil().TruncateInt()
 		maxBidAmount := auction.ExpectedMintedToken.Amount.Sub(change)
 		if bid.Amount.GT(maxBidAmount) {
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount.Uint64())
+			return errorsmod.Wrapf(sdkerrors.ErrNotFound, "bid should be less than or equal to %d ", maxBidAmount.Uint64())
 		}
 	} else {
 		if bid.Amount.GT(auction.AuctionedToken.Amount) {

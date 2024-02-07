@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -9,11 +10,11 @@ import (
 
 func (k Keeper) VerifyCollateralizationRatio(
 	ctx sdk.Context,
-	amountIn sdk.Int,
+	amountIn sdkmath.Int,
 	assetIn assettypes.Asset,
-	amountOut sdk.Int,
+	amountOut sdkmath.Int,
 	assetOut assettypes.Asset,
-	liquidationThreshold sdk.Dec,
+	liquidationThreshold sdkmath.LegacyDec,
 ) error {
 	collateralizationRatio, err := k.CalculateCollateralizationRatio(ctx, amountIn, assetIn, amountOut, assetOut)
 	if err != nil {
@@ -29,18 +30,18 @@ func (k Keeper) VerifyCollateralizationRatio(
 
 func (k Keeper) CalculateCollateralizationRatio(
 	ctx sdk.Context,
-	amountIn sdk.Int,
+	amountIn sdkmath.Int,
 	assetIn assettypes.Asset,
-	amountOut sdk.Int,
+	amountOut sdkmath.Int,
 	assetOut assettypes.Asset,
-) (sdk.Dec, error) {
+) (sdkmath.LegacyDec, error) {
 	totalIn, err := k.Market.CalcAssetPrice(ctx, assetIn.Id, amountIn)
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return sdkmath.LegacyZeroDec(), err
 	}
 	totalOut, err := k.Market.CalcAssetPrice(ctx, assetOut.Id, amountOut)
 	if err != nil {
-		return sdk.ZeroDec(), err
+		return sdkmath.LegacyZeroDec(), err
 	}
 
 	return totalOut.Quo(totalIn), nil

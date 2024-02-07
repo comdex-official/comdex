@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/comdex-official/comdex/app"
 	"github.com/comdex-official/comdex/x/tokenmint"
 	"github.com/comdex-official/comdex/x/tokenmint/keeper"
@@ -11,7 +12,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +26,7 @@ func TestInvalidMsg(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, res)
 
-	_, _, log := sdkerrors.ABCIInfo(err, false)
+	_, _, log := errorsmod.ABCIInfo(err, false)
 	require.True(t, strings.Contains(log, "unknown request"))
 }
 

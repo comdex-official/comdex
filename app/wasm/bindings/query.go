@@ -1,6 +1,9 @@
 package bindings
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdkmath "cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 type ComdexQuery struct {
 	AppData                                *AppData                                `json:"get_app,omitempty"`
@@ -132,14 +135,14 @@ type CollectorLookupTableQueryResponse struct {
 }
 
 type ExtendedPairsVaultRecordsQuery struct {
-	AppID        uint64  `json:"app_id"`
-	PairID       uint64  `json:"pair_id"`
-	StabilityFee sdk.Dec `json:"stability_fee"`
-	ClosingFee   sdk.Dec `json:"closing_fee"`
-	DrawDownFee  sdk.Dec `json:"draw_down_fee"`
-	DebtCeiling  sdk.Int `json:"debt_ceiling"`
-	DebtFloor    sdk.Int `json:"debt_floor"`
-	PairName     string  `json:"pair_name"`
+	AppID        uint64            `json:"app_id"`
+	PairID       uint64            `json:"pair_id"`
+	StabilityFee sdkmath.LegacyDec `json:"stability_fee"`
+	ClosingFee   sdkmath.LegacyDec `json:"closing_fee"`
+	DrawDownFee  sdkmath.LegacyDec `json:"draw_down_fee"`
+	DebtCeiling  sdkmath.Int       `json:"debt_ceiling"`
+	DebtFloor    sdkmath.Int       `json:"debt_floor"`
+	PairName     string            `json:"pair_name"`
 }
 
 type ExtendedPairsVaultRecordsQueryResponse struct {

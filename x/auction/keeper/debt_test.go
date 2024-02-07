@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"time"
 
 	"github.com/comdex-official/comdex/x/auction"
@@ -30,12 +31,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForSurplus
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(200000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {
@@ -103,12 +104,12 @@ func (s *KeeperTestSuite) WasmSetCollectorLookupTableAndAuctionControlForDebt() 
 				AppID:            1,
 				CollectorAssetID: 2,
 				SecondaryAssetID: 3,
-				SurplusThreshold: sdk.NewInt(10000000),
-				DebtThreshold:    sdk.NewInt(5000000),
-				LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-				LotSize:          sdk.NewInt(200000),
-				BidFactor:        sdk.MustNewDecFromStr("0.01"),
-				DebtLotSize:      sdk.NewInt(2000000),
+				SurplusThreshold: sdkmath.NewInt(10000000),
+				DebtThreshold:    sdkmath.NewInt(5000000),
+				LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+				LotSize:          sdkmath.NewInt(200000),
+				BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				DebtLotSize:      sdkmath.NewInt(2000000),
 			},
 		},
 	} {
@@ -167,7 +168,7 @@ func (s *KeeperTestSuite) TestDebtActivatorBetweenThreshholdAndLotsize() {
 	s.AddPairAndExtendedPairVault1()
 	s.AddAuctionParams()
 	s.WasmSetCollectorLookupTableAndAuctionControlForDebt()
-	s.WasmUpdateCollectorLookupTable(sdk.NewInt(30000), sdk.NewInt(20500), sdk.NewInt(800), sdk.NewInt(501))
+	s.WasmUpdateCollectorLookupTable(sdkmath.NewInt(30000), sdkmath.NewInt(20500), sdkmath.NewInt(800), sdkmath.NewInt(501))
 
 	k, ctx := &s.keeper, &s.ctx
 
@@ -208,7 +209,7 @@ func (s *KeeperTestSuite) TestDebtActivator() {
 		AppId:         1,
 		BreakerEnable: false,
 	}
-	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdk.NewIntFromUint64(4700000))
+	err := collectorKeeper.SetNetFeeCollectedData(*ctx, uint64(1), 2, sdkmath.NewIntFromUint64(4700000))
 	s.Require().NoError(err)
 	err1 := k.DebtActivator(*ctx, auctionMapData, klswData, false)
 	s.Require().NoError(err1)
@@ -356,8 +357,8 @@ func (s *KeeperTestSuite) TestDebtBid() {
 			beforeCmstBalance, err := s.getBalance(tc.msg.Bidder, "ucmst")
 			s.Require().NoError(err)
 			previousUserAddress := ""
-			mintedToken := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
-			beforeCmstBalance2 := sdk.NewCoin("zero", sdk.NewIntFromUint64(10))
+			mintedToken := sdk.NewCoin("zero", sdkmath.NewIntFromUint64(10))
+			beforeCmstBalance2 := sdk.NewCoin("zero", sdkmath.NewIntFromUint64(10))
 			if tc.bidID != uint64(1) {
 				previousUserAddress = beforeAuction.Bidder.String()
 				beforeCmstBalance2, err = s.getBalance(previousUserAddress, "ucmst")
@@ -400,7 +401,7 @@ func (s *KeeperTestSuite) TestDebtBid() {
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidId, tc.bidID)
 				s.Require().Equal(afterAuction.BiddingIds[tc.bidID-uint64(1)].BidOwner, tc.msg.Bidder)
 				if tc.bidID != uint64(1) {
-					s.Require().True(afterAuction.ExpectedMintedToken.Amount.LTE(sdk.NewDec(beforeAuction.ExpectedMintedToken.Amount.Int64()).Mul(sdk.MustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
+					s.Require().True(afterAuction.ExpectedMintedToken.Amount.LTE(sdkmath.LegacyNewDecFromInt(beforeAuction.ExpectedMintedToken.Amount).Mul(sdkmath.LegacyMustNewDecFromStr("1").Sub(beforeAuction.BidFactor)).TruncateInt()))
 				}
 				s.Require().Equal(beforeHarborBalance, afterHarborBalance)
 				s.Require().Equal(beforeCmstBalance.Sub(expectedUserToken), afterCmstBalance)

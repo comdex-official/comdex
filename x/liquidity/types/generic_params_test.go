@@ -3,6 +3,7 @@ package types_test
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,42 +53,42 @@ func TestGenericParamsValidate(t *testing.T) {
 		{
 			"negative MinInitialPoolCoinSupply",
 			func(params *types.GenericParams) {
-				params.MinInitialPoolCoinSupply = sdk.NewInt(-1)
+				params.MinInitialPoolCoinSupply = sdkmath.NewInt(-1)
 			},
 			"min initial pool coin supply must be positive: -1",
 		},
 		{
 			"zero MinInitialPoolCoinSupply",
 			func(params *types.GenericParams) {
-				params.MinInitialPoolCoinSupply = sdk.ZeroInt()
+				params.MinInitialPoolCoinSupply = sdkmath.ZeroInt()
 			},
 			"min initial pool coin supply must be positive: 0",
 		},
 		{
 			"invalid PairCreationFee",
 			func(params *types.GenericParams) {
-				params.PairCreationFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.ZeroInt()}}
+				params.PairCreationFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdkmath.ZeroInt()}}
 			},
 			"invalid pair creation fee: coin 0stake amount is not positive",
 		},
 		{
 			"invalid PoolCreationFee",
 			func(params *types.GenericParams) {
-				params.PoolCreationFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.ZeroInt()}}
+				params.PoolCreationFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdkmath.ZeroInt()}}
 			},
 			"invalid pool creation fee: coin 0stake amount is not positive",
 		},
 		{
 			"negative MinInitialDepositAmount",
 			func(params *types.GenericParams) {
-				params.MinInitialDepositAmount = sdk.NewInt(-1)
+				params.MinInitialDepositAmount = sdkmath.NewInt(-1)
 			},
 			"minimum initial deposit amount must not be negative: -1",
 		},
 		{
 			"negative MaxPriceLimitRatio",
 			func(params *types.GenericParams) {
-				params.MaxPriceLimitRatio = sdk.NewDec(-1)
+				params.MaxPriceLimitRatio = sdkmath.LegacyNewDec(-1)
 			},
 			"max price limit ratio must not be negative: -1.000000000000000000",
 		},
@@ -101,42 +102,42 @@ func TestGenericParamsValidate(t *testing.T) {
 		{
 			"negative SwapFeeRate",
 			func(params *types.GenericParams) {
-				params.SwapFeeRate = sdk.NewDec(-1)
+				params.SwapFeeRate = sdkmath.LegacyNewDec(-1)
 			},
 			"swap fee rate must not be negative: -1.000000000000000000",
 		},
 		{
 			"overflow SwapFeeRate",
 			func(params *types.GenericParams) {
-				params.SwapFeeRate = sdk.NewDec(2)
+				params.SwapFeeRate = sdkmath.LegacyNewDec(2)
 			},
 			"swap fee rate cannot exceed 1 i.e 100 perc. : 2.000000000000000000",
 		},
 		{
 			"negative WithdrawFeeRate",
 			func(params *types.GenericParams) {
-				params.WithdrawFeeRate = sdk.NewDec(-1)
+				params.WithdrawFeeRate = sdkmath.LegacyNewDec(-1)
 			},
 			"withdraw fee rate must not be negative: -1.000000000000000000",
 		},
 		{
 			"overflow WithdrawFeeRate",
 			func(params *types.GenericParams) {
-				params.WithdrawFeeRate = sdk.NewDec(2)
+				params.WithdrawFeeRate = sdkmath.LegacyNewDec(2)
 			},
 			"withdraw fee rate cannot exceed 1 i.e 100 perc. : 2.000000000000000000",
 		},
 		{
 			"negative SwapFeeBurnRate",
 			func(params *types.GenericParams) {
-				params.SwapFeeBurnRate = sdk.NewDec(-1)
+				params.SwapFeeBurnRate = sdkmath.LegacyNewDec(-1)
 			},
 			"swap fee burn rate must not be negative: -1.000000000000000000",
 		},
 		{
 			"overflow SwapFeeBurnRate",
 			func(params *types.GenericParams) {
-				params.SwapFeeBurnRate = sdk.NewDec(2)
+				params.SwapFeeBurnRate = sdkmath.LegacyNewDec(2)
 			},
 			"swap fee burn rate cannot exceed 1 i.e 100 perc. : 2.000000000000000000",
 		},

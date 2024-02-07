@@ -3,9 +3,9 @@ package simapp
 import (
 	"time"
 
-	tmdb "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/log"
+	dbm "github.com/cosmos/cosmos-db"
 	abcitypes "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -16,15 +16,14 @@ import (
 // New creates application instance with in-memory database and disabled logging.
 func New(dir string) *comdex.App {
 	var (
-		db       = tmdb.NewMemDB()
+		db       = dbm.NewMemDB()
 		logger   = log.NewNopLogger()
-		encoding = comdex.MakeEncodingConfig()
 	)
 
-	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
-		simtestutil.EmptyAppOptions{}, comdex.GetWasmEnabledProposals(), comdex.EmptyWasmOpts)
+	a := comdex.NewComdexApp(logger, db, nil, true,
+		simtestutil.EmptyAppOptions{}, comdex.EmptyWasmOpts)
 	// InitChain updates deliverState which is required when app.NewContext is called
-	a.InitChain(abcitypes.RequestInitChain{
+	a.InitChain(&abcitypes.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,
 		AppStateBytes:   []byte("{}"),
 	})

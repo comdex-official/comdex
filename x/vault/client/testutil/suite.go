@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"testing"
 
@@ -11,19 +12,19 @@ import (
 	vaultKeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	"github.com/comdex-official/comdex/x/vault/types"
 
+	pruningtypes "cosmossdk.io/store/pruning/types"
 	"github.com/comdex-official/comdex/testutil/network"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
-	// store "github.com/cosmos/cosmos-sdk/store/types"
+
+	// store "cosmossdk.io/core/store"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	networkI "github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	dbm "github.com/cometbft/cometbft-db"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 )
 
 type VaultIntegrationTestSuite struct {
@@ -39,9 +40,9 @@ type VaultIntegrationTestSuite struct {
 
 func NewAppConstructor() networkI.AppConstructor {
 	return func(val networkI.ValidatorI) servertypes.Application {
-		return chain.New(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
-			chain.MakeEncodingConfig(), simtestutil.EmptyAppOptions{}, chain.GetWasmEnabledProposals(), chain.EmptyWasmOpts,
+		return chain.NewComdexApp(
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true,
+			simtestutil.EmptyAppOptions{}, chain.EmptyWasmOpts,
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 		)
@@ -56,12 +57,12 @@ func (s *VaultIntegrationTestSuite) SetupSuite() {
 	}
 
 	s.app = chain.Setup(s.T(), false)
-	s.ctx = s.app.BaseApp.NewContext(false, tmproto.Header{})
+	s.ctx = s.app.BaseApp.NewContext(false)
 	s.msgServer = vaultKeeper.NewMsgServer(s.app.VaultKeeper)
 
 	cfg := network.DefaultConfig()
 	cfg.AppConstructor = NewAppConstructor()
-	cfg.GenesisState = chain.ModuleBasics.DefaultGenesis(cfg.Codec)
+	cfg.GenesisState = chain.NewDefaultGenesisState(cfg.Codec)
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
@@ -89,7 +90,7 @@ func (s *VaultIntegrationTestSuite) Create() {
 	pairID := s.CreateNewPair(assetInID, assetOutID)
 	extendedVaultPairID := s.CreateNewExtendedVaultPair("CMDX-C", appID, pairID)
 
-	_, _ = MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdk.NewInt(3), sdk.NewInt(2), s.val.Address.String())
+	_, _ = MsgCreate(s.val.ClientCtx, appID, extendedVaultPairID, sdkmath.NewInt(3), sdkmath.NewInt(2), s.val.Address.String())
 	// s.Require().NoError(err)
 
 	err := s.network.WaitForNextBlock()

@@ -1,8 +1,11 @@
 package v8
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
@@ -11,39 +14,38 @@ import (
 	"github.com/comdex-official/comdex/x/lend/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func UpdateExtendedPairVaultsAndAsset(ctx sdk.Context, assetKeeper assetkeeper.Keeper) {
 	extPairs := []*bindings.MsgUpdatePairsVault{
 		{
-			AppID: 2, ExtPairID: 2, StabilityFee: sdk.MustNewDecFromStr("1"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.4"),
+			AppID: 2, ExtPairID: 2, StabilityFee: sdkmath.LegacyMustNewDecFromStr("1"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(250000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("1.4"),
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 3, StabilityFee: sdk.MustNewDecFromStr("0.5"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.7"),
+			AppID: 2, ExtPairID: 3, StabilityFee: sdkmath.LegacyMustNewDecFromStr("0.5"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(350000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("1.7"),
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 4, StabilityFee: sdk.MustNewDecFromStr("0.25"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2"),
+			AppID: 2, ExtPairID: 4, StabilityFee: sdkmath.LegacyMustNewDecFromStr("0.25"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(400000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("2"),
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 5, StabilityFee: sdk.MustNewDecFromStr("1"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(250000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.5"),
+			AppID: 2, ExtPairID: 5, StabilityFee: sdkmath.LegacyMustNewDecFromStr("1"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(250000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("1.5"),
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 6, StabilityFee: sdk.MustNewDecFromStr("0.5"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(350000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("1.8"),
+			AppID: 2, ExtPairID: 6, StabilityFee: sdkmath.LegacyMustNewDecFromStr("0.5"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(350000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("1.8"),
 			MinUsdValueLeft: 100000,
 		},
 		{
-			AppID: 2, ExtPairID: 7, StabilityFee: sdk.MustNewDecFromStr("0.25"), ClosingFee: sdk.ZeroDec(), LiquidationPenalty: sdk.MustNewDecFromStr("0.15"),
-			DrawDownFee: sdk.MustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdk.NewInt(400000000000), DebtFloor: sdk.NewInt(50000000), MinCr: sdk.MustNewDecFromStr("2.1"),
+			AppID: 2, ExtPairID: 7, StabilityFee: sdkmath.LegacyMustNewDecFromStr("0.25"), ClosingFee: sdkmath.LegacyZeroDec(), LiquidationPenalty: sdkmath.LegacyMustNewDecFromStr("0.15"),
+			DrawDownFee: sdkmath.LegacyMustNewDecFromStr("0.005"), IsVaultActive: true, DebtCeiling: sdkmath.NewInt(400000000000), DebtFloor: sdkmath.NewInt(50000000), MinCr: sdkmath.LegacyMustNewDecFromStr("2.1"),
 			MinUsdValueLeft: 100000,
 		},
 	}
@@ -60,8 +62,8 @@ func UpdateExtendedPairVaultsAndAsset(ctx sdk.Context, assetKeeper assetkeeper.K
 	}
 }
 
-func Dec(s string) sdk.Dec {
-	dec, err := sdk.NewDecFromStr(s)
+func Dec(s string) sdkmath.LegacyDec {
+	dec, err := sdkmath.LegacyNewDecFromStr(s)
 	if err != nil {
 		panic(err)
 	}
@@ -82,7 +84,7 @@ func UpdateAuctionParams(
 	cUSDC := assettypes.Asset{
 		Name:                  "CAXLUSDC",
 		Denom:                 "ucaxlusdc",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -95,7 +97,7 @@ func UpdateAuctionParams(
 	cstATOM := assettypes.Asset{
 		Name:                  "CSTATOM",
 		Denom:                 "ucstatom",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -166,7 +168,7 @@ func UpdateAuctionParams(
 		AuctionDurationSeconds: 18000,
 		Buffer:                 Dec("1.15"),
 		Cusp:                   Dec("0.7"),
-		Step:                   sdk.NewInt(360),
+		Step:                   sdkmath.NewInt(360),
 		PriceFunctionType:      1,
 		DutchId:                3,
 		BidDurationSeconds:     3600,
@@ -198,7 +200,7 @@ func CreateUpgradeHandler810(
 	mm *module.Manager,
 	configurator module.Configurator,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		return newVM, err
 	}
@@ -211,10 +213,10 @@ func CreateUpgradeHandler811(
 	lendKeeper lendkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		UpdateAuctionParams(ctx, assetKeeper, lendKeeper, auctionKeeper)
-		UpdateExtendedPairVaultsAndAsset(ctx, assetKeeper)
+		UpdateAuctionParams(sdk.UnwrapSDKContext(ctx), assetKeeper, lendKeeper, auctionKeeper)
+		UpdateExtendedPairVaultsAndAsset(sdk.UnwrapSDKContext(ctx), assetKeeper)
 		return newVM, err
 	}
 }

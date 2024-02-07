@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	"github.com/comdex-official/comdex/x/auction"
@@ -33,15 +34,15 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              1,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -103,8 +104,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress1,
 				AppId:               1,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 		{
@@ -113,8 +114,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress2,
 				AppId:               1,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 	} {
@@ -143,11 +144,11 @@ func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uin
 	return len(res.VaultIds)
 }
 
-func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdk.Dec {
+func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdkmath.LegacyDec {
 	marketKeeper, ctx := &s.marketKeeper, &s.ctx
 	price, found := marketKeeper.GetTwa(*ctx, id)
 	s.Require().True(found)
-	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price.Twa))
+	price1 := sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(price.Twa))
 	return price1
 }
 
@@ -158,12 +159,12 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 	addr2, err := sdk.AccAddressFromBech32(userAddress2)
 	s.Require().NoError(err)
-	genesisSupply := sdk.NewIntFromUint64(1000000)
+	genesisSupply := sdkmath.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
@@ -192,7 +193,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "CMDX",
 				Denom:         "ucmdx",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -202,7 +203,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "CMST",
 				Denom:         "ucmst",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -212,7 +213,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "HARBOR",
 				Denom:         "uharbor",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -221,8 +222,8 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetRecords(*ctx, tc.msg)
 			s.Require().NoError(err)
-			s.fundAddr(addr, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
-			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
+			s.fundAddr(addr, sdk.NewCoin(tc.msg.Denom, sdkmath.NewInt(1000000)))
+			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdkmath.NewInt(1000000)))
 		})
 	}
 }
@@ -259,7 +260,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].AmountIn, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
+	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdkmath.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
 	s.Require().Equal(lockedVault[0].IsAuctionInProgress, true)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
@@ -267,7 +268,7 @@ func (s *KeeperTestSuite) LiquidateVaults1() {
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
 	s.Require().NoError(err)
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdkmath.LegacyNewDecFromInt(lockedVault[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdkmath.LegacyNewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) AddAuctionParams() {
@@ -275,9 +276,9 @@ func (s *KeeperTestSuite) AddAuctionParams() {
 	auctionParams := auctionTypes.AuctionParams{
 		AppId:                  1,
 		AuctionDurationSeconds: 300,
-		Buffer:                 sdk.MustNewDecFromStr("1.2"),
-		Cusp:                   sdk.MustNewDecFromStr("0.6"),
-		Step:                   sdk.NewIntFromUint64(1),
+		Buffer:                 sdkmath.LegacyMustNewDecFromStr("1.2"),
+		Cusp:                   sdkmath.LegacyMustNewDecFromStr("0.6"),
+		Step:                   sdkmath.NewIntFromUint64(1),
 		PriceFunctionType:      1,
 		SurplusId:              1,
 		DebtId:                 2,
@@ -314,10 +315,10 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.Require().Equal(dutchAuction.AuctionMappingId, auctionMappingId)
 	s.Require().Equal(dutchAuction.OutflowTokenInitAmount.Amount, lockedVault.AmountIn)
 	s.Require().Equal(dutchAuction.OutflowTokenCurrentAmount.Amount, lockedVault.AmountIn)
-	s.Require().Equal(dutchAuction.InflowTokenCurrentAmount.Amount, sdk.ZeroInt())
+	s.Require().Equal(dutchAuction.InflowTokenCurrentAmount.Amount, sdkmath.ZeroInt())
 
 	inFlowTokenTargetAmount := lockedVault.AmountOut
-	mulfactor := sdk.NewDec(inFlowTokenTargetAmount.Int64()).Mul(dutchAuction.LiquidationPenalty)
+	mulfactor := sdkmath.LegacyNewDecFromInt(inFlowTokenTargetAmount).Mul(dutchAuction.LiquidationPenalty)
 	inFlowTokenTargetAmount = inFlowTokenTargetAmount.Add(mulfactor.TruncateInt()).Add(lockedVault.InterestAccumulated)
 
 	s.Require().Equal(dutchAuction.InflowTokenTargetAmount.Amount, inFlowTokenTargetAmount)
@@ -329,9 +330,9 @@ func (s *KeeperTestSuite) TestDutchActivator() {
 	s.Require().True(found)
 	assetInPrice, found := s.marketKeeper.GetTwa(*ctx, dutchAuction.AssetInId)
 	s.Require().True(found)
-	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, sdk.NewDecFromInt(sdk.NewIntFromUint64(assetOutPrice.Twa)).Mul(sdk.MustNewDecFromStr("1.2")))
-	s.Require().Equal(dutchAuction.OutflowTokenEndPrice, dutchAuction.OutflowTokenInitialPrice.Mul(sdk.MustNewDecFromStr("0.6")))
-	s.Require().Equal(dutchAuction.InflowTokenCurrentPrice, sdk.NewDecFromInt(sdk.NewIntFromUint64(assetInPrice.Twa)))
+	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(assetOutPrice.Twa)).Mul(sdkmath.LegacyMustNewDecFromStr("1.2")))
+	s.Require().Equal(dutchAuction.OutflowTokenEndPrice, dutchAuction.OutflowTokenInitialPrice.Mul(sdkmath.LegacyMustNewDecFromStr("0.6")))
+	s.Require().Equal(dutchAuction.InflowTokenCurrentPrice, sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(assetInPrice.Twa)))
 }
 
 func (s *KeeperTestSuite) TestDutchBid() {
@@ -439,7 +440,7 @@ func (s *KeeperTestSuite) TestDutchBid() {
 				s.Require().NoError(err)
 
 				userBid, err := k.GetDutchUserBidding(*ctx, userAddress1, appID, biddingID)
-				userReceivableAmount := sdk.NewDec(tc.msg.Amount.Amount.Int64()).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
+				userReceivableAmount := sdkmath.LegacyNewDecFromInt(tc.msg.Amount.Amount).Mul(beforeAuction.OutflowTokenCurrentPrice).Quo(beforeAuction.InflowTokenCurrentPrice).TruncateInt()
 				userOutflowCoin := sdk.NewCoin("ucmst", userReceivableAmount)
 				userInflowCoin := tc.msg.Amount
 				s.Require().Equal(beforeAuction.OutflowTokenCurrentAmount.Sub(userInflowCoin), afterAuction.OutflowTokenCurrentAmount)
@@ -527,10 +528,10 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 
 	err1 := k.FundModule(*ctx, auctionTypes.ModuleName, "ucmst", 10000000)
 	s.Require().NoError(err1)
-	err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdk.NewInt(10000000))))
+	err = s.app.BankKeeper.SendCoinsFromModuleToModule(*ctx, auctionTypes.ModuleName, collectorTypes.ModuleName, sdk.NewCoins(sdk.NewCoin("ucmst", sdkmath.NewInt(10000000))))
 	s.Require().NoError(err)
 
-	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdk.NewInt(10000000))
+	err = s.app.CollectorKeeper.SetNetFeeCollectedData(*ctx, 1, 2, sdkmath.NewInt(10000000))
 	s.Require().NoError(err)
 
 	_, err = server.MsgPlaceDutchBid(sdk.WrapSDKContext(*ctx),
@@ -558,7 +559,7 @@ func (s *KeeperTestSuite) TestCloseDutchAuctionWithProtocolLoss() {
 	// verify loss
 	stats, found := k.GetProtocolStat(*ctx, appId, 2)
 	s.Require().True(found)
-	loss := sdk.NewDec(afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount.Int64())
+	loss := sdkmath.LegacyNewDecFromInt(afterAuction.InflowTokenTargetAmount.Sub(afterAuction.InflowTokenCurrentAmount).Amount)
 	s.Require().Equal(loss, stats.Loss)
 }
 
@@ -580,7 +581,7 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	dutchAuction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.6")))
+	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdkmath.LegacyMustNewDecFromStr("0.6")))
 
 	// full the auction duration RESTART
 	s.advanceseconds(1)
@@ -621,5 +622,5 @@ func (s *KeeperTestSuite) TestRestartDutchAuction() {
 	dutchAuction, err = k.GetDutchAuction(*ctx, appId, auctionMappingId, auctionId)
 	s.Require().NoError(err)
 
-	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdk.MustNewDecFromStr("0.8")))
+	s.Require().Equal(dutchAuction.OutflowTokenCurrentPrice, startPrice.Mul(sdkmath.LegacyMustNewDecFromStr("0.8")))
 }

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -28,29 +30,29 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
 		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+			errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrap(err, "params retreval failed")
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	spendable := k.bankKeeper.SpendableCoins(ctx, msg.GetOrderer())
 	if spendableAmt := spendable.AmountOf(msg.OfferCoin.Denom); spendableAmt.LT(msg.OfferCoin.Amount) {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
 			sdk.NewCoin(msg.OfferCoin.Denom, spendableAmt), msg.OfferCoin)
 	}
 
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
+			errorsmod.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
 	}
 
 	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
 	var upperPriceLimit, lowerPriceLimit sdkmath.LegacyDec
@@ -62,16 +64,16 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 	}
 	switch {
 	case msg.Price.GT(upperPriceLimit):
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", msg.Price, upperPriceLimit)
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(types.ErrPriceOutOfRange, "%s is higher than %s", msg.Price, upperPriceLimit)
 	case msg.Price.LT(lowerPriceLimit):
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", msg.Price, lowerPriceLimit)
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(types.ErrPriceOutOfRange, "%s is lower than %s", msg.Price, lowerPriceLimit)
 	}
 
 	switch msg.Direction {
 	case types.OrderDirectionBuy:
 		if msg.OfferCoin.Denom != pair.QuoteCoinDenom || msg.DemandCoinDenom != pair.BaseCoinDenom {
 			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-				sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
+				errorsmod.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
 					msg.DemandCoinDenom, msg.OfferCoin.Denom, pair.BaseCoinDenom, pair.QuoteCoinDenom)
 		}
 		price = amm.PriceToDownTick(msg.Price, int(params.TickPrecision))
@@ -80,13 +82,13 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 
 		if msg.OfferCoin.IsLT(offerCoin.Add(swapFeeCoin)) {
-			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, offerCoin.Add(swapFeeCoin))
 		}
 	case types.OrderDirectionSell:
 		if msg.OfferCoin.Denom != pair.BaseCoinDenom || msg.DemandCoinDenom != pair.QuoteCoinDenom {
 			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-				sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
+				errorsmod.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
 					msg.OfferCoin.Denom, msg.DemandCoinDenom, pair.BaseCoinDenom, pair.QuoteCoinDenom)
 		}
 		price = amm.PriceToUpTick(msg.Price, int(params.TickPrecision))
@@ -95,7 +97,7 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 
 		if msg.OfferCoin.Amount.LT(swapFeeCoin.Amount.Add(offerCoin.Amount)) {
-			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, sdk.NewCoin(msg.OfferCoin.Denom, swapFeeCoin.Amount.Add(offerCoin.Amount)))
 		}
 	}
@@ -110,7 +112,7 @@ func (k Keeper) ValidateMsgLimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder)
 func (k Keeper) LimitOrder(ctx sdk.Context, msg *types.MsgLimitOrder) (types.Order, error) {
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return types.Order{}, sdkerrors.Wrap(err, "params retreval failed")
+		return types.Order{}, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	offerCoin, swapFeeCoin, price, err := k.ValidateMsgLimitOrder(ctx, msg)
@@ -158,29 +160,29 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
 		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+			errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrap(err, "params retreval failed")
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	spendable := k.bankKeeper.SpendableCoins(ctx, msg.GetOrderer())
 	if spendableAmt := spendable.AmountOf(msg.OfferCoin.Denom); spendableAmt.LT(msg.OfferCoin.Amount) {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
 			sdk.NewCoin(msg.OfferCoin.Denom, spendableAmt), msg.OfferCoin)
 	}
 
 	if msg.OrderLifespan > params.MaxOrderLifespan {
 		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-			sdkerrors.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
+			errorsmod.Wrapf(types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, params.MaxOrderLifespan)
 	}
 
 	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
-		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+		return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
 	if pair.LastPrice == nil {
@@ -192,27 +194,27 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 	case types.OrderDirectionBuy:
 		if msg.OfferCoin.Denom != pair.QuoteCoinDenom || msg.DemandCoinDenom != pair.BaseCoinDenom {
 			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-				sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
+				errorsmod.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
 					msg.DemandCoinDenom, msg.OfferCoin.Denom, pair.BaseCoinDenom, pair.QuoteCoinDenom)
 		}
 		price = amm.PriceToDownTick(lastPrice.Mul(sdkmath.LegacyOneDec().Add(params.MaxPriceLimitRatio)), int(params.TickPrecision))
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, amm.OfferCoinAmount(amm.Buy, price, msg.Amount))
 		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 		if msg.OfferCoin.IsLT(offerCoin.Add(swapFeeCoin)) {
-			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, offerCoin.Add(swapFeeCoin))
 		}
 	case types.OrderDirectionSell:
 		if msg.OfferCoin.Denom != pair.BaseCoinDenom || msg.DemandCoinDenom != pair.QuoteCoinDenom {
 			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{},
-				sdkerrors.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
+				errorsmod.Wrapf(types.ErrWrongPair, "denom pair (%s, %s) != (%s, %s)",
 					msg.OfferCoin.Denom, msg.DemandCoinDenom, pair.BaseCoinDenom, pair.QuoteCoinDenom)
 		}
 		price = amm.PriceToUpTick(lastPrice.Mul(sdkmath.LegacyOneDec().Sub(params.MaxPriceLimitRatio)), int(params.TickPrecision))
 		offerCoin = sdk.NewCoin(msg.OfferCoin.Denom, msg.Amount)
 		swapFeeCoin = sdk.NewCoin(msg.OfferCoin.Denom, CalculateSwapFeeAmount(ctx, params, offerCoin.Amount))
 		if msg.OfferCoin.Amount.LT(swapFeeCoin.Amount.Add(offerCoin.Amount)) {
-			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, sdkerrors.Wrapf(
+			return sdk.Coin{}, sdk.Coin{}, sdkmath.LegacyDec{}, errorsmod.Wrapf(
 				types.ErrInsufficientOfferCoin, "%s is smaller than %s", msg.OfferCoin, sdk.NewCoin(msg.OfferCoin.Denom, swapFeeCoin.Amount.Add(offerCoin.Amount)))
 		}
 	}
@@ -227,7 +229,7 @@ func (k Keeper) ValidateMsgMarketOrder(ctx sdk.Context, msg *types.MsgMarketOrde
 func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.Order, error) {
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return types.Order{}, sdkerrors.Wrap(err, "params retreval failed")
+		return types.Order{}, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	offerCoin, swapFeeCoin, price, err := k.ValidateMsgMarketOrder(ctx, msg)
@@ -272,36 +274,36 @@ func (k Keeper) MarketOrder(ctx sdk.Context, msg *types.MsgMarketOrder) (types.O
 func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.Order, err error) {
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
-		return nil, sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+		return nil, errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	params, err := k.GetGenericParams(ctx, msg.AppId)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "params retreval failed")
+		return nil, errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	tickPrec := int(params.TickPrecision)
 
 	if msg.SellAmount.IsPositive() {
 		if !amm.PriceToDownTick(msg.MinSellPrice, tickPrec).Equal(msg.MinSellPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "min sell price is not on ticks")
+			return nil, errorsmod.Wrapf(types.ErrPriceNotOnTicks, "min sell price is not on ticks")
 		}
 		if !amm.PriceToDownTick(msg.MaxSellPrice, tickPrec).Equal(msg.MaxSellPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "max sell price is not on ticks")
+			return nil, errorsmod.Wrapf(types.ErrPriceNotOnTicks, "max sell price is not on ticks")
 		}
 	}
 	if msg.BuyAmount.IsPositive() {
 		if !amm.PriceToDownTick(msg.MinBuyPrice, tickPrec).Equal(msg.MinBuyPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "min buy price is not on ticks")
+			return nil, errorsmod.Wrapf(types.ErrPriceNotOnTicks, "min buy price is not on ticks")
 		}
 		if !amm.PriceToDownTick(msg.MaxBuyPrice, tickPrec).Equal(msg.MaxBuyPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceNotOnTicks, "max buy price is not on ticks")
+			return nil, errorsmod.Wrapf(types.ErrPriceNotOnTicks, "max buy price is not on ticks")
 		}
 	}
 
 	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
 	var lowestPrice, highestPrice sdkmath.LegacyDec
@@ -314,18 +316,18 @@ func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.
 
 	if msg.SellAmount.IsPositive() {
 		if msg.MinSellPrice.LT(lowestPrice) || msg.MinSellPrice.GT(highestPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "min sell price is out of range [%s, %s]", lowestPrice, highestPrice)
+			return nil, errorsmod.Wrapf(types.ErrPriceOutOfRange, "min sell price is out of range [%s, %s]", lowestPrice, highestPrice)
 		}
 		if msg.MaxSellPrice.LT(lowestPrice) || msg.MaxSellPrice.GT(highestPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "max sell price is out of range [%s, %s]", lowestPrice, highestPrice)
+			return nil, errorsmod.Wrapf(types.ErrPriceOutOfRange, "max sell price is out of range [%s, %s]", lowestPrice, highestPrice)
 		}
 	}
 	if msg.BuyAmount.IsPositive() {
 		if msg.MinBuyPrice.LT(lowestPrice) || msg.MinBuyPrice.GT(highestPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "min buy price is out of range [%s, %s]", lowestPrice, highestPrice)
+			return nil, errorsmod.Wrapf(types.ErrPriceOutOfRange, "min buy price is out of range [%s, %s]", lowestPrice, highestPrice)
 		}
 		if msg.MaxBuyPrice.LT(lowestPrice) || msg.MaxBuyPrice.GT(highestPrice) {
-			return nil, sdkerrors.Wrapf(types.ErrPriceOutOfRange, "max buy price is out of range [%s, %s]", lowestPrice, highestPrice)
+			return nil, errorsmod.Wrapf(types.ErrPriceOutOfRange, "max buy price is out of range [%s, %s]", lowestPrice, highestPrice)
 		}
 	}
 
@@ -352,19 +354,19 @@ func (k Keeper) MMOrder(ctx sdk.Context, msg *types.MsgMMOrder) (orders []types.
 	orderer := msg.GetOrderer()
 	spendable := k.bankKeeper.SpendableCoins(ctx, orderer)
 	if spendableAmt := spendable.AmountOf(pair.BaseCoinDenom); spendableAmt.LT(offerBaseCoin.Amount) {
-		return nil, sdkerrors.Wrapf(
+		return nil, errorsmod.Wrapf(
 			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
 			sdk.NewCoin(pair.BaseCoinDenom, spendableAmt), offerBaseCoin)
 	}
 	if spendableAmt := spendable.AmountOf(pair.QuoteCoinDenom); spendableAmt.LT(offerQuoteCoin.Amount) {
-		return nil, sdkerrors.Wrapf(
+		return nil, errorsmod.Wrapf(
 			sdkerrors.ErrInsufficientFunds, "%s is smaller than %s",
 			sdk.NewCoin(pair.QuoteCoinDenom, spendableAmt), offerQuoteCoin)
 	}
 
 	maxOrderLifespan := params.MaxOrderLifespan
 	if msg.OrderLifespan > maxOrderLifespan {
-		return nil, sdkerrors.Wrapf(
+		return nil, errorsmod.Wrapf(
 			types.ErrTooLongOrderLifespan, "%s is longer than %s", msg.OrderLifespan, maxOrderLifespan)
 	}
 
@@ -444,16 +446,16 @@ func (k Keeper) ValidateMsgCancelOrder(ctx sdk.Context, msg *types.MsgCancelOrde
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
 		return types.Order{},
-			sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+			errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 
 	order, found = k.GetOrder(ctx, msg.AppId, msg.PairId, msg.OrderId)
 	if !found {
 		return types.Order{},
-			sdkerrors.Wrapf(sdkerrors.ErrNotFound, "order %d not found in pair %d", msg.OrderId, msg.PairId)
+			errorsmod.Wrapf(sdkerrors.ErrNotFound, "order %d not found in pair %d", msg.OrderId, msg.PairId)
 	}
 	if msg.Orderer != order.Orderer {
-		return types.Order{}, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "mismatching orderer")
+		return types.Order{}, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "mismatching orderer")
 	}
 	if order.Status == types.OrderStatusCanceled {
 		return types.Order{}, types.ErrAlreadyCanceled
@@ -494,7 +496,7 @@ func (k Keeper) CancelOrder(ctx sdk.Context, msg *types.MsgCancelOrder) error {
 func (k Keeper) ValidateMsgCancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) error {
 	_, found := k.assetKeeper.GetApp(ctx, msg.AppId)
 	if !found {
-		return sdkerrors.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
+		return errorsmod.Wrapf(types.ErrInvalidAppID, "app id %d not found", msg.AppId)
 	}
 	return nil
 }
@@ -512,7 +514,7 @@ func (k Keeper) CancelAllOrders(ctx sdk.Context, msg *types.MsgCancelAllOrders) 
 	for _, pairID := range msg.PairIds {
 		pair, found := k.GetPair(ctx, msg.AppId, pairID)
 		if !found { // check if the pair exists
-			return sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
+			return errorsmod.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", pairID)
 		}
 		pairIDSet[pairID] = struct{}{} // add pair id to the set
 		pairIds = append(pairIds, strconv.FormatUint(pairID, 10))
@@ -562,7 +564,7 @@ func (k Keeper) cancelMMOrder(ctx sdk.Context, appID uint64, orderer sdk.AccAddr
 				continue
 			}
 			if order.BatchId == pair.CurrentBatchId {
-				return nil, sdkerrors.Wrap(types.ErrSameBatch, "couldn't cancel previously placed orders")
+				return nil, errorsmod.Wrap(types.ErrSameBatch, "couldn't cancel previously placed orders")
 			}
 			if order.Status.CanBeCanceled() {
 				if err := k.FinishOrder(ctx, order, types.OrderStatusCanceled); err != nil {
@@ -573,7 +575,7 @@ func (k Keeper) cancelMMOrder(ctx sdk.Context, appID uint64, orderer sdk.AccAddr
 		}
 		k.DeleteMMOrderIndex(ctx, appID, index)
 	} else if !skipIfNotFound {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "previous market making orders not found")
+		return nil, errorsmod.Wrap(sdkerrors.ErrNotFound, "previous market making orders not found")
 	}
 	return
 }
@@ -583,7 +585,7 @@ func (k Keeper) cancelMMOrder(ctx sdk.Context, appID uint64, orderer sdk.AccAddr
 func (k Keeper) CancelMMOrder(ctx sdk.Context, msg *types.MsgCancelMMOrder) (canceledOrderIds []uint64, err error) {
 	pair, found := k.GetPair(ctx, msg.AppId, msg.PairId)
 	if !found {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
+		return nil, errorsmod.Wrapf(sdkerrors.ErrNotFound, "pair %d not found", msg.PairId)
 	}
 
 	canceledOrderIds, err = k.cancelMMOrder(ctx, msg.AppId, msg.GetOrderer(), pair, false)
@@ -606,7 +608,7 @@ func (k Keeper) CancelMMOrder(ctx sdk.Context, msg *types.MsgCancelMMOrder) (can
 func (k Keeper) ExecuteMatching(ctx sdk.Context, pair types.Pair) error {
 	params, err := k.GetGenericParams(ctx, pair.AppId)
 	if err != nil {
-		return sdkerrors.Wrap(err, "params retreval failed")
+		return errorsmod.Wrap(err, "params retreval failed")
 	}
 	ob := amm.NewOrderBook()
 
@@ -706,7 +708,7 @@ func (k Keeper) Match(ctx sdk.Context, params types.GenericParams, ob *amm.Order
 func (k Keeper) ApplyMatchResult(ctx sdk.Context, pair types.Pair, orders []amm.Order, quoteCoinDiff sdkmath.Int) error {
 	params, err := k.GetGenericParams(ctx, pair.AppId)
 	if err != nil {
-		return sdkerrors.Wrap(err, "params retreval failed")
+		return errorsmod.Wrap(err, "params retreval failed")
 	}
 	bulkOp := types.NewBulkSendCoinsOperation()
 	for _, order := range orders { // TODO: need optimization to filter matched orders only
@@ -832,7 +834,7 @@ func (k Keeper) FinishOrder(ctx sdk.Context, order types.Order, status types.Ord
 
 	params, err := k.GetGenericParams(ctx, order.AppId)
 	if err != nil {
-		return sdkerrors.Wrap(err, "params retreval failed")
+		return errorsmod.Wrap(err, "params retreval failed")
 	}
 
 	pair, _ := k.GetPair(ctx, order.AppId, order.PairId)

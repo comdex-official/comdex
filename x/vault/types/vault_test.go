@@ -3,10 +3,11 @@ package types_test
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/comdex-official/comdex/x/vault/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestValidateVault(t *testing.T) {
@@ -20,8 +21,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 0,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: true,
 		},
@@ -30,8 +31,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: true,
 		},
@@ -40,8 +41,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos....",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: true,
 		},
@@ -50,8 +51,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.Int{},
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.Int{},
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: true,
 		},
@@ -60,8 +61,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.NewInt(-123),
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.NewInt(-123),
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: true,
 		},
@@ -70,8 +71,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.Int{},
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.Int{},
 			},
 			expErr: true,
 		},
@@ -80,8 +81,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.NewInt(-5000),
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.NewInt(-5000),
 			},
 			expErr: true,
 		},
@@ -90,8 +91,8 @@ func TestValidateVault(t *testing.T) {
 			vault: types.Vault{
 				ExtendedPairVaultID: 1,
 				Owner:               "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
-				AmountIn:            sdk.NewInt(10000),
-				AmountOut:           sdk.NewInt(5000),
+				AmountIn:            sdkmath.NewInt(10000),
+				AmountOut:           sdkmath.NewInt(5000),
 			},
 			expErr: false,
 		},

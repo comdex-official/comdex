@@ -3,6 +3,10 @@ package keeper
 import (
 	"sort"
 
+	storetypes "cosmossdk.io/store/types"
+
+	sdkmath "cosmossdk.io/math"
+
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
@@ -102,10 +106,10 @@ func (k Keeper) GetUserAppMappingData(ctx sdk.Context, address string, appID uin
 	var (
 		store = k.Store(ctx)
 		key   = types.UserAppMappingKey(address, appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -137,10 +141,10 @@ func (k Keeper) GetUserMappingData(ctx sdk.Context, address string) (mappingData
 	var (
 		store = k.Store(ctx)
 		key   = types.UserKey(address)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -159,10 +163,10 @@ func (k Keeper) GetUserMappingData(ctx sdk.Context, address string) (mappingData
 func (k Keeper) GetAllUserVaultExtendedPairMapping(ctx sdk.Context) (userVaultAssetData []types.OwnerAppExtendedPairVaultMappingData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.UserVaultExtendedPairMappingKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.UserVaultExtendedPairMappingKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -208,10 +212,10 @@ func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExte
 	var (
 		store = k.Store(ctx)
 		key   = types.AppMappingKey(appMappingID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -233,10 +237,10 @@ func (k Keeper) GetAppMappingData(ctx sdk.Context, appMappingID uint64) (appExte
 func (k Keeper) GetAllAppExtendedPairVaultMapping(ctx sdk.Context) (appExtendedPairVaultData []types.AppExtendedPairVaultMappingData) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.AppExtendedPairVaultMappingKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.AppExtendedPairVaultMappingKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -255,13 +259,13 @@ func (k Keeper) GetAllAppExtendedPairVaultMapping(ctx sdk.Context) (appExtendedP
 // If exists fine --- go with the next steps from here
 // else instantiate 1 and set it. and go for the next steps from here
 // So best way will be to create a function which will first check if AppExtendedPairVault Data exists or not. If it does. then send counted value. else create a struct save it. and send counter value.
-func (k Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64, extendedPairVaultID uint64) (mintedStatistics sdk.Int, lenVaults uint64) {
+func (k Keeper) CheckAppExtendedPairVaultMapping(ctx sdk.Context, appMappingID uint64, extendedPairVaultID uint64) (mintedStatistics sdkmath.Int, lenVaults uint64) {
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairVaultID)
 	if !found {
 		// Initialising a new struct
 		var newAppExtendedPairVault types.AppExtendedPairVaultMappingData
 		newAppExtendedPairVault.AppId = appMappingID
-		zeroVal := sdk.ZeroInt()
+		zeroVal := sdkmath.ZeroInt()
 		newAppExtendedPairVault.ExtendedPairId = extendedPairVaultID
 		newAppExtendedPairVault.CollateralLockedAmount = zeroVal
 		newAppExtendedPairVault.TokenMintedAmount = zeroVal
@@ -297,77 +301,77 @@ func (k Keeper) UpdateAppExtendedPairVaultMappingDataOnMsgCreateStableMintVault(
 }
 
 // CalculateCollateralizationRatio Calculate Collaterlization Ratio .
-func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdk.Int, amountOut sdk.Int) (sdk.Dec, error) {
+func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVaultID uint64, amountIn sdkmath.Int, amountOut sdkmath.Int) (sdkmath.LegacyDec, error) {
 	extendedPairVault, found := k.asset.GetPairsVault(ctx, extendedPairVaultID)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorExtendedPairVaultDoesNotExists
+		return sdkmath.LegacyZeroDec(), types.ErrorExtendedPairVaultDoesNotExists
 	}
 	pairData, found := k.asset.GetPair(ctx, extendedPairVault.PairId)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorPairDoesNotExist
+		return sdkmath.LegacyZeroDec(), types.ErrorPairDoesNotExist
 	}
 	assetInData, found := k.asset.GetAsset(ctx, pairData.AssetIn)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), types.ErrorAssetDoesNotExist
 	}
 	assetOutData, found := k.asset.GetAsset(ctx, pairData.AssetOut)
 	if !found {
-		return sdk.ZeroDec(), types.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), types.ErrorAssetDoesNotExist
 	}
 	esmStatus, found := k.esm.GetESMStatus(ctx, extendedPairVault.AppId)
 	statusEsm := false
 	if found {
 		statusEsm = esmStatus.Status
 	}
-	var assetInTotalPrice sdk.Dec
+	var assetInTotalPrice sdkmath.LegacyDec
 	var err error
 	// check to get calc asset price from esm
 	if statusEsm && esmStatus.SnapshotStatus {
 		price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetInData.Id)
 		if !found {
-			return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+			return sdkmath.LegacyZeroDec(), types.ErrorPriceDoesNotExist
 		}
-		numerator := sdk.NewDecFromInt(amountIn).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-		denominator := sdk.NewDecFromInt(assetInData.Decimals)
+		numerator := sdkmath.LegacyNewDecFromInt(amountIn).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(price)))
+		denominator := sdkmath.LegacyNewDecFromInt(assetInData.Decimals)
 		assetInTotalPrice = numerator.Quo(denominator)
 	} else if !statusEsm {
 		// calculating price of the asset_in
 		assetInTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetInData.Id, amountIn)
 		if err != nil {
-			return sdk.ZeroDec(), err
+			return sdkmath.LegacyZeroDec(), err
 		}
 	}
-	var assetOutTotalPrice sdk.Dec
+	var assetOutTotalPrice sdkmath.LegacyDec
 
 	if extendedPairVault.AssetOutOraclePrice {
 		// If oracle Price required for the assetOut
 		if statusEsm && esmStatus.SnapshotStatus {
 			price, found := k.esm.GetSnapshotOfPrices(ctx, extendedPairVault.AppId, assetOutData.Id)
 			if !found {
-				return sdk.ZeroDec(), types.ErrorPriceDoesNotExist
+				return sdkmath.LegacyZeroDec(), types.ErrorPriceDoesNotExist
 			}
-			numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(price)))
-			denominator := sdk.NewDecFromInt(assetOutData.Decimals)
+			numerator := sdkmath.LegacyNewDecFromInt(amountOut).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(price)))
+			denominator := sdkmath.LegacyNewDecFromInt(assetOutData.Decimals)
 			assetOutTotalPrice = numerator.Quo(denominator)
 		} else {
 			assetOutTotalPrice, err = k.oracle.CalcAssetPrice(ctx, assetOutData.Id, amountOut)
 			if err != nil {
-				return sdk.ZeroDec(), err
+				return sdkmath.LegacyZeroDec(), err
 			}
 		}
 	} else {
 		// If oracle Price is not required for the assetOut
-		numerator := sdk.NewDecFromInt(amountOut).Mul(sdk.NewDecFromInt(sdk.NewIntFromUint64(extendedPairVault.AssetOutPrice)))
-		denominator := sdk.NewDecFromInt(assetOutData.Decimals)
+		numerator := sdkmath.LegacyNewDecFromInt(amountOut).Mul(sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(extendedPairVault.AssetOutPrice)))
+		denominator := sdkmath.LegacyNewDecFromInt(assetOutData.Decimals)
 		assetOutTotalPrice = numerator.Quo(denominator)
 	}
 
-	if assetInTotalPrice.LTE(sdk.ZeroDec()) {
-		return sdk.ZeroDec(), types.ErrorInvalidAmountIn
+	if assetInTotalPrice.LTE(sdkmath.LegacyZeroDec()) {
+		return sdkmath.LegacyZeroDec(), types.ErrorInvalidAmountIn
 	}
 
-	if assetOutTotalPrice.LTE(sdk.ZeroDec()) {
-		return sdk.ZeroDec(), types.ErrorInvalidAmountOut
+	if assetOutTotalPrice.LTE(sdkmath.LegacyZeroDec()) {
+		return sdkmath.LegacyZeroDec(), types.ErrorInvalidAmountOut
 	}
 	return assetInTotalPrice.Quo(assetOutTotalPrice), nil
 }
@@ -375,9 +379,9 @@ func (k Keeper) CalculateCollateralizationRatio(ctx sdk.Context, extendedPairVau
 func (k Keeper) VerifyCollaterlizationRatio(
 	ctx sdk.Context,
 	extendedPairVaultID uint64,
-	amountIn sdk.Int,
-	amountOut sdk.Int,
-	minCrRequired sdk.Dec,
+	amountIn sdkmath.Int,
+	amountOut sdkmath.Int,
+	minCrRequired sdkmath.LegacyDec,
 	statusEsm bool,
 ) error {
 	collaterlizationRatio, err := k.CalculateCollateralizationRatio(ctx, extendedPairVaultID, amountIn, amountOut)
@@ -386,7 +390,7 @@ func (k Keeper) VerifyCollaterlizationRatio(
 	}
 	if collaterlizationRatio.LT(minCrRequired) && !statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
-	} else if collaterlizationRatio.LT(sdk.MustNewDecFromStr("1")) && statusEsm {
+	} else if collaterlizationRatio.LT(sdkmath.LegacyMustNewDecFromStr("1")) && statusEsm {
 		return types.ErrorInvalidCollateralizationRatio
 	}
 	return nil
@@ -416,7 +420,7 @@ func (k Keeper) GetVault(ctx sdk.Context, id uint64) (vault types.Vault, found b
 }
 
 // UpdateCollateralLockedAmountLockerMapping For updating token stats of collateral .
-func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool) {
 	// if Change type true = Add to collateral Locked
 	// If change type false = Subtract from the collateral Locked
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
@@ -434,7 +438,7 @@ func (k Keeper) UpdateCollateralLockedAmountLockerMapping(ctx sdk.Context, appMa
 }
 
 // UpdateTokenMintedAmountLockerMapping For updating token stats of minted .
-func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdk.Int, changeType bool) {
+func (k Keeper) UpdateTokenMintedAmountLockerMapping(ctx sdk.Context, appMappingID uint64, extendedPairID uint64, amount sdkmath.Int, changeType bool) {
 	// if Change type true = Add to token Locked
 	// If change type false = Subtract from the token Locked
 	appExtendedPairVaultData, found := k.GetAppExtendedPairVaultMappingData(ctx, appMappingID, extendedPairID)
@@ -462,10 +466,10 @@ func (k Keeper) DeleteVault(ctx sdk.Context, id uint64) {
 func (k Keeper) GetVaults(ctx sdk.Context) (vaults []types.Vault) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.VaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.VaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -553,10 +557,10 @@ func (k Keeper) GetStableMintVault(ctx sdk.Context, id uint64) (stableVault type
 func (k Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.StableMintVault) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.StableMintVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.StableMintVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -571,7 +575,7 @@ func (k Keeper) GetStableMintVaults(ctx sdk.Context) (stableVaults []types.Stabl
 	return stableVaults
 }
 
-func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdk.Int, AmountOut sdk.Int) error {
+func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, ExtendedPairVaultID uint64, AmountIn sdkmath.Int, AmountOut sdkmath.Int) error {
 	appMapping, _ := k.asset.GetApp(ctx, AppID)
 	extendedPairVault, _ := k.asset.GetPairsVault(ctx, ExtendedPairVaultID)
 	//checking if vault exists
@@ -586,7 +590,7 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 		return nil
 	}
 
-	zeroVal := sdk.ZeroInt()
+	zeroVal := sdkmath.ZeroInt()
 	oldID := k.GetIDForVault(ctx)
 	var newVault types.Vault
 	newID := oldID + 1
@@ -618,7 +622,7 @@ func (k Keeper) CreateNewVault(ctx sdk.Context, From string, AppID uint64, Exten
 	return nil
 }
 
-func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdk.Int) (userToken sdk.Int) {
+func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdkmath.Int) (userToken sdkmath.Int) {
 	nume := userVault.AmountOut.Mul(amountIn)
 	deno := userVault.AmountIn
 	userToken = nume.Quo(deno)
@@ -626,11 +630,11 @@ func (k Keeper) calculateUserToken(userVault types.Vault, amountIn sdk.Int) (use
 	return userToken
 }
 
-func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount sdk.Int, extPair []uint64, votingRatio []sdk.Int) error {
+func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount sdkmath.Int, extPair []uint64, votingRatio []sdkmath.Int) error {
 	var assetID uint64
 	var vaultsData types.AppExtendedPairVaultMappingData
 
-	totalVote := sdk.ZeroInt()
+	totalVote := sdkmath.ZeroInt()
 	app, _ := k.asset.GetApp(ctx, appID)
 	govToken := app.GenesisToken
 	for _, v := range govToken {
@@ -639,7 +643,7 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 		}
 	}
 	asset, _ := k.asset.GetAsset(ctx, assetID)
-	if amount.GT(sdk.ZeroInt()) {
+	if amount.GT(sdkmath.ZeroInt()) {
 		err := k.bank.MintCoins(ctx, tokenminttypes.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 		if err != nil {
 			return err
@@ -652,19 +656,19 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	for j, extP := range extPair {
 		extPairVaultMappingData, found := k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 		individualVote := votingRatio[j]
-		votingR := sdk.NewDec(individualVote.Int64()).Quo(sdk.NewDec(totalVote.Int64()))
-		shareByExtPair := votingR.Mul(sdk.NewDec(amount.Int64()))
+		votingR := sdkmath.LegacyNewDecFromInt(individualVote).Quo(sdkmath.LegacyNewDecFromInt(totalVote))
+		shareByExtPair := votingR.Mul(sdkmath.LegacyNewDecFromInt(amount))
 		if !found || extPairVaultMappingData.TokenMintedAmount.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDec(extPairVaultMappingData.TokenMintedAmount.Int64()))
+		perUserShareByAmtDec := shareByExtPair.Quo(sdkmath.LegacyNewDecFromInt(extPairVaultMappingData.TokenMintedAmount))
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 
 		for _, vaultID := range vaultsData.VaultIds {
 			vault, _ := k.GetVault(ctx, vaultID)
-			amt := sdk.NewDecFromInt(vault.AmountOut).Mul(perUserShareByAmtDec)
+			amt := sdkmath.LegacyNewDecFromInt(vault.AmountOut).Mul(perUserShareByAmtDec)
 			addr, _ := sdk.AccAddressFromBech32(vault.Owner)
-			if amt.GT(sdk.NewDec(0)) {
+			if amt.GT(sdkmath.LegacyNewDec(0)) {
 				err := k.bank.SendCoinsFromModuleToAccount(ctx, tokenminttypes.ModuleName, addr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amt.TruncateInt())))
 				if err != nil {
 					return err
@@ -676,23 +680,23 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	return nil
 }
 
-func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdk.Dec, amt1 sdk.Int, id2 uint64, rate2 sdk.Dec) (sdk.Dec, sdk.Int, error) {
+func (k Keeper) GetAmountOfOtherToken(ctx sdk.Context, id1 uint64, rate1 sdkmath.LegacyDec, amt1 sdkmath.Int, id2 uint64, rate2 sdkmath.LegacyDec) (sdkmath.LegacyDec, sdkmath.Int, error) {
 	asset1, found := k.asset.GetAsset(ctx, id1)
 	if !found {
-		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), sdkmath.ZeroInt(), assettypes.ErrorAssetDoesNotExist
 	}
 	asset2, found := k.asset.GetAsset(ctx, id2)
 	if !found {
-		return sdk.ZeroDec(), sdk.ZeroInt(), assettypes.ErrorAssetDoesNotExist
+		return sdkmath.LegacyZeroDec(), sdkmath.ZeroInt(), assettypes.ErrorAssetDoesNotExist
 	}
 
-	numerator := sdk.NewDecFromInt(amt1).Mul(rate1) //rate urate 1000000
-	denominator := sdk.NewDecFromInt(asset1.Decimals)
+	numerator := sdkmath.LegacyNewDecFromInt(amt1).Mul(rate1) //rate urate 1000000
+	denominator := sdkmath.LegacyNewDecFromInt(asset1.Decimals)
 	t1dAmount := numerator.Quo(denominator)
 
 	newAmount := t1dAmount.Quo(rate2)
-	tokenAmount := newAmount.Mul(sdk.NewDecFromInt(asset2.Decimals))
-	// return sdk.Int(tokenAmount), nil
+	tokenAmount := newAmount.Mul(sdkmath.LegacyNewDecFromInt(asset2.Decimals))
+	// return sdkmath.Int(tokenAmount), nil
 	return t1dAmount, tokenAmount.TruncateInt(), nil
 }
 
@@ -734,10 +738,10 @@ func (k Keeper) GetStableMintVaultUserRewards(ctx sdk.Context, appID uint64, use
 	var (
 		store = k.Store(ctx)
 		key   = types.StableMintRewardsKey(appID, user)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -760,10 +764,10 @@ func (k Keeper) GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (m
 	var (
 		store = k.Store(ctx)
 		key   = types.StableMintRewardsAppKey(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -782,7 +786,7 @@ func (k Keeper) GetStableMintVaultRewardsByApp(ctx sdk.Context, appID uint64) (m
 	return mappingData, true
 }
 
-func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, user string, quanitity sdk.Int) {
+func (k Keeper) DeleteUserStableRewardEntries(ctx sdk.Context, appID uint64, user string, quanitity sdkmath.Int) {
 	stableVaultRewards, found := k.GetStableMintVaultUserRewards(ctx, appID, user)
 	if found {
 		for _, userRewards := range stableVaultRewards {
@@ -802,10 +806,10 @@ func (k Keeper) GetStableMintVaultRewardsOfAllApps(ctx sdk.Context) (mappingData
 	var (
 		store = k.Store(ctx)
 		key   = types.StableVaultRewardsKeyPrefix
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

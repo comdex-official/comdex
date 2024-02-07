@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	utils "github.com/comdex-official/comdex/types"
@@ -34,12 +36,12 @@ type UserOrder struct {
 // NewUserOrder returns a new user order.
 func NewUserOrder(order Order) *UserOrder {
 	var dir amm.OrderDirection
-	var amt sdk.Int
+	var amt sdkmath.Int
 	switch order.Direction {
 	case OrderDirectionBuy:
 		dir = amm.Buy
 		utils.SafeMath(func() {
-			amt = sdk.MinInt(
+			amt = sdkmath.MinInt(
 				order.OpenAmount,
 				order.RemainingOfferCoin.Amount.ToLegacyDec().QuoTruncate(order.Price).TruncateInt(),
 			)
@@ -97,8 +99,8 @@ func NewPoolOrder(
 
 	reserveAddr sdk.AccAddress,
 	dir amm.OrderDirection,
-	price sdk.Dec,
-	amt sdk.Int,
+	price sdkmath.LegacyDec,
+	amt sdkmath.Int,
 	offerCoinDenom, demandCoinDenom string,
 ) *PoolOrder {
 	return &PoolOrder{

@@ -1,7 +1,11 @@
 package v12
 
 import (
+	"context"
+	sdkmath "cosmossdk.io/math"
 	"fmt"
+
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	assettypes "github.com/comdex-official/comdex/x/asset/types"
 	auctionkeeperold "github.com/comdex-official/comdex/x/auction/keeper"
@@ -16,9 +20,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
-	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
+	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v8/keeper"
+	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v8/types"
 )
 
 // An error occurred during the creation of the CMST/STJUNO pair, as it was mistakenly created in the Harbor app (ID-2) instead of the cSwap app (ID-1).
@@ -40,27 +43,27 @@ func CreateUpgradeHandlerV12(
 	liquidationKeeperOld liquidationkeeperold.Keeper,
 	assetKeeper assetkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Applying main net upgrade - v.12.0.0")
+	return func(ctx context.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		sdk.UnwrapSDKContext(ctx).Logger().Info("Applying main net upgrade - v.12.0.0")
 
 		icqparams := icqtypes.DefaultParams()
 		icqparams.AllowQueries = append(icqparams.AllowQueries, "/cosmwasm.wasm.v1.Query/SmartContractState")
-		icqkeeper.SetParams(ctx, icqparams)
+		icqkeeper.SetParams(sdk.UnwrapSDKContext(ctx), icqparams)
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return nil, err
 		}
-		UpdateLendParams(ctx, lendKeeper, assetKeeper)
-		InitializeStates(ctx, liquidationKeeper, auctionKeeper)
+		UpdateLendParams(sdk.UnwrapSDKContext(ctx), lendKeeper, assetKeeper)
+		InitializeStates(sdk.UnwrapSDKContext(ctx), liquidationKeeper, auctionKeeper)
 		//Refund(ctx, bankKeeper, collectorKeeper)
 		//RemoveFaultyAuctions(ctx, lendKeeper, auctionKeeperOld, liquidationKeeperOld, bankKeeper)
 		return vm, err
 	}
 }
 
-func dec(num string) sdk.Dec {
-	decVal, _ := sdk.NewDecFromStr(num)
+func dec(num string) sdkmath.LegacyDec {
+	decVal, _ := sdkmath.LegacyNewDecFromStr(num)
 	return decVal
 }
 
@@ -73,7 +76,7 @@ func UpdateLendParams(
 	cSTATOM := assettypes.Asset{
 		Name:                  "CSTATOM",
 		Denom:                 "ucstatom",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -114,7 +117,7 @@ func UpdateLendParams(
 	cAXLUSDC := assettypes.Asset{
 		Name:                  "CAXLUSDC",
 		Denom:                 "ucaxlusdc",
-		Decimals:              sdk.NewInt(1000000),
+		Decimals:              sdkmath.NewInt(1000000),
 		IsOnChain:             true,
 		IsOraclePriceRequired: false,
 		IsCdpMintable:         true,
@@ -133,9 +136,9 @@ func InitializeStates(
 	dutchAuctionParams := liquidationtypes.DutchAuctionParam{
 		Premium:         newDec("1.15"),
 		Discount:        newDec("0.7"),
-		DecrementFactor: sdk.NewInt(1),
+		DecrementFactor: sdkmath.NewInt(1),
 	}
-	englishAuctionParams := liquidationtypes.EnglishAuctionParam{DecrementFactor: sdk.NewInt(1)}
+	englishAuctionParams := liquidationtypes.EnglishAuctionParam{DecrementFactor: sdkmath.NewInt(1)}
 
 	harborParams := liquidationtypes.LiquidationWhiteListing{
 		AppId:               2,
@@ -144,7 +147,7 @@ func InitializeStates(
 		DutchAuctionParam:   &dutchAuctionParams,
 		IsEnglishActivated:  true,
 		EnglishAuctionParam: &englishAuctionParams,
-		KeeeperIncentive:    sdk.ZeroDec(),
+		KeeeperIncentive:    sdkmath.LegacyZeroDec(),
 	}
 
 	commodoParams := liquidationtypes.LiquidationWhiteListing{
@@ -154,7 +157,7 @@ func InitializeStates(
 		DutchAuctionParam:   &dutchAuctionParams,
 		IsEnglishActivated:  false,
 		EnglishAuctionParam: nil,
-		KeeeperIncentive:    sdk.ZeroDec(),
+		KeeeperIncentive:    sdkmath.LegacyZeroDec(),
 	}
 
 	liquidationKeeper.SetLiquidationWhiteListing(ctx, harborParams)
@@ -191,7 +194,7 @@ func InitializeStates(
 
 }
 
-func newDec(i string) sdk.Dec {
-	dec, _ := sdk.NewDecFromStr(i)
+func newDec(i string) sdkmath.LegacyDec {
+	dec, _ := sdkmath.LegacyNewDecFromStr(i)
 	return dec
 }

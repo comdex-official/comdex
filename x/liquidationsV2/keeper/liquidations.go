@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/comdex-official/comdex/x/liquidationsV2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuftypes "github.com/cosmos/gogoproto/types"
@@ -74,10 +75,10 @@ func (k Keeper) GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault 
 	var (
 		store = k.Store(ctx)
 		key   = types.LockedVaultKeyByApp(appID)
-		iter  = sdk.KVStorePrefixIterator(store, key)
+		iter  = storetypes.KVStorePrefixIterator(store, key)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -95,10 +96,10 @@ func (k Keeper) GetLockedVaultByApp(ctx sdk.Context, appID uint64) (lockedVault 
 func (k Keeper) GetLockedVaults(ctx sdk.Context) (lockedVaults []types.LockedVault) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.LockedVaultKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

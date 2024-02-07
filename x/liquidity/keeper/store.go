@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	gogotypes "github.com/cosmos/gogoproto/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -77,8 +78,8 @@ func (k Keeper) SetPairLookupIndex(ctx sdk.Context, appID uint64, denomA string,
 // Stops iteration when callback returns true.
 func (k Keeper) IterateAllPairs(ctx sdk.Context, appID uint64, cb func(pair types.Pair) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllPairsKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllPairsKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -176,8 +177,8 @@ func (k Keeper) SetPoolsByPairIndex(ctx sdk.Context, pool types.Pool) {
 // Stops iteration when callback returns true.
 func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllPoolsKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -200,8 +201,8 @@ func (k Keeper) IterateAllPools(ctx sdk.Context, appID uint64, cb func(pool type
 // Stops iteration when callback returns true.
 func (k Keeper) IteratePoolsByPair(ctx sdk.Context, appID, pairID uint64, cb func(pool types.Pool) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(appID, pairID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetPoolsByPairIndexKeyPrefix(appID, pairID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -267,8 +268,8 @@ func (k Keeper) SetDepositRequestIndex(ctx sdk.Context, req types.DepositRequest
 // and call cb for each request.
 func (k Keeper) IterateAllDepositRequests(ctx sdk.Context, appID uint64, cb func(req types.DepositRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllDepositRequestKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllDepositRequestKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -297,8 +298,8 @@ func (k Keeper) IterateDepositRequestsByDepositor(
 	cb func(req types.DepositRequest) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetDepositRequestIndexKeyPrefix(appID, depositor))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetDepositRequestIndexKeyPrefix(appID, depositor))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -376,8 +377,8 @@ func (k Keeper) SetWithdrawRequestIndex(ctx sdk.Context, req types.WithdrawReque
 // and call cb for each request.
 func (k Keeper) IterateAllWithdrawRequests(ctx sdk.Context, appID uint64, cb func(req types.WithdrawRequest) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllWithdrawRequestKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllWithdrawRequestKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -406,8 +407,8 @@ func (k Keeper) IterateWithdrawRequestsByWithdrawer(
 	cb func(req types.WithdrawRequest) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetWithdrawRequestIndexKeyPrefix(appID, withdrawer))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetWithdrawRequestIndexKeyPrefix(appID, withdrawer))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -485,8 +486,8 @@ func (k Keeper) SetOrderIndex(ctx sdk.Context, appID uint64, order types.Order) 
 // cb for each order.
 func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllOrdersKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -509,8 +510,8 @@ func (k Keeper) IterateAllOrders(ctx sdk.Context, appID uint64, cb func(order ty
 // and call cb for each order.
 func (k Keeper) IterateOrdersByPair(ctx sdk.Context, appID, pairID uint64, cb func(order types.Order) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(appID, pairID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetOrdersByPairKeyPrefix(appID, pairID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -539,8 +540,8 @@ func (k Keeper) IterateOrdersByOrderer(
 	cb func(order types.Order) (stop bool, err error),
 ) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetOrderIndexKeyPrefix(appID, orderer))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetOrderIndexKeyPrefix(appID, orderer))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -622,8 +623,8 @@ func (k Keeper) SetMMOrderIndex(ctx sdk.Context, appID uint64, index types.MMOrd
 // in the store and call cb for each order.
 func (k Keeper) IterateAllMMOrderIndexes(ctx sdk.Context, appID uint64, cb func(index types.MMOrderIndex) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllMMOrderIndexKey(appID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllMMOrderIndexKey(appID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -704,8 +705,8 @@ func (k Keeper) GetActiveFarmer(ctx sdk.Context, appID, poolID uint64, farmer sd
 // Stops iteration when callback returns true.
 func (k Keeper) IterateAllActiveFarmers(ctx sdk.Context, appID, poolID uint64, cb func(activeFarmer types.ActiveFarmer) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllActiveFarmersKey(appID, poolID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllActiveFarmersKey(appID, poolID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -756,8 +757,8 @@ func (k Keeper) GetQueuedFarmer(ctx sdk.Context, appID, poolID uint64, farmer sd
 // Stops iteration when callback returns true.
 func (k Keeper) IterateAllQueuedFarmers(ctx sdk.Context, appID, poolID uint64, cb func(queuedFarmer types.QueuedFarmer) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllQueuedFarmersKey(appID, poolID))
-	defer func(iter sdk.Iterator) {
+	iter := storetypes.KVStorePrefixIterator(store, types.GetAllQueuedFarmersKey(appID, poolID))
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return

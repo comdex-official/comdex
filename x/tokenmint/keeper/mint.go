@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
@@ -34,10 +36,10 @@ func (k Keeper) GetTokenMint(ctx sdk.Context, appMappingID uint64) (appTokenMint
 func (k Keeper) GetTotalTokenMinted(ctx sdk.Context) (appTokenMintData []types.TokenMint) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.TokenMintKeyPrefix)
+		iter  = storetypes.KVStorePrefixIterator(store, types.TokenMintKeyPrefix)
 	)
 
-	defer func(iter sdk.Iterator) {
+	defer func(iter storetypes.Iterator) {
 		err := iter.Close()
 		if err != nil {
 			return
@@ -76,7 +78,7 @@ func (k Keeper) GetAssetDataInTokenMintByAppSupply(ctx sdk.Context, appMappingID
 	return tokenData.CurrentSupply.Int64(), found
 }
 
-func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdk.Int) error {
+func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, address string, amount sdkmath.Int) error {
 	assetData, found := k.asset.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -90,7 +92,7 @@ func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetI
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
-	if amount.GT(sdk.ZeroInt()) {
+	if amount.GT(sdkmath.ZeroInt()) {
 		if err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, amount))); err != nil {
 			return err
 		}
@@ -106,7 +108,7 @@ func (k Keeper) MintNewTokensForApp(ctx sdk.Context, appMappingID uint64, assetI
 	return nil
 }
 
-func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdk.Int) error {
+func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID uint64, amount sdkmath.Int) error {
 	assetData, found := k.asset.GetAsset(ctx, assetID)
 	if !found {
 		return types.ErrorAssetDoesNotExist
@@ -120,7 +122,7 @@ func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID u
 	if !found {
 		return types.ErrorAssetNotWhiteListedForGenesisMinting
 	}
-	if tokenData.CurrentSupply.Sub(amount).LTE(sdk.NewInt(0)) || amount.LTE(sdk.ZeroInt()) {
+	if tokenData.CurrentSupply.Sub(amount).LTE(sdkmath.NewInt(0)) || amount.LTE(sdkmath.ZeroInt()) {
 		return types.ErrorBurningMakesSupplyLessThanZero
 	}
 	if err := k.bank.BurnCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetData.Denom, amount))); err != nil {
@@ -132,7 +134,7 @@ func (k Keeper) BurnTokensForApp(ctx sdk.Context, appMappingID uint64, assetID u
 	return nil
 }
 
-func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdk.Int) {
+func (k Keeper) UpdateAssetDataInTokenMintByApp(ctx sdk.Context, appMappingID uint64, assetID uint64, changeType bool, amount sdkmath.Int) {
 	// ChangeType + == add to current supply
 	// Change type - == reduce from supply
 	mintData, found := k.GetTokenMint(ctx, appMappingID)
@@ -182,7 +184,7 @@ func (k Keeper) BurnFrom(ctx sdk.Context, amount sdk.Coin, burnFrom sdk.AccAddre
 	return nil
 }
 
-func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdk.Int, foundationAddr []string) error {
+func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount sdkmath.Int, foundationAddr []string) error {
 	s := len(foundationAddr)
 	var assetID uint64
 	app, _ := k.asset.GetApp(ctx, appID)
@@ -193,17 +195,17 @@ func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount 
 		}
 	}
 	asset, _ := k.asset.GetAsset(ctx, assetID)
-	if amount.GT(sdk.ZeroInt()) {
+	if amount.GT(sdkmath.ZeroInt()) {
 		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 		if err != nil {
 			return err
 		}
 	}
 
-	amountToIndividualFoundationAddr := amount.Quo(sdk.NewInt(int64(s)))
+	amountToIndividualFoundationAddr := amount.Quo(sdkmath.NewInt(int64(s)))
 	for _, addr := range foundationAddr {
 		newAddr, _ := sdk.AccAddressFromBech32(addr)
-		if amountToIndividualFoundationAddr.GT(sdk.ZeroInt()) {
+		if amountToIndividualFoundationAddr.GT(sdkmath.ZeroInt()) {
 			err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, newAddr, sdk.NewCoins(sdk.NewCoin(asset.Denom, amountToIndividualFoundationAddr)))
 			if err != nil {
 				return err
@@ -215,7 +217,7 @@ func (k Keeper) WasmMsgFoundationEmission(ctx sdk.Context, appID uint64, amount 
 	return nil
 }
 
-func (k Keeper) WasmMsgRebaseMint(ctx sdk.Context, appID uint64, amount sdk.Int, contractAddr sdk.AccAddress) error {
+func (k Keeper) WasmMsgRebaseMint(ctx sdk.Context, appID uint64, amount sdkmath.Int, contractAddr sdk.AccAddress) error {
 	var assetID uint64
 	app, _ := k.asset.GetApp(ctx, appID)
 	govToken := app.GenesisToken
@@ -225,7 +227,7 @@ func (k Keeper) WasmMsgRebaseMint(ctx sdk.Context, appID uint64, amount sdk.Int,
 		}
 	}
 	asset, _ := k.asset.GetAsset(ctx, assetID)
-	if amount.GT(sdk.ZeroInt()) {
+	if amount.GT(sdkmath.ZeroInt()) {
 		err := k.bank.MintCoins(ctx, types.ModuleName, sdk.NewCoins(sdk.NewCoin(asset.Denom, amount)))
 		if err != nil {
 			return err

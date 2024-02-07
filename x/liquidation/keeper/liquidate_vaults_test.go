@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetTypes "github.com/comdex-official/comdex/x/asset/types"
 	liquidationTypes "github.com/comdex-official/comdex/x/liquidation/types"
@@ -29,15 +30,15 @@ func (s *KeeperTestSuite) AddPairAndExtendedPairVault1() {
 			bindings.MsgAddExtendedPairsVault{
 				AppID:               1,
 				PairID:              1,
-				StabilityFee:        sdk.MustNewDecFromStr("0.01"),
-				ClosingFee:          sdk.MustNewDecFromStr("0"),
-				LiquidationPenalty:  sdk.MustNewDecFromStr("0.12"),
-				DrawDownFee:         sdk.MustNewDecFromStr("0.01"),
+				StabilityFee:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+				ClosingFee:          sdkmath.LegacyMustNewDecFromStr("0"),
+				LiquidationPenalty:  sdkmath.LegacyMustNewDecFromStr("0.12"),
+				DrawDownFee:         sdkmath.LegacyMustNewDecFromStr("0.01"),
 				IsVaultActive:       true,
-				DebtCeiling:         sdk.NewInt(1000000000000),
-				DebtFloor:           sdk.NewInt(1000000),
+				DebtCeiling:         sdkmath.NewInt(1000000000000),
+				DebtFloor:           sdkmath.NewInt(1000000),
 				IsStableMintVault:   false,
-				MinCr:               sdk.MustNewDecFromStr("1.5"),
+				MinCr:               sdkmath.LegacyMustNewDecFromStr("1.5"),
 				PairName:            "CMDX-B",
 				AssetOutOraclePrice: true,
 				AssetOutPrice:       1000000,
@@ -101,8 +102,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress1,
 				AppId:               1,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 		{
@@ -111,8 +112,8 @@ func (s *KeeperTestSuite) CreateVault() {
 				From:                userAddress2,
 				AppId:               1,
 				ExtendedPairVaultId: 1,
-				AmountIn:            sdk.NewIntFromUint64(1000000),
-				AmountOut:           sdk.NewIntFromUint64(1000000),
+				AmountIn:            sdkmath.NewIntFromUint64(1000000),
+				AmountOut:           sdkmath.NewIntFromUint64(1000000),
 			},
 		},
 	} {
@@ -141,10 +142,10 @@ func (s *KeeperTestSuite) GetVaultCountForExtendedPairIDbyAppID(appID, extID uin
 	return len(res.VaultIds)
 }
 
-func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdk.Dec {
+func (s *KeeperTestSuite) GetAssetPrice(id uint64) sdkmath.LegacyDec {
 	price, err := s.app.MarketKeeper.GetLatestPrice(s.ctx, id)
 	s.Suite.NoError(err)
-	price1 := sdk.NewDecFromInt(sdk.NewIntFromUint64(price))
+	price1 := sdkmath.LegacyNewDecFromInt(sdkmath.NewIntFromUint64(price))
 	return price1
 }
 
@@ -155,12 +156,12 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Require().NoError(err)
 	addr2, err := sdk.AccAddressFromBech32(userAddress2)
 	s.Require().NoError(err)
-	genesisSupply := sdk.NewIntFromUint64(1000000)
+	genesisSupply := sdkmath.NewIntFromUint64(1000000)
 	assetKeeper, ctx := &s.assetKeeper, &s.ctx
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 		GenesisToken: []assetTypes.MintGenesisToken{
 			{
@@ -189,7 +190,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "CMDX",
 				Denom:         "ucmdx",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -199,7 +200,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "CMST",
 				Denom:         "ucmst",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -209,7 +210,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 			assetTypes.Asset{
 				Name:          "HARBOR",
 				Denom:         "uharbor",
-				Decimals:      sdk.NewInt(1000000),
+				Decimals:      sdkmath.NewInt(1000000),
 				IsOnChain:     true,
 				IsCdpMintable: true,
 			},
@@ -218,8 +219,8 @@ func (s *KeeperTestSuite) AddAppAsset() {
 		s.Run(tc.name, func() {
 			err := assetKeeper.AddAssetRecords(*ctx, tc.msg)
 			s.Require().NoError(err)
-			s.fundAddr(addr, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
-			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdk.NewInt(1000000)))
+			s.fundAddr(addr, sdk.NewCoin(tc.msg.Denom, sdkmath.NewInt(1000000)))
+			s.fundAddr(addr2, sdk.NewCoin(tc.msg.Denom, sdkmath.NewInt(1000000)))
 		})
 	}
 }
@@ -256,7 +257,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	s.Require().Equal(lockedVault[0].Owner, beforeVault.Owner)
 	s.Require().Equal(lockedVault[0].AmountIn, beforeVault.AmountIn)
 	s.Require().Equal(lockedVault[0].AmountOut, beforeVault.AmountOut)
-	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdk.ZeroInt())
+	s.Require().Equal(lockedVault[0].UpdatedAmountOut, sdkmath.ZeroInt())
 	s.Require().Equal(lockedVault[0].Initiator, liquidationTypes.ModuleName)
 	s.Require().Equal(lockedVault[0].IsAuctionInProgress, true)
 	s.Require().Equal(lockedVault[0].IsAuctionComplete, false)
@@ -264,7 +265,7 @@ func (s *KeeperTestSuite) TestLiquidateVaults1() {
 	price, err := s.app.MarketKeeper.CalcAssetPrice(*ctx, uint64(1), beforeVault.AmountIn)
 	s.Require().NoError(err)
 	s.Require().Equal(lockedVault[0].CollateralToBeAuctioned, price)
-	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdk.NewDec(lockedVault[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault[0].CrAtLiquidation, sdkmath.LegacyNewDecFromInt(lockedVault[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdkmath.LegacyNewDecFromInt(lockedVault[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestUpdateLockedVaults() {
@@ -272,7 +273,7 @@ func (s *KeeperTestSuite) TestUpdateLockedVaults() {
 	liquidationKeeper, ctx := &s.liquidationKeeper, &s.ctx
 
 	lockedVault1 := liquidationKeeper.GetLockedVaults(*ctx)
-	s.Require().Equal(lockedVault1[0].CrAtLiquidation, sdk.NewDec(lockedVault1[0].AmountIn.Int64()).Mul(s.GetAssetPrice(1)).Quo(sdk.NewDec(lockedVault1[0].AmountOut.Int64()).Mul(s.GetAssetPrice(2))))
+	s.Require().Equal(lockedVault1[0].CrAtLiquidation, sdkmath.LegacyNewDecFromInt(lockedVault1[0].AmountIn).Mul(s.GetAssetPrice(1)).Quo(sdkmath.LegacyNewDecFromInt(lockedVault1[0].AmountOut).Mul(s.GetAssetPrice(2))))
 }
 
 func (s *KeeperTestSuite) TestSetFlags() {

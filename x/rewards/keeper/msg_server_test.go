@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
 	"time"
 
@@ -18,7 +19,6 @@ import (
 	"github.com/comdex-official/comdex/x/rewards/types"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 	vaulttypes "github.com/comdex-official/comdex/x/vault/types"
-	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -27,7 +27,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
@@ -36,7 +36,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2a := assetTypes.AppData{
 		Name:             "harbor",
 		ShortName:        "hbr",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2a)
@@ -45,7 +45,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg2 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
@@ -54,7 +54,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg3 := assetTypes.Asset{
 		Name:          "CMDX",
 		Denom:         "ucmdx",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -76,7 +76,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg4 := assetTypes.Asset{
 		Name:          "CMST",
 		Denom:         "ucmst",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -98,7 +98,7 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	msg5 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg5)
@@ -117,8 +117,8 @@ func (s *KeeperTestSuite) AddAppAsset() {
 	s.Suite.NoError(err)
 }
 
-func Dec(s string) sdk.Dec {
-	dec, err := sdk.NewDecFromStr(s)
+func Dec(s string) sdkmath.LegacyDec {
+	dec, err := sdkmath.LegacyNewDecFromStr(s)
 	if err != nil {
 		panic(err)
 	}
@@ -131,7 +131,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg1 := assetTypes.AppData{
 		Name:             "cswap",
 		ShortName:        "cswap",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err := assetKeeper.AddAppRecords(*ctx, msg1)
@@ -140,7 +140,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg2 := assetTypes.AppData{
 		Name:             "harbor",
 		ShortName:        "harbor",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg2)
@@ -148,7 +148,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg3 := assetTypes.AppData{
 		Name:             "commodo",
 		ShortName:        "comdo",
-		MinGovDeposit:    sdk.NewIntFromUint64(10000000),
+		MinGovDeposit:    sdkmath.NewIntFromUint64(10000000),
 		GovTimeInSeconds: 900,
 	}
 	err = assetKeeper.AddAppRecords(*ctx, msg3)
@@ -157,7 +157,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg4 := assetTypes.Asset{
 		Name:          "ATOM",
 		Denom:         "uatom",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -179,7 +179,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg5 := assetTypes.Asset{
 		Name:          "CMDX",
 		Denom:         "ucmdx",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -201,7 +201,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg6 := assetTypes.Asset{
 		Name:          "CMST",
 		Denom:         "ucmst",
-		Decimals:      sdk.NewInt(1000000),
+		Decimals:      sdkmath.NewInt(1000000),
 		IsOnChain:     true,
 		IsCdpMintable: true,
 	}
@@ -223,7 +223,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg7 := assetTypes.Asset{
 		Name:      "HARBOR",
 		Denom:     "uharbor",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg7)
@@ -244,7 +244,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg11 := assetTypes.Asset{
 		Name:      "CATOM",
 		Denom:     "ucatom",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg11)
@@ -253,7 +253,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg12 := assetTypes.Asset{
 		Name:      "CCMDX",
 		Denom:     "uccmdx",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg12)
@@ -262,7 +262,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	msg13 := assetTypes.Asset{
 		Name:      "CCMST",
 		Denom:     "uccmst",
-		Decimals:  sdk.NewInt(1000000),
+		Decimals:  sdkmath.NewInt(1000000),
 		IsOnChain: true,
 	}
 	err = assetKeeper.AddAssetRecords(*ctx, msg13)
@@ -330,17 +330,17 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	assetDataPoolOneAssetOne := &lendtypes.AssetDataPoolMapping{
 		AssetID:          1,
 		AssetTransitType: 3,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 	assetDataPoolOneAssetTwo := &lendtypes.AssetDataPoolMapping{
 		AssetID:          2,
 		AssetTransitType: 1,
-		SupplyCap:        sdk.NewDec(1000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(1000000000000),
 	}
 	assetDataPoolOneAssetThree := &lendtypes.AssetDataPoolMapping{
 		AssetID:          3,
 		AssetTransitType: 2,
-		SupplyCap:        sdk.NewDec(5000000000000),
+		SupplyCap:        sdkmath.LegacyNewDec(5000000000000),
 	}
 
 	assetDataCMDXPool = append(assetDataCMDXPool, assetDataPoolOneAssetOne, assetDataPoolOneAssetTwo, assetDataPoolOneAssetThree)
@@ -446,7 +446,7 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		AuctionDurationSeconds: 21600,
 		Buffer:                 Dec("1.2"),
 		Cusp:                   Dec("0.7"),
-		Step:                   sdk.NewInt(360),
+		Step:                   sdkmath.NewInt(360),
 		PriceFunctionType:      1,
 		DutchId:                3,
 		BidDurationSeconds:     3600,
@@ -457,16 +457,16 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 	}
 
 	userAddress := "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(100000000000000)))
-	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddress, sdk.NewCoin("uatom", sdk.NewInt(100000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(100000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 1, userAddress, sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(100000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddress, sdk.NewCoin("ucmdx", sdk.NewInt(1000000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 2, userAddress, sdk.NewCoin("ucmdx", sdkmath.NewInt(1000000000000)))
 	s.Require().NoError(err)
-	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewIntFromUint64(100000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewIntFromUint64(100000000000000)))
 
-	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddress, sdk.NewCoin("ucmst", sdk.NewInt(100000000000)))
+	err = lendKeeper.FundModAcc(s.ctx, 1, 3, userAddress, sdk.NewCoin("ucmst", sdkmath.NewInt(100000000000)))
 	s.Require().NoError(err)
 
 	lendKeeper, ctx = &s.lendKeeper, &s.ctx
@@ -476,28 +476,28 @@ func (s *KeeperTestSuite) AddAppAssetLend() {
 		Lender:         "cosmos1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t",
 		AssetId:        1,
 		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		AmountIn:       sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)),
 		PairId:         3,
 		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
+		AmountOut:      sdk.NewCoin("ucmdx", sdkmath.NewInt(1000000000)),
 		AppId:          3,
 	}
 
-	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg20)
 	s.Require().NoError(err)
 	msg30 := lendtypes.MsgBorrowAlternate{
 		Lender:         "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp",
 		AssetId:        1,
 		PoolId:         1,
-		AmountIn:       sdk.NewCoin("uatom", sdk.NewInt(100000000000)),
+		AmountIn:       sdk.NewCoin("uatom", sdkmath.NewInt(100000000000)),
 		PairId:         3,
 		IsStableBorrow: false,
-		AmountOut:      sdk.NewCoin("ucmdx", sdk.NewInt(1000000000)),
+		AmountOut:      sdk.NewCoin("ucmdx", sdkmath.NewInt(1000000000)),
 		AppId:          3,
 	}
 
-	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdk.NewIntFromUint64(1000000000000)))
+	s.fundAddr("cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp", sdk.NewCoin("uatom", sdkmath.NewIntFromUint64(1000000000000)))
 	_, err = server.BorrowAlternate(sdk.WrapSDKContext(*ctx), &msg30)
 	s.Require().NoError(err)
 }
@@ -508,12 +508,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg1)
 	s.Require().NoError(err)
@@ -522,12 +522,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            1,
 		CollectorAssetID: 2,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err1 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg2)
 	s.Require().NoError(err1)
@@ -536,12 +536,12 @@ func (s *KeeperTestSuite) AddCollectorLookupTable() {
 		AppID:            2,
 		CollectorAssetID: 1,
 		SecondaryAssetID: 3,
-		SurplusThreshold: sdk.NewInt(10000000),
-		DebtThreshold:    sdk.NewInt(5000000),
-		LockerSavingRate: sdk.MustNewDecFromStr("0.1"),
-		LotSize:          sdk.NewInt(2000000),
-		BidFactor:        sdk.MustNewDecFromStr("0.01"),
-		DebtLotSize:      sdk.NewInt(2000000),
+		SurplusThreshold: sdkmath.NewInt(10000000),
+		DebtThreshold:    sdkmath.NewInt(5000000),
+		LockerSavingRate: sdkmath.LegacyMustNewDecFromStr("0.1"),
+		LotSize:          sdkmath.NewInt(2000000),
+		BidFactor:        sdkmath.LegacyMustNewDecFromStr("0.01"),
+		DebtLotSize:      sdkmath.NewInt(2000000),
 	}
 	err2 := collectorKeeper.WasmSetCollectorLookupTable(*ctx, &msg3)
 	s.Require().NoError(err2)
@@ -591,12 +591,12 @@ func (s *KeeperTestSuite) TestCreateLocker() {
 	}
 	msg2 := lockertypes.MsgCreateLockerRequest{
 		Depositor: userAddress,
-		Amount:    sdk.NewInt(1000000000),
+		Amount:    sdkmath.NewInt(1000000000),
 		AssetId:   1,
 		AppId:     1,
 	}
 
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000)))
 	_, err := server.MsgCreateLocker(sdk.WrapSDKContext(*ctx), &msg2)
 	s.Require().NoError(err)
 }
@@ -605,7 +605,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	amt, _ := sdk.NewIntFromString("1000000000000000000000")
+	amt, _ := sdkmath.NewIntFromString("1000000000000000000000")
 	s.fundAddr(userAddress, sdk.NewCoin("weth", amt))
 
 	s.TestCreateLocker()
@@ -646,13 +646,12 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLocker() {
 	}
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
-	req := abci.RequestBeginBlock{}
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
 }
@@ -677,11 +676,11 @@ func (s *KeeperTestSuite) TestCreateVault() {
 		From:                userAddress,
 		AppId:               2,
 		ExtendedPairVaultId: extendedVaultPairID1,
-		AmountIn:            sdk.NewInt(1000000000),
-		AmountOut:           sdk.NewInt(200000000),
+		AmountIn:            sdkmath.NewInt(1000000000),
+		AmountOut:           sdkmath.NewInt(200000000),
 	}
 
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000)))
 	_, err := server.MsgCreate(sdk.WrapSDKContext(*ctx), &msg2)
 	s.Require().NoError(err)
 
@@ -689,11 +688,11 @@ func (s *KeeperTestSuite) TestCreateVault() {
 		From:                userAddress1,
 		AppId:               2,
 		ExtendedPairVaultId: extendedVaultPairID1,
-		AmountIn:            sdk.NewInt(1000000000),
-		AmountOut:           sdk.NewInt(100000000),
+		AmountIn:            sdkmath.NewInt(1000000000),
+		AmountOut:           sdkmath.NewInt(100000000),
 	}
 
-	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000)))
 	_, err = server.MsgCreate(sdk.WrapSDKContext(*ctx), &msg3)
 	s.Require().NoError(err)
 }
@@ -702,7 +701,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(10)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	amt, _ := sdk.NewIntFromString("1000000000000000000000")
+	amt, _ := sdkmath.NewIntFromString("1000000000000000000000")
 	s.fundAddr(userAddress, sdk.NewCoin("btc", amt))
 
 	s.TestCreateVault()
@@ -744,18 +743,17 @@ func (s *KeeperTestSuite) TestCreateExtRewardsVault() {
 	userAddress1 := "cosmos1kwtdrjkwu6y87vlylaeatzmc5p4jhvn7qwqnkp"
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-02T12:10:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
-	req := abci.RequestBeginBlock{}
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
 	availableBalances1 := s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
 	fmt.Println("bal at first day second user", availableBalances1)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances1 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
 	fmt.Println("bal at second day second user", availableBalances1)
 }
@@ -767,7 +765,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 	s.TestFarmSetup()
 	rewardsKeeper, ctx := &s.rewardsKeeper, &s.ctx
 	server := keeper.NewMsgServerImpl(*rewardsKeeper)
-	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdk.NewInt(1234567890)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmst", sdkmath.NewInt(1234567890)))
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at t0 ", availableBalances)
 
@@ -785,7 +783,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 				AssetId:              []uint64{2},
 				CSwapAppId:           1,
 				CSwapMinLockAmount:   100000000,
-				TotalRewards:         sdk.NewCoin("ucmst", sdk.NewInt(1234567890)),
+				TotalRewards:         sdk.NewCoin("ucmst", sdkmath.NewInt(1234567890)),
 				MasterPoolId:         1,
 				DurationDays:         3,
 				MinLockupTimeSeconds: 1,
@@ -816,8 +814,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:10:10Z"))
 	s.ctx = s.ctx.WithBlockHeight(11)
-	req := abci.RequestBeginBlock{}
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	availableBalances2 := s.getBalances(sdk.MustAccAddressFromBech32(userAddress2))
 	fmt.Println("bal at first day", availableBalances, availableBalances2)
@@ -825,29 +822,29 @@ func (s *KeeperTestSuite) TestCreateExtRewardsLend() {
 
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-04T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(12)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	availableBalances2 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress2))
 	fmt.Println("bal at second day", availableBalances, availableBalances2)
 	fmt.Println("rewQuery", rewQuery)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-05T12:12:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	availableBalances2 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress2))
 	fmt.Println("bal at third day", availableBalances, availableBalances2)
 	fmt.Println("rewQuery", rewQuery)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-06T12:15:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(15)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	availableBalances2 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress2))
 	fmt.Println("bal at fourth day", availableBalances, availableBalances2)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-07T12:17:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(16)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
@@ -898,7 +895,7 @@ func (s *KeeperTestSuite) TestCreateExtRewardsStableVault() {
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-01T12:00:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(5)
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
-	amt, _ := sdk.NewIntFromString("100000000000")
+	amt, _ := sdkmath.NewIntFromString("100000000000")
 	s.fundAddr(userAddress, sdk.NewCoin("cmdx", amt))
 
 	s.TestCreateVault()
@@ -949,9 +946,9 @@ func (s *KeeperTestSuite) TestCreateExtRewardsStableVault() {
 		From:                userAddress1,
 		AppId:               2,
 		ExtendedPairVaultId: 2,
-		Amount:              sdk.NewInt(1000000000),
+		Amount:              sdkmath.NewInt(1000000000),
 	}
-	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	s.fundAddr(userAddress1, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000)))
 	_, err := vaultServer.MsgCreateStableMint(sdk.WrapSDKContext(*ctx), &msg4)
 	s.Require().NoError(err)
 
@@ -959,25 +956,24 @@ func (s *KeeperTestSuite) TestCreateExtRewardsStableVault() {
 		From:                userAddress,
 		AppId:               2,
 		ExtendedPairVaultId: 2,
-		Amount:              sdk.NewInt(1000000000),
+		Amount:              sdkmath.NewInt(1000000000),
 		StableVaultId:       1,
 	}
-	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdk.NewIntFromUint64(1000000000)))
+	s.fundAddr(userAddress, sdk.NewCoin("ucmdx", sdkmath.NewIntFromUint64(1000000000)))
 	_, err = vaultServer.MsgDepositStableMint(sdk.WrapSDKContext(*ctx), &msg5)
 	s.Require().NoError(err)
 
-	req := abci.RequestBeginBlock{}
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances := s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at first day", availableBalances)
 	availableBalances1 := s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
 	fmt.Println("bal at first day second user", availableBalances1)
 	s.ctx = s.ctx.WithBlockTime(utils.ParseTime("2022-03-03T12:11:00Z"))
 	s.ctx = s.ctx.WithBlockHeight(120)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances = s.getBalances(sdk.MustAccAddressFromBech32(userAddress))
 	fmt.Println("bal at second day", availableBalances)
-	rewards.BeginBlocker(*ctx, req, *rewardsKeeper)
+	rewards.BeginBlocker(*ctx, *rewardsKeeper)
 	availableBalances1 = s.getBalances(sdk.MustAccAddressFromBech32(userAddress1))
 	fmt.Println("bal at second day second user", availableBalances1)
 }

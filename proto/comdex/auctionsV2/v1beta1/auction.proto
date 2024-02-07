@@ -46,18 +46,18 @@ message Auction{
 
   // price indicator only for dutch auctions
   string collateral_token_auction_price = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"outflow_token_auction_price\""
   ];
   string collateral_token_oracle_price = 8 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"outflow_token_oracle_price\""
   ];
 
   string debt_token_oracle_price = 9 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"inflow_token_oracle_price\""
   ];
@@ -91,11 +91,11 @@ message Auction{
   string bonus_amount = 17 [
     (gogoproto.moretags) = "yaml:\"bonus_amount\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
 
   string collateral_token_initial_price = 18 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"collateral_token_initial_price\""
   ];
@@ -117,11 +117,11 @@ message LimitBidProtocolData{
   string bid_value = 3 [
     (gogoproto.moretags) = "yaml:\"bid_value\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
 
   string max_discount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"max_discount\""
   ];
@@ -137,11 +137,11 @@ message LimitBidProtocolDataForQuery{
   string bid_value = 3 [
     (gogoproto.moretags) = "yaml:\"bid_value\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
 
   string max_discount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"max_discount\""
   ];
@@ -163,11 +163,11 @@ message LimitBidProtocolDataWithUserForQuery{
   string bid_value = 3 [
     (gogoproto.moretags) = "yaml:\"bid_value\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
 
   string max_discount = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false,
     (gogoproto.moretags) = "yaml:\"max_discount\""
   ];
@@ -180,6 +180,6 @@ message LimitBidProtocolDataWithUserForQuery{
   string user_bid_value = 7 [
     (gogoproto.moretags) = "yaml:\"user_bid_value\"",
     (gogoproto.nullable) = false,
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int"
+    (gogoproto.customtype) = "cosmossdk.io/math.Int"
   ];
 }

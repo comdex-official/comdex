@@ -2,7 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	errorsmod "cosmossdk.io/errors"
 )
 
 var _ sdk.Msg = (*MsgMintNewTokensRequest)(nil)
@@ -25,16 +25,16 @@ func (m *MsgMintNewTokensRequest) Type() string {
 
 func (m *MsgMintNewTokensRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errorsmod.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if m.AppId == 0 {
-		return errors.Wrap(ErrorInvalidAppID, "app id can not be zero")
+		return errorsmod.Wrap(ErrorInvalidAppID, "app id can not be zero")
 	}
 	if m.AssetId == 0 {
-		return errors.Wrap(ErrorInvalidAssetID, "asset id can not be zero")
+		return errorsmod.Wrap(ErrorInvalidAssetID, "asset id can not be zero")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errorsmod.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 
 	return nil

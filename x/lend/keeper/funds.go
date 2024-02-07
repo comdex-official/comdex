@@ -1,18 +1,19 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/lend/types"
 )
 
 func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleName string, payment sdk.Coin, inc bool) error {
-	newAmount := payment.Amount.Quo(sdk.NewIntFromUint64(types.Uint64Two))
+	newAmount := payment.Amount.Quo(sdkmath.NewIntFromUint64(types.Uint64Two))
 	reserve, found := k.GetReserveBuybackAssetData(ctx, assetID)
 	if !found {
 		reserve.AssetID = assetID
-		reserve.BuybackAmount = sdk.ZeroInt()
-		reserve.ReserveAmount = sdk.ZeroInt()
+		reserve.BuybackAmount = sdkmath.ZeroInt()
+		reserve.ReserveAmount = sdkmath.ZeroInt()
 	}
 
 	if inc {
@@ -32,7 +33,7 @@ func (k Keeper) UpdateReserveBalances(ctx sdk.Context, assetID uint64, moduleNam
 	return nil
 }
 
-func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount sdk.Int, inc bool) {
+func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount sdkmath.Int, inc bool) {
 	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, PoolID, AssetID)
 	if inc {
 		assetStats.TotalLend = assetStats.TotalLend.Add(amount)
@@ -42,7 +43,7 @@ func (k Keeper) UpdateLendStats(ctx sdk.Context, AssetID, PoolID uint64, amount 
 	k.SetAssetStatsByPoolIDAndAssetID(ctx, assetStats)
 }
 
-func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, isStableBorrow bool, amount sdk.Int, inc bool) {
+func (k Keeper) UpdateBorrowStats(ctx sdk.Context, pair types.Extended_Pair, isStableBorrow bool, amount sdkmath.Int, inc bool) {
 	assetStats, _ := k.GetAssetStatsByPoolIDAndAssetID(ctx, pair.AssetOutPoolID, pair.AssetOut)
 	if inc {
 		if isStableBorrow {

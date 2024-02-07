@@ -1,13 +1,13 @@
 package types
 
 import (
+	cosmossdk_io_math "cosmossdk.io/math"
 	fmt "fmt"
 	io "io"
 	math "math"
 	math_bits "math/bits"
 
 	_ "github.com/cosmos/cosmos-sdk/types"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
@@ -109,21 +109,21 @@ func (m *Extended_Pair_Old) GetMinUsdValueLeft() uint64 {
 }
 
 type AssetRatesParams_Old struct {
-	AssetID              uint64                                 `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
-	UOptimal             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=u_optimal,json=uOptimal,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"u_optimal" yaml:"u_optimal"`
-	Base                 github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=base,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"base" yaml:"base"`
-	Slope1               github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=slope1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"slope1" yaml:"slope1"`
-	Slope2               github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,5,opt,name=slope2,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"slope2" yaml:"slope2"`
-	EnableStableBorrow   bool                                   `protobuf:"varint,6,opt,name=enable_stable_borrow,json=enableStableBorrow,proto3" json:"enable_stable_borrow,omitempty" yaml:"enable_stable_borrow"`
-	StableBase           github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=stable_base,json=stableBase,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_base" yaml:"stable_base"`
-	StableSlope1         github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=stable_slope1,json=stableSlope1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_slope1" yaml:"stable_slope1"`
-	StableSlope2         github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,9,opt,name=stable_slope2,json=stableSlope2,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_slope2" yaml:"stable_slope2"`
-	Ltv                  github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,10,opt,name=ltv,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"ltv" yaml:"ltv"`
-	LiquidationThreshold github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=liquidation_threshold,json=liquidationThreshold,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_threshold" yaml:"liquidation_threshold"`
-	LiquidationPenalty   github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,12,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
-	LiquidationBonus     github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,13,opt,name=liquidation_bonus,json=liquidationBonus,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_bonus" yaml:"liquidation_bonus"`
-	ReserveFactor        github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,14,opt,name=reserve_factor,json=reserveFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve_factor" yaml:"reserve_factor"`
-	CAssetID             uint64                                 `protobuf:"varint,15,opt,name=c_asset_id,json=cAssetId,proto3" json:"c_asset_id,omitempty" yaml:"c_asset_id"`
+	AssetID              uint64                      `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty" yaml:"asset_id"`
+	UOptimal             cosmossdk_io_math.LegacyDec `protobuf:"bytes,2,opt,name=u_optimal,json=uOptimal,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"u_optimal" yaml:"u_optimal"`
+	Base                 cosmossdk_io_math.LegacyDec `protobuf:"bytes,3,opt,name=base,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"base" yaml:"base"`
+	Slope1               cosmossdk_io_math.LegacyDec `protobuf:"bytes,4,opt,name=slope1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"slope1" yaml:"slope1"`
+	Slope2               cosmossdk_io_math.LegacyDec `protobuf:"bytes,5,opt,name=slope2,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"slope2" yaml:"slope2"`
+	EnableStableBorrow   bool                        `protobuf:"varint,6,opt,name=enable_stable_borrow,json=enableStableBorrow,proto3" json:"enable_stable_borrow,omitempty" yaml:"enable_stable_borrow"`
+	StableBase           cosmossdk_io_math.LegacyDec `protobuf:"bytes,7,opt,name=stable_base,json=stableBase,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_base" yaml:"stable_base"`
+	StableSlope1         cosmossdk_io_math.LegacyDec `protobuf:"bytes,8,opt,name=stable_slope1,json=stableSlope1,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_slope1" yaml:"stable_slope1"`
+	StableSlope2         cosmossdk_io_math.LegacyDec `protobuf:"bytes,9,opt,name=stable_slope2,json=stableSlope2,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"stable_slope2" yaml:"stable_slope2"`
+	Ltv                  cosmossdk_io_math.LegacyDec `protobuf:"bytes,10,opt,name=ltv,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"ltv" yaml:"ltv"`
+	LiquidationThreshold cosmossdk_io_math.LegacyDec `protobuf:"bytes,11,opt,name=liquidation_threshold,json=liquidationThreshold,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_threshold" yaml:"liquidation_threshold"`
+	LiquidationPenalty   cosmossdk_io_math.LegacyDec `protobuf:"bytes,12,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
+	LiquidationBonus     cosmossdk_io_math.LegacyDec `protobuf:"bytes,13,opt,name=liquidation_bonus,json=liquidationBonus,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_bonus" yaml:"liquidation_bonus"`
+	ReserveFactor        cosmossdk_io_math.LegacyDec `protobuf:"bytes,14,opt,name=reserve_factor,json=reserveFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"reserve_factor" yaml:"reserve_factor"`
+	CAssetID             uint64                      `protobuf:"varint,15,opt,name=c_asset_id,json=cAssetId,proto3" json:"c_asset_id,omitempty" yaml:"c_asset_id"`
 }
 
 func (m *AssetRatesParams_Old) Reset()         { *m = AssetRatesParams_Old{} }

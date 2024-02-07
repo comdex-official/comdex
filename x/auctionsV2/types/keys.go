@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -75,7 +76,7 @@ func GetUserBidHistoricalKey(address string) []byte {
 	return append(UserBidHistoricalKeyPrefix, address...)
 }
 
-func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium sdk.Int, address string) []byte {
+func UserLimitBidKey(debtTokenID, collateralTokenID uint64, premium sdkmath.Int, address string) []byte {
 	return append(append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian((premium.Uint64()))...), address...)
 }
 
@@ -83,7 +84,7 @@ func MarketBidProtocolKey(debtTokenID, collateralTokenID uint64) []byte {
 	return append(append(MarketBidProtocolKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...)
 }
 
-func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium sdk.Int) []byte {
+func UserLimitBidKeyForPremium(debtTokenID, collateralTokenID uint64, premium sdkmath.Int) []byte {
 	return append(append(append(UserLimitBidMappingKeyPrefix, sdk.Uint64ToBigEndian(debtTokenID)...), sdk.Uint64ToBigEndian(collateralTokenID)...), sdk.Uint64ToBigEndian((premium.Uint64()))...)
 }
 
