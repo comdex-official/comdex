@@ -1,6 +1,7 @@
 package types
 
 import (
+	"slices"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -13,6 +14,7 @@ func NewMsgRegisterContract(
 	securityAddress string,
 	gameName string,
 	contractAddress string,
+	gameType uint64,
 ) *MsgRegisterContract {
 	return &MsgRegisterContract{
 		SecurityAddress: securityAddress,
@@ -51,6 +53,10 @@ func (msg *MsgRegisterContract) ValidateBasic() error {
 	_, err = sdk.AccAddressFromBech32(msg.ContractAddress)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid contract address (%s)", err)
+	}
+	gameType := []uint64{1, 2, 3}
+	if !slices.Contains(gameType, msg.GameType) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid game type (%s)")
 	}
 
 	return nil

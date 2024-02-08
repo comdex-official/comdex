@@ -42,20 +42,25 @@ func GetTxCmd() *cobra.Command {
 
 func CmdRegisterContract() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register-contract [game name] [contract address]",
+		Use:   "register-contract [game name] [contract address] [game type]",
 		Short: "Register game contract",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			gameType, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return fmt.Errorf("game-type '%s' not a valid uint", args[0])
+			}
 
 			msg := types.NewMsgRegisterContract(
 				clientCtx.GetFromAddress().String(),
 				args[0],
 				args[1],
+				gameType,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -20,6 +20,7 @@ message MsgRegisterContract {
     string security_address = 1;
     string game_name = 2;
     string contract_address = 3;
+    uint64 game_type = 4; // 1 -> single, 2 -> multi, 3 -> both
   }
   
 message MsgRegisterContractResponse {}

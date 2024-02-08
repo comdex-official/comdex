@@ -90,3 +90,30 @@ func (k Keeper) CheckSecurityAddress(ctx sdk.Context, from string) bool {
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.storeKey)
 }
+
+func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, ResolveSinglePlayer []byte, gameName string) {
+	logger := k.Logger(ctx)
+	err := k.SudoContractCall(ctx, contractAddress, ResolveSinglePlayer)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Game %s contract call error for single player", gameName))
+	} else {
+		logger.Info(fmt.Sprintf("Game %s contract call for single player success", gameName))
+	}
+}
+
+func (k Keeper) MultiPlayer(ctx sdk.Context, contractAddress string, SetupMultiPlayer []byte, ResolveMultiPlayer []byte, gameName string) {
+	logger := k.Logger(ctx)
+	err := k.SudoContractCall(ctx, contractAddress, SetupMultiPlayer)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Game %s contract call error for setup multi player", gameName))
+	} else {
+		logger.Info(fmt.Sprintf("Game %s contract call for setup multi player success", gameName))
+	}
+
+	err = k.SudoContractCall(ctx, contractAddress, ResolveMultiPlayer)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Game %s contract call error for resolve multi player", gameName))
+	} else {
+		logger.Info(fmt.Sprintf("Game %s contract call for single resolve multi success", gameName))
+	}
+}

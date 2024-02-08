@@ -58,6 +58,7 @@ func (k msgServer) RegisterContract(goCtx context.Context, msg *types.MsgRegiste
 		ContractAdmin: contractInfo.Admin,
 		GameName: msg.GameName,
 		ContractAddress: msg.ContractAddress,
+		GameType: msg.GameType,
 	}
 
 	err = k.SetContract(ctx, contract)
