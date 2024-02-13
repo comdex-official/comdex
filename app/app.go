@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -201,6 +202,14 @@ import (
 	icqkeeper "github.com/cosmos/ibc-apps/modules/async-icq/v7/keeper"
 	icqtypes "github.com/cosmos/ibc-apps/modules/async-icq/v7/types"
 
+	"github.com/skip-mev/block-sdk/abci"
+	"github.com/skip-mev/block-sdk/abci/checktx"
+	"github.com/skip-mev/block-sdk/block"
+	"github.com/skip-mev/block-sdk/block/base"
+	auctionmoduleskip "github.com/skip-mev/block-sdk/x/auction"
+	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
+	auctionmoduleskiptypes "github.com/skip-mev/block-sdk/x/auction/types"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
@@ -315,6 +324,7 @@ var (
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
+		auctionmoduleskip.AppModuleBasic{},
 	)
 )
 
@@ -335,8 +345,9 @@ func init() {
 type App struct {
 	*baseapp.BaseApp
 
-	amino *codec.LegacyAmino
-	cdc   codec.Codec
+	amino    *codec.LegacyAmino
+	cdc      codec.Codec
+	txConfig client.TxConfig
 
 	interfaceRegistry codectypes.InterfaceRegistry
 
@@ -395,6 +406,8 @@ type App struct {
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
 	CommonKeeper      commonkeeper.Keeper
+	// auctionKeeper is the keeper that handles processing auction transactions
+	AuctionKeeperSkip auctionkeeperskip.Keeper
 
 	// IBC modules
 	// transfer module
@@ -407,6 +420,8 @@ type App struct {
 
 	WasmKeeper     wasm.Keeper
 	ContractKeeper *wasmkeeper.PermissionedKeeper
+	// Custom checkTx handler
+	checkTxHandler checktx.CheckTx
 	// the module manager
 	mm *module.Manager
 	// Module configurator
@@ -441,7 +456,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, commontypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, commontypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, auctionmoduleskiptypes.StoreKey,
 		)
 	)
 
@@ -449,11 +464,13 @@ func New(
 	baseApp.SetCommitMultiStoreTracer(traceStore)
 	baseApp.SetVersion(version.Version)
 	baseApp.SetInterfaceRegistry(encoding.InterfaceRegistry)
+	baseApp.SetTxEncoder(encoding.TxConfig.TxEncoder())
 
 	app := &App{
 		BaseApp:           baseApp,
 		amino:             encoding.Amino,
 		cdc:               encoding.Marshaler,
+		txConfig:          encoding.TxConfig,
 		interfaceRegistry: encoding.InterfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
 		keys:              keys,
@@ -902,6 +919,16 @@ func New(
 		govModAddress,
 	)
 
+	app.AuctionKeeperSkip = auctionkeeperskip.NewKeeper(
+		appCodec,
+		keys[auctionmoduleskiptypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DistrKeeper,
+		app.StakingKeeper,
+		govModAddress,
+	)
+
 	// ICQ Keeper
 	icqKeeper := icqkeeper.NewKeeper(
 		appCodec,
@@ -1077,6 +1104,7 @@ func New(
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
+		auctionmoduleskip.NewAppModule(app.cdc, app.AuctionKeeperSkip),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -1125,6 +1153,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		auctionmoduleskiptypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -1169,6 +1198,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		auctionmoduleskiptypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -1217,6 +1247,7 @@ func New(
 		packetforwardtypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		auctionmoduleskiptypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
@@ -1236,9 +1267,26 @@ func New(
 	}
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
-	// initialize BaseApp
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
+	// STEP 1-3: Create the Block SDK lanes.
+	mevLane, freeLane, defaultLane := CreateLanes(app)
+
+	// STEP 4: Construct a mempool based off the lanes. Note that the order of the lanes
+	// matters. Blocks are constructed from the top lane to the bottom lane. The top lane
+	// is the first lane in the array and the bottom lane is the last lane in the array.
+	mempool, err := block.NewLanedMempool(
+		app.Logger(),
+		[]block.Lane{mevLane, freeLane, defaultLane},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	// The application's mempool is now powered by the Block SDK!
+	app.BaseApp.SetMempool(mempool)
+
+	// STEP 5: Create a global ante handler that will be called on each transaction when
+	// proposals are being built and verified. Note that this step must be done before
+	// setting the ante handler on the lanes.
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -1253,6 +1301,11 @@ func New(
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
 			Cdc:               appCodec,
+			MEVLane:           mevLane,
+			TxDecoder:         encoding.TxConfig.TxDecoder(),
+			TxEncoder:         encoding.TxConfig.TxEncoder(),
+			auctionkeeperskip: app.AuctionKeeperSkip,
+			FreeLane:          freeLane,
 		},
 	)
 	if err != nil {
@@ -1260,6 +1313,55 @@ func New(
 	}
 
 	app.SetAnteHandler(anteHandler)
+
+	// Set the ante handler on the lanes.
+	opt := []base.LaneOption{
+		base.WithAnteHandler(anteHandler),
+	}
+	mevLane.WithOptions(
+		opt...,
+	)
+	freeLane.WithOptions(
+		opt...,
+	)
+	defaultLane.WithOptions(
+		opt...,
+	)
+
+	// Step 6: Create the proposal handler and set it on the app. Now the application
+	// will build and verify proposals using the Block SDK!
+	proposalHandler := abci.NewProposalHandler(
+		app.Logger(),
+		encoding.TxConfig.TxDecoder(),
+		encoding.TxConfig.TxEncoder(),
+		mempool,
+	)
+	app.BaseApp.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
+	app.BaseApp.SetProcessProposal(proposalHandler.ProcessProposalHandler())
+
+	// Step 7: Set the custom CheckTx handler on BaseApp. This is only required if you
+	// use the MEV lane.
+	mevCheckTxHandler := checktx.NewMEVCheckTxHandler(
+		app.BaseApp,
+		encoding.TxConfig.TxDecoder(),
+		mevLane,
+		anteHandler,
+		app.BaseApp.CheckTx,
+		app.ChainID(),
+	)
+
+	parityCheckTxHandler := checktx.NewMempoolParityCheckTx(
+		app.BaseApp.Logger(),
+		mempool,
+		encoding.TxConfig.TxDecoder(),
+		mevCheckTxHandler.CheckTx(),
+	)
+
+	app.SetCheckTx(parityCheckTxHandler.CheckTx())
+
+	// initialize BaseApp
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if manager := app.SnapshotManager(); manager != nil {
@@ -1393,6 +1495,17 @@ func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
+// ChainID gets chainID from private fields of BaseApp
+func (a *App) ChainID() string {
+	field := reflect.ValueOf(a.BaseApp).Elem().FieldByName("chainID")
+	return field.String()
+}
+
+// SetCheckTx sets the checkTxHandler for the app.
+func (a *App) SetCheckTx(handler checktx.CheckTx) {
+	a.checkTxHandler = handler
+}
+
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (a *App) RegisterAPIRoutes(server *api.Server, apiConfig serverconfig.APIConfig) {
@@ -1441,49 +1554,50 @@ func (a *App) RegisterNodeService(clientCtx client.Context) {
 
 func (a *App) ModuleAccountsPermissions() map[string][]string {
 	return map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		distrtypes.ModuleName:          nil,
-		govtypes.ModuleName:            {authtypes.Burner},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		collectortypes.ModuleName:      {authtypes.Burner, authtypes.Staking},
-		vaulttypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
-		tokenminttypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc1:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc2:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc3:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc4:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc5:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc6:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc7:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc8:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc9:           {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc10:          {authtypes.Minter, authtypes.Burner},
-		lendtypes.ModuleAcc11:          {authtypes.Minter, authtypes.Burner},
-		liquidationtypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		auctiontypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		lockertypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-		esmtypes.ModuleName:            {authtypes.Burner},
-		wasm.ModuleName:                {authtypes.Burner},
-		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		liquidationsV2types.ModuleName: {authtypes.Minter, authtypes.Burner},
-		auctionsV2types.ModuleName:     {authtypes.Minter, authtypes.Burner},
-		commontypes.ModuleName:         nil,
-		icatypes.ModuleName:            nil,
-		ibcfeetypes.ModuleName:         nil,
-		assettypes.ModuleName:          nil,
-		icqtypes.ModuleName:            nil,
+		authtypes.FeeCollectorName:        nil,
+		distrtypes.ModuleName:             nil,
+		govtypes.ModuleName:               {authtypes.Burner},
+		ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+		minttypes.ModuleName:              {authtypes.Minter},
+		stakingtypes.BondedPoolName:       {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		collectortypes.ModuleName:         {authtypes.Burner, authtypes.Staking},
+		vaulttypes.ModuleName:             {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleName:              {authtypes.Minter, authtypes.Burner},
+		tokenminttypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc1:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc2:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc3:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc4:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc5:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc6:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc7:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc8:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc9:              {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc10:             {authtypes.Minter, authtypes.Burner},
+		lendtypes.ModuleAcc11:             {authtypes.Minter, authtypes.Burner},
+		liquidationtypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+		auctiontypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		lockertypes.ModuleName:            {authtypes.Minter, authtypes.Burner},
+		esmtypes.ModuleName:               {authtypes.Burner},
+		wasm.ModuleName:                   {authtypes.Burner},
+		liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+		rewardstypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
+		liquidationsV2types.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		auctionsV2types.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		commontypes.ModuleName:            nil,
+		icatypes.ModuleName:               nil,
+		ibcfeetypes.ModuleName:            nil,
+		assettypes.ModuleName:             nil,
+		icqtypes.ModuleName:               nil,
+		auctionmoduleskiptypes.ModuleName: nil,
 	}
 }
 
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv14.UpgradeName,
-		tv14.CreateUpgradeHandlerV14(a.mm, a.configurator, a.CommonKeeper),
+		tv14.CreateUpgradeHandlerV14(a.mm, a.configurator, a.CommonKeeper, a.AuctionKeeperSkip),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1521,6 +1635,7 @@ func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *store
 		storeUpgrades = &storetypes.StoreUpgrades{
 			Added: []string{
 				commontypes.StoreKey,
+				auctionmoduleskiptypes.StoreKey,
 			},
 		}
 	}

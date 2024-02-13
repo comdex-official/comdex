@@ -1,30 +1,68 @@
 package v14
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	commonkeeper "github.com/comdex-official/comdex/x/common/keeper"
 	commontypes "github.com/comdex-official/comdex/x/common/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
+	auctionmoduleskiptypes "github.com/skip-mev/block-sdk/x/auction/types"
+	"strings"
 )
 
 func CreateUpgradeHandlerV14(
 	mm *module.Manager,
 	configurator module.Configurator,
 	commonkeeper commonkeeper.Keeper,
+	auctionkeeperskip auctionkeeperskip.Keeper,
+
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 
 		ctx.Logger().Info("Applying test net upgrade - v14.0.0")
-		logger := ctx.Logger().With("upgrade", UpgradeName)
+		ctx.Logger().With("upgrade", UpgradeName)
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return vm, err
 		}
-		logger.Info("set common module params")
+		ctx.Logger().Info("set common module params")
 		commonkeeper.SetParams(ctx, commontypes.DefaultParams())
-		
+
+		ctx.Logger().Info("setting default params for MEV module (x/auction)")
+		if err = setDefaultMEVParams(ctx, auctionkeeperskip); err != nil {
+			return nil, err
+		}
+
+		//TODO:
+		// disable or enable auctions ??
+		// Setting MaxBundleSize to 0 means no auction txs will be accepted
+		// lanes.go 38,49,60
+
 		return vm, err
 	}
+}
+
+func setDefaultMEVParams(ctx sdk.Context, auctionkeeperskip auctionkeeperskip.Keeper) error {
+	nativeDenom := getChainBondDenom(ctx.ChainID())
+
+	// Skip MEV (x/auction)
+	return auctionkeeperskip.SetParams(ctx, auctionmoduleskiptypes.Params{
+		MaxBundleSize:          auctionmoduleskiptypes.DefaultMaxBundleSize,
+		EscrowAccountAddress:   authtypes.NewModuleAddress(auctionmoduleskiptypes.ModuleName),
+		ReserveFee:             sdk.NewCoin(nativeDenom, sdk.NewInt(1)),
+		MinBidIncrement:        sdk.NewCoin(nativeDenom, sdk.NewInt(1)),
+		FrontRunningProtection: auctionmoduleskiptypes.DefaultFrontRunningProtection,
+		ProposerFee:            auctionmoduleskiptypes.DefaultProposerFee,
+	})
+}
+
+// getChainBondDenom returns expected bond denom based on chainID.
+func getChainBondDenom(chainID string) string {
+	if strings.HasPrefix(chainID, "comdex-") {
+		return "ucmdx"
+	}
+	return "stake"
 }
