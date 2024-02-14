@@ -22,7 +22,6 @@ func CreateUpgradeHandlerV14(
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 
 		ctx.Logger().Info("Applying test net upgrade - v14.0.0")
-		ctx.Logger().With("upgrade", UpgradeName)
 
 		vm, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
@@ -35,11 +34,6 @@ func CreateUpgradeHandlerV14(
 		if err = setDefaultMEVParams(ctx, auctionkeeperskip); err != nil {
 			return nil, err
 		}
-
-		//TODO:
-		// disable or enable auctions ??
-		// Setting MaxBundleSize to 0 means no auction txs will be accepted
-		// lanes.go 38,49,60
 
 		return vm, err
 	}

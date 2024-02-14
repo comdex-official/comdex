@@ -35,7 +35,7 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
 		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.2"),
 		SignerExtractor: signerAdapter,
-		MaxTxs:          1000, // TODO: change MaxTxs
+		MaxTxs:          0,
 	}
 
 	// Create a free configuration that accepts 1000 transactions and consumes 20% of the
@@ -46,7 +46,7 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
 		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.2"),
 		SignerExtractor: signerAdapter,
-		MaxTxs:          1000, // TODO: change MaxTxs
+		MaxTxs:          0,
 	}
 
 	// Create a default configuration that accepts 1000 transactions and consumes 60% of the
@@ -57,7 +57,7 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
 		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.6"),
 		SignerExtractor: signerAdapter,
-		MaxTxs:          1000, // TODO: change MaxTxs
+		MaxTxs:          0,
 	}
 
 	// 3. Create the match handlers for each lane. These match handlers determine whether or not
