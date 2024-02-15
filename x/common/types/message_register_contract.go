@@ -20,6 +20,7 @@ func NewMsgRegisterContract(
 		SecurityAddress: securityAddress,
 		GameName: gameName,
 		ContractAddress: contractAddress,
+		GameType: gameType,
 	}
 }
 
@@ -56,7 +57,7 @@ func (msg *MsgRegisterContract) ValidateBasic() error {
 	}
 	gameType := []uint64{1, 2, 3}
 	if !slices.Contains(gameType, msg.GameType) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid game type (%s)")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid game type, should be 1,2 or 3")
 	}
 
 	return nil

@@ -95,9 +95,9 @@ func (k Keeper) SinglePlayer(ctx sdk.Context, contractAddress string, ResolveSin
 	logger := k.Logger(ctx)
 	err := k.SudoContractCall(ctx, contractAddress, ResolveSinglePlayer)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Game %s contract call error for single player", gameName))
+		logger.Error(fmt.Sprintf("Game %s contract call error for single-player", gameName))
 	} else {
-		logger.Info(fmt.Sprintf("Game %s contract call for single player success", gameName))
+		logger.Info(fmt.Sprintf("Game %s contract call for single-player success", gameName))
 	}
 }
 
@@ -105,15 +105,15 @@ func (k Keeper) MultiPlayer(ctx sdk.Context, contractAddress string, SetupMultiP
 	logger := k.Logger(ctx)
 	err := k.SudoContractCall(ctx, contractAddress, SetupMultiPlayer)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Game %s contract call error for setup multi player", gameName))
+		logger.Error(fmt.Sprintf("Game %s contract call error for setup multi-player", gameName))
 	} else {
-		logger.Info(fmt.Sprintf("Game %s contract call for setup multi player success", gameName))
+		logger.Info(fmt.Sprintf("Game %s contract call for setup multi-player success", gameName))
 	}
 
 	err = k.SudoContractCall(ctx, contractAddress, ResolveMultiPlayer)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Game %s contract call error for resolve multi player", gameName))
+		logger.Error(fmt.Sprintf("Game %s contract call error for resolve multi-player", gameName))
 	} else {
-		logger.Info(fmt.Sprintf("Game %s contract call for single resolve multi success", gameName))
+		logger.Info(fmt.Sprintf("Game %s contract call for resolve multi-player success", gameName))
 	}
 }
