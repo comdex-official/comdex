@@ -340,14 +340,14 @@ require (
 )
 
 replace (
-	// TODO: use fork of block-sdk, change store_key
-	github.com/skip-mev/block-sdk => /Users/chandragupta/go/src/github.com/skip-mev/block-sdk
-
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	//TODO: to be replaced from comdex fork of bandchain-packet
 	github.com/bandprotocol/bandchain-packet => github.com/InjectiveLabs/bandchain-packet v0.0.4-0.20230327115226-35199d4659d5
+
+	// fork of block-sdk, module name changed
+	github.com/skip-mev/block-sdk => github.com/comdex-official/block-sdk v1.4.0-comdex
 
 	// https://github.com/cosmos/cosmos-sdk/blob/v0.47.5/UPGRADING.md#protobuf
 	// github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

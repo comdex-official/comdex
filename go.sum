@@ -942,6 +942,8 @@ github.com/coinbase/kryptology v1.8.0/go.mod h1:RYXOAPdzOGUe3qlSFkMGn58i3xUA8hmx
 github.com/coinbase/rosetta-sdk-go v0.7.9 h1:lqllBjMnazTjIqYrOGv8h8jxjg9+hJazIGZr9ZvoCcA=
 github.com/coinbase/rosetta-sdk-go v0.7.9/go.mod h1:0/knutI7XGVqXmmH4OQD8OckFrbQ8yMsUZTG7FXCR2M=
 github.com/coinbase/rosetta-sdk-go/types v1.0.0/go.mod h1:eq7W2TMRH22GTW0N0beDnN931DW0/WOI1R2sdHNHG4c=
+github.com/comdex-official/block-sdk v1.4.0-comdex h1:GPVgcMOLcr7AsrmmSzUNd9gCX8oGKqKfLmOx++jl5DE=
+github.com/comdex-official/block-sdk v1.4.0-comdex/go.mod h1:Yv+gQqRh41bCbWC0Bpau8DBE7UwxxPfGmNVbtVrgWAo=
 github.com/cometbft/cometbft v0.34.27-alpha.1/go.mod h1:hct3hasQ2hIF3HoD7foVw4RaqTNSSeJ/lgcrVK6uDvs=
 github.com/cometbft/cometbft v0.37.0/go.mod h1:Y2MMMN//O5K4YKd8ze4r9jmk4Y7h0ajqILXbH5JQFVs=
 github.com/cometbft/cometbft v0.37.2 h1:XB0yyHGT0lwmJlFmM4+rsRnczPlHoAKFX6K8Zgc2/Jc=
@@ -2799,8 +2801,6 @@ github.com/sivchari/tenv v1.7.0/go.mod h1:64yStXKSOxDfX47NlhVwND4dHwfZDdbp2Lyl01
 github.com/sivchari/tenv v1.7.1 h1:PSpuD4bu6fSmtWMxSGWcvqUUgIn7k3yOJhOIzVWn8Ak=
 github.com/sivchari/tenv v1.7.1/go.mod h1:64yStXKSOxDfX47NlhVwND4dHwfZDdbp2Lyl018Icvg=
 github.com/skeema/knownhosts v1.1.0/go.mod h1:sKFq3RD6/TKZkSWn8boUbDC7Qkgcv+8XXijpFO6roag=
-github.com/skip-mev/block-sdk v1.4.0 h1:j2wEooUDA74ed+FjCDI3I/aPArdYxKLG5asb6C+so2M=
-github.com/skip-mev/block-sdk v1.4.0/go.mod h1:Yv+gQqRh41bCbWC0Bpau8DBE7UwxxPfGmNVbtVrgWAo=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=
 github.com/smartystreets/assertions v1.0.0/go.mod h1:kHHU4qYBaI3q23Pp3VPrmWhuIUrLW/7eUrw0BU5VaoM=
 github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9/go.mod h1:SnhjPscd9TpLiy1LpzGSKh3bXCfxxXuqd9xmQJy3slM=
