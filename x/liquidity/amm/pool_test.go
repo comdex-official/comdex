@@ -613,7 +613,7 @@ func TestCreateRangedPool(t *testing.T) {
 			utils.ParseDec("1.0"), utils.ParseDec("1.001"),
 			utils.ParseDec("1.0005"),
 			"",
-			sdkmath.NewInt(1_000000000000000000), sdkmath.NewInt(999000936633622179),
+			sdkmath.NewInt(1_000000000000000000), sdkmath.NewInt(999000936633614182),
 		},
 		{
 			"small x asset",

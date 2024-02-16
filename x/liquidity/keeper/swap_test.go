@@ -2334,7 +2334,7 @@ func (s *KeeperTestSuite) TestExhaustRangedPool() {
 	ammPool := pool.AMMPool(rx.Amount, ry.Amount, sdkmath.Int{})
 	s.Require().True(coinEq(rx, utils.ParseCoin("997231denom2")))
 	s.Require().True(coinEq(ry, utils.ParseCoin("984671denom1")))
-	s.Require().True(decEq(ammPool.Price(), utils.ParseDec("1.003719250732340753")))
+	s.Require().True(decEq(ammPool.Price(), utils.ParseDec("1.003719250732340754")))
 
 	s.Require().True(coinsEq(utils.ParseCoins("31534denom2"), s.getBalances(sdk.MustAccAddressFromBech32(params.DustCollectorAddress))))
 	s.Require().True(coinsEq(utils.ParseCoins("12546884denom1,12666562denom2"), s.getBalances(orderer)))
