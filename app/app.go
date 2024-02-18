@@ -1082,6 +1082,7 @@ func New(
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		ica.NewAppModule(nil, &app.ICAHostKeeper),
 		params.NewAppModule(app.ParamsKeeper),
+		consensus.NewAppModule(app.cdc, app.ConsensusParamsKeeper),
 		// app.RawIcs20TransferAppModule,
 		ibctransfer.NewAppModule(app.IbcTransferKeeper),
 		asset.NewAppModule(app.cdc, app.AssetKeeper),
