@@ -1,8 +1,6 @@
 module github.com/comdex-official/comdex
 
-go 1.21.4
-
-toolchain go1.21.6
+go 1.21.7
 
 require (
 	cosmossdk.io/api v0.3.1
