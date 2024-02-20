@@ -3,6 +3,7 @@ package v14
 import (
 	commonkeeper "github.com/comdex-official/comdex/x/common/keeper"
 	commontypes "github.com/comdex-official/comdex/x/common/types"
+	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,6 +18,7 @@ func CreateUpgradeHandlerV14(
 	configurator module.Configurator,
 	commonkeeper commonkeeper.Keeper,
 	auctionkeeperskip auctionkeeperskip.Keeper,
+	lendKeeper lendkeeper.Keeper,
 
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
@@ -35,6 +37,8 @@ func CreateUpgradeHandlerV14(
 			return nil, err
 		}
 
+		//TODO: uncomment this before mainnet upgrade
+		//UpdateLendParams(ctx, lendKeeper)
 		return vm, err
 	}
 }
@@ -59,4 +63,13 @@ func getChainBondDenom(chainID string) string {
 		return "ucmdx"
 	}
 	return "stake"
+}
+
+func UpdateLendParams(
+	ctx sdk.Context,
+	lendKeeper lendkeeper.Keeper,
+) {
+	assetRatesParamsStAtom, _ := lendKeeper.GetAssetRatesParams(ctx, 14)
+	assetRatesParamsStAtom.CAssetID = 23
+	lendKeeper.SetAssetRatesParams(ctx, assetRatesParamsStAtom)
 }
