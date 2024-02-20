@@ -370,8 +370,17 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	//Calculating Liquidation Fees
 	feesToBeCollected := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationPenalty).TruncateInt()
 
+	// for upgrade: v14
+	// this code is to deduct the bonus amount from amount in of lend position of the user
+
+	debtToken, _ := k.market.GetTwa(ctx, pair.AssetOut)
+	debtPrice := sdk.NewDecFromInt(sdk.NewInt(int64(debtToken.Twa)))
+
+	collateralToken, _ := k.market.GetTwa(ctx, pair.AssetIn)
+	collateralPrice := sdk.NewDecFromInt(sdk.NewInt(int64(collateralToken.Twa)))
 	//Calculating auction bonus to be given
 	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
+	_, bonusTokenQuantity, _ := k.vault.GetAmountOfOtherToken(ctx, pair.AssetOut, debtPrice, auctionBonusToBeGiven, pair.AssetIn, collateralPrice)
 
 	err := k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount)))
 	if err != nil {
@@ -383,7 +392,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 		return err
 	}
 
-	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
+	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount.Sub(bonusTokenQuantity)), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
 	if err != nil {
 		return err
 	}
@@ -721,8 +730,7 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData types.LockedVault, auctionData auctionsV2types.Auction) error {
 	// send money back to the debt pool (assetOut pool)
 	// liquidation penalty to the reserve and interest to the pool
-	// send token to the bidder
-	// if cross pool borrow, settle the transit asset to it's native pool
+	// if cross pool borrow, settle the transit asset to its native pool
 	// close the borrow and update the stats
 
 	borrowPos, _ := k.lend.GetBorrow(ctx, liquidationData.OriginalVaultId)

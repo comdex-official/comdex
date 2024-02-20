@@ -24,4 +24,5 @@ var (
 	ErrAuctionLookupTableNotFound       = sdkerrors.Register(ModuleName, 714, "auctionLookupTable not found")
 	ErrorUnableToSetNetFees             = sdkerrors.Register(ModuleName, 715, "Unable To set net fees collected after auction closed")
 	ErrorInGettingLockedVault           = sdkerrors.Register(ModuleName, 716, "error in bid dutch auction - locked vault not found")
+	ErrorInsufficientReserveBalance     = sdkerrors.Register(ModuleName, 717, "Insufficient Reserve Balance for this transaction")
 )

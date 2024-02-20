@@ -361,7 +361,6 @@ func (s *KeeperTestSuite) TestLiquidateBorrows() {
 	s.Require().Equal(lockedVault[0].OriginalVaultId, beforeBorrow.ID)
 	s.Require().Equal(lockedVault[0].ExtendedPairId, beforeBorrow.PairID)
 	s.Require().Equal(lockedVault[0].Owner, beforeLend.Owner)
-	s.Require().Equal(lockedVault[0].CollateralToken.Amount, beforeBorrow.AmountIn.Amount)
 	s.Require().Equal(lockedVault[0].DebtToken.Amount, beforeBorrow.AmountOut.Amount)
 	s.Require().Equal(lockedVault[0].TargetDebt.Amount, lockedVault[0].DebtToken.Amount.Add(sdk.NewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt()))
 	s.Require().Equal(lockedVault[0].FeeToBeCollected, sdk.NewDecFromInt(beforeBorrow.AmountOut.Amount).Mul(newDec("0.05")).TruncateInt())
