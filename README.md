@@ -24,7 +24,7 @@ Commodo : [docs.commodo.one](http://docs.commodo.one).
 cSwap :  [docs.cswap.one](https://docs.cswap.one).
 
 
-If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.com/invite/7vjPvWKKMT).
+If you have technical questions or concerns, ask a developer or community member in the [Comdex discord](https://discord.gg/comdexofficial).
 
 ### Installation
 
