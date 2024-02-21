@@ -1,6 +1,7 @@
 package simapp
 
 import (
+	"github.com/comdex-official/comdex/app/params"
 	"time"
 
 	tmdb "github.com/cometbft/cometbft-db"
@@ -18,7 +19,7 @@ func New(dir string) *comdex.App {
 	var (
 		db       = tmdb.NewMemDB()
 		logger   = log.NewNopLogger()
-		encoding = comdex.MakeEncodingConfig()
+		encoding = params.MakeEncodingConfig()
 	)
 
 	a := comdex.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
