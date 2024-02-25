@@ -1,0 +1,13 @@
+syntax = "proto3";
+package comdex.gasless.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "comdex/gasless/v1beta1/params.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/gasless/types";
+option (gogoproto.goproto_getters_all) = false;
+
+// GenesisState defines the gasless module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

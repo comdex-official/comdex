@@ -1,0 +1,9 @@
+syntax = "proto3";
+package comdex.gasless.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/gasless/types";
+option (gogoproto.goproto_getters_all) = false;

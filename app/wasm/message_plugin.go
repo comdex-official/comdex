@@ -18,6 +18,7 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	gaslessKeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
@@ -27,7 +28,8 @@ import (
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
-	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper,
+	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper,
+	vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper, gaslesskeeper gaslessKeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
@@ -42,6 +44,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			esmKeeper:         esmKeeper,
 			vaultKeeper:       vaultKeeper,
 			liquiditykeeper:   liquiditykeeper,
+			gaslesskeeper:     gaslesskeeper,
 		}
 	}
 }
@@ -58,6 +61,7 @@ type CustomMessenger struct {
 	esmKeeper         esmkeeper.Keeper
 	vaultKeeper       vaultkeeper.Keeper
 	liquiditykeeper   liquidityKeeper.Keeper
+	gaslesskeeper     gaslessKeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -564,7 +568,7 @@ func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAdd
 		if contractAddr.String() != comdex1[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}
-	}else if ctx.ChainID() == "comdex-test3" {
+	} else if ctx.ChainID() == "comdex-test3" {
 		if contractAddr.String() != testnet3[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}

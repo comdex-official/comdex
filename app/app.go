@@ -188,6 +188,11 @@ import (
 	liquidationsV2keeper "github.com/comdex-official/comdex/x/liquidationsV2/keeper"
 	liquidationsV2types "github.com/comdex-official/comdex/x/liquidationsV2/types"
 
+	"github.com/comdex-official/comdex/x/gasless"
+	gaslessclient "github.com/comdex-official/comdex/x/gasless/client"
+	gaslesskeeper "github.com/comdex-official/comdex/x/gasless/keeper"
+	gaslesstypes "github.com/comdex-official/comdex/x/gasless/types"
+
 	"github.com/comdex-official/comdex/x/auctionsV2"
 	auctionsV2client "github.com/comdex-official/comdex/x/auctionsV2/client"
 	auctionsV2keeper "github.com/comdex-official/comdex/x/auctionsV2/keeper"
@@ -248,6 +253,7 @@ func GetGovProposalHandlers() []govclient.ProposalHandler {
 	proposalHandlers = append(proposalHandlers, liquidityclient.LiquidityProposalHandler...)
 	proposalHandlers = append(proposalHandlers, liquidationsV2client.LiquidationsV2Handler...)
 	proposalHandlers = append(proposalHandlers, auctionsV2client.AuctionsV2Handler...)
+	proposalHandlers = append(proposalHandlers, gaslessclient.GaslessProposalHandler...)
 
 	return proposalHandlers
 }
@@ -306,6 +312,7 @@ var (
 		ibcfee.AppModuleBasic{},
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
+		gasless.AppModuleBasic{},
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -388,6 +395,7 @@ type App struct {
 	Rewardskeeper     rewardskeeper.Keeper
 	NewliqKeeper      liquidationsV2keeper.Keeper
 	NewaucKeeper      auctionsV2keeper.Keeper
+	GaslessKeeper     gaslesskeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -434,7 +442,8 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, gaslesstypes.StoreKey,
+			ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey,
 		)
 	)
 
@@ -489,6 +498,7 @@ func New(
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquidationsV2types.ModuleName)
 	app.ParamsKeeper.Subspace(auctionsV2types.ModuleName)
+	app.ParamsKeeper.Subspace(gaslesstypes.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
 	app.ParamsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 
@@ -881,6 +891,14 @@ func New(
 		&app.TokenmintKeeper,
 	)
 
+	app.GaslessKeeper = gaslesskeeper.NewKeeper(
+		app.cdc,
+		app.keys[gaslesstypes.StoreKey],
+		app.GetSubspace(gaslesstypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
+
 	// ICQ Keeper
 	icqKeeper := icqkeeper.NewKeeper(
 		appCodec,
@@ -907,7 +925,7 @@ func New(
 	}
 	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper, &app.GaslessKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -946,7 +964,8 @@ func New(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IbcKeeper.ClientKeeper)).
 		AddRoute(liquiditytypes.RouterKey, liquidity.NewLiquidityProposalHandler(app.LiquidityKeeper)).
 		AddRoute(liquidationsV2types.RouterKey, liquidationsV2.NewLiquidationsV2Handler(app.NewliqKeeper)).
-		AddRoute(auctionsV2types.RouterKey, auctionsV2.NewAuctionsV2Handler(app.NewaucKeeper))
+		AddRoute(auctionsV2types.RouterKey, auctionsV2.NewAuctionsV2Handler(app.NewaucKeeper)).
+		AddRoute(gaslesstypes.RouterKey, gasless.NewGaslessProposalHandler(app.GaslessKeeper))
 
 	if len(wasmEnabledProposals) != 0 {
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasmEnabledProposals))
@@ -1052,6 +1071,7 @@ func New(
 		rewards.NewAppModule(app.cdc, app.Rewardskeeper, app.AccountKeeper, app.BankKeeper),
 		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
 		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
+		gasless.NewAppModule(app.cdc, app.GaslessKeeper, app.AccountKeeper, app.BankKeeper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -1097,6 +1117,7 @@ func New(
 		esmtypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
+		gaslesstypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1140,6 +1161,7 @@ func New(
 		esmtypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
+		gaslesstypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1187,6 +1209,7 @@ func New(
 		crisistypes.ModuleName,
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
+		gaslesstypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1447,6 +1470,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		liquidationsV2types.ModuleName: {authtypes.Minter, authtypes.Burner},
 		auctionsV2types.ModuleName:     {authtypes.Minter, authtypes.Burner},
+		gaslesstypes.ModuleName:        nil,
 		icatypes.ModuleName:            nil,
 		ibcfeetypes.ModuleName:         nil,
 		assettypes.ModuleName:          nil,

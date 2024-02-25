@@ -4,6 +4,7 @@ import (
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	gaslessKeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
@@ -27,6 +28,7 @@ type QueryPlugin struct {
 	lendKeeper        *lendKeeper.Keeper
 	liquidityKeeper   *liquidityKeeper.Keeper
 	marketKeeper      *marketKeeper.Keeper
+	gaslessKeeper     *gaslessKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -41,6 +43,7 @@ func NewQueryPlugin(
 	lendKeeper *lendKeeper.Keeper,
 	liquidityKeeper *liquidityKeeper.Keeper,
 	marketKeeper *marketKeeper.Keeper,
+	gaslessKeeper *gaslessKeeper.Keeper,
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:       assetKeeper,
@@ -54,6 +57,7 @@ func NewQueryPlugin(
 		lendKeeper:        lendKeeper,
 		liquidityKeeper:   liquidityKeeper,
 		marketKeeper:      marketKeeper,
+		gaslessKeeper:     gaslessKeeper,
 	}
 }
 
@@ -209,7 +213,7 @@ func (qp QueryPlugin) WasmGetPools(ctx sdk.Context, appID uint64) (pools []uint6
 
 func (qp QueryPlugin) WasmGetAssetPrice(ctx sdk.Context, assetID uint64) (twa uint64, found bool) {
 	assetTwa, found := qp.marketKeeper.GetTwa(ctx, assetID)
-	if found && assetTwa.IsPriceActive{
+	if found && assetTwa.IsPriceActive {
 		return assetTwa.Twa, true
 	}
 	return 0, false
