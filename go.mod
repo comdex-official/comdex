@@ -356,6 +356,6 @@ replace (
 
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 
-	// https://github.com/cosmos/cosmos-sdk/issues/18415
-	golang.org/x/exp => golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53
+	// https://github.com/skip-mev/block-sdk/blob/v1.4.0/go.mod#L331
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
