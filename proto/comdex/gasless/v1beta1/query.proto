@@ -15,11 +15,31 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryMessagesAndContractsRequest is a request type for the Query/MessagesAndContracts RPC method.
+message QueryMessagesAndContractsRequest {}
+
+message ContractDetails {
+  uint64 code_id = 1;
+  string address = 2;
+  string lable = 3;
+}
+
+// QueryMessagesAndContractsResponse is a response type for the Query/MessagesAndContracts RPC method.
+message QueryMessagesAndContractsResponse {
+  repeated string messages = 1;
+  repeated ContractDetails contracts = 2;
+}
+
 
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/params";
+  }
+
+  // MessagesAndContracts return all cosmos.base.v1beta1.Msg messages and available contract details 
+  rpc MessagesAndContracts(QueryMessagesAndContractsRequest) returns (QueryMessagesAndContractsResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/mac";
   }
 }

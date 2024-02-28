@@ -22,3 +22,18 @@ func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	k.Keeper.paramSpace.GetParamSet(ctx, &params)
 	return &types.QueryParamsResponse{Params: params}, nil
 }
+
+func (k Querier) MessagesAndContracts(c context.Context, _ *types.QueryMessagesAndContractsRequest) (*types.QueryMessagesAndContractsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	messages := k.GetAvailableMessages(ctx)
+	contractsDetails := k.GetAllAvailableContracts(ctx)
+	contracts := []*types.ContractDetails{}
+	for _, c := range contractsDetails {
+		contract := c
+		contracts = append(contracts, &contract)
+	}
+	return &types.QueryMessagesAndContractsResponse{
+		Messages:  messages,
+		Contracts: contracts,
+	}, nil
+}
