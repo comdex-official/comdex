@@ -895,8 +895,10 @@ func New(
 		app.cdc,
 		app.keys[gaslesstypes.StoreKey],
 		app.GetSubspace(gaslesstypes.ModuleName),
+		app.interfaceRegistry,
 		app.AccountKeeper,
 		app.BankKeeper,
+		&app.WasmKeeper,
 	)
 
 	// ICQ Keeper

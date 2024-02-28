@@ -39,6 +39,15 @@ func (k Keeper) IterateAllTxGPIDS(ctx sdk.Context, cb func(txGPIDS types.TxGPIDS
 	return nil
 }
 
+func (k Keeper) GetAllTxGPIDS(ctx sdk.Context) (txGPIDSs []types.TxGPIDS) {
+	txGPIDSs = []types.TxGPIDS{}
+	_ = k.IterateAllTxGPIDS(ctx, func(txGPIDS types.TxGPIDS) (stop bool, err error) {
+		txGPIDSs = append(txGPIDSs, txGPIDS)
+		return false, nil
+	})
+	return txGPIDSs
+}
+
 func (k Keeper) SetTxGPIDS(ctx sdk.Context, txGPIDS types.TxGPIDS) {
 	store := ctx.KVStore(k.storeKey)
 	bz := types.MustMarshalTxGPIDS(k.cdc, txGPIDS)
@@ -102,6 +111,15 @@ func (k Keeper) IterateAllGasProviders(ctx sdk.Context, cb func(gasProvider type
 	return nil
 }
 
+func (k Keeper) GetAllGasProviders(ctx sdk.Context) (gasProviders []types.GasProvider) {
+	gasProviders = []types.GasProvider{}
+	_ = k.IterateAllGasProviders(ctx, func(gasProvider types.GasProvider) (stop bool, err error) {
+		gasProviders = append(gasProviders, gasProvider)
+		return false, nil
+	})
+	return gasProviders
+}
+
 func (k Keeper) SetGasProvider(ctx sdk.Context, gasProvider types.GasProvider) {
 	store := ctx.KVStore(k.storeKey)
 	bz := types.MustMarshalGasProvider(k.cdc, gasProvider)
@@ -138,6 +156,15 @@ func (k Keeper) IterateAllGasConsumers(ctx sdk.Context, cb func(gasConsumer type
 		}
 	}
 	return nil
+}
+
+func (k Keeper) GetAllGasConsumers(ctx sdk.Context) (gasConsumers []types.GasConsumer) {
+	gasConsumers = []types.GasConsumer{}
+	_ = k.IterateAllGasConsumers(ctx, func(gasConsumer types.GasConsumer) (stop bool, err error) {
+		gasConsumers = append(gasConsumers, gasConsumer)
+		return false, nil
+	})
+	return gasConsumers
 }
 
 func (k Keeper) SetGasConsumer(ctx sdk.Context, gasConsumer types.GasConsumer) {
