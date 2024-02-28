@@ -25,6 +25,7 @@ func GetQueryCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
+		NewQueryMessagesAndContractsCmd(),
 	)
 
 	return cmd
@@ -58,6 +59,45 @@ $ %s query %s params
 			}
 
 			return clientCtx.PrintProto(&resp.Params)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryMessagesAndContractsCmd implements the messages and contracts query command.
+func NewQueryMessagesAndContractsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "mac",
+		Args:  cobra.NoArgs,
+		Short: "Query all the available messages and contract addresses",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query all the available messages and contract addresses.
+Example:
+$ %s query %s mac
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			resp, err := queryClient.MessagesAndContracts(
+				cmd.Context(),
+				&types.QueryMessagesAndContractsRequest{},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
 		},
 	}
 

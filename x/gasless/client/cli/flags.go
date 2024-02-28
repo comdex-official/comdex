@@ -7,6 +7,10 @@ import (
 )
 
 func ParseStringSliceFromString(s string, separator string) ([]string, error) {
+	if s == "" {
+		return []string{}, nil
+	}
+
 	stringSlice := strings.Split(s, separator)
 
 	parsedStrings := make([]string, 0, len(stringSlice))

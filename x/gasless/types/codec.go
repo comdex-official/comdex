@@ -12,6 +12,7 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/gasless interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(&MsgCreateGasProvider{}, "comdex/gasless/MsgCreateGasProvider", nil)
 }
 
 // RegisterInterfaces registers the x/gasless interfaces types with the
@@ -23,6 +24,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
+		&MsgCreateGasProvider{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

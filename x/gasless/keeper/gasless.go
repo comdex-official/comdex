@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strconv"
+
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/comdex-official/comdex/x/gasless/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -42,4 +44,38 @@ func (k Keeper) GetAllAvailableContracts(ctx sdk.Context) (contractsDetails []ty
 		}
 	}
 	return contractsDetails
+}
+
+func (k Keeper) ValidateMsgCreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvider) error {
+	return nil
+}
+
+func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvider) (types.GasProvider, error) {
+	if err := k.ValidateMsgCreateGasProvider(ctx, msg); err != nil {
+		return types.GasProvider{}, err
+	}
+	id := k.GetNextGasProviderIDWithUpdate(ctx)
+	gasProvider := types.NewGasProvider(
+		id,
+		sdk.MustAccAddressFromBech32(msg.GetCreator()),
+		msg.MaxTxsCountPerConsumer,
+		msg.MaxFeeUsagePerConsumer,
+		msg.MaxFeeUsagePerTx,
+		msg.TxsAllowed,
+		msg.ContractsAllowed,
+		msg.FeeDenom,
+	)
+
+	k.SetGasProvider(ctx, gasProvider)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeCreateGasProvider,
+			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
+			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyFeeDenom, msg.FeeDenom),
+		),
+	})
+
+	return gasProvider, nil
 }

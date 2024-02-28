@@ -8,6 +8,17 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 option (gogoproto.goproto_getters_all) = false;
 
+
+// AddressType enumerates the available types of a address.
+enum AddressType {
+    option (gogoproto.goproto_enum_prefix) = false;
+  
+    // the 32 bytes length address type of ADR 028.
+    ADDRESS_TYPE_32_BYTES = 0 [(gogoproto.enumvalue_customname) = "AddressType32Bytes"];
+    // the default 20 bytes length address type.
+    ADDRESS_TYPE_20_BYTES = 1 [(gogoproto.enumvalue_customname) = "AddressType20Bytes"];
+  }
+
 message TxGPIDS {
     string tx_path_or_contract_address = 1;
     repeated uint64 gas_provider_ids = 2;
@@ -17,12 +28,14 @@ message GasProvider {
     uint64 id = 1;
     string creator = 2;
     string gas_tank = 3;
-    bool operational = 4;
+    bool is_active = 4;
     uint64 max_txs_count_per_consumer = 5;
-    cosmos.base.v1beta1.Coin max_fee_usage_per_consumer = 6 [(gogoproto.nullable) = false];
-    repeated string txs_allowed = 7;
-    repeated string contracts_allowed = 8;
-    repeated string authorized_actors = 9;
+    string max_fee_usage_per_consumer = 6 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    string max_fee_usage_per_tx = 7 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    repeated string txs_allowed = 8;
+    repeated string contracts_allowed = 9;
+    repeated string authorized_actors = 10;
+    string fee_denom = 11;
 }
 
 message UsageDetail {

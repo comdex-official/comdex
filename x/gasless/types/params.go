@@ -4,6 +4,11 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
+const (
+	GasTankAddressPrefix      = "GasTankAddress"
+	ModuleAddressNameSplitter = "|"
+)
+
 var _ paramstypes.ParamSet = (*Params)(nil)
 
 func ParamKeyTable() paramstypes.KeyTable {

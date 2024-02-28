@@ -1,8 +1,43 @@
 syntax = "proto3";
 package comdex.gasless.v1beta1;
 
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
 option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 
 // Msg defines the Msg service.
 service Msg {
+    // CreateGasProvider defines a method for creating a new gas provider
+    rpc CreateGasProvider(MsgCreateGasProvider) returns (MsgCreateGasProviderResponse);
 }
+
+
+// MsgCreateGasProvider defines an SDK message for creating a new GasProvider.
+message MsgCreateGasProvider {
+    // creator specifies the bech32-encoded address that is the pair creator.
+    string creator = 1;
+
+    // fee_denom specifies the denom of the gas deposit coin 
+    string fee_denom = 2;
+
+    // max_fee_usage_per_tx specifies the maximum fee allowed for each tx
+    string max_fee_usage_per_tx = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+
+    // max_txs_count_per_consumer specifies the number of txs allowed for each consumer 
+    uint64 max_txs_count_per_consumer = 4;
+
+    // max_fee_usage_per_consumer specifies the maximum fee consumption allowed for each consumer
+    string max_fee_usage_per_consumer = 5 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    
+    // txs_allowed specifies txs paths allowed to consume gas from the gas tank
+    repeated string txs_allowed = 6;
+    
+    // contracts_allowed specifies wasm contracts allowed to consume gas from the gas tank
+    repeated string contracts_allowed = 7;
+
+    // gas_deposit specifies the initial desposit in the gas tank
+    cosmos.base.v1beta1.Coin gas_deposit = 8 [(gogoproto.nullable) = false];
+}
+
+message MsgCreateGasProviderResponse {}
