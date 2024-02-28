@@ -7,3 +7,51 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 option (gogoproto.goproto_getters_all) = false;
+
+message TxGPIDS {
+    string tx_path_or_contract_address = 1;
+    repeated uint64 gas_provider_ids = 2;
+}
+
+message GasProvider {
+    uint64 id = 1;
+    string creator = 2;
+    string gas_tank = 3;
+    bool operational = 4;
+    uint64 max_txs_count_per_consumer = 5;
+    cosmos.base.v1beta1.Coin max_fee_usage_per_consumer = 6 [(gogoproto.nullable) = false];
+    repeated string txs_allowed = 7;
+    repeated string contracts_allowed = 8;
+    repeated string authorized_actors = 9;
+}
+
+message UsageDetail {
+    google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+    cosmos.base.v1beta1.Coin gas_consumed = 2 [(gogoproto.nullable) = false];
+}
+
+message UsageDetails {
+    repeated UsageDetail details = 1;
+}
+
+message Usage {
+    map<string, UsageDetails> txs = 1;
+    map<uint64, UsageDetails> contracts = 2;
+}
+
+message ConsumptionDetail {
+    bool is_blocked = 1;
+    bool elite_pass = 2;
+    uint64 total_txs_allowed = 3;
+    uint64 total_txs_made = 4;
+    cosmos.base.v1beta1.Coin total_fee_consumption_allowed = 5 [(gogoproto.nullable) = false];
+    repeated cosmos.base.v1beta1.Coin total_fees_consumed = 6 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+    Usage usage = 7;
+}
+
+message GasConsumer {
+    string consumer = 1;
+    map<uint64, ConsumptionDetail> consumption = 2;
+}
+
+

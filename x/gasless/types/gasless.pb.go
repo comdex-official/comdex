@@ -5,17 +5,23 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/types"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
+	io "io"
 	math "math"
+	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -23,22 +29,2465 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+type TxGPIDS struct {
+	TxPathOrContractAddress string   `protobuf:"bytes,1,opt,name=tx_path_or_contract_address,json=txPathOrContractAddress,proto3" json:"tx_path_or_contract_address,omitempty"`
+	GasProviderIds          []uint64 `protobuf:"varint,2,rep,packed,name=gas_provider_ids,json=gasProviderIds,proto3" json:"gas_provider_ids,omitempty"`
+}
+
+func (m *TxGPIDS) Reset()         { *m = TxGPIDS{} }
+func (m *TxGPIDS) String() string { return proto.CompactTextString(m) }
+func (*TxGPIDS) ProtoMessage()    {}
+func (*TxGPIDS) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{0}
+}
+func (m *TxGPIDS) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *TxGPIDS) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_TxGPIDS.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *TxGPIDS) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TxGPIDS.Merge(m, src)
+}
+func (m *TxGPIDS) XXX_Size() int {
+	return m.Size()
+}
+func (m *TxGPIDS) XXX_DiscardUnknown() {
+	xxx_messageInfo_TxGPIDS.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TxGPIDS proto.InternalMessageInfo
+
+type GasProvider struct {
+	Id                     uint64     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Creator                string     `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
+	GasTank                string     `protobuf:"bytes,3,opt,name=gas_tank,json=gasTank,proto3" json:"gas_tank,omitempty"`
+	Operational            bool       `protobuf:"varint,4,opt,name=operational,proto3" json:"operational,omitempty"`
+	MaxTxsCountPerConsumer uint64     `protobuf:"varint,5,opt,name=max_txs_count_per_consumer,json=maxTxsCountPerConsumer,proto3" json:"max_txs_count_per_consumer,omitempty"`
+	MaxFeeUsagePerConsumer types.Coin `protobuf:"bytes,6,opt,name=max_fee_usage_per_consumer,json=maxFeeUsagePerConsumer,proto3" json:"max_fee_usage_per_consumer"`
+	TxsAllowed             []string   `protobuf:"bytes,7,rep,name=txs_allowed,json=txsAllowed,proto3" json:"txs_allowed,omitempty"`
+	ContractsAllowed       []string   `protobuf:"bytes,8,rep,name=contracts_allowed,json=contractsAllowed,proto3" json:"contracts_allowed,omitempty"`
+	AuthorizedActors       []string   `protobuf:"bytes,9,rep,name=authorized_actors,json=authorizedActors,proto3" json:"authorized_actors,omitempty"`
+}
+
+func (m *GasProvider) Reset()         { *m = GasProvider{} }
+func (m *GasProvider) String() string { return proto.CompactTextString(m) }
+func (*GasProvider) ProtoMessage()    {}
+func (*GasProvider) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{1}
+}
+func (m *GasProvider) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GasProvider) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GasProvider.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GasProvider) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GasProvider.Merge(m, src)
+}
+func (m *GasProvider) XXX_Size() int {
+	return m.Size()
+}
+func (m *GasProvider) XXX_DiscardUnknown() {
+	xxx_messageInfo_GasProvider.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GasProvider proto.InternalMessageInfo
+
+type UsageDetail struct {
+	Timestamp   time.Time  `protobuf:"bytes,1,opt,name=timestamp,proto3,stdtime" json:"timestamp"`
+	GasConsumed types.Coin `protobuf:"bytes,2,opt,name=gas_consumed,json=gasConsumed,proto3" json:"gas_consumed"`
+}
+
+func (m *UsageDetail) Reset()         { *m = UsageDetail{} }
+func (m *UsageDetail) String() string { return proto.CompactTextString(m) }
+func (*UsageDetail) ProtoMessage()    {}
+func (*UsageDetail) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{2}
+}
+func (m *UsageDetail) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *UsageDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_UsageDetail.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *UsageDetail) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UsageDetail.Merge(m, src)
+}
+func (m *UsageDetail) XXX_Size() int {
+	return m.Size()
+}
+func (m *UsageDetail) XXX_DiscardUnknown() {
+	xxx_messageInfo_UsageDetail.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UsageDetail proto.InternalMessageInfo
+
+type UsageDetails struct {
+	Details []*UsageDetail `protobuf:"bytes,1,rep,name=details,proto3" json:"details,omitempty"`
+}
+
+func (m *UsageDetails) Reset()         { *m = UsageDetails{} }
+func (m *UsageDetails) String() string { return proto.CompactTextString(m) }
+func (*UsageDetails) ProtoMessage()    {}
+func (*UsageDetails) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{3}
+}
+func (m *UsageDetails) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *UsageDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_UsageDetails.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *UsageDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UsageDetails.Merge(m, src)
+}
+func (m *UsageDetails) XXX_Size() int {
+	return m.Size()
+}
+func (m *UsageDetails) XXX_DiscardUnknown() {
+	xxx_messageInfo_UsageDetails.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UsageDetails proto.InternalMessageInfo
+
+type Usage struct {
+	Txs       map[string]*UsageDetails `protobuf:"bytes,1,rep,name=txs,proto3" json:"txs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	Contracts map[uint64]*UsageDetails `protobuf:"bytes,2,rep,name=contracts,proto3" json:"contracts,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (m *Usage) Reset()         { *m = Usage{} }
+func (m *Usage) String() string { return proto.CompactTextString(m) }
+func (*Usage) ProtoMessage()    {}
+func (*Usage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{4}
+}
+func (m *Usage) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Usage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Usage.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Usage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Usage.Merge(m, src)
+}
+func (m *Usage) XXX_Size() int {
+	return m.Size()
+}
+func (m *Usage) XXX_DiscardUnknown() {
+	xxx_messageInfo_Usage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Usage proto.InternalMessageInfo
+
+type ConsumptionDetail struct {
+	IsBlocked                  bool                                     `protobuf:"varint,1,opt,name=is_blocked,json=isBlocked,proto3" json:"is_blocked,omitempty"`
+	ElitePass                  bool                                     `protobuf:"varint,2,opt,name=elite_pass,json=elitePass,proto3" json:"elite_pass,omitempty"`
+	TotalTxsAllowed            uint64                                   `protobuf:"varint,3,opt,name=total_txs_allowed,json=totalTxsAllowed,proto3" json:"total_txs_allowed,omitempty"`
+	TotalTxsMade               uint64                                   `protobuf:"varint,4,opt,name=total_txs_made,json=totalTxsMade,proto3" json:"total_txs_made,omitempty"`
+	TotalFeeConsumptionAllowed types.Coin                               `protobuf:"bytes,5,opt,name=total_fee_consumption_allowed,json=totalFeeConsumptionAllowed,proto3" json:"total_fee_consumption_allowed"`
+	TotalFeesConsumed          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=total_fees_consumed,json=totalFeesConsumed,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"total_fees_consumed"`
+	Usage                      *Usage                                   `protobuf:"bytes,7,opt,name=usage,proto3" json:"usage,omitempty"`
+}
+
+func (m *ConsumptionDetail) Reset()         { *m = ConsumptionDetail{} }
+func (m *ConsumptionDetail) String() string { return proto.CompactTextString(m) }
+func (*ConsumptionDetail) ProtoMessage()    {}
+func (*ConsumptionDetail) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{5}
+}
+func (m *ConsumptionDetail) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ConsumptionDetail) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ConsumptionDetail.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ConsumptionDetail) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ConsumptionDetail.Merge(m, src)
+}
+func (m *ConsumptionDetail) XXX_Size() int {
+	return m.Size()
+}
+func (m *ConsumptionDetail) XXX_DiscardUnknown() {
+	xxx_messageInfo_ConsumptionDetail.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ConsumptionDetail proto.InternalMessageInfo
+
+type GasConsumer struct {
+	Consumer    string                        `protobuf:"bytes,1,opt,name=consumer,proto3" json:"consumer,omitempty"`
+	Consumption map[uint64]*ConsumptionDetail `protobuf:"bytes,2,rep,name=consumption,proto3" json:"consumption,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (m *GasConsumer) Reset()         { *m = GasConsumer{} }
+func (m *GasConsumer) String() string { return proto.CompactTextString(m) }
+func (*GasConsumer) ProtoMessage()    {}
+func (*GasConsumer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a0a6c07135ead427, []int{6}
+}
+func (m *GasConsumer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GasConsumer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GasConsumer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GasConsumer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GasConsumer.Merge(m, src)
+}
+func (m *GasConsumer) XXX_Size() int {
+	return m.Size()
+}
+func (m *GasConsumer) XXX_DiscardUnknown() {
+	xxx_messageInfo_GasConsumer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GasConsumer proto.InternalMessageInfo
+
+func init() {
+	proto.RegisterType((*TxGPIDS)(nil), "comdex.gasless.v1beta1.TxGPIDS")
+	proto.RegisterType((*GasProvider)(nil), "comdex.gasless.v1beta1.GasProvider")
+	proto.RegisterType((*UsageDetail)(nil), "comdex.gasless.v1beta1.UsageDetail")
+	proto.RegisterType((*UsageDetails)(nil), "comdex.gasless.v1beta1.UsageDetails")
+	proto.RegisterType((*Usage)(nil), "comdex.gasless.v1beta1.Usage")
+	proto.RegisterMapType((map[uint64]*UsageDetails)(nil), "comdex.gasless.v1beta1.Usage.ContractsEntry")
+	proto.RegisterMapType((map[string]*UsageDetails)(nil), "comdex.gasless.v1beta1.Usage.TxsEntry")
+	proto.RegisterType((*ConsumptionDetail)(nil), "comdex.gasless.v1beta1.ConsumptionDetail")
+	proto.RegisterType((*GasConsumer)(nil), "comdex.gasless.v1beta1.GasConsumer")
+	proto.RegisterMapType((map[uint64]*ConsumptionDetail)(nil), "comdex.gasless.v1beta1.GasConsumer.ConsumptionEntry")
+}
+
 func init() {
 	proto.RegisterFile("comdex/gasless/v1beta1/gasless.proto", fileDescriptor_a0a6c07135ead427)
 }
 
 var fileDescriptor_a0a6c07135ead427 = []byte{
-	// 191 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x44, 0x8f, 0x31, 0xae, 0xc2, 0x30,
-	0x0c, 0x86, 0xd3, 0xe5, 0x0d, 0x6f, 0x44, 0x88, 0xa1, 0x83, 0x59, 0x58, 0xa9, 0x55, 0x71, 0x03,
-	0x2e, 0xc0, 0xce, 0x96, 0x84, 0x34, 0x44, 0x6a, 0x70, 0x85, 0x53, 0x04, 0xb7, 0xe0, 0x58, 0x1d,
-	0x3b, 0x32, 0x42, 0x7b, 0x11, 0x44, 0xd3, 0xc2, 0xe6, 0xcf, 0xfe, 0xf4, 0xcb, 0xff, 0xff, 0x4a,
-	0x93, 0x3f, 0x98, 0x2b, 0x5a, 0xc9, 0xa5, 0x61, 0xc6, 0x4b, 0xae, 0x4c, 0x90, 0xf9, 0xc4, 0x59,
-	0x75, 0xa6, 0x40, 0xb3, 0x45, 0xb4, 0xb2, 0x69, 0x3b, 0x5a, 0xe9, 0xdc, 0x92, 0xa5, 0x41, 0xc1,
-	0xcf, 0x14, 0xed, 0x14, 0x34, 0xb1, 0x27, 0x46, 0x25, 0xd9, 0x7c, 0x03, 0x35, 0xb9, 0xd3, 0x78,
-	0x5f, 0x5a, 0x22, 0x5b, 0x1a, 0x1c, 0x48, 0xd5, 0x05, 0x06, 0xe7, 0x0d, 0x07, 0xe9, 0xab, 0x28,
-	0x6c, 0x77, 0xcd, 0x0b, 0x44, 0xd3, 0x41, 0xd2, 0x76, 0x90, 0x3c, 0x3b, 0x48, 0xee, 0x3d, 0x88,
-	0xb6, 0x07, 0xf1, 0xe8, 0x41, 0xec, 0x73, 0xeb, 0xc2, 0xb1, 0x56, 0x99, 0x26, 0x8f, 0xf1, 0xaf,
-	0x35, 0x15, 0x85, 0xd3, 0x4e, 0x96, 0x23, 0xe3, 0xaf, 0x4f, 0xb8, 0x55, 0x86, 0xd5, 0xdf, 0x90,
-	0xbb, 0x79, 0x07, 0x00, 0x00, 0xff, 0xff, 0x03, 0xb0, 0x1f, 0x80, 0xee, 0x00, 0x00, 0x00,
+	// 920 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x4f, 0x6f, 0xe3, 0x44,
+	0x14, 0x8f, 0xe3, 0x64, 0x93, 0x3c, 0x57, 0xa5, 0x1d, 0xd0, 0xe2, 0x35, 0x6a, 0x12, 0x85, 0x0a,
+	0x85, 0x3f, 0x6b, 0xd3, 0x2e, 0x87, 0x55, 0x05, 0x42, 0x4d, 0x97, 0x5d, 0x2d, 0xd2, 0x6a, 0x23,
+	0x13, 0x38, 0x00, 0x92, 0x35, 0xb1, 0xa7, 0xae, 0x15, 0x27, 0x63, 0x3c, 0x93, 0xe2, 0xc2, 0x17,
+	0xe0, 0xb8, 0x17, 0xbe, 0x04, 0xdf, 0x80, 0x6f, 0xd0, 0x1b, 0x7b, 0xe4, 0xc4, 0x42, 0x7b, 0xe5,
+	0x43, 0xa0, 0x99, 0xf1, 0xbf, 0xc2, 0x6e, 0xd5, 0x03, 0xa7, 0x78, 0xde, 0xfb, 0xbd, 0xdf, 0x7b,
+	0xf3, 0xde, 0xef, 0x4d, 0x60, 0xd7, 0xa7, 0xcb, 0x80, 0x64, 0x4e, 0x88, 0x59, 0x4c, 0x18, 0x73,
+	0x4e, 0xf7, 0xe6, 0x84, 0xe3, 0xbd, 0xe2, 0x6c, 0x27, 0x29, 0xe5, 0x14, 0xdd, 0x56, 0x28, 0xbb,
+	0xb0, 0xe6, 0x28, 0xeb, 0x8d, 0x90, 0x86, 0x54, 0x42, 0x1c, 0xf1, 0xa5, 0xd0, 0x56, 0xdf, 0xa7,
+	0x6c, 0x49, 0x99, 0x33, 0xc7, 0x8c, 0x94, 0x84, 0x3e, 0x8d, 0x56, 0xb9, 0x7f, 0x10, 0x52, 0x1a,
+	0xc6, 0xc4, 0x91, 0xa7, 0xf9, 0xfa, 0xd8, 0xe1, 0xd1, 0x92, 0x30, 0x8e, 0x97, 0x89, 0x02, 0x8c,
+	0xbe, 0x83, 0xce, 0x2c, 0x7b, 0x34, 0x7d, 0xfc, 0xe0, 0x0b, 0xf4, 0x31, 0xbc, 0xc5, 0x33, 0x2f,
+	0xc1, 0xfc, 0xc4, 0xa3, 0xa9, 0xe7, 0xd3, 0x15, 0x4f, 0xb1, 0xcf, 0x3d, 0x1c, 0x04, 0x29, 0x61,
+	0xcc, 0xd4, 0x86, 0xda, 0xb8, 0xe7, 0xbe, 0xc9, 0xb3, 0x29, 0xe6, 0x27, 0x4f, 0xd3, 0xa3, 0xdc,
+	0x7f, 0xa8, 0xdc, 0x68, 0x0c, 0x5b, 0x21, 0x66, 0x5e, 0x92, 0xd2, 0xd3, 0x28, 0x20, 0xa9, 0x17,
+	0x05, 0xcc, 0x6c, 0x0e, 0xf5, 0x71, 0xcb, 0xdd, 0x0c, 0x31, 0x9b, 0xe6, 0xe6, 0xc7, 0x01, 0x1b,
+	0xfd, 0xa4, 0x83, 0xf1, 0xa8, 0x32, 0xa1, 0x4d, 0x68, 0x46, 0x81, 0xa4, 0x6f, 0xb9, 0xcd, 0x28,
+	0x40, 0x26, 0x74, 0xfc, 0x94, 0x60, 0x4e, 0x53, 0xb3, 0x29, 0x73, 0x16, 0x47, 0x74, 0x07, 0xba,
+	0x22, 0x07, 0xc7, 0xab, 0x85, 0xa9, 0x2b, 0x57, 0x88, 0xd9, 0x0c, 0xaf, 0x16, 0x68, 0x08, 0x06,
+	0x4d, 0x48, 0x8a, 0x79, 0x44, 0x57, 0x38, 0x36, 0x5b, 0x43, 0x6d, 0xdc, 0x75, 0xeb, 0x26, 0x74,
+	0x00, 0xd6, 0x12, 0x67, 0x1e, 0xcf, 0x98, 0xe7, 0xd3, 0xf5, 0x8a, 0x7b, 0x09, 0x91, 0xb7, 0x64,
+	0xeb, 0x25, 0x49, 0xcd, 0xb6, 0x4c, 0x7f, 0x7b, 0x89, 0xb3, 0x59, 0xc6, 0x8e, 0x84, 0x7f, 0x4a,
+	0xc4, 0x1d, 0xa5, 0x17, 0x7d, 0xa3, 0x62, 0x8f, 0x09, 0xf1, 0xd6, 0x0c, 0x87, 0xe4, 0x6a, 0xec,
+	0xad, 0xa1, 0x36, 0x36, 0xf6, 0xef, 0xd8, 0x6a, 0x16, 0xb6, 0x98, 0x45, 0x31, 0x36, 0xfb, 0x88,
+	0x46, 0xab, 0x49, 0xeb, 0xfc, 0x8f, 0x41, 0x43, 0x92, 0x3f, 0x24, 0xe4, 0x4b, 0x41, 0x50, 0x27,
+	0x1f, 0x80, 0x21, 0x8a, 0xc2, 0x71, 0x4c, 0xbf, 0x27, 0x81, 0xd9, 0x19, 0xea, 0xe3, 0x9e, 0x0b,
+	0x3c, 0x63, 0x87, 0xca, 0x82, 0xde, 0x87, 0xed, 0x62, 0x1a, 0x15, 0xac, 0x2b, 0x61, 0x5b, 0xa5,
+	0xa3, 0x06, 0xc6, 0x6b, 0x7e, 0x42, 0xd3, 0xe8, 0x07, 0x12, 0x78, 0xd8, 0xe7, 0x34, 0x65, 0x66,
+	0x4f, 0x81, 0x2b, 0xc7, 0xa1, 0xb4, 0x8f, 0x7e, 0xd6, 0xc0, 0x90, 0xf5, 0x3c, 0x20, 0x1c, 0x47,
+	0x31, 0x9a, 0x40, 0xaf, 0x14, 0x88, 0x9c, 0x88, 0xb1, 0x6f, 0xd9, 0x4a, 0x42, 0x76, 0x21, 0x21,
+	0x7b, 0x56, 0x20, 0x26, 0x5d, 0x71, 0xaf, 0x67, 0x2f, 0x06, 0x9a, 0x5b, 0x85, 0xa1, 0x09, 0x6c,
+	0x88, 0x21, 0xe5, 0xdd, 0x09, 0xe4, 0x0c, 0x6f, 0xd0, 0x1d, 0x23, 0xc4, 0x2c, 0x6f, 0x49, 0x30,
+	0x7a, 0x02, 0x1b, 0xb5, 0xb2, 0x18, 0xfa, 0x04, 0x3a, 0x81, 0xfa, 0x34, 0xb5, 0xa1, 0x3e, 0x36,
+	0xf6, 0xdf, 0xb6, 0x5f, 0xbe, 0x26, 0x76, 0x2d, 0xcc, 0x2d, 0x62, 0x46, 0xbf, 0x35, 0xa1, 0x2d,
+	0x1d, 0xe8, 0x3e, 0xe8, 0x3c, 0x2b, 0x48, 0xde, 0xb9, 0x96, 0xc4, 0x9e, 0x65, 0xec, 0xb3, 0x15,
+	0x4f, 0xcf, 0x5c, 0x11, 0x82, 0x3e, 0x87, 0x5e, 0xd9, 0x6b, 0x29, 0x6c, 0x63, 0xff, 0x83, 0xeb,
+	0xe3, 0x8b, 0x0d, 0xc9, 0x59, 0xaa, 0x70, 0xeb, 0x5b, 0xe8, 0x16, 0xe4, 0x68, 0x0b, 0xf4, 0x05,
+	0x39, 0xcb, 0xb7, 0x4b, 0x7c, 0xa2, 0x03, 0x68, 0x9f, 0xe2, 0x78, 0x4d, 0xf2, 0xce, 0xed, 0xde,
+	0xe0, 0xaa, 0xcc, 0x55, 0x21, 0x07, 0xcd, 0xfb, 0x9a, 0x35, 0x87, 0xcd, 0xab, 0xa9, 0xeb, 0x39,
+	0x5a, 0xff, 0x4b, 0x8e, 0xd1, 0xaf, 0x3a, 0x6c, 0xab, 0x69, 0x25, 0x62, 0xbd, 0x72, 0xf9, 0xec,
+	0x00, 0x44, 0xcc, 0x9b, 0xc7, 0xd4, 0x5f, 0x10, 0xb5, 0xd1, 0x5d, 0xb7, 0x17, 0xb1, 0x89, 0x32,
+	0x08, 0x37, 0x89, 0x23, 0x4e, 0xbc, 0x04, 0x33, 0x26, 0x33, 0x77, 0xdd, 0x9e, 0xb4, 0x4c, 0x31,
+	0x63, 0xe8, 0x3d, 0xd8, 0xe6, 0x94, 0xe3, 0xd8, 0xab, 0x6f, 0x83, 0x2e, 0x6b, 0x7e, 0x4d, 0x3a,
+	0x66, 0xd5, 0x4a, 0xec, 0xc2, 0x66, 0x85, 0x5d, 0xe2, 0x80, 0xc8, 0x8d, 0x6f, 0xb9, 0x1b, 0x05,
+	0xf0, 0x09, 0x0e, 0x08, 0x9a, 0xc3, 0x8e, 0x42, 0x89, 0xc5, 0xf5, 0xab, 0x72, 0x4b, 0xf6, 0xf6,
+	0xcd, 0xb4, 0x69, 0x49, 0x96, 0x87, 0x84, 0xd4, 0xae, 0x5c, 0x54, 0xf2, 0x23, 0xbc, 0x5e, 0xe6,
+	0xa8, 0xa9, 0xfe, 0x96, 0x54, 0xc8, 0x35, 0xcc, 0x1f, 0x0a, 0xe6, 0x5f, 0x5e, 0x0c, 0xc6, 0x61,
+	0xc4, 0x4f, 0xd6, 0x73, 0x31, 0x00, 0x27, 0x7f, 0xcc, 0xd5, 0xcf, 0x5d, 0x16, 0x2c, 0x1c, 0x7e,
+	0x96, 0x10, 0x26, 0x03, 0x98, 0xbb, 0x5d, 0x54, 0x51, 0xee, 0x09, 0xba, 0x07, 0x6d, 0xf9, 0x1e,
+	0x99, 0x1d, 0x79, 0x91, 0x9d, 0x6b, 0xc7, 0xe8, 0x2a, 0xec, 0xe8, 0x6f, 0x4d, 0xbe, 0xbf, 0xe5,
+	0xfb, 0x63, 0x41, 0xb7, 0x7c, 0xca, 0x94, 0x0c, 0xcb, 0x33, 0xfa, 0x0a, 0x8c, 0x5a, 0xdf, 0x72,
+	0xdd, 0x7f, 0xf4, 0xaa, 0x34, 0x35, 0x56, 0xbb, 0xd6, 0x2a, 0xa5, 0xff, 0x3a, 0x91, 0x15, 0xc1,
+	0xd6, 0xbf, 0x01, 0x2f, 0x51, 0xe9, 0xa7, 0x57, 0x55, 0xfa, 0xee, 0xab, 0xf2, 0xfe, 0x47, 0x89,
+	0x35, 0xa9, 0x4e, 0x9e, 0x9e, 0xff, 0xd5, 0x6f, 0x9c, 0x5f, 0xf4, 0xb5, 0xe7, 0x17, 0x7d, 0xed,
+	0xcf, 0x8b, 0xbe, 0xf6, 0xec, 0xb2, 0xdf, 0x78, 0x7e, 0xd9, 0x6f, 0xfc, 0x7e, 0xd9, 0x6f, 0x7c,
+	0xbd, 0x77, 0xa5, 0xfd, 0x82, 0xfd, 0x2e, 0x3d, 0x3e, 0x8e, 0xfc, 0x08, 0xc7, 0xf9, 0xd9, 0xa9,
+	0xfe, 0xb1, 0xe5, 0x34, 0xe6, 0xb7, 0xe4, 0x4b, 0x78, 0xef, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0x2f, 0x1e, 0x40, 0x67, 0xd0, 0x07, 0x00, 0x00,
 }
+
+func (m *TxGPIDS) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *TxGPIDS) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *TxGPIDS) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.GasProviderIds) > 0 {
+		dAtA2 := make([]byte, len(m.GasProviderIds)*10)
+		var j1 int
+		for _, num := range m.GasProviderIds {
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintGasless(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TxPathOrContractAddress) > 0 {
+		i -= len(m.TxPathOrContractAddress)
+		copy(dAtA[i:], m.TxPathOrContractAddress)
+		i = encodeVarintGasless(dAtA, i, uint64(len(m.TxPathOrContractAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GasProvider) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GasProvider) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GasProvider) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AuthorizedActors) > 0 {
+		for iNdEx := len(m.AuthorizedActors) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AuthorizedActors[iNdEx])
+			copy(dAtA[i:], m.AuthorizedActors[iNdEx])
+			i = encodeVarintGasless(dAtA, i, uint64(len(m.AuthorizedActors[iNdEx])))
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if len(m.ContractsAllowed) > 0 {
+		for iNdEx := len(m.ContractsAllowed) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.ContractsAllowed[iNdEx])
+			copy(dAtA[i:], m.ContractsAllowed[iNdEx])
+			i = encodeVarintGasless(dAtA, i, uint64(len(m.ContractsAllowed[iNdEx])))
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.TxsAllowed) > 0 {
+		for iNdEx := len(m.TxsAllowed) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.TxsAllowed[iNdEx])
+			copy(dAtA[i:], m.TxsAllowed[iNdEx])
+			i = encodeVarintGasless(dAtA, i, uint64(len(m.TxsAllowed[iNdEx])))
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	{
+		size, err := m.MaxFeeUsagePerConsumer.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGasless(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x32
+	if m.MaxTxsCountPerConsumer != 0 {
+		i = encodeVarintGasless(dAtA, i, uint64(m.MaxTxsCountPerConsumer))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.Operational {
+		i--
+		if m.Operational {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.GasTank) > 0 {
+		i -= len(m.GasTank)
+		copy(dAtA[i:], m.GasTank)
+		i = encodeVarintGasless(dAtA, i, uint64(len(m.GasTank)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintGasless(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintGasless(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *UsageDetail) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *UsageDetail) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UsageDetail) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.GasConsumed.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGasless(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	n5, err5 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Timestamp, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp):])
+	if err5 != nil {
+		return 0, err5
+	}
+	i -= n5
+	i = encodeVarintGasless(dAtA, i, uint64(n5))
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *UsageDetails) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *UsageDetails) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *UsageDetails) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Details) > 0 {
+		for iNdEx := len(m.Details) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Details[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGasless(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Usage) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Usage) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Usage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Contracts) > 0 {
+		for k := range m.Contracts {
+			v := m.Contracts[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintGasless(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i = encodeVarintGasless(dAtA, i, uint64(k))
+			i--
+			dAtA[i] = 0x8
+			i = encodeVarintGasless(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Txs) > 0 {
+		for k := range m.Txs {
+			v := m.Txs[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintGasless(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintGasless(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintGasless(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ConsumptionDetail) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ConsumptionDetail) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ConsumptionDetail) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Usage != nil {
+		{
+			size, err := m.Usage.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintGasless(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.TotalFeesConsumed) > 0 {
+		for iNdEx := len(m.TotalFeesConsumed) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TotalFeesConsumed[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGasless(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	{
+		size, err := m.TotalFeeConsumptionAllowed.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintGasless(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x2a
+	if m.TotalTxsMade != 0 {
+		i = encodeVarintGasless(dAtA, i, uint64(m.TotalTxsMade))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.TotalTxsAllowed != 0 {
+		i = encodeVarintGasless(dAtA, i, uint64(m.TotalTxsAllowed))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.ElitePass {
+		i--
+		if m.ElitePass {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.IsBlocked {
+		i--
+		if m.IsBlocked {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GasConsumer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GasConsumer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GasConsumer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Consumption) > 0 {
+		for k := range m.Consumption {
+			v := m.Consumption[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintGasless(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i = encodeVarintGasless(dAtA, i, uint64(k))
+			i--
+			dAtA[i] = 0x8
+			i = encodeVarintGasless(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.Consumer) > 0 {
+		i -= len(m.Consumer)
+		copy(dAtA[i:], m.Consumer)
+		i = encodeVarintGasless(dAtA, i, uint64(len(m.Consumer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func encodeVarintGasless(dAtA []byte, offset int, v uint64) int {
+	offset -= sovGasless(v)
+	base := offset
+	for v >= 1<<7 {
+		dAtA[offset] = uint8(v&0x7f | 0x80)
+		v >>= 7
+		offset++
+	}
+	dAtA[offset] = uint8(v)
+	return base
+}
+func (m *TxGPIDS) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.TxPathOrContractAddress)
+	if l > 0 {
+		n += 1 + l + sovGasless(uint64(l))
+	}
+	if len(m.GasProviderIds) > 0 {
+		l = 0
+		for _, e := range m.GasProviderIds {
+			l += sovGasless(uint64(e))
+		}
+		n += 1 + sovGasless(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *GasProvider) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovGasless(uint64(m.Id))
+	}
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovGasless(uint64(l))
+	}
+	l = len(m.GasTank)
+	if l > 0 {
+		n += 1 + l + sovGasless(uint64(l))
+	}
+	if m.Operational {
+		n += 2
+	}
+	if m.MaxTxsCountPerConsumer != 0 {
+		n += 1 + sovGasless(uint64(m.MaxTxsCountPerConsumer))
+	}
+	l = m.MaxFeeUsagePerConsumer.Size()
+	n += 1 + l + sovGasless(uint64(l))
+	if len(m.TxsAllowed) > 0 {
+		for _, s := range m.TxsAllowed {
+			l = len(s)
+			n += 1 + l + sovGasless(uint64(l))
+		}
+	}
+	if len(m.ContractsAllowed) > 0 {
+		for _, s := range m.ContractsAllowed {
+			l = len(s)
+			n += 1 + l + sovGasless(uint64(l))
+		}
+	}
+	if len(m.AuthorizedActors) > 0 {
+		for _, s := range m.AuthorizedActors {
+			l = len(s)
+			n += 1 + l + sovGasless(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *UsageDetail) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Timestamp)
+	n += 1 + l + sovGasless(uint64(l))
+	l = m.GasConsumed.Size()
+	n += 1 + l + sovGasless(uint64(l))
+	return n
+}
+
+func (m *UsageDetails) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Details) > 0 {
+		for _, e := range m.Details {
+			l = e.Size()
+			n += 1 + l + sovGasless(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Usage) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Txs) > 0 {
+		for k, v := range m.Txs {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovGasless(uint64(l))
+			}
+			mapEntrySize := 1 + len(k) + sovGasless(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovGasless(uint64(mapEntrySize))
+		}
+	}
+	if len(m.Contracts) > 0 {
+		for k, v := range m.Contracts {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovGasless(uint64(l))
+			}
+			mapEntrySize := 1 + sovGasless(uint64(k)) + l
+			n += mapEntrySize + 1 + sovGasless(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *ConsumptionDetail) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.IsBlocked {
+		n += 2
+	}
+	if m.ElitePass {
+		n += 2
+	}
+	if m.TotalTxsAllowed != 0 {
+		n += 1 + sovGasless(uint64(m.TotalTxsAllowed))
+	}
+	if m.TotalTxsMade != 0 {
+		n += 1 + sovGasless(uint64(m.TotalTxsMade))
+	}
+	l = m.TotalFeeConsumptionAllowed.Size()
+	n += 1 + l + sovGasless(uint64(l))
+	if len(m.TotalFeesConsumed) > 0 {
+		for _, e := range m.TotalFeesConsumed {
+			l = e.Size()
+			n += 1 + l + sovGasless(uint64(l))
+		}
+	}
+	if m.Usage != nil {
+		l = m.Usage.Size()
+		n += 1 + l + sovGasless(uint64(l))
+	}
+	return n
+}
+
+func (m *GasConsumer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Consumer)
+	if l > 0 {
+		n += 1 + l + sovGasless(uint64(l))
+	}
+	if len(m.Consumption) > 0 {
+		for k, v := range m.Consumption {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovGasless(uint64(l))
+			}
+			mapEntrySize := 1 + sovGasless(uint64(k)) + l
+			n += mapEntrySize + 1 + sovGasless(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func sovGasless(x uint64) (n int) {
+	return (math_bits.Len64(x|1) + 6) / 7
+}
+func sozGasless(x uint64) (n int) {
+	return sovGasless(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *TxGPIDS) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: TxGPIDS: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: TxGPIDS: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxPathOrContractAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxPathOrContractAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGasless
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.GasProviderIds = append(m.GasProviderIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGasless
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthGasless
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthGasless
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.GasProviderIds) == 0 {
+					m.GasProviderIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.GasProviderIds = append(m.GasProviderIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderIds", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GasProvider) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GasProvider: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GasProvider: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTank", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GasTank = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Operational", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Operational = bool(v != 0)
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxTxsCountPerConsumer", wireType)
+			}
+			m.MaxTxsCountPerConsumer = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxTxsCountPerConsumer |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxFeeUsagePerConsumer", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.MaxFeeUsagePerConsumer.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TxsAllowed", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TxsAllowed = append(m.TxsAllowed, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractsAllowed", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractsAllowed = append(m.ContractsAllowed, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AuthorizedActors", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AuthorizedActors = append(m.AuthorizedActors, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *UsageDetail) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: UsageDetail: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: UsageDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Timestamp, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GasConsumed", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.GasConsumed.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *UsageDetails) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: UsageDetails: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: UsageDetails: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Details", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Details = append(m.Details, &UsageDetail{})
+			if err := m.Details[len(m.Details)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Usage) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Usage: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Usage: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Txs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Txs == nil {
+				m.Txs = make(map[string]*UsageDetails)
+			}
+			var mapkey string
+			var mapvalue *UsageDetails
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGasless
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthGasless
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthGasless
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &UsageDetails{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipGasless(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Txs[mapkey] = mapvalue
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Contracts", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Contracts == nil {
+				m.Contracts = make(map[uint64]*UsageDetails)
+			}
+			var mapkey uint64
+			var mapvalue *UsageDetails
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGasless
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthGasless
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &UsageDetails{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipGasless(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Contracts[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ConsumptionDetail) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ConsumptionDetail: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ConsumptionDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsBlocked", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.IsBlocked = bool(v != 0)
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ElitePass", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ElitePass = bool(v != 0)
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalTxsAllowed", wireType)
+			}
+			m.TotalTxsAllowed = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TotalTxsAllowed |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalTxsMade", wireType)
+			}
+			m.TotalTxsMade = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TotalTxsMade |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalFeeConsumptionAllowed", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TotalFeeConsumptionAllowed.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalFeesConsumed", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TotalFeesConsumed = append(m.TotalFeesConsumed, types.Coin{})
+			if err := m.TotalFeesConsumed[len(m.TotalFeesConsumed)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Usage", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Usage == nil {
+				m.Usage = &Usage{}
+			}
+			if err := m.Usage.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GasConsumer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GasConsumer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GasConsumer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Consumer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Consumer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Consumption", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGasless
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Consumption == nil {
+				m.Consumption = make(map[uint64]*ConsumptionDetail)
+			}
+			var mapkey uint64
+			var mapvalue *ConsumptionDetail
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowGasless
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowGasless
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthGasless
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &ConsumptionDetail{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipGasless(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthGasless
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Consumption[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGasless(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthGasless
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipGasless(dAtA []byte) (n int, err error) {
+	l := len(dAtA)
+	iNdEx := 0
+	depth := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowGasless
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if dAtA[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+		case 1:
+			iNdEx += 8
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowGasless
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if length < 0 {
+				return 0, ErrInvalidLengthGasless
+			}
+			iNdEx += length
+		case 3:
+			depth++
+		case 4:
+			if depth == 0 {
+				return 0, ErrUnexpectedEndOfGroupGasless
+			}
+			depth--
+		case 5:
+			iNdEx += 4
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+		if iNdEx < 0 {
+			return 0, ErrInvalidLengthGasless
+		}
+		if depth == 0 {
+			return iNdEx, nil
+		}
+	}
+	return 0, io.ErrUnexpectedEOF
+}
+
+var (
+	ErrInvalidLengthGasless        = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowGasless          = fmt.Errorf("proto: integer overflow")
+	ErrUnexpectedEndOfGroupGasless = fmt.Errorf("proto: unexpected end of group")
+)
