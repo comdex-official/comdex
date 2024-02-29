@@ -10,12 +10,21 @@ option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 service Msg {
     // CreateGasProvider defines a method for creating a new gas provider
     rpc CreateGasProvider(MsgCreateGasProvider) returns (MsgCreateGasProviderResponse);
+
+    // AuthorizeActors defines a method for authorizing accounts to take actions on creator's behalf
+    rpc AuthorizeActors(MsgAuthorizeActors) returns (MsgAuthorizeActorsResponse);
+
+    // UpdateGasProviderStatus defines a method for marking gas tank as active or inactive
+    rpc UpdateGasProviderStatus(MsgUpdateGasProviderStatus) returns (MsgUpdateGasProviderStatusResponse);
+
+    // UpdateGasProviderConfigs defines a method for updating the configs of gas provider
+    rpc UpdateGasProviderConfigs(MsgUpdateGasProviderConfig) returns (MsgUpdateGasProviderConfigResponse);
 }
 
 
 // MsgCreateGasProvider defines an SDK message for creating a new GasProvider.
 message MsgCreateGasProvider {
-    // creator specifies the bech32-encoded address that is the pair creator.
+    // creator specifies the bech32-encoded address that is the gas provider.
     string creator = 1;
 
     // fee_denom specifies the denom of the gas deposit coin 
@@ -41,3 +50,54 @@ message MsgCreateGasProvider {
 }
 
 message MsgCreateGasProviderResponse {}
+
+// MsgAuthorizeActors defines the SDK message for authorizing accounts to take actions on provider's behalf
+message MsgAuthorizeActors {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // provider specifies the bech32-encoded address that is the gas provider.
+    string provider = 2;
+
+    // actors specifies the list of bech32-encoded address allowed to take actions
+    repeated string actors = 3;
+}
+
+message MsgAuthorizeActorsResponse {}
+
+// MsgUpdateGasProviderStatus defines an SDK message for updating the status of gas tank.
+message MsgUpdateGasProviderStatus {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // provider specifies the bech32-encoded address that is the gas provider.
+    string provider = 2;
+}
+
+message MsgUpdateGasProviderStatusResponse{}
+
+// MsgUpdateGasProviderConfig defines an SDK message for updating the configs of gas provider.
+message MsgUpdateGasProviderConfig {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // provider specifies the bech32-encoded address that is the gas provider.
+    string provider = 2;
+
+    // max_fee_usage_per_tx specifies the maximum fee allowed for each tx
+    string max_fee_usage_per_tx = 3 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+
+    // max_txs_count_per_consumer specifies the number of txs allowed for each consumer 
+    uint64 max_txs_count_per_consumer = 4;
+
+    // max_fee_usage_per_consumer specifies the maximum fee consumption allowed for each consumer
+    string max_fee_usage_per_consumer = 5 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    
+    // txs_allowed specifies txs paths allowed to consume gas from the gas tank
+    repeated string txs_allowed = 6;
+    
+    // contracts_allowed specifies wasm contracts allowed to consume gas from the gas tank
+    repeated string contracts_allowed = 7;
+}
+
+message MsgUpdateGasProviderConfigResponse {}

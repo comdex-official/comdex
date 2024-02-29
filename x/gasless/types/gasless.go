@@ -104,8 +104,8 @@ func NewGasProvider(
 		MaxTxsCountPerConsumer: maxTxsCountPerConsumer,
 		MaxFeeUsagePerConsumer: maxFeeUsagePerConsumer,
 		MaxFeeUsagePerTx:       maxFeeUsagePerTx,
-		TxsAllowed:             txsAllowed,
-		ContractsAllowed:       contractsAllowed,
+		TxsAllowed:             RemoveDuplicates(txsAllowed),
+		ContractsAllowed:       RemoveDuplicates(contractsAllowed),
 		AuthorizedActors:       []string{},
 		FeeDenom:               feeDenom,
 	}
@@ -126,7 +126,9 @@ func (gasProvider GasProvider) Validate() error {
 	if err := sdk.ValidateDenom(gasProvider.FeeDenom); err != nil {
 		return fmt.Errorf("invalid fee denom: %w", err)
 	}
-
+	if gasProvider.MaxTxsCountPerConsumer == 0 {
+		return fmt.Errorf("max tx count per consumer must not be 0")
+	}
 	if !gasProvider.MaxFeeUsagePerTx.IsPositive() {
 		return fmt.Errorf("max_fee_usage_per_tx should be positive")
 	}

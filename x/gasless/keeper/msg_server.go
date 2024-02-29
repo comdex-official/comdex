@@ -29,3 +29,36 @@ func (m msgServer) CreateGasProvider(goCtx context.Context, msg *types.MsgCreate
 
 	return &types.MsgCreateGasProviderResponse{}, nil
 }
+
+// AuthorizeActors defines a method to update the actors in gas provider
+func (m msgServer) AuthorizeActors(goCtx context.Context, msg *types.MsgAuthorizeActors) (*types.MsgAuthorizeActorsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.AuthorizeActors(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgAuthorizeActorsResponse{}, nil
+}
+
+// UpdateGasProviderStatus defines a method to update the active status of gas provider
+func (m msgServer) UpdateGasProviderStatus(goCtx context.Context, msg *types.MsgUpdateGasProviderStatus) (*types.MsgUpdateGasProviderStatusResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.UpdateGasProviderStatus(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateGasProviderStatusResponse{}, nil
+}
+
+// UpdateGasProviderConfigs defines a method to update a gas provider
+func (m msgServer) UpdateGasProviderConfigs(goCtx context.Context, msg *types.MsgUpdateGasProviderConfig) (*types.MsgUpdateGasProviderConfigResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.UpdateGasProviderConfig(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateGasProviderConfigResponse{}, nil
+}

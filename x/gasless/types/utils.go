@@ -29,6 +29,18 @@ func ItemExists(array []string, item string) bool {
 	return false
 }
 
+func RemoveDuplicates(input []string) []string {
+	uniqueMap := make(map[string]bool)
+	for _, str := range input {
+		uniqueMap[str] = true
+	}
+	uniqueSlice := make([]string, 0, len(uniqueMap))
+	for str := range uniqueMap {
+		uniqueSlice = append(uniqueSlice, str)
+	}
+	return uniqueSlice
+}
+
 func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProviderResponse {
 	return GasProviderResponse{
 		Id:                     gasProvider.Id,

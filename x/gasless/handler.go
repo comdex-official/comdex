@@ -21,6 +21,15 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgCreateGasProvider:
 			res, err := msgServer.CreateGasProvider(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgAuthorizeActors:
+			res, err := msgServer.AuthorizeActors(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUpdateGasProviderStatus:
+			res, err := msgServer.UpdateGasProviderStatus(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUpdateGasProviderConfig:
+			res, err := msgServer.UpdateGasProviderConfigs(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
 		}
