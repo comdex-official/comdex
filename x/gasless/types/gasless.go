@@ -111,6 +111,14 @@ func NewGasProvider(
 	}
 }
 
+func (gasProvider GasProvider) GetGasTankReserveAddress() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(gasProvider.GasTank)
+	if err != nil {
+		panic(err)
+	}
+	return addr
+}
+
 func (gasProvider GasProvider) Validate() error {
 	if gasProvider.Id == 0 {
 		return fmt.Errorf("pair id must not be 0")

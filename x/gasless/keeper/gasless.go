@@ -119,6 +119,15 @@ func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvid
 		msg.FeeDenom,
 	)
 
+	// Send gas deposit coins to the gas tank's reserve account.
+	creator, err := sdk.AccAddressFromBech32(msg.GetCreator())
+	if err != nil {
+		return types.GasProvider{}, err
+	}
+	if err := k.bankKeeper.SendCoins(ctx, creator, gasProvider.GetGasTankReserveAddress(), sdk.NewCoins(msg.GasDeposit)); err != nil {
+		return types.GasProvider{}, err
+	}
+
 	k.SetGasProvider(ctx, gasProvider)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
