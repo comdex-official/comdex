@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -26,6 +27,8 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
 		NewQueryMessagesAndContractsCmd(),
+		NewQueryGasProviderCmd(),
+		NewQueryGasProvidersCmd(),
 	)
 
 	return cmd
@@ -93,6 +96,96 @@ $ %s query %s mac
 				cmd.Context(),
 				&types.QueryMessagesAndContractsRequest{},
 			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryGasProviderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gasprovider [gas-provider-id]",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Query details of the gas provider",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of the gas provider
+Example:
+$ %s query %s gasprovider
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			gasProviderId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse gas_provider_id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasProvider(
+				cmd.Context(),
+				&types.QueryGasProviderRequest{
+					GasProviderId: gasProviderId,
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryGasProvidersCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gasproviders ",
+		Args:  cobra.MinimumNArgs(0),
+		Short: "Query details of all the gas providers",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of all the gas providers
+Example:
+$ %s query %s gasproviders
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasProviders(
+				cmd.Context(),
+				&types.QueryGasProvidersRequest{
+					Pagination: pageReq,
+				},
+			)
+
 			if err != nil {
 				return err
 			}

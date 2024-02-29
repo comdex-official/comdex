@@ -28,3 +28,20 @@ func ItemExists(array []string, item string) bool {
 	}
 	return false
 }
+
+func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProviderResponse {
+	return GasProviderResponse{
+		Id:                     gasProvider.Id,
+		Creator:                gasProvider.Creator,
+		GasTankAddress:         gasProvider.GasTank,
+		GasTankBalances:        balances,
+		IsActive:               gasProvider.IsActive,
+		MaxTxsCountPerConsumer: gasProvider.MaxTxsCountPerConsumer,
+		MaxFeeUsagePerConsumer: gasProvider.MaxFeeUsagePerConsumer,
+		MaxFeeUsagePerTx:       gasProvider.MaxFeeUsagePerTx,
+		TxsAllowed:             gasProvider.TxsAllowed,
+		ContractsAllowed:       gasProvider.ContractsAllowed,
+		AuthorizedActors:       gasProvider.AuthorizedActors,
+		FeeDenom:               gasProvider.FeeDenom,
+	}
+}

@@ -4,6 +4,8 @@ package comdex.gasless.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/gasless/v1beta1/params.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 
@@ -30,6 +32,41 @@ message QueryMessagesAndContractsResponse {
   repeated ContractDetails contracts = 2;
 }
 
+message GasProviderResponse {
+  uint64 id = 1;
+  string creator = 2;
+  string gas_tank_address = 3;
+  repeated cosmos.base.v1beta1.Coin gas_tank_balances = 4 [(gogoproto.nullable) = false];
+  bool is_active = 5;
+  uint64 max_txs_count_per_consumer = 6;
+  string max_fee_usage_per_consumer = 7 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+  string max_fee_usage_per_tx = 8 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+  repeated string txs_allowed = 9;
+  repeated string contracts_allowed = 10;
+  repeated string authorized_actors = 11;
+  string fee_denom = 12;
+}
+
+// QueryGasProviderRequest is a request type for the Query/GasProvider RPC method.
+message QueryGasProviderRequest {
+  uint64 gas_provider_id = 1;
+}
+
+// QueryGasProviderResponse is a response type for the Query/GasProvider RPC method.
+message QueryGasProviderResponse {
+  GasProviderResponse gas_provider = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryGasProvidersRequest is a request type for the Query/GasProviders RPC method.
+message QueryGasProvidersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryGasProvidersResponse is a response type for the Query/GasProviders RPC method.
+message QueryGasProvidersResponse {
+  repeated GasProviderResponse gas_providers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 // Query defines the gRPC querier service.
 service Query {
@@ -41,5 +78,15 @@ service Query {
   // MessagesAndContracts return all cosmos.base.v1beta1.Msg messages and available contract details 
   rpc MessagesAndContracts(QueryMessagesAndContractsRequest) returns (QueryMessagesAndContractsResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/mac";
+  }
+
+  // GasProvider returns gas provider details details 
+  rpc GasProvider(QueryGasProviderRequest) returns (QueryGasProviderResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/provider/{gas_provider_id}";
+  }
+
+  // GasProviders return details of all the gas providers
+  rpc GasProviders(QueryGasProvidersRequest) returns (QueryGasProvidersResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/providers";
   }
 }
