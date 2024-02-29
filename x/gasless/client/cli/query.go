@@ -12,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 
 	"github.com/comdex-official/comdex/x/gasless/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.
@@ -29,6 +30,8 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryMessagesAndContractsCmd(),
 		NewQueryGasProviderCmd(),
 		NewQueryGasProvidersCmd(),
+		NewQueryGasConsumerCmd(),
+		NewQueryGasConsumersCmd(),
 	)
 
 	return cmd
@@ -128,7 +131,7 @@ $ %s query %s gasprovider
 				return err
 			}
 
-			gasProviderId, err := strconv.ParseUint(args[0], 10, 64)
+			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return fmt.Errorf("parse gas_provider_id: %w", err)
 			}
@@ -137,7 +140,7 @@ $ %s query %s gasprovider
 			resp, err := queryClient.GasProvider(
 				cmd.Context(),
 				&types.QueryGasProviderRequest{
-					GasProviderId: gasProviderId,
+					GasProviderId: gasProviderID,
 				},
 			)
 
@@ -182,6 +185,96 @@ $ %s query %s gasproviders
 			resp, err := queryClient.GasProviders(
 				cmd.Context(),
 				&types.QueryGasProvidersRequest{
+					Pagination: pageReq,
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryGasConsumerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gasconsumer [consumer]",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Query details of the gas consumer",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of the gas consumer
+Example:
+$ %s query %s gasconsumer
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasConsumer(
+				cmd.Context(),
+				&types.QueryGasConsumerRequest{
+					Consumer: sanitizedConsumer.String(),
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryGasConsumersCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gasconsumers ",
+		Args:  cobra.MinimumNArgs(0),
+		Short: "Query details of all the gas consumers",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of all the gas consumers
+Example:
+$ %s query %s gasconsumers
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasConsumers(
+				cmd.Context(),
+				&types.QueryGasConsumersRequest{
 					Pagination: pageReq,
 				},
 			)

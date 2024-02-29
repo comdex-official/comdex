@@ -30,6 +30,8 @@ func GetTxCmd() *cobra.Command {
 		NewAuthorizeActorsCmd(),
 		NewUpdateGasProviderStatusCmd(),
 		NewUpdateGasProviderConfigsCmd(),
+		NewBlockConsumerCmd(),
+		NewUnblockConsumerCmd(),
 	)
 
 	return cmd
@@ -273,6 +275,100 @@ $ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1be
 				maxFeeUsagePerConsumer,
 				txsAllowed,
 				contractsAllowed,
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewBlockConsumerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "block-consumer [gas-provider-id] [consumer]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Block consumer",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Block consumer.
+Example:
+$ %s tx %s block-consumer 1 comdex1.. --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse gas-provider-id: %w", err)
+			}
+
+			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgBlockConsumer(
+				gasProviderID,
+				clientCtx.GetFromAddress(),
+				sanitizedConsumer,
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewUnblockConsumerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "unblock-consumer [gas-provider-id] [consumer]",
+		Args:  cobra.ExactArgs(2),
+		Short: "Unblock consumer",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Unblock consumer.
+Example:
+$ %s tx %s unblock-consumer 1 comdex1.. --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse gas-provider-id: %w", err)
+			}
+
+			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUnblockConsumer(
+				gasProviderID,
+				clientCtx.GetFromAddress(),
+				sanitizedConsumer,
 			)
 			if err = msg.ValidateBasic(); err != nil {
 				return err
