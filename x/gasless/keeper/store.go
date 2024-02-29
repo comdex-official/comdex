@@ -173,10 +173,19 @@ func (k Keeper) SetGasConsumer(ctx sdk.Context, gasConsumer types.GasConsumer) {
 	store.Set(types.GetGasConsumerKey(sdk.MustAccAddressFromBech32(gasConsumer.Consumer)), bz)
 }
 
-func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress) types.GasConsumer {
+func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress, gasProvider types.GasProvider) types.GasConsumer {
 	gasConsumer, found := k.GetGasConsumer(ctx, consumer)
 	if !found {
 		gasConsumer = types.NewGasConsumer(consumer)
+	}
+	if gasConsumer.Consumption == nil {
+		gasConsumer.Consumption = make(map[uint64]*types.ConsumptionDetail)
+	}
+	if _, ok := gasConsumer.Consumption[gasProvider.Id]; !ok {
+		gasConsumer.Consumption[gasProvider.Id] = types.NewConsumptionDetail(
+			gasProvider.MaxTxsCountPerConsumer,
+			sdk.NewCoin(gasProvider.FeeDenom, gasProvider.MaxFeeUsagePerConsumer),
+		)
 		k.SetGasConsumer(ctx, gasConsumer)
 	}
 	return gasConsumer

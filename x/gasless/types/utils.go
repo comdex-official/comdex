@@ -57,3 +57,20 @@ func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProv
 		FeeDenom:               gasProvider.FeeDenom,
 	}
 }
+
+func NewConsumptionDetail(
+	txsAllowed uint64,
+	feeConsumptionAllowed sdk.Coin,
+) *ConsumptionDetail {
+	return &ConsumptionDetail{
+		IsBlocked:                  false,
+		TotalTxsAllowed:            txsAllowed,
+		TotalTxsMade:               0,
+		TotalFeeConsumptionAllowed: feeConsumptionAllowed,
+		TotalFeesConsumed:          sdk.NewCoin(feeConsumptionAllowed.Denom, sdk.ZeroInt()),
+		Usage: &Usage{
+			Txs:       make(map[string]*UsageDetails),
+			Contracts: make(map[string]*UsageDetails),
+		},
+	}
+}

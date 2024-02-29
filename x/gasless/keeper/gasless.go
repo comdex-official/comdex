@@ -359,7 +359,10 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 		return types.GasConsumer{}, err
 	}
 
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer))
+	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
+	gasConsumer.Consumption[msg.GasProviderId].IsBlocked = true
+	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -405,7 +408,10 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 		return types.GasConsumer{}, err
 	}
 
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer))
+	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
+	gasConsumer.Consumption[msg.GasProviderId].IsBlocked = false
+	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
