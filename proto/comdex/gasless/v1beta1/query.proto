@@ -4,6 +4,7 @@ package comdex.gasless.v1beta1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "comdex/gasless/v1beta1/params.proto";
+import "comdex/gasless/v1beta1/gasless.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
@@ -68,6 +69,27 @@ message QueryGasProvidersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryGasConsumerRequest is a request type for the Query/GasConsumer RPC method.
+message QueryGasConsumerRequest {
+  string consumer = 1;
+}
+
+// QueryGasConsumerResponse is a response type for the Query/GasConsumer RPC method.
+message QueryGasConsumerResponse {
+  GasConsumer gas_consumer = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryGasConsumersRequest is a request type for the Query/GasConsumers RPC method.
+message QueryGasConsumersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryGasConsumersResponse is a response type for the Query/GasConsumers RPC method.
+message QueryGasConsumersResponse {
+  repeated GasConsumer gas_consumers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 // Query defines the gRPC querier service.
 service Query {
   // Params returns parameters of the module.
@@ -80,7 +102,7 @@ service Query {
     option (google.api.http).get = "/comdex/gasless/v1beta1/mac";
   }
 
-  // GasProvider returns gas provider details details 
+  // GasProvider returns gas provider details 
   rpc GasProvider(QueryGasProviderRequest) returns (QueryGasProviderResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/provider/{gas_provider_id}";
   }
@@ -88,5 +110,15 @@ service Query {
   // GasProviders return details of all the gas providers
   rpc GasProviders(QueryGasProvidersRequest) returns (QueryGasProvidersResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/providers";
+  }
+
+  // GasConsumer returns gas consumer details 
+  rpc GasConsumer(QueryGasConsumerRequest) returns (QueryGasConsumerResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/consumer/{consumer}";
+  }
+
+  // GasConsumers return details of all the gas consumers
+  rpc GasConsumers(QueryGasConsumersRequest) returns (QueryGasConsumersResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/consumers";
   }
 }

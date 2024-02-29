@@ -19,6 +19,12 @@ service Msg {
 
     // UpdateGasProviderConfigs defines a method for updating the configs of gas provider
     rpc UpdateGasProviderConfigs(MsgUpdateGasProviderConfig) returns (MsgUpdateGasProviderConfigResponse);
+
+    // BlockConsumer defines a method for blocking a suspected malicious consumer
+    rpc BlockConsumer(MsgBlockConsumer) returns (MsgBlockConsumerResponse);
+
+    // UnblockConsumer defines a method for unblocking consumer
+    rpc UnblockConsumer(MsgUnblockConsumer) returns (MsgUnblockConsumerResponse);
 }
 
 
@@ -101,3 +107,31 @@ message MsgUpdateGasProviderConfig {
 }
 
 message MsgUpdateGasProviderConfigResponse {}
+
+// MsgBlockConsumer defines an SDK message for blocking the  suspected malicious consumer.
+message MsgBlockConsumer {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // actor specifies the bech32-encoded address that is the gas provider or authorized actor.
+    string actor = 2;
+    
+    // consumer specifies the bech32-encoded address of a consumer.
+    string consumer = 3;
+}
+
+message MsgBlockConsumerResponse {}
+
+// MsgUnblockConsumer defines an SDK message for unblocking consumer.
+message MsgUnblockConsumer {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // actor specifies the bech32-encoded address that is the gas provider or authorized actor.
+    string actor = 2;
+    
+    // consumer specifies the bech32-encoded address of a consumer.
+    string consumer = 3;
+}
+
+message MsgUnblockConsumerResponse {}

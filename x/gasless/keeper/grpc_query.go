@@ -96,3 +96,55 @@ func (k Querier) GasProviders(c context.Context, req *types.QueryGasProvidersReq
 		Pagination:   pageRes,
 	}, nil
 }
+
+func (k Querier) GasConsumer(c context.Context, req *types.QueryGasConsumerRequest) (*types.QueryGasConsumerResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(req.Consumer); err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid consumer address")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	gc, found := k.GetGasConsumer(ctx, sdk.MustAccAddressFromBech32(req.Consumer))
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "gas consumer %s not found", req.Consumer)
+	}
+	return &types.QueryGasConsumerResponse{
+		GasConsumer: gc,
+	}, nil
+}
+
+func (k Querier) GasConsumers(c context.Context, req *types.QueryGasConsumersRequest) (*types.QueryGasConsumersResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+	store := ctx.KVStore(k.storeKey)
+
+	keyPrefix := types.GetAllGasConsumersKey()
+	gcGetter := func(_, value []byte) types.GasConsumer {
+		return types.MustUnmarshalGasConsumer(k.cdc, value)
+	}
+	gcStore := prefix.NewStore(store, keyPrefix)
+	var gasConsumers []types.GasConsumer
+
+	pageRes, err := query.FilteredPaginate(gcStore, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
+		gc := gcGetter(key, value)
+		if accumulate {
+			gasConsumers = append(gasConsumers, gc)
+		}
+
+		return true, nil
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &types.QueryGasConsumersResponse{
+		GasConsumers: gasConsumers,
+		Pagination:   pageRes,
+	}, nil
+}

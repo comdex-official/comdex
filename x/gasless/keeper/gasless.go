@@ -159,6 +159,10 @@ func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthor
 		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
 	}
 
+	if !gasProvider.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
@@ -241,6 +245,10 @@ func (k Keeper) ValidateMsgUpdateGasProviderConfig(ctx sdk.Context, msg *types.M
 		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
 	}
 
+	if !gasProvider.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
@@ -317,4 +325,96 @@ func (k Keeper) UpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGas
 	})
 
 	return gasProvider, nil
+}
+
+func (k Keeper) ValidateMsgBlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) error {
+	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	if !found {
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+	}
+
+	if !gasProvider.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid actor address: %v", err)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+
+	authorizedActors := gasProvider.AuthorizedActors
+	authorizedActors = append(authorizedActors, gasProvider.Creator)
+
+	if !types.ItemExists(authorizedActors, msg.Actor) {
+		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor")
+	}
+	return nil
+}
+
+func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (types.GasConsumer, error) {
+	if err := k.ValidateMsgBlockConsumer(ctx, msg); err != nil {
+		return types.GasConsumer{}, err
+	}
+
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer))
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeBlockConsumer,
+			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(msg.GasProviderId, 10)),
+		),
+	})
+
+	return gasConsumer, nil
+}
+
+func (k Keeper) ValidateMsgUnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) error {
+	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	if !found {
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+	}
+
+	if !gasProvider.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid actor address: %v", err)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+
+	authorizedActors := gasProvider.AuthorizedActors
+	authorizedActors = append(authorizedActors, gasProvider.Creator)
+
+	if !types.ItemExists(authorizedActors, msg.Actor) {
+		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor")
+	}
+	return nil
+}
+
+func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) (types.GasConsumer, error) {
+	if err := k.ValidateMsgUnblockConsumer(ctx, msg); err != nil {
+		return types.GasConsumer{}, err
+	}
+
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer))
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeUnblockConsumer,
+			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(msg.GasProviderId, 10)),
+		),
+	})
+
+	return gasConsumer, nil
 }

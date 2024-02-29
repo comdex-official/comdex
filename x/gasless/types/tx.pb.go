@@ -474,6 +474,206 @@ func (m *MsgUpdateGasProviderConfigResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGasProviderConfigResponse proto.InternalMessageInfo
 
+// MsgBlockConsumer defines an SDK message for blocking the  suspected malicious consumer.
+type MsgBlockConsumer struct {
+	// gas_provider_id specifies the id of the gas provider
+	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// actor specifies the bech32-encoded address that is the gas provider or authorized actor.
+	Actor string `protobuf:"bytes,2,opt,name=actor,proto3" json:"actor,omitempty"`
+	// consumer specifies the bech32-encoded address of a consumer.
+	Consumer string `protobuf:"bytes,3,opt,name=consumer,proto3" json:"consumer,omitempty"`
+}
+
+func (m *MsgBlockConsumer) Reset()         { *m = MsgBlockConsumer{} }
+func (m *MsgBlockConsumer) String() string { return proto.CompactTextString(m) }
+func (*MsgBlockConsumer) ProtoMessage()    {}
+func (*MsgBlockConsumer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_58c8d01c81a883a9, []int{8}
+}
+func (m *MsgBlockConsumer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBlockConsumer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBlockConsumer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBlockConsumer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBlockConsumer.Merge(m, src)
+}
+func (m *MsgBlockConsumer) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBlockConsumer) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBlockConsumer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBlockConsumer proto.InternalMessageInfo
+
+func (m *MsgBlockConsumer) GetGasProviderId() uint64 {
+	if m != nil {
+		return m.GasProviderId
+	}
+	return 0
+}
+
+func (m *MsgBlockConsumer) GetActor() string {
+	if m != nil {
+		return m.Actor
+	}
+	return ""
+}
+
+func (m *MsgBlockConsumer) GetConsumer() string {
+	if m != nil {
+		return m.Consumer
+	}
+	return ""
+}
+
+type MsgBlockConsumerResponse struct {
+}
+
+func (m *MsgBlockConsumerResponse) Reset()         { *m = MsgBlockConsumerResponse{} }
+func (m *MsgBlockConsumerResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgBlockConsumerResponse) ProtoMessage()    {}
+func (*MsgBlockConsumerResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_58c8d01c81a883a9, []int{9}
+}
+func (m *MsgBlockConsumerResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBlockConsumerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBlockConsumerResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBlockConsumerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBlockConsumerResponse.Merge(m, src)
+}
+func (m *MsgBlockConsumerResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBlockConsumerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBlockConsumerResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBlockConsumerResponse proto.InternalMessageInfo
+
+// MsgUnblockConsumer defines an SDK message for unblocking consumer.
+type MsgUnblockConsumer struct {
+	// gas_provider_id specifies the id of the gas provider
+	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// actor specifies the bech32-encoded address that is the gas provider or authorized actor.
+	Actor string `protobuf:"bytes,2,opt,name=actor,proto3" json:"actor,omitempty"`
+	// consumer specifies the bech32-encoded address of a consumer.
+	Consumer string `protobuf:"bytes,3,opt,name=consumer,proto3" json:"consumer,omitempty"`
+}
+
+func (m *MsgUnblockConsumer) Reset()         { *m = MsgUnblockConsumer{} }
+func (m *MsgUnblockConsumer) String() string { return proto.CompactTextString(m) }
+func (*MsgUnblockConsumer) ProtoMessage()    {}
+func (*MsgUnblockConsumer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_58c8d01c81a883a9, []int{10}
+}
+func (m *MsgUnblockConsumer) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUnblockConsumer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUnblockConsumer.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUnblockConsumer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnblockConsumer.Merge(m, src)
+}
+func (m *MsgUnblockConsumer) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUnblockConsumer) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnblockConsumer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUnblockConsumer proto.InternalMessageInfo
+
+func (m *MsgUnblockConsumer) GetGasProviderId() uint64 {
+	if m != nil {
+		return m.GasProviderId
+	}
+	return 0
+}
+
+func (m *MsgUnblockConsumer) GetActor() string {
+	if m != nil {
+		return m.Actor
+	}
+	return ""
+}
+
+func (m *MsgUnblockConsumer) GetConsumer() string {
+	if m != nil {
+		return m.Consumer
+	}
+	return ""
+}
+
+type MsgUnblockConsumerResponse struct {
+}
+
+func (m *MsgUnblockConsumerResponse) Reset()         { *m = MsgUnblockConsumerResponse{} }
+func (m *MsgUnblockConsumerResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUnblockConsumerResponse) ProtoMessage()    {}
+func (*MsgUnblockConsumerResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_58c8d01c81a883a9, []int{11}
+}
+func (m *MsgUnblockConsumerResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUnblockConsumerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUnblockConsumerResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUnblockConsumerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnblockConsumerResponse.Merge(m, src)
+}
+func (m *MsgUnblockConsumerResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUnblockConsumerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnblockConsumerResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUnblockConsumerResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreateGasProvider)(nil), "comdex.gasless.v1beta1.MsgCreateGasProvider")
 	proto.RegisterType((*MsgCreateGasProviderResponse)(nil), "comdex.gasless.v1beta1.MsgCreateGasProviderResponse")
@@ -483,53 +683,62 @@ func init() {
 	proto.RegisterType((*MsgUpdateGasProviderStatusResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderStatusResponse")
 	proto.RegisterType((*MsgUpdateGasProviderConfig)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderConfig")
 	proto.RegisterType((*MsgUpdateGasProviderConfigResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderConfigResponse")
+	proto.RegisterType((*MsgBlockConsumer)(nil), "comdex.gasless.v1beta1.MsgBlockConsumer")
+	proto.RegisterType((*MsgBlockConsumerResponse)(nil), "comdex.gasless.v1beta1.MsgBlockConsumerResponse")
+	proto.RegisterType((*MsgUnblockConsumer)(nil), "comdex.gasless.v1beta1.MsgUnblockConsumer")
+	proto.RegisterType((*MsgUnblockConsumerResponse)(nil), "comdex.gasless.v1beta1.MsgUnblockConsumerResponse")
 }
 
 func init() { proto.RegisterFile("comdex/gasless/v1beta1/tx.proto", fileDescriptor_58c8d01c81a883a9) }
 
 var fileDescriptor_58c8d01c81a883a9 = []byte{
-	// 647 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x95, 0xcd, 0x6e, 0xd3, 0x4e,
-	0x14, 0xc5, 0xe3, 0x7f, 0xf2, 0xef, 0xc7, 0x54, 0xa8, 0xed, 0xa8, 0x04, 0x63, 0x8a, 0x13, 0x45,
-	0x08, 0x45, 0x7c, 0xd8, 0x6a, 0x61, 0xd5, 0x15, 0x6d, 0x2a, 0x50, 0x85, 0x22, 0x55, 0xa6, 0x5d,
-	0xc0, 0xc6, 0x4c, 0xec, 0x9b, 0xa9, 0x45, 0xec, 0x31, 0x33, 0x93, 0xd6, 0xf0, 0x06, 0x74, 0xc5,
-	0x82, 0x37, 0x62, 0xd3, 0x65, 0x97, 0x88, 0x45, 0x85, 0xda, 0x17, 0x41, 0x63, 0xc7, 0x8e, 0xd2,
-	0x26, 0x55, 0x23, 0x75, 0xc9, 0x2e, 0xd7, 0xf7, 0xdc, 0x33, 0xbf, 0xe4, 0xe4, 0x7a, 0x50, 0xcd,
-	0x63, 0xa1, 0x0f, 0x89, 0x4d, 0x89, 0xe8, 0x81, 0x10, 0xf6, 0xe1, 0x5a, 0x07, 0x24, 0x59, 0xb3,
-	0x65, 0x62, 0xc5, 0x9c, 0x49, 0x86, 0xab, 0x99, 0xc0, 0x1a, 0x08, 0xac, 0x81, 0xc0, 0x58, 0xa1,
-	0x8c, 0xb2, 0x54, 0x62, 0xab, 0x4f, 0x99, 0xda, 0x30, 0x3d, 0x26, 0x42, 0x26, 0xec, 0x0e, 0x11,
-	0x50, 0x78, 0x79, 0x2c, 0x88, 0xb2, 0x7e, 0xe3, 0x67, 0x19, 0xad, 0xb4, 0x05, 0x6d, 0x71, 0x20,
-	0x12, 0xde, 0x10, 0xb1, 0xcb, 0xd9, 0x61, 0xe0, 0x03, 0xc7, 0x3a, 0x9a, 0xf5, 0xd4, 0x43, 0xc6,
-	0x75, 0xad, 0xae, 0x35, 0xe7, 0x9d, 0xbc, 0xc4, 0x0f, 0xd0, 0x7c, 0x17, 0xc0, 0xf5, 0x21, 0x62,
-	0xa1, 0xfe, 0x5f, 0xda, 0x9b, 0xeb, 0x02, 0x6c, 0xab, 0x1a, 0xb7, 0xd1, 0x4a, 0x48, 0x12, 0x57,
-	0x09, 0xfa, 0x82, 0x50, 0x70, 0x63, 0xe0, 0xae, 0x4c, 0xf4, 0xb2, 0xd2, 0x6d, 0x3d, 0x3c, 0x39,
-	0xab, 0x95, 0x7e, 0x9f, 0xd5, 0xee, 0x66, 0x54, 0xc2, 0xff, 0x64, 0x05, 0xcc, 0x0e, 0x89, 0x3c,
-	0xb0, 0x76, 0x22, 0xe9, 0x2c, 0x85, 0x24, 0x79, 0x0d, 0xb0, 0xaf, 0x06, 0x77, 0x81, 0xef, 0x25,
-	0x78, 0x03, 0x19, 0xca, 0x4e, 0x26, 0xc2, 0xf5, 0x58, 0x3f, 0x92, 0xa9, 0x9d, 0xc7, 0x22, 0xd1,
-	0x0f, 0x81, 0xeb, 0x95, 0xba, 0xd6, 0xac, 0x38, 0xd5, 0x90, 0x24, 0x7b, 0x89, 0x68, 0xa9, 0xfe,
-	0x2e, 0xf0, 0xd6, 0xa0, 0x8b, 0xdf, 0x67, 0xb3, 0xa3, 0x28, 0xc5, 0xec, 0xff, 0x37, 0x01, 0xaa,
-	0x8e, 0x02, 0x15, 0xd6, 0x35, 0xb4, 0xa0, 0x90, 0x48, 0xaf, 0xc7, 0x8e, 0xc0, 0xd7, 0x67, 0xea,
-	0xe5, 0xe6, 0xbc, 0x83, 0x64, 0x22, 0x36, 0xb3, 0x27, 0xf8, 0x29, 0x5a, 0xf6, 0x58, 0x24, 0x39,
-	0xf1, 0xe4, 0x50, 0x36, 0x9b, 0xca, 0x96, 0x8a, 0x46, 0x2e, 0x7e, 0x85, 0x16, 0x28, 0x11, 0xae,
-	0x0f, 0x31, 0x13, 0x81, 0xd4, 0xe7, 0xea, 0x5a, 0x73, 0x61, 0xfd, 0xbe, 0x95, 0x21, 0x59, 0x2a,
-	0xb9, 0x3c, 0x64, 0xab, 0xc5, 0x82, 0x68, 0xab, 0xa2, 0xa0, 0x1d, 0x44, 0x89, 0xd8, 0xce, 0x46,
-	0x1a, 0x26, 0x5a, 0x1d, 0x17, 0xa2, 0x03, 0x22, 0x66, 0x91, 0x80, 0x46, 0x8c, 0x70, 0x5b, 0xd0,
-	0xcd, 0xbe, 0x3c, 0x60, 0x3c, 0xf8, 0x0a, 0x9b, 0x9e, 0x64, 0x5c, 0xe0, 0xc7, 0x68, 0x51, 0x9d,
-	0x1b, 0x0f, 0xd4, 0x6e, 0xe0, 0xa7, 0x51, 0x57, 0x9c, 0x3b, 0x74, 0xe8, 0xb1, 0xe3, 0x63, 0x03,
-	0xcd, 0xe5, 0x9a, 0x3c, 0xef, 0xbc, 0xc6, 0x55, 0x34, 0x43, 0x52, 0x37, 0xbd, 0x9c, 0x7e, 0xbb,
-	0x41, 0xd5, 0x58, 0x45, 0xc6, 0xd5, 0x13, 0x0b, 0x9e, 0x8f, 0x69, 0x77, 0x3f, 0xf6, 0x47, 0x79,
-	0xdf, 0x49, 0x22, 0xfb, 0xb7, 0xc2, 0xd5, 0x78, 0x84, 0x1a, 0x93, 0x4f, 0x28, 0x38, 0x7e, 0x94,
-	0xc7, 0x83, 0xb4, 0x58, 0xd4, 0x0d, 0xe8, 0xad, 0xfc, 0x40, 0xff, 0x16, 0x62, 0xea, 0x85, 0x98,
-	0x14, 0x5e, 0x96, 0x4a, 0x1e, 0xde, 0xfa, 0x71, 0x05, 0x95, 0xdb, 0x82, 0xe2, 0x23, 0xb4, 0x7c,
-	0xf5, 0xf5, 0xf5, 0xcc, 0x1a, 0xff, 0x9a, 0xb4, 0xc6, 0xed, 0x89, 0xf1, 0x72, 0x1a, 0x75, 0x0e,
-	0x80, 0x3f, 0xa3, 0xc5, 0xcb, 0x2b, 0xf5, 0xe4, 0x1a, 0xa3, 0x4b, 0x5a, 0x63, 0xfd, 0xe6, 0xda,
-	0xe2, 0xc8, 0x6f, 0x1a, 0xba, 0x37, 0x69, 0x6d, 0xae, 0xf3, 0x9b, 0x30, 0x63, 0x6c, 0x4c, 0x3f,
-	0x53, 0xb0, 0x1c, 0x6b, 0x48, 0x9f, 0x90, 0xd1, 0x94, 0x30, 0xd9, 0xd0, 0x74, 0x30, 0xa3, 0x7f,
-	0x86, 0xad, 0xb7, 0x27, 0xe7, 0xa6, 0x76, 0x7a, 0x6e, 0x6a, 0x7f, 0xce, 0x4d, 0xed, 0xfb, 0x85,
-	0x59, 0x3a, 0xbd, 0x30, 0x4b, 0xbf, 0x2e, 0xcc, 0xd2, 0x87, 0x35, 0x1a, 0xc8, 0x83, 0x7e, 0x47,
-	0x79, 0xdb, 0x99, 0xff, 0x73, 0xd6, 0xed, 0x06, 0x5e, 0x40, 0x7a, 0x83, 0xda, 0x1e, 0xde, 0xb6,
-	0xf2, 0x4b, 0x0c, 0xa2, 0x33, 0x93, 0xde, 0x8d, 0x2f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0xe1,
-	0xd3, 0xd3, 0x4b, 0x8c, 0x07, 0x00, 0x00,
+	// 734 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x96, 0xcd, 0x6e, 0xd3, 0x4a,
+	0x14, 0xc7, 0xe3, 0xeb, 0xf4, 0x6b, 0xaa, 0xaa, 0xed, 0x28, 0x37, 0xd7, 0xd7, 0xb7, 0xd7, 0x89,
+	0x2c, 0x84, 0x22, 0x3e, 0x6c, 0x5a, 0x58, 0x75, 0x45, 0x93, 0x0a, 0x54, 0xa1, 0x48, 0x95, 0x69,
+	0x17, 0xb0, 0x31, 0x13, 0x7b, 0xe2, 0x5a, 0x8d, 0x3d, 0xc6, 0x33, 0x69, 0x0d, 0x6f, 0x00, 0x2b,
+	0x16, 0xbc, 0x11, 0x9b, 0x2e, 0xbb, 0x44, 0x2c, 0x2a, 0xd4, 0xee, 0x78, 0x0a, 0x34, 0x1e, 0xdb,
+	0x25, 0x69, 0x12, 0x25, 0x52, 0xc5, 0x8a, 0x5d, 0x8f, 0xcf, 0xff, 0x9c, 0xf3, 0xab, 0xff, 0x73,
+	0x26, 0x06, 0x35, 0x87, 0x04, 0x2e, 0x4e, 0x4c, 0x0f, 0xd1, 0x1e, 0xa6, 0xd4, 0x3c, 0xd9, 0xec,
+	0x60, 0x86, 0x36, 0x4d, 0x96, 0x18, 0x51, 0x4c, 0x18, 0x81, 0x55, 0x21, 0x30, 0x32, 0x81, 0x91,
+	0x09, 0xd4, 0x8a, 0x47, 0x3c, 0x92, 0x4a, 0x4c, 0xfe, 0x97, 0x50, 0xab, 0x9a, 0x43, 0x68, 0x40,
+	0xa8, 0xd9, 0x41, 0x14, 0x17, 0xbd, 0x1c, 0xe2, 0x87, 0x22, 0xaf, 0x7f, 0x91, 0x41, 0xa5, 0x4d,
+	0xbd, 0x56, 0x8c, 0x11, 0xc3, 0xcf, 0x11, 0xdd, 0x8f, 0xc9, 0x89, 0xef, 0xe2, 0x18, 0x2a, 0x60,
+	0xc1, 0xe1, 0x0f, 0x49, 0xac, 0x48, 0x75, 0xa9, 0xb1, 0x64, 0xe5, 0x21, 0xfc, 0x0f, 0x2c, 0x75,
+	0x31, 0xb6, 0x5d, 0x1c, 0x92, 0x40, 0xf9, 0x2b, 0xcd, 0x2d, 0x76, 0x31, 0xde, 0xe5, 0x31, 0x6c,
+	0x83, 0x4a, 0x80, 0x12, 0x9b, 0x0b, 0xfa, 0x14, 0x79, 0xd8, 0x8e, 0x70, 0x6c, 0xb3, 0x44, 0x91,
+	0xb9, 0xae, 0xf9, 0xff, 0xd9, 0x45, 0xad, 0xf4, 0xed, 0xa2, 0xf6, 0xb7, 0xa0, 0xa2, 0xee, 0xb1,
+	0xe1, 0x13, 0x33, 0x40, 0xec, 0xc8, 0xd8, 0x0b, 0x99, 0xb5, 0x16, 0xa0, 0xe4, 0x19, 0xc6, 0x87,
+	0xbc, 0x70, 0x1f, 0xc7, 0x07, 0x09, 0xdc, 0x06, 0x2a, 0x6f, 0xc7, 0x12, 0x6a, 0x3b, 0xa4, 0x1f,
+	0xb2, 0xb4, 0x9d, 0x43, 0x42, 0xda, 0x0f, 0x70, 0xac, 0x94, 0xeb, 0x52, 0xa3, 0x6c, 0x55, 0x03,
+	0x94, 0x1c, 0x24, 0xb4, 0xc5, 0xf3, 0xfb, 0x38, 0x6e, 0x65, 0x59, 0xf8, 0x4a, 0xd4, 0x0e, 0xa2,
+	0x14, 0xb5, 0x73, 0xd3, 0x00, 0x55, 0x07, 0x81, 0x8a, 0xd6, 0x35, 0xb0, 0xcc, 0x91, 0x50, 0xaf,
+	0x47, 0x4e, 0xb1, 0xab, 0xcc, 0xd7, 0xe5, 0xc6, 0x92, 0x05, 0x58, 0x42, 0x77, 0xc4, 0x13, 0x78,
+	0x1f, 0xac, 0x3b, 0x24, 0x64, 0x31, 0x72, 0xd8, 0xb5, 0x6c, 0x21, 0x95, 0xad, 0x15, 0x89, 0x5c,
+	0xfc, 0x14, 0x2c, 0x7b, 0x88, 0xda, 0x2e, 0x8e, 0x08, 0xf5, 0x99, 0xb2, 0x58, 0x97, 0x1a, 0xcb,
+	0x5b, 0xff, 0x1a, 0x02, 0xc9, 0xe0, 0xce, 0xe5, 0x26, 0x1b, 0x2d, 0xe2, 0x87, 0xcd, 0x32, 0x87,
+	0xb6, 0x80, 0x87, 0xe8, 0xae, 0x28, 0xd1, 0x35, 0xb0, 0x31, 0xca, 0x44, 0x0b, 0xd3, 0x88, 0x84,
+	0x14, 0xeb, 0x11, 0x80, 0x6d, 0xea, 0xed, 0xf4, 0xd9, 0x11, 0x89, 0xfd, 0xf7, 0x78, 0xc7, 0x61,
+	0x24, 0xa6, 0xf0, 0x2e, 0x58, 0xe5, 0x73, 0xa3, 0x4c, 0x6d, 0xfb, 0x6e, 0x6a, 0x75, 0xd9, 0x5a,
+	0xf1, 0xae, 0x7b, 0xec, 0xb9, 0x50, 0x05, 0x8b, 0xb9, 0x26, 0xf7, 0x3b, 0x8f, 0x61, 0x15, 0xcc,
+	0xa3, 0xb4, 0x9b, 0x22, 0xa7, 0xff, 0x5d, 0x16, 0xe9, 0x1b, 0x40, 0xbd, 0x39, 0xb1, 0xe0, 0x79,
+	0x93, 0x66, 0x0f, 0x23, 0x77, 0x90, 0xf7, 0x25, 0x43, 0xac, 0x7f, 0x2b, 0x5c, 0xfa, 0x1d, 0xa0,
+	0x8f, 0x9f, 0x50, 0x70, 0x7c, 0x96, 0x47, 0x83, 0xb4, 0x48, 0xd8, 0xf5, 0xbd, 0x5b, 0x79, 0x41,
+	0x7f, 0x16, 0x62, 0xe6, 0x85, 0x18, 0x67, 0x9e, 0x70, 0xa5, 0x30, 0xaf, 0x07, 0xd6, 0xda, 0xd4,
+	0x6b, 0xf6, 0x88, 0x73, 0x5c, 0x70, 0x4c, 0xeb, 0x58, 0x05, 0xcc, 0xa5, 0x07, 0x35, 0xb3, 0x4b,
+	0x04, 0xdc, 0xc7, 0xe2, 0x75, 0xc8, 0xc2, 0xc7, 0x3c, 0xd6, 0x55, 0xa0, 0x0c, 0x4f, 0x2b, 0x48,
+	0xc2, 0x74, 0xbd, 0x0e, 0xc3, 0xce, 0x6f, 0x62, 0x11, 0xcb, 0x35, 0x34, 0x2f, 0xa7, 0xd9, 0xfa,
+	0x31, 0x07, 0xe4, 0x36, 0xf5, 0xe0, 0x29, 0x58, 0xbf, 0x79, 0xad, 0x3f, 0x30, 0x46, 0xff, 0x7c,
+	0x18, 0xa3, 0xee, 0x0f, 0xf5, 0xc9, 0x2c, 0xea, 0x1c, 0x00, 0xbe, 0x05, 0xab, 0xc3, 0x57, 0xcd,
+	0xbd, 0x09, 0x8d, 0x86, 0xb4, 0xea, 0xd6, 0xf4, 0xda, 0x62, 0xe4, 0x07, 0x09, 0xfc, 0x33, 0xee,
+	0x3a, 0x99, 0xd4, 0x6f, 0x4c, 0x8d, 0xba, 0x3d, 0x7b, 0x4d, 0xc1, 0xf2, 0x51, 0x02, 0xca, 0x98,
+	0xb3, 0x3b, 0x23, 0x8c, 0x28, 0x9a, 0x0d, 0x66, 0x70, 0x49, 0xe0, 0x31, 0x58, 0x19, 0xdc, 0x90,
+	0xc6, 0x84, 0x66, 0x03, 0x4a, 0xf5, 0xd1, 0xb4, 0xca, 0x5f, 0x8d, 0x1f, 0x5e, 0x82, 0x49, 0xc6,
+	0x0f, 0x69, 0x27, 0x1a, 0x3f, 0xe6, 0xb0, 0x37, 0x5f, 0x9c, 0x5d, 0x6a, 0xd2, 0xf9, 0xa5, 0x26,
+	0x7d, 0xbf, 0xd4, 0xa4, 0x4f, 0x57, 0x5a, 0xe9, 0xfc, 0x4a, 0x2b, 0x7d, 0xbd, 0xd2, 0x4a, 0xaf,
+	0x37, 0x3d, 0x9f, 0x1d, 0xf5, 0x3b, 0xbc, 0xa7, 0x29, 0xfa, 0x3e, 0x24, 0xdd, 0xae, 0xef, 0xf8,
+	0xa8, 0x97, 0xc5, 0xe6, 0xf5, 0x57, 0x16, 0x7b, 0x17, 0x61, 0xda, 0x99, 0x4f, 0xbf, 0x89, 0x1e,
+	0xff, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x68, 0x9a, 0x9e, 0xa1, 0x84, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -552,6 +761,10 @@ type MsgClient interface {
 	UpdateGasProviderStatus(ctx context.Context, in *MsgUpdateGasProviderStatus, opts ...grpc.CallOption) (*MsgUpdateGasProviderStatusResponse, error)
 	// UpdateGasProviderConfigs defines a method for updating the configs of gas provider
 	UpdateGasProviderConfigs(ctx context.Context, in *MsgUpdateGasProviderConfig, opts ...grpc.CallOption) (*MsgUpdateGasProviderConfigResponse, error)
+	// BlockConsumer defines a method for blocking a suspected malicious consumer
+	BlockConsumer(ctx context.Context, in *MsgBlockConsumer, opts ...grpc.CallOption) (*MsgBlockConsumerResponse, error)
+	// UnblockConsumer defines a method for unblocking consumer
+	UnblockConsumer(ctx context.Context, in *MsgUnblockConsumer, opts ...grpc.CallOption) (*MsgUnblockConsumerResponse, error)
 }
 
 type msgClient struct {
@@ -598,6 +811,24 @@ func (c *msgClient) UpdateGasProviderConfigs(ctx context.Context, in *MsgUpdateG
 	return out, nil
 }
 
+func (c *msgClient) BlockConsumer(ctx context.Context, in *MsgBlockConsumer, opts ...grpc.CallOption) (*MsgBlockConsumerResponse, error) {
+	out := new(MsgBlockConsumerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/BlockConsumer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UnblockConsumer(ctx context.Context, in *MsgUnblockConsumer, opts ...grpc.CallOption) (*MsgUnblockConsumerResponse, error) {
+	out := new(MsgUnblockConsumerResponse)
+	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/UnblockConsumer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateGasProvider defines a method for creating a new gas provider
@@ -608,6 +839,10 @@ type MsgServer interface {
 	UpdateGasProviderStatus(context.Context, *MsgUpdateGasProviderStatus) (*MsgUpdateGasProviderStatusResponse, error)
 	// UpdateGasProviderConfigs defines a method for updating the configs of gas provider
 	UpdateGasProviderConfigs(context.Context, *MsgUpdateGasProviderConfig) (*MsgUpdateGasProviderConfigResponse, error)
+	// BlockConsumer defines a method for blocking a suspected malicious consumer
+	BlockConsumer(context.Context, *MsgBlockConsumer) (*MsgBlockConsumerResponse, error)
+	// UnblockConsumer defines a method for unblocking consumer
+	UnblockConsumer(context.Context, *MsgUnblockConsumer) (*MsgUnblockConsumerResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -625,6 +860,12 @@ func (*UnimplementedMsgServer) UpdateGasProviderStatus(ctx context.Context, req 
 }
 func (*UnimplementedMsgServer) UpdateGasProviderConfigs(ctx context.Context, req *MsgUpdateGasProviderConfig) (*MsgUpdateGasProviderConfigResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateGasProviderConfigs not implemented")
+}
+func (*UnimplementedMsgServer) BlockConsumer(ctx context.Context, req *MsgBlockConsumer) (*MsgBlockConsumerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockConsumer not implemented")
+}
+func (*UnimplementedMsgServer) UnblockConsumer(ctx context.Context, req *MsgUnblockConsumer) (*MsgUnblockConsumerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnblockConsumer not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -703,6 +944,42 @@ func _Msg_UpdateGasProviderConfigs_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_BlockConsumer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBlockConsumer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).BlockConsumer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.gasless.v1beta1.Msg/BlockConsumer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).BlockConsumer(ctx, req.(*MsgBlockConsumer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UnblockConsumer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUnblockConsumer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UnblockConsumer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.gasless.v1beta1.Msg/UnblockConsumer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UnblockConsumer(ctx, req.(*MsgUnblockConsumer))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.gasless.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -722,6 +999,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateGasProviderConfigs",
 			Handler:    _Msg_UpdateGasProviderConfigs_Handler,
+		},
+		{
+			MethodName: "BlockConsumer",
+			Handler:    _Msg_BlockConsumer_Handler,
+		},
+		{
+			MethodName: "UnblockConsumer",
+			Handler:    _Msg_UnblockConsumer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1067,6 +1352,136 @@ func (m *MsgUpdateGasProviderConfigResponse) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgBlockConsumer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBlockConsumer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBlockConsumer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Consumer) > 0 {
+		i -= len(m.Consumer)
+		copy(dAtA[i:], m.Consumer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Consumer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Actor) > 0 {
+		i -= len(m.Actor)
+		copy(dAtA[i:], m.Actor)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Actor)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.GasProviderId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBlockConsumerResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBlockConsumerResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBlockConsumerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUnblockConsumer) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUnblockConsumer) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUnblockConsumer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Consumer) > 0 {
+		i -= len(m.Consumer)
+		copy(dAtA[i:], m.Consumer)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Consumer)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Actor) > 0 {
+		i -= len(m.Actor)
+		copy(dAtA[i:], m.Actor)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Actor)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.GasProviderId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUnblockConsumerResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUnblockConsumerResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUnblockConsumerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1217,6 +1632,64 @@ func (m *MsgUpdateGasProviderConfig) Size() (n int) {
 }
 
 func (m *MsgUpdateGasProviderConfigResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgBlockConsumer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GasProviderId != 0 {
+		n += 1 + sovTx(uint64(m.GasProviderId))
+	}
+	l = len(m.Actor)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Consumer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgBlockConsumerResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUnblockConsumer) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GasProviderId != 0 {
+		n += 1 + sovTx(uint64(m.GasProviderId))
+	}
+	l = len(m.Actor)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Consumer)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUnblockConsumerResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2192,6 +2665,372 @@ func (m *MsgUpdateGasProviderConfigResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgUpdateGasProviderConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBlockConsumer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBlockConsumer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBlockConsumer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+			}
+			m.GasProviderId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GasProviderId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Actor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Actor = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Consumer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Consumer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBlockConsumerResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBlockConsumerResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBlockConsumerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUnblockConsumer) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUnblockConsumer: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUnblockConsumer: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+			}
+			m.GasProviderId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GasProviderId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Actor", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Actor = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Consumer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Consumer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUnblockConsumerResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUnblockConsumerResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUnblockConsumerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

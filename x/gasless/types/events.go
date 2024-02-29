@@ -6,9 +6,13 @@ const (
 	EventTypeAuthorizeActors         = "authorize_actors"
 	EventTypeUpdateGasProviderStatus = "update_gas_provider_status"
 	EventTypeUpdateGasProviderConfig = "update_gas_provider_config"
+	EventTypeBlockConsumer           = "block_consumer"
+	EventTypeUnblockConsumer         = "unblock_consumer"
 
 	AttributeKeyCreator                = "creator"
 	AttributeKeyProvider               = "provider"
+	AttributeKeyActor                  = "actor"
+	AttributeKeyConsumer               = "consumer"
 	AttributeKeyGasProviderId          = "gas_provider_id"
 	AttributeKeyFeeDenom               = "fee_denom"
 	AttributeKeyAuthorizedActors       = "authorized_actors"

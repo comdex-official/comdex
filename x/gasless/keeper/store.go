@@ -172,3 +172,12 @@ func (k Keeper) SetGasConsumer(ctx sdk.Context, gasConsumer types.GasConsumer) {
 	bz := types.MustMarshalGasConsumer(k.cdc, gasConsumer)
 	store.Set(types.GetGasConsumerKey(sdk.MustAccAddressFromBech32(gasConsumer.Consumer)), bz)
 }
+
+func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress) types.GasConsumer {
+	gasConsumer, found := k.GetGasConsumer(ctx, consumer)
+	if !found {
+		gasConsumer = types.NewGasConsumer(consumer)
+		k.SetGasConsumer(ctx, gasConsumer)
+	}
+	return gasConsumer
+}

@@ -30,6 +30,12 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgUpdateGasProviderConfig:
 			res, err := msgServer.UpdateGasProviderConfigs(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgBlockConsumer:
+			res, err := msgServer.BlockConsumer(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgUnblockConsumer:
+			res, err := msgServer.UnblockConsumer(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", types.ModuleName, msg)
 		}

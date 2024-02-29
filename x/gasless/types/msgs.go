@@ -12,6 +12,8 @@ var (
 	_ sdk.Msg = (*MsgAuthorizeActors)(nil)
 	_ sdk.Msg = (*MsgUpdateGasProviderStatus)(nil)
 	_ sdk.Msg = (*MsgUpdateGasProviderConfig)(nil)
+	_ sdk.Msg = (*MsgBlockConsumer)(nil)
+	_ sdk.Msg = (*MsgUnblockConsumer)(nil)
 )
 
 // Message types for the gasless module.
@@ -20,6 +22,8 @@ const (
 	TypeMsgAuthorizeActors         = "authorize_actors"
 	TypeMsgUpdateGasProviderStatus = "update_gas_provider_status"
 	TypeMsgUpdateGasProviderConfig = "update_gas_provider_config"
+	TypeMsgBlockConsumer           = "block_consumer"
+	TypeMsgUnblockConsumer         = "unblock_consumer"
 )
 
 // NewMsgCreateGasProvider returns a new MsgCreateGasProvider.
@@ -225,6 +229,88 @@ func (msg MsgUpdateGasProviderConfig) GetSignBytes() []byte {
 
 func (msg MsgUpdateGasProviderConfig) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Provider)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+// NewMsgBlockConsumer returns a new MsgBlockConsumer.
+func NewMsgBlockConsumer(
+	gasProviderID uint64,
+	actor, consumer sdk.AccAddress,
+) *MsgBlockConsumer {
+	return &MsgBlockConsumer{
+		GasProviderId: gasProviderID,
+		Actor:         actor.String(),
+		Consumer:      consumer.String(),
+	}
+}
+
+func (msg MsgBlockConsumer) Route() string { return RouterKey }
+
+func (msg MsgBlockConsumer) Type() string { return TypeMsgBlockConsumer }
+
+func (msg MsgBlockConsumer) ValidateBasic() error {
+	if msg.GasProviderId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+	return nil
+}
+
+func (msg MsgBlockConsumer) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgBlockConsumer) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Actor)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+// NewMsgUnblockConsumer returns a new MsgUnblockConsumer.
+func NewMsgUnblockConsumer(
+	gasProviderID uint64,
+	actor, consumer sdk.AccAddress,
+) *MsgUnblockConsumer {
+	return &MsgUnblockConsumer{
+		GasProviderId: gasProviderID,
+		Actor:         actor.String(),
+		Consumer:      consumer.String(),
+	}
+}
+
+func (msg MsgUnblockConsumer) Route() string { return RouterKey }
+
+func (msg MsgUnblockConsumer) Type() string { return TypeMsgUnblockConsumer }
+
+func (msg MsgUnblockConsumer) ValidateBasic() error {
+	if msg.GasProviderId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+	return nil
+}
+
+func (msg MsgUnblockConsumer) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgUnblockConsumer) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Actor)
 	if err != nil {
 		panic(err)
 	}

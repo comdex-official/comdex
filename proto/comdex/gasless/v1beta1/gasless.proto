@@ -54,12 +54,11 @@ message Usage {
 
 message ConsumptionDetail {
     bool is_blocked = 1;
-    bool elite_pass = 2;
-    uint64 total_txs_allowed = 3;
-    uint64 total_txs_made = 4;
-    cosmos.base.v1beta1.Coin total_fee_consumption_allowed = 5 [(gogoproto.nullable) = false];
-    repeated cosmos.base.v1beta1.Coin total_fees_consumed = 6 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
-    Usage usage = 7;
+    uint64 total_txs_allowed = 2;
+    uint64 total_txs_made = 3;
+    cosmos.base.v1beta1.Coin total_fee_consumption_allowed = 4 [(gogoproto.nullable) = false];
+    repeated cosmos.base.v1beta1.Coin total_fees_consumed = 5 [(gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins", (gogoproto.nullable) = false];
+    Usage usage = 6;
 }
 
 message GasConsumer {

@@ -123,6 +123,9 @@ func (gasProvider GasProvider) Validate() error {
 	if gasProvider.Id == 0 {
 		return fmt.Errorf("pair id must not be 0")
 	}
+	if _, err := sdk.AccAddressFromBech32(gasProvider.Creator); err != nil {
+		return fmt.Errorf("invalid creator address: %v", err)
+	}
 	if err := sdk.ValidateDenom(gasProvider.FeeDenom); err != nil {
 		return fmt.Errorf("invalid fee denom: %w", err)
 	}
@@ -139,5 +142,21 @@ func (gasProvider GasProvider) Validate() error {
 		return fmt.Errorf("atleast one tx or contract is required to initialize")
 	}
 
+	return nil
+}
+
+func NewGasConsumer(
+	consumer sdk.AccAddress,
+) GasConsumer {
+	return GasConsumer{
+		Consumer:    consumer.String(),
+		Consumption: make(map[uint64]*ConsumptionDetail),
+	}
+}
+
+func (gasConsumer GasConsumer) Validate() error {
+	if _, err := sdk.AccAddressFromBech32(gasConsumer.Consumer); err != nil {
+		return fmt.Errorf("invalid consumer address: %v", err)
+	}
 	return nil
 }

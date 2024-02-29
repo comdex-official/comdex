@@ -62,3 +62,25 @@ func (m msgServer) UpdateGasProviderConfigs(goCtx context.Context, msg *types.Ms
 
 	return &types.MsgUpdateGasProviderConfigResponse{}, nil
 }
+
+// BlockConsumer defines a method to block a gas consumer
+func (m msgServer) BlockConsumer(goCtx context.Context, msg *types.MsgBlockConsumer) (*types.MsgBlockConsumerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.BlockConsumer(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgBlockConsumerResponse{}, nil
+}
+
+// UnblockConsumer defines a method to unblock a consumer
+func (m msgServer) UnblockConsumer(goCtx context.Context, msg *types.MsgUnblockConsumer) (*types.MsgUnblockConsumerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.UnblockConsumer(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUnblockConsumerResponse{}, nil
+}
