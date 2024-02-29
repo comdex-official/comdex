@@ -18,3 +18,13 @@ func DeriveAddress(addressType AddressType, moduleName, name string) sdk.AccAddr
 		return sdk.AccAddress{}
 	}
 }
+
+// ItemExists returns true if item exists in array else false .
+func ItemExists(array []string, item string) bool {
+	for _, v := range array {
+		if v == item {
+			return true
+		}
+	}
+	return false
+}

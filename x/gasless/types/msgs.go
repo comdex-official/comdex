@@ -1,9 +1,10 @@
 package types
 
 import (
+	sdkerrors "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
@@ -44,22 +45,22 @@ func (msg MsgCreateGasProvider) Type() string { return TypeMsgCreateGasProvider 
 
 func (msg MsgCreateGasProvider) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %v", err)
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid creator address: %v", err)
 	}
 	if err := sdk.ValidateDenom(msg.FeeDenom); err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, err.Error())
 	}
 	if msg.FeeDenom != msg.GasDeposit.Denom {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "denom mismatch, fee denom and gas_deposit")
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "denom mismatch, fee denom and gas_deposit")
 	}
 	if !msg.MaxFeeUsagePerTx.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max_fee_usage_per_tx should be positive")
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "max_fee_usage_per_tx should be positive")
 	}
 	if !msg.MaxFeeUsagePerConsumer.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "max_fee_usage_per_consumer should be positive")
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "max_fee_usage_per_consumer should be positive")
 	}
-	if len(msg.TxsAllowed) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "atleast one tx is required to initialize")
+	if len(msg.TxsAllowed) == 0 && len(msg.ContractsAllowed) == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "atleast one tx or contract is required to initialize")
 	}
 	return nil
 }

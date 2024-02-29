@@ -125,8 +125,8 @@ func (gasProvider GasProvider) Validate() error {
 	if !gasProvider.MaxFeeUsagePerConsumer.IsPositive() {
 		return fmt.Errorf("max_fee_usage_per_consumer should be positive")
 	}
-	if len(gasProvider.TxsAllowed) == 0 {
-		return fmt.Errorf("atleast one tx is required to initialize")
+	if len(gasProvider.TxsAllowed) == 0 && len(gasProvider.ContractsAllowed) == 0 {
+		return fmt.Errorf("atleast one tx or contract is required to initialize")
 	}
 
 	return nil
