@@ -1253,6 +1253,7 @@ func New(
 			txCounterStoreKey: app.GetKey(wasm.StoreKey),
 			IBCChannelKeeper:  app.IbcKeeper,
 			Cdc:               appCodec,
+			GaslessKeeper:     app.GaslessKeeper,
 		},
 	)
 	if err != nil {
