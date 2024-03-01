@@ -103,7 +103,7 @@ func (dfd DeductFeeDecorator) checkDeductFee(ctx sdk.Context, sdkTx sdk.Tx, fee 
 
 		deductFeesFrom = feeGranter
 	} else {
-		dfd.gaslessKeeper.GetFeeSource(ctx, sdkTx, feePayer, fee)
+		deductFeesFrom = dfd.gaslessKeeper.GetFeeSource(ctx, sdkTx, feePayer, fee)
 	}
 
 	deductFeesFromAcc := dfd.accountKeeper.GetAccount(ctx, deductFeesFrom)

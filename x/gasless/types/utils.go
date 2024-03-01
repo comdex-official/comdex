@@ -41,10 +41,10 @@ func RemoveDuplicates(input []string) []string {
 	return uniqueSlice
 }
 
-func RemoveDuplicatesUint64(input []uint64) []uint64 {
+func RemoveDuplicatesUint64(list []uint64) []uint64 {
 	uniqueMap := make(map[uint64]bool)
 	var uniqueList []uint64
-	for _, v := range input {
+	for _, v := range list {
 		if !uniqueMap[v] {
 			uniqueMap[v] = true
 			uniqueList = append(uniqueList, v)
@@ -61,6 +61,23 @@ func RemoveValueFromListUint64(list []uint64, x uint64) []uint64 {
 		}
 	}
 	return newList
+}
+
+func ShiftToEndUint64(list []uint64, x uint64) []uint64 {
+	list = RemoveDuplicatesUint64(list)
+	var index int = -1
+	for i, val := range list {
+		if val == x {
+			index = i
+			break
+		}
+	}
+	if index == -1 {
+		return list
+	}
+	list = append(list[:index], list[index+1:]...)
+	list = append(list, x)
+	return list
 }
 
 func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProviderResponse {
