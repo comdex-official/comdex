@@ -91,8 +91,9 @@ func (k Keeper) CanGasProviderBeUsedAsSource(ctx sdk.Context, gpid uint64, consu
 
 	// if total fees consumed by the consumer is more than or equal to the allowed consumption
 	// i.e consumer has exhausted its fee limit and hence is not eligible for the given provider
-	if consumptionDetails.TotalFeesConsumed.IsGTE(consumptionDetails.TotalFeeConsumptionAllowed) {
-		return gasProvider, false, sdkerrors.Wrapf(types.ErrorFeeConsumptionFailure, "exhausted total fee usage")
+	totalFeeConsumption := consumptionDetails.TotalFeesConsumed.Add(fee)
+	if totalFeeConsumption.IsGTE(consumptionDetails.TotalFeeConsumptionAllowed) {
+		return gasProvider, false, sdkerrors.Wrapf(types.ErrorFeeConsumptionFailure, "exhausted total fee usage or pending fee limit insufficient for tx")
 	}
 
 	return gasProvider, true, nil
