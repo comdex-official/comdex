@@ -305,15 +305,22 @@ func (k Keeper) UpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGas
 
 	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
 
+	consumerUpdateRequire := false
+	if gasProvider.MaxTxsCountPerConsumer != msg.MaxTxsCountPerConsumer || !gasProvider.MaxFeeUsagePerConsumer.Equal(msg.MaxFeeUsagePerConsumer) {
+		consumerUpdateRequire = true
+	}
+	k.RemoveFromTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
+
 	gasProvider.MaxFeeUsagePerTx = msg.MaxFeeUsagePerTx
 	gasProvider.MaxTxsCountPerConsumer = msg.MaxTxsCountPerConsumer
 	gasProvider.MaxFeeUsagePerConsumer = msg.MaxFeeUsagePerConsumer
 
-	k.RemoveFromTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
-
 	gasProvider.TxsAllowed = types.RemoveDuplicates(msg.TxsAllowed)
 	gasProvider.ContractsAllowed = types.RemoveDuplicates(msg.ContractsAllowed)
 
+	if consumerUpdateRequire {
+		k.UpdateConsumerAllowance(ctx, gasProvider)
+	}
 	k.AddToTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
 
 	k.SetGasProvider(ctx, gasProvider)

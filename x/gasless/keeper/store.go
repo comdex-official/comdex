@@ -246,3 +246,18 @@ func (k Keeper) RemoveFromTxGpids(ctx sdk.Context, txs, contracts []string, gpid
 		k.SetTxGPIDS(ctx, txGpids)
 	}
 }
+
+func (k Keeper) UpdateConsumerAllowance(ctx sdk.Context, gasProvider types.GasProvider) {
+	allConsumers := k.GetAllGasConsumers(ctx)
+	for _, consumer := range allConsumers {
+		if consumer.Consumption == nil {
+			continue
+		}
+		if _, ok := consumer.Consumption[gasProvider.Id]; !ok {
+			continue
+		}
+		consumer.Consumption[gasProvider.Id].TotalTxsAllowed = gasProvider.MaxTxsCountPerConsumer
+		consumer.Consumption[gasProvider.Id].TotalFeeConsumptionAllowed = sdk.NewCoin(gasProvider.FeeDenom, gasProvider.MaxFeeUsagePerConsumer)
+		k.SetGasConsumer(ctx, consumer)
+	}
+}
