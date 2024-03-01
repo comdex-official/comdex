@@ -172,6 +172,10 @@ func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthor
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
+	if len(msg.Actors) > 5 {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "only 5 actors can be authorized")
+	}
+
 	for _, actor := range msg.Actors {
 		if _, err := sdk.AccAddressFromBech32(actor); err != nil {
 			return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid actor address - %s : %v", actor, err)

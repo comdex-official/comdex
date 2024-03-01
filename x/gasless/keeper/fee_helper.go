@@ -74,7 +74,7 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 	}
 
 	// only one fee coin is supported, tx containing multiple coins as fees are not allowed.
-	if len(fees) > 1 {
+	if len(fees) != 1 {
 		return originalFeePayer
 	}
 
