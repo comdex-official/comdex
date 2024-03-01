@@ -32,6 +32,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryGasProvidersCmd(),
 		NewQueryGasConsumerCmd(),
 		NewQueryGasConsumersCmd(),
+		NewQueryTxGpidsCmd(),
 	)
 
 	return cmd
@@ -279,6 +280,42 @@ $ %s query %s gasconsumers
 				},
 			)
 
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// NewQueryTxGpidsCmd implements the tx-gpids query command.
+func NewQueryTxGpidsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "tx-gpids",
+		Args:  cobra.NoArgs,
+		Short: "Query all the tx type url and contract address along with associcated gas provider ids",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query all the tx type url and contract address along with associcated gas provider ids
+Example:
+$ %s query %s tx-gpids
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+
+			resp, err := queryClient.GasProviderIdsForAllTXC(cmd.Context(), &types.QueryGasProviderIdsForAllTXC{})
 			if err != nil {
 				return err
 			}

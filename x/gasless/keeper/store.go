@@ -54,6 +54,12 @@ func (k Keeper) SetTxGPIDS(ctx sdk.Context, txGPIDS types.TxGPIDS) {
 	store.Set(types.GetTxGPIDSKey(txGPIDS.TxPathOrContractAddress), bz)
 }
 
+// DeleteTxGPIDS deletes an TxGPIDS.
+func (k Keeper) DeleteTxGPIDS(ctx sdk.Context, txGPIDS types.TxGPIDS) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.GetTxGPIDSKey(txGPIDS.TxPathOrContractAddress))
+}
+
 func (k Keeper) GetLastGasProviderID(ctx sdk.Context) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.GetLastGasProviderIDKey())
@@ -189,4 +195,54 @@ func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress,
 		k.SetGasConsumer(ctx, gasConsumer)
 	}
 	return gasConsumer
+}
+
+func (k Keeper) AddToTxGpids(ctx sdk.Context, txs, contracts []string, gpid uint64) {
+	for _, txPath := range txs {
+		txGpids, found := k.GetTxGPIDS(ctx, txPath)
+		if !found {
+			txGpids = types.NewTxGPIDS(txPath)
+		}
+		txGpids.GasProviderIds = append(txGpids.GasProviderIds, gpid)
+		txGpids.GasProviderIds = types.RemoveDuplicatesUint64(txGpids.GasProviderIds)
+		k.SetTxGPIDS(ctx, txGpids)
+	}
+
+	for _, c := range contracts {
+		txGpids, found := k.GetTxGPIDS(ctx, c)
+		if !found {
+			txGpids = types.NewTxGPIDS(c)
+		}
+		txGpids.GasProviderIds = append(txGpids.GasProviderIds, gpid)
+		txGpids.GasProviderIds = types.RemoveDuplicatesUint64(txGpids.GasProviderIds)
+		k.SetTxGPIDS(ctx, txGpids)
+	}
+}
+
+func (k Keeper) RemoveFromTxGpids(ctx sdk.Context, txs, contracts []string, gpid uint64) {
+	for _, txPath := range txs {
+		txGpids, found := k.GetTxGPIDS(ctx, txPath)
+		if !found {
+			continue
+		}
+		txGpids.GasProviderIds = types.RemoveValueFromListUint64(txGpids.GasProviderIds, gpid)
+		if len(txGpids.GasProviderIds) == 0 {
+			k.DeleteTxGPIDS(ctx, txGpids)
+			continue
+		}
+		k.SetTxGPIDS(ctx, txGpids)
+	}
+
+	for _, c := range contracts {
+		txGpids, found := k.GetTxGPIDS(ctx, c)
+		if !found {
+			continue
+		}
+		txGpids.GasProviderIds = types.RemoveValueFromListUint64(txGpids.GasProviderIds, gpid)
+		if len(txGpids.GasProviderIds) == 0 {
+			k.DeleteTxGPIDS(ctx, txGpids)
+			continue
+		}
+		k.SetTxGPIDS(ctx, txGpids)
+	}
 }

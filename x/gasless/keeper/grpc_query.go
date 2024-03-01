@@ -148,3 +148,16 @@ func (k Querier) GasConsumers(c context.Context, req *types.QueryGasConsumersReq
 		Pagination:   pageRes,
 	}, nil
 }
+
+func (k Querier) GasProviderIdsForAllTXC(c context.Context, req *types.QueryGasProviderIdsForAllTXC) (*types.QueryGasProviderIdsForAllTXCResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	txToGpids := []*types.TxGPIDS{}
+	allTxGpids := k.GetAllTxGPIDS(ctx)
+	for _, val := range allTxGpids {
+		gpids := val
+		txToGpids = append(txToGpids, &gpids)
+	}
+	return &types.QueryGasProviderIdsForAllTXCResponse{
+		TxToGpIds: txToGpids,
+	}, nil
+}

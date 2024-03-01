@@ -41,6 +41,28 @@ func RemoveDuplicates(input []string) []string {
 	return uniqueSlice
 }
 
+func RemoveDuplicatesUint64(input []uint64) []uint64 {
+	uniqueMap := make(map[uint64]bool)
+	var uniqueList []uint64
+	for _, v := range input {
+		if !uniqueMap[v] {
+			uniqueMap[v] = true
+			uniqueList = append(uniqueList, v)
+		}
+	}
+	return uniqueList
+}
+
+func RemoveValueFromListUint64(list []uint64, x uint64) []uint64 {
+	var newList []uint64
+	for _, v := range list {
+		if v != x {
+			newList = append(newList, v)
+		}
+	}
+	return newList
+}
+
 func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProviderResponse {
 	return GasProviderResponse{
 		Id:                     gasProvider.Id,
@@ -72,5 +94,12 @@ func NewConsumptionDetail(
 			Txs:       make(map[string]*UsageDetails),
 			Contracts: make(map[string]*UsageDetails),
 		},
+	}
+}
+
+func NewTxGPIDS(tpoc string) TxGPIDS {
+	return TxGPIDS{
+		TxPathOrContractAddress: tpoc,
+		GasProviderIds:          []uint64{},
 	}
 }

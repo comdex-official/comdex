@@ -134,6 +134,7 @@ func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvid
 		return types.GasProvider{}, err
 	}
 
+	k.AddToTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
 	k.SetGasProvider(ctx, gasProvider)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -303,11 +304,17 @@ func (k Keeper) UpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGas
 	}
 
 	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
+
 	gasProvider.MaxFeeUsagePerTx = msg.MaxFeeUsagePerTx
 	gasProvider.MaxTxsCountPerConsumer = msg.MaxTxsCountPerConsumer
 	gasProvider.MaxFeeUsagePerConsumer = msg.MaxFeeUsagePerConsumer
+
+	k.RemoveFromTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
+
 	gasProvider.TxsAllowed = types.RemoveDuplicates(msg.TxsAllowed)
 	gasProvider.ContractsAllowed = types.RemoveDuplicates(msg.ContractsAllowed)
+
+	k.AddToTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
 
 	k.SetGasProvider(ctx, gasProvider)
 
