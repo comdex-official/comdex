@@ -141,7 +141,7 @@ func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvid
 		sdk.NewEvent(
 			types.EventTypeCreateGasProvider,
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyFeeDenom, msg.FeeDenom),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerTx, msg.MaxFeeUsagePerTx.String()),
 			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.MaxTxsCountPerConsumer, 10)),
@@ -199,7 +199,7 @@ func (k Keeper) AuthorizeActors(ctx sdk.Context, msg *types.MsgAuthorizeActors) 
 		sdk.NewEvent(
 			types.EventTypeAuthorizeActors,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyAuthorizedActors, strings.Join(msg.Actors, ",")),
 		),
 	})
@@ -236,7 +236,7 @@ func (k Keeper) UpdateGasProviderStatus(ctx sdk.Context, msg *types.MsgUpdateGas
 		sdk.NewEvent(
 			types.EventTypeUpdateGasProviderStatus,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyGasProviderStatus, strconv.FormatBool(gasProvider.IsActive)),
 		),
 	})
@@ -333,7 +333,7 @@ func (k Keeper) UpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGas
 		sdk.NewEvent(
 			types.EventTypeUpdateGasProviderConfig,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerTx, msg.MaxFeeUsagePerTx.String()),
 			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.MaxTxsCountPerConsumer, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerConsumer, msg.MaxFeeUsagePerConsumer.String()),
@@ -387,7 +387,7 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 			types.EventTypeBlockConsumer,
 			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
 			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
 		),
 	})
 
@@ -436,7 +436,7 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 			types.EventTypeUnblockConsumer,
 			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
 			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyGasProviderId, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
 		),
 	})
 
