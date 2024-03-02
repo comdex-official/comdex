@@ -84,3 +84,14 @@ func (m msgServer) UnblockConsumer(goCtx context.Context, msg *types.MsgUnblockC
 
 	return &types.MsgUnblockConsumerResponse{}, nil
 }
+
+// UpdateGasConsumerLimit defines a method to increase consumption limit for a consumer
+func (m msgServer) UpdateGasConsumerLimit(goCtx context.Context, msg *types.MsgUpdateGasConsumerLimit) (*types.MsgUpdateGasConsumerLimitResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if _, err := m.Keeper.UpdateGasConsumerLimit(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateGasConsumerLimitResponse{}, nil
+}

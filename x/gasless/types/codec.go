@@ -18,6 +18,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateGasProviderConfig{}, "comdex/gasless/MsgUpdateGasProviderConfig", nil)
 	cdc.RegisterConcrete(&MsgBlockConsumer{}, "comdex/gasless/MsgBlockConsumer", nil)
 	cdc.RegisterConcrete(&MsgUnblockConsumer{}, "comdex/gasless/MsgUnblockConsumer", nil)
+	cdc.RegisterConcrete(&MsgUpdateGasConsumerLimit{}, "comdex/gasless/MsgUpdateGasConsumerLimit", nil)
 }
 
 // RegisterInterfaces registers the x/gasless interfaces types with the
@@ -35,6 +36,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgUpdateGasProviderConfig{},
 		&MsgBlockConsumer{},
 		&MsgUnblockConsumer{},
+		&MsgUpdateGasConsumerLimit{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

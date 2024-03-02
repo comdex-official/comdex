@@ -32,6 +32,7 @@ func GetTxCmd() *cobra.Command {
 		NewUpdateGasProviderConfigsCmd(),
 		NewBlockConsumerCmd(),
 		NewUnblockConsumerCmd(),
+		NewUpdateGasConsumerLimitCmd(),
 	)
 
 	return cmd
@@ -369,6 +370,65 @@ $ %s tx %s unblock-consumer 1 comdex1.. --from mykey
 				gasProviderID,
 				clientCtx.GetFromAddress(),
 				sanitizedConsumer,
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewUpdateGasConsumerLimitCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-consumer-limit [gas-provider-id] [consumer] [total-txs-allowed] [total-fee-consumption-allowed]",
+		Args:  cobra.ExactArgs(4),
+		Short: "Update consumer consumption limit",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Update consumer consumption limit.
+Example:
+$ %s tx %s update-consumer-limit 1 comdex1.. 200 5000000 --from mykey
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse gas-provider-id: %w", err)
+			}
+
+			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			totalTxsAllowed, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse total-txs-allowed: %w", err)
+			}
+
+			totalFeeConsumptionAllowed, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return fmt.Errorf("invalid total-fee-consumption-allowed: %s", args[3])
+			}
+
+			msg := types.NewMsgUpdateGasConsumerLimit(
+				gasProviderID,
+				clientCtx.GetFromAddress(),
+				sanitizedConsumer,
+				totalTxsAllowed,
+				totalFeeConsumptionAllowed,
 			)
 			if err = msg.ValidateBasic(); err != nil {
 				return err

@@ -25,6 +25,9 @@ service Msg {
 
     // UnblockConsumer defines a method for unblocking consumer
     rpc UnblockConsumer(MsgUnblockConsumer) returns (MsgUnblockConsumerResponse);
+
+    // UpdateGasConsumerLimit defines a method for updating consumption limit of gas consumer
+    rpc UpdateGasConsumerLimit(MsgUpdateGasConsumerLimit) returns (MsgUpdateGasConsumerLimitResponse);
 }
 
 
@@ -135,3 +138,23 @@ message MsgUnblockConsumer {
 }
 
 message MsgUnblockConsumerResponse {}
+
+// MsgUpdateGasConsumerLimit defines an SDK message for updating the consumption limits of gas consumer.
+message MsgUpdateGasConsumerLimit {
+    // gas_provider_id specifies the id of the gas provider
+    uint64 gas_provider_id = 1;
+
+    // provider specifies the bech32-encoded address that is the gas provider.
+    string provider = 2;
+
+    // consumer specifies the bech32-encoded address of a consumer.
+    string consumer = 3;
+
+    // total_txs_allowed specifies the number of txs allowed for each consumer 
+    uint64 total_txs_allowed = 4;
+
+    // total_fee_consumption_allowed specifies the maximum fee consumption allowed for each consumer
+    string total_fee_consumption_allowed = 5 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+}
+
+message MsgUpdateGasConsumerLimitResponse {}

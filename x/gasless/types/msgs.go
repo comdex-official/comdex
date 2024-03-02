@@ -14,6 +14,7 @@ var (
 	_ sdk.Msg = (*MsgUpdateGasProviderConfig)(nil)
 	_ sdk.Msg = (*MsgBlockConsumer)(nil)
 	_ sdk.Msg = (*MsgUnblockConsumer)(nil)
+	_ sdk.Msg = (*MsgUpdateGasConsumerLimit)(nil)
 )
 
 // Message types for the gasless module.
@@ -24,6 +25,7 @@ const (
 	TypeMsgUpdateGasProviderConfig = "update_gas_provider_config"
 	TypeMsgBlockConsumer           = "block_consumer"
 	TypeMsgUnblockConsumer         = "unblock_consumer"
+	TypeMsgUpdateGasConsumerLimit  = "update_gas_consumer_limit"
 )
 
 // NewMsgCreateGasProvider returns a new MsgCreateGasProvider.
@@ -315,6 +317,57 @@ func (msg MsgUnblockConsumer) GetSignBytes() []byte {
 
 func (msg MsgUnblockConsumer) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Actor)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{addr}
+}
+
+// NewMsgUpdateGasConsumerLimit returns a new MsgUpdateGasConsumerLimit.
+func NewMsgUpdateGasConsumerLimit(
+	gasProviderID uint64,
+	provider, consumer sdk.AccAddress,
+	totalTxsAllowed uint64,
+	totalFeeConsumptionAllowed sdkmath.Int,
+) *MsgUpdateGasConsumerLimit {
+	return &MsgUpdateGasConsumerLimit{
+		GasProviderId:              gasProviderID,
+		Provider:                   provider.String(),
+		Consumer:                   consumer.String(),
+		TotalTxsAllowed:            totalTxsAllowed,
+		TotalFeeConsumptionAllowed: totalFeeConsumptionAllowed,
+	}
+}
+
+func (msg MsgUpdateGasConsumerLimit) Route() string { return RouterKey }
+
+func (msg MsgUpdateGasConsumerLimit) Type() string { return TypeMsgUpdateGasConsumerLimit }
+
+func (msg MsgUpdateGasConsumerLimit) ValidateBasic() error {
+	if msg.GasProviderId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+	if msg.TotalTxsAllowed == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "total txs allowed must not be 0")
+	}
+	if !msg.TotalFeeConsumptionAllowed.IsPositive() {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "total fee consumption by consumer should be positive")
+	}
+	return nil
+}
+
+func (msg MsgUpdateGasConsumerLimit) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
+}
+
+func (msg MsgUpdateGasConsumerLimit) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Provider)
 	if err != nil {
 		panic(err)
 	}

@@ -442,3 +442,64 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 
 	return gasConsumer, nil
 }
+
+func (k Keeper) ValidateMsgUpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasConsumerLimit) error {
+	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	if !found {
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+	}
+
+	if !gasProvider.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
+	}
+
+	if gasProvider.Creator != msg.Provider {
+		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
+	}
+
+	if msg.TotalTxsAllowed == 0 {
+		return sdkerrors.Wrap(types.ErrorInvalidrequest, "total txs allowed must not be 0")
+	}
+
+	if !msg.TotalFeeConsumptionAllowed.IsPositive() {
+		return sdkerrors.Wrapf(types.ErrorInvalidrequest, "total fee consumption allowed should be positive")
+	}
+
+	return nil
+}
+
+func (k Keeper) UpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasConsumerLimit) (types.GasConsumer, error) {
+	if err := k.ValidateMsgUpdateGasConsumerLimit(ctx, msg); err != nil {
+		return types.GasConsumer{}, err
+	}
+
+	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
+	if !gasConsumer.Consumption[msg.GasProviderId].TotalFeeConsumptionAllowed.Amount.Equal(msg.TotalFeeConsumptionAllowed) ||
+		gasConsumer.Consumption[msg.GasProviderId].TotalTxsAllowed != msg.TotalTxsAllowed {
+		gasConsumer.Consumption[msg.GasProviderId].TotalFeeConsumptionAllowed.Amount = msg.TotalFeeConsumptionAllowed
+		gasConsumer.Consumption[msg.GasProviderId].TotalTxsAllowed = msg.TotalTxsAllowed
+		k.SetGasConsumer(ctx, gasConsumer)
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeBlockConsumer,
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
+			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.TotalTxsAllowed, 10)),
+			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerConsumer, msg.TotalFeeConsumptionAllowed.String()),
+		),
+	})
+
+	return gasConsumer, nil
+}
