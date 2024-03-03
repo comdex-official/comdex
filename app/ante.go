@@ -12,7 +12,6 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	"github.com/skip-mev/block-sdk/block"
 	auctionanteskip "github.com/skip-mev/block-sdk/x/auction/ante"
 	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
 )
@@ -31,7 +30,6 @@ type HandlerOptions struct {
 	TxDecoder         sdk.TxDecoder
 	TxEncoder         sdk.TxEncoder
 	auctionkeeperskip auctionkeeperskip.Keeper
-	FreeLane          block.Lane
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -60,10 +58,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		block.NewIgnoreDecorator(
-			ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
-			options.FreeLane,
-		),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 		// SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),

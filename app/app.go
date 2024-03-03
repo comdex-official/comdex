@@ -1269,14 +1269,14 @@ func New(
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
 	// STEP 1-3: Create the Block SDK lanes.
-	mevLane, freeLane, defaultLane := CreateLanes(app)
+	mevLane, defaultLane := CreateLanes(app)
 
 	// STEP 4: Construct a mempool based off the lanes. Note that the order of the lanes
 	// matters. Blocks are constructed from the top lane to the bottom lane. The top lane
 	// is the first lane in the array and the bottom lane is the last lane in the array.
 	mempool, err := block.NewLanedMempool(
 		app.Logger(),
-		[]block.Lane{mevLane, freeLane, defaultLane},
+		[]block.Lane{mevLane, defaultLane},
 	)
 	if err != nil {
 		panic(err)
@@ -1306,7 +1306,6 @@ func New(
 			TxDecoder:         encoding.TxConfig.TxDecoder(),
 			TxEncoder:         encoding.TxConfig.TxEncoder(),
 			auctionkeeperskip: app.AuctionKeeperSkip,
-			FreeLane:          freeLane,
 		},
 	)
 	if err != nil {
@@ -1320,9 +1319,6 @@ func New(
 		base.WithAnteHandler(anteHandler),
 	}
 	mevLane.WithOptions(
-		opt...,
-	)
-	freeLane.WithOptions(
 		opt...,
 	)
 	defaultLane.WithOptions(

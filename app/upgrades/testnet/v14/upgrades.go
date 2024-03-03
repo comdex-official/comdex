@@ -49,9 +49,9 @@ func setDefaultMEVParams(ctx sdk.Context, auctionkeeperskip auctionkeeperskip.Ke
 	// Skip MEV (x/auction)
 	return auctionkeeperskip.SetParams(ctx, auctionmoduleskiptypes.Params{
 		MaxBundleSize:          auctionmoduleskiptypes.DefaultMaxBundleSize,
-		EscrowAccountAddress:   authtypes.NewModuleAddress(auctionmoduleskiptypes.ModuleName),
-		ReserveFee:             sdk.NewCoin(nativeDenom, sdk.NewInt(1)),
-		MinBidIncrement:        sdk.NewCoin(nativeDenom, sdk.NewInt(1)),
+		EscrowAccountAddress:   authtypes.NewModuleAddress(auctionmoduleskiptypes.ModuleName), // TODO: revisit
+		ReserveFee:             sdk.NewCoin(nativeDenom, sdk.NewInt(10)),
+		MinBidIncrement:        sdk.NewCoin(nativeDenom, sdk.NewInt(5)),
 		FrontRunningProtection: auctionmoduleskiptypes.DefaultFrontRunningProtection,
 		ProposerFee:            auctionmoduleskiptypes.DefaultProposerFee,
 	})

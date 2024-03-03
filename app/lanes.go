@@ -6,7 +6,6 @@ import (
 	signerextraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block/base"
 	defaultlane "github.com/skip-mev/block-sdk/lanes/base"
-	freelane "github.com/skip-mev/block-sdk/lanes/free"
 	mevlane "github.com/skip-mev/block-sdk/lanes/mev"
 )
 
@@ -14,7 +13,7 @@ import (
 // we create three separate lanes - MEV, Free, and Default - and then return them.
 //
 // NOTE: Application Developers should closely replicate this function in their own application.
-func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
+func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane) {
 	// 1. Create the signer extractor. This is used to extract the expected signers from
 	// a transaction. Each lane can have a different signer extractor if needed.
 	signerAdapter := signerextraction.NewDefaultAdapter()
@@ -33,18 +32,7 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		Logger:          app.Logger(),
 		TxEncoder:       encodingConfig.TxConfig.TxEncoder(),
 		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.2"),
-		SignerExtractor: signerAdapter,
-		MaxTxs:          0,
-	}
-
-	// Create a free configuration that accepts 1000 transactions and consumes 20% of the
-	// block space.
-	freeConfig := base.LaneConfig{
-		Logger:          app.Logger(),
-		TxEncoder:       encodingConfig.TxConfig.TxEncoder(),
-		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.2"),
+		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.1"),
 		SignerExtractor: signerAdapter,
 		MaxTxs:          0,
 	}
@@ -55,7 +43,7 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		Logger:          app.Logger(),
 		TxEncoder:       encodingConfig.TxConfig.TxEncoder(),
 		TxDecoder:       encodingConfig.TxConfig.TxDecoder(),
-		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.6"),
+		MaxBlockSpace:   math.LegacyMustNewDecFromStr("0.9"),
 		SignerExtractor: signerAdapter,
 		MaxTxs:          0,
 	}
@@ -68,7 +56,6 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 	mevMatchHandler := factory.MatchHandler()
 
 	// Create the final match handler for the free lane.
-	freeMatchHandler := freelane.DefaultMatchHandler()
 
 	// Create the final match handler for the default lane.
 	defaultMatchHandler := base.DefaultMatchHandler()
@@ -80,16 +67,10 @@ func CreateLanes(app *App) (*mevlane.MEVLane, *base.BaseLane, *base.BaseLane) {
 		mevMatchHandler,
 	)
 
-	freeLane := freelane.NewFreeLane(
-		freeConfig,
-		base.DefaultTxPriority(),
-		freeMatchHandler,
-	)
-
 	defaultLane := defaultlane.NewDefaultLane(
 		defaultConfig,
 		defaultMatchHandler,
 	)
 
-	return mevLane, freeLane, defaultLane
+	return mevLane, defaultLane
 }
