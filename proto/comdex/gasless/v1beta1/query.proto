@@ -33,9 +33,9 @@ message QueryMessagesAndContractsResponse {
   repeated ContractDetails contracts = 2;
 }
 
-message GasProviderResponse {
+message GasTankResponse {
   uint64 id = 1;
-  string creator = 2;
+  string provider = 2;
   string gas_tank_address = 3;
   repeated cosmos.base.v1beta1.Coin gas_tank_balances = 4 [(gogoproto.nullable) = false];
   bool is_active = 5;
@@ -48,24 +48,24 @@ message GasProviderResponse {
   string fee_denom = 12;
 }
 
-// QueryGasProviderRequest is a request type for the Query/GasProvider RPC method.
-message QueryGasProviderRequest {
-  uint64 gas_provider_id = 1;
+// QueryGasTankRequest is a request type for the Query/GasTank RPC method.
+message QueryGasTankRequest {
+  uint64 gas_tank_id = 1;
 }
 
-// QueryGasProviderResponse is a response type for the Query/GasProvider RPC method.
-message QueryGasProviderResponse {
-  GasProviderResponse gas_provider = 1 [(gogoproto.nullable) = false];
+// QueryGasTankResponse is a response type for the Query/GasTank RPC method.
+message QueryGasTankResponse {
+  GasTankResponse gas_tank = 1 [(gogoproto.nullable) = false];
 }
 
-// QueryGasProvidersRequest is a request type for the Query/GasProviders RPC method.
-message QueryGasProvidersRequest {
+// QueryGasTanksRequest is a request type for the Query/GasTanks RPC method.
+message QueryGasTanksRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryGasProvidersResponse is a response type for the Query/GasProviders RPC method.
-message QueryGasProvidersResponse {
-  repeated GasProviderResponse gas_providers = 1 [(gogoproto.nullable) = false];
+// QueryGasTanksResponse is a response type for the Query/GasTanks RPC method.
+message QueryGasTanksResponse {
+  repeated GasTankResponse gas_tanks = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -90,10 +90,10 @@ message QueryGasConsumersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryGasProviderIdsForAllTXC {}
+message QueryGasTankIdsForAllTXC {}
 
-message QueryGasProviderIdsForAllTXCResponse {
-  repeated TxGPIDS tx_to_gp_ids = 1;
+message QueryGasTankIdsForAllTXCResponse {
+  repeated TxGTIDs tx_to_gt_ids = 1;
 }
 
 // Query defines the gRPC querier service.
@@ -108,14 +108,14 @@ service Query {
     option (google.api.http).get = "/comdex/gasless/v1beta1/mac";
   }
 
-  // GasProvider returns gas provider details 
-  rpc GasProvider(QueryGasProviderRequest) returns (QueryGasProviderResponse) {
-    option (google.api.http).get = "/comdex/gasless/v1beta1/provider/{gas_provider_id}";
+  // GasTank returns gas tank details 
+  rpc GasTank(QueryGasTankRequest) returns (QueryGasTankResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/tank/{gas_tank_id}";
   }
 
-  // GasProviders return details of all the gas providers
-  rpc GasProviders(QueryGasProvidersRequest) returns (QueryGasProvidersResponse) {
-    option (google.api.http).get = "/comdex/gasless/v1beta1/providers";
+  // GasTanks return details of all the gas tanks
+  rpc GasTanks(QueryGasTanksRequest) returns (QueryGasTanksResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/tanks";
   }
 
   // GasConsumer returns gas consumer details 
@@ -128,8 +128,8 @@ service Query {
     option (google.api.http).get = "/comdex/gasless/v1beta1/consumers";
   }
 
-  // GasProviderIdsForAllTXC returns gas provider ids with all available tx or contracts
-  rpc GasProviderIdsForAllTXC(QueryGasProviderIdsForAllTXC) returns (QueryGasProviderIdsForAllTXCResponse) {
+  // GasTankIdsForAllTXC returns gas tanks ids with all available tx or contracts
+  rpc GasTankIdsForAllTXC(QueryGasTankIdsForAllTXC) returns (QueryGasTankIdsForAllTXCResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/txc";
   }
 }

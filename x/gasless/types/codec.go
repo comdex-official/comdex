@@ -12,10 +12,10 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/gasless interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateGasProvider{}, "comdex/gasless/MsgCreateGasProvider", nil)
+	cdc.RegisterConcrete(&MsgCreateGasTank{}, "comdex/gasless/MsgCreateGasTank", nil)
 	cdc.RegisterConcrete(&MsgAuthorizeActors{}, "comdex/gasless/MsgAuthorizeActors", nil)
-	cdc.RegisterConcrete(&MsgUpdateGasProviderStatus{}, "comdex/gasless/MsgUpdateGasProviderStatus", nil)
-	cdc.RegisterConcrete(&MsgUpdateGasProviderConfig{}, "comdex/gasless/MsgUpdateGasProviderConfig", nil)
+	cdc.RegisterConcrete(&MsgUpdateGasTankStatus{}, "comdex/gasless/MsgUpdateGasTankStatus", nil)
+	cdc.RegisterConcrete(&MsgUpdateGasTankConfig{}, "comdex/gasless/MsgUpdateGasTankConfig", nil)
 	cdc.RegisterConcrete(&MsgBlockConsumer{}, "comdex/gasless/MsgBlockConsumer", nil)
 	cdc.RegisterConcrete(&MsgUnblockConsumer{}, "comdex/gasless/MsgUnblockConsumer", nil)
 	cdc.RegisterConcrete(&MsgUpdateGasConsumerLimit{}, "comdex/gasless/MsgUpdateGasConsumerLimit", nil)
@@ -30,10 +30,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgCreateGasProvider{},
+		&MsgCreateGasTank{},
 		&MsgAuthorizeActors{},
-		&MsgUpdateGasProviderStatus{},
-		&MsgUpdateGasProviderConfig{},
+		&MsgUpdateGasTankStatus{},
+		&MsgUpdateGasTankConfig{},
 		&MsgBlockConsumer{},
 		&MsgUnblockConsumer{},
 		&MsgUpdateGasConsumerLimit{},

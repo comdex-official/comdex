@@ -7,19 +7,19 @@ import (
 	"github.com/comdex-official/comdex/x/gasless/types"
 )
 
-func (k Keeper) GetTxGPIDS(ctx sdk.Context, txPathOrContractAddress string) (txGPIDS types.TxGPIDS, found bool) {
+func (k Keeper) GetTxGTIDs(ctx sdk.Context, txPathOrContractAddress string) (txGTIDs types.TxGTIDs, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetTxGPIDSKey(txPathOrContractAddress))
+	bz := store.Get(types.GetTxGTIDsKey(txPathOrContractAddress))
 	if bz == nil {
 		return
 	}
-	txGPIDS = types.MustUnmarshalTxGPIDS(k.cdc, bz)
-	return txGPIDS, true
+	txGTIDs = types.MustUnmarshalTxGTIDs(k.cdc, bz)
+	return txGTIDs, true
 }
 
-func (k Keeper) IterateAllTxGPIDS(ctx sdk.Context, cb func(txGPIDS types.TxGPIDS) (stop bool, err error)) error {
+func (k Keeper) IterateAllTxGTIDs(ctx sdk.Context, cb func(txGTIDs types.TxGTIDs) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllTxGPIDSKey())
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllTxGTIDsKey())
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
@@ -27,8 +27,8 @@ func (k Keeper) IterateAllTxGPIDS(ctx sdk.Context, cb func(txGPIDS types.TxGPIDS
 		}
 	}(iter)
 	for ; iter.Valid(); iter.Next() {
-		txGPIDS := types.MustUnmarshalTxGPIDS(k.cdc, iter.Value())
-		stop, err := cb(txGPIDS)
+		txGTIDs := types.MustUnmarshalTxGTIDs(k.cdc, iter.Value())
+		stop, err := cb(txGTIDs)
 		if err != nil {
 			return err
 		}
@@ -39,32 +39,32 @@ func (k Keeper) IterateAllTxGPIDS(ctx sdk.Context, cb func(txGPIDS types.TxGPIDS
 	return nil
 }
 
-func (k Keeper) GetAllTxGPIDS(ctx sdk.Context) (txGPIDSs []types.TxGPIDS) {
-	txGPIDSs = []types.TxGPIDS{}
-	_ = k.IterateAllTxGPIDS(ctx, func(txGPIDS types.TxGPIDS) (stop bool, err error) {
-		txGPIDSs = append(txGPIDSs, txGPIDS)
+func (k Keeper) GetAllTxGTIDs(ctx sdk.Context) (txGTIDss []types.TxGTIDs) {
+	txGTIDss = []types.TxGTIDs{}
+	_ = k.IterateAllTxGTIDs(ctx, func(txGTIDs types.TxGTIDs) (stop bool, err error) {
+		txGTIDss = append(txGTIDss, txGTIDs)
 		return false, nil
 	})
-	return txGPIDSs
+	return txGTIDss
 }
 
-func (k Keeper) SetTxGPIDS(ctx sdk.Context, txGPIDS types.TxGPIDS) {
+func (k Keeper) SetTxGTIDs(ctx sdk.Context, txGTIDs types.TxGTIDs) {
 	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshalTxGPIDS(k.cdc, txGPIDS)
-	store.Set(types.GetTxGPIDSKey(txGPIDS.TxPathOrContractAddress), bz)
+	bz := types.MustMarshalTxGTIDs(k.cdc, txGTIDs)
+	store.Set(types.GetTxGTIDsKey(txGTIDs.TxPathOrContractAddress), bz)
 }
 
-// DeleteTxGPIDS deletes an TxGPIDS.
-func (k Keeper) DeleteTxGPIDS(ctx sdk.Context, txGPIDS types.TxGPIDS) {
+// DeleteTxGTIDs deletes an TxGTIDs.
+func (k Keeper) DeleteTxGTIDs(ctx sdk.Context, txGTIDs types.TxGTIDs) {
 	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.GetTxGPIDSKey(txGPIDS.TxPathOrContractAddress))
+	store.Delete(types.GetTxGTIDsKey(txGTIDs.TxPathOrContractAddress))
 }
 
-func (k Keeper) GetLastGasProviderID(ctx sdk.Context) (id uint64) {
+func (k Keeper) GetLastGasTankID(ctx sdk.Context) (id uint64) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetLastGasProviderIDKey())
+	bz := store.Get(types.GetLastGasTankIDKey())
 	if bz == nil {
-		id = 0 // initialize the GasProviderID
+		id = 0 // initialize the GasTankID
 	} else {
 		var val gogotypes.UInt64Value
 		k.cdc.MustUnmarshal(bz, &val)
@@ -73,31 +73,31 @@ func (k Keeper) GetLastGasProviderID(ctx sdk.Context) (id uint64) {
 	return
 }
 
-func (k Keeper) SetLastGasProviderID(ctx sdk.Context, id uint64) {
+func (k Keeper) SetLastGasTankID(ctx sdk.Context, id uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&gogotypes.UInt64Value{Value: id})
-	store.Set(types.GetLastGasProviderIDKey(), bz)
+	store.Set(types.GetLastGasTankIDKey(), bz)
 }
 
-func (k Keeper) GetNextGasProviderIDWithUpdate(ctx sdk.Context) uint64 {
-	id := k.GetLastGasProviderID(ctx) + 1
-	k.SetLastGasProviderID(ctx, id)
+func (k Keeper) GetNextGasTankIDWithUpdate(ctx sdk.Context) uint64 {
+	id := k.GetLastGasTankID(ctx) + 1
+	k.SetLastGasTankID(ctx, id)
 	return id
 }
 
-func (k Keeper) GetGasProvider(ctx sdk.Context, id uint64) (gasProvider types.GasProvider, found bool) {
+func (k Keeper) GetGasTank(ctx sdk.Context, id uint64) (gasTank types.GasTank, found bool) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.GetGasProviderKey(id))
+	bz := store.Get(types.GetGasTankKey(id))
 	if bz == nil {
 		return
 	}
-	gasProvider = types.MustUnmarshalGasProvider(k.cdc, bz)
-	return gasProvider, true
+	gasTank = types.MustUnmarshalGasTank(k.cdc, bz)
+	return gasTank, true
 }
 
-func (k Keeper) IterateAllGasProviders(ctx sdk.Context, cb func(gasProvider types.GasProvider) (stop bool, err error)) error {
+func (k Keeper) IterateAllGasTanks(ctx sdk.Context, cb func(gasTank types.GasTank) (stop bool, err error)) error {
 	store := ctx.KVStore(k.storeKey)
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllGasProvidersKey())
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllGasTanksKey())
 	defer func(iter sdk.Iterator) {
 		err := iter.Close()
 		if err != nil {
@@ -105,8 +105,8 @@ func (k Keeper) IterateAllGasProviders(ctx sdk.Context, cb func(gasProvider type
 		}
 	}(iter)
 	for ; iter.Valid(); iter.Next() {
-		gasProvider := types.MustUnmarshalGasProvider(k.cdc, iter.Value())
-		stop, err := cb(gasProvider)
+		gasTank := types.MustUnmarshalGasTank(k.cdc, iter.Value())
+		stop, err := cb(gasTank)
 		if err != nil {
 			return err
 		}
@@ -117,19 +117,19 @@ func (k Keeper) IterateAllGasProviders(ctx sdk.Context, cb func(gasProvider type
 	return nil
 }
 
-func (k Keeper) GetAllGasProviders(ctx sdk.Context) (gasProviders []types.GasProvider) {
-	gasProviders = []types.GasProvider{}
-	_ = k.IterateAllGasProviders(ctx, func(gasProvider types.GasProvider) (stop bool, err error) {
-		gasProviders = append(gasProviders, gasProvider)
+func (k Keeper) GetAllGasTanks(ctx sdk.Context) (gasTanks []types.GasTank) {
+	gasTanks = []types.GasTank{}
+	_ = k.IterateAllGasTanks(ctx, func(gasTank types.GasTank) (stop bool, err error) {
+		gasTanks = append(gasTanks, gasTank)
 		return false, nil
 	})
-	return gasProviders
+	return gasTanks
 }
 
-func (k Keeper) SetGasProvider(ctx sdk.Context, gasProvider types.GasProvider) {
+func (k Keeper) SetGasTank(ctx sdk.Context, gasTank types.GasTank) {
 	store := ctx.KVStore(k.storeKey)
-	bz := types.MustMarshalGasProvider(k.cdc, gasProvider)
-	store.Set(types.GetGasProviderKey(gasProvider.Id), bz)
+	bz := types.MustMarshalGasTank(k.cdc, gasTank)
+	store.Set(types.GetGasTankKey(gasTank.Id), bz)
 }
 
 func (k Keeper) GetGasConsumer(ctx sdk.Context, consumer sdk.AccAddress) (gasConsumer types.GasConsumer, found bool) {
@@ -179,7 +179,7 @@ func (k Keeper) SetGasConsumer(ctx sdk.Context, gasConsumer types.GasConsumer) {
 	store.Set(types.GetGasConsumerKey(sdk.MustAccAddressFromBech32(gasConsumer.Consumer)), bz)
 }
 
-func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress, gasProvider types.GasProvider) types.GasConsumer {
+func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress, gasTank types.GasTank) types.GasConsumer {
 	gasConsumer, found := k.GetGasConsumer(ctx, consumer)
 	if !found {
 		gasConsumer = types.NewGasConsumer(consumer)
@@ -187,77 +187,77 @@ func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress,
 	if gasConsumer.Consumption == nil {
 		gasConsumer.Consumption = make(map[uint64]*types.ConsumptionDetail)
 	}
-	if _, ok := gasConsumer.Consumption[gasProvider.Id]; !ok {
-		gasConsumer.Consumption[gasProvider.Id] = types.NewConsumptionDetail(
-			gasProvider.MaxTxsCountPerConsumer,
-			sdk.NewCoin(gasProvider.FeeDenom, gasProvider.MaxFeeUsagePerConsumer),
+	if _, ok := gasConsumer.Consumption[gasTank.Id]; !ok {
+		gasConsumer.Consumption[gasTank.Id] = types.NewConsumptionDetail(
+			gasTank.MaxTxsCountPerConsumer,
+			sdk.NewCoin(gasTank.FeeDenom, gasTank.MaxFeeUsagePerConsumer),
 		)
 		k.SetGasConsumer(ctx, gasConsumer)
 	}
 	return gasConsumer
 }
 
-func (k Keeper) AddToTxGpids(ctx sdk.Context, txs, contracts []string, gpid uint64) {
+func (k Keeper) AddToTxGtids(ctx sdk.Context, txs, contracts []string, gtid uint64) {
 	for _, txPath := range txs {
-		txGpids, found := k.GetTxGPIDS(ctx, txPath)
+		txGtids, found := k.GetTxGTIDs(ctx, txPath)
 		if !found {
-			txGpids = types.NewTxGPIDS(txPath)
+			txGtids = types.NewTxGTIDs(txPath)
 		}
-		txGpids.GasProviderIds = append(txGpids.GasProviderIds, gpid)
-		txGpids.GasProviderIds = types.RemoveDuplicatesUint64(txGpids.GasProviderIds)
-		k.SetTxGPIDS(ctx, txGpids)
+		txGtids.GasTankIds = append(txGtids.GasTankIds, gtid)
+		txGtids.GasTankIds = types.RemoveDuplicatesUint64(txGtids.GasTankIds)
+		k.SetTxGTIDs(ctx, txGtids)
 	}
 
 	for _, c := range contracts {
-		txGpids, found := k.GetTxGPIDS(ctx, c)
+		txGtids, found := k.GetTxGTIDs(ctx, c)
 		if !found {
-			txGpids = types.NewTxGPIDS(c)
+			txGtids = types.NewTxGTIDs(c)
 		}
-		txGpids.GasProviderIds = append(txGpids.GasProviderIds, gpid)
-		txGpids.GasProviderIds = types.RemoveDuplicatesUint64(txGpids.GasProviderIds)
-		k.SetTxGPIDS(ctx, txGpids)
+		txGtids.GasTankIds = append(txGtids.GasTankIds, gtid)
+		txGtids.GasTankIds = types.RemoveDuplicatesUint64(txGtids.GasTankIds)
+		k.SetTxGTIDs(ctx, txGtids)
 	}
 }
 
-func (k Keeper) RemoveFromTxGpids(ctx sdk.Context, txs, contracts []string, gpid uint64) {
+func (k Keeper) RemoveFromTxGtids(ctx sdk.Context, txs, contracts []string, gtid uint64) {
 	for _, txPath := range txs {
-		txGpids, found := k.GetTxGPIDS(ctx, txPath)
+		txGtids, found := k.GetTxGTIDs(ctx, txPath)
 		if !found {
 			continue
 		}
-		txGpids.GasProviderIds = types.RemoveValueFromListUint64(txGpids.GasProviderIds, gpid)
-		if len(txGpids.GasProviderIds) == 0 {
-			k.DeleteTxGPIDS(ctx, txGpids)
+		txGtids.GasTankIds = types.RemoveValueFromListUint64(txGtids.GasTankIds, gtid)
+		if len(txGtids.GasTankIds) == 0 {
+			k.DeleteTxGTIDs(ctx, txGtids)
 			continue
 		}
-		k.SetTxGPIDS(ctx, txGpids)
+		k.SetTxGTIDs(ctx, txGtids)
 	}
 
 	for _, c := range contracts {
-		txGpids, found := k.GetTxGPIDS(ctx, c)
+		txGtids, found := k.GetTxGTIDs(ctx, c)
 		if !found {
 			continue
 		}
-		txGpids.GasProviderIds = types.RemoveValueFromListUint64(txGpids.GasProviderIds, gpid)
-		if len(txGpids.GasProviderIds) == 0 {
-			k.DeleteTxGPIDS(ctx, txGpids)
+		txGtids.GasTankIds = types.RemoveValueFromListUint64(txGtids.GasTankIds, gtid)
+		if len(txGtids.GasTankIds) == 0 {
+			k.DeleteTxGTIDs(ctx, txGtids)
 			continue
 		}
-		k.SetTxGPIDS(ctx, txGpids)
+		k.SetTxGTIDs(ctx, txGtids)
 	}
 }
 
-func (k Keeper) UpdateConsumerAllowance(ctx sdk.Context, gasProvider types.GasProvider) {
+func (k Keeper) UpdateConsumerAllowance(ctx sdk.Context, gasTank types.GasTank) {
 	allConsumers := k.GetAllGasConsumers(ctx)
 	for _, consumer := range allConsumers {
 		if consumer.Consumption == nil {
 			continue
 		}
-		if _, ok := consumer.Consumption[gasProvider.Id]; !ok {
+		if _, ok := consumer.Consumption[gasTank.Id]; !ok {
 			continue
 		}
-		consumer.Consumption[gasProvider.Id].TotalTxsAllowed = gasProvider.MaxTxsCountPerConsumer
-		consumer.Consumption[gasProvider.Id].TotalFeeConsumptionAllowed = sdk.NewCoin(gasProvider.FeeDenom, gasProvider.MaxFeeUsagePerConsumer)
+		consumer.Consumption[gasTank.Id].TotalTxsAllowed = gasTank.MaxTxsCountPerConsumer
+		consumer.Consumption[gasTank.Id].TotalFeeConsumptionAllowed = sdk.NewCoin(gasTank.FeeDenom, gasTank.MaxFeeUsagePerConsumer)
 		k.SetGasConsumer(ctx, consumer)
 	}
 }

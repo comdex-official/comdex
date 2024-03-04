@@ -20,30 +20,30 @@ const (
 )
 
 var (
-	TxGPIDSKeyPrefix     = []byte{0xa0}
-	LastGasProviderIDKey = []byte{0xa1}
-	GasProviderKeyPrefix = []byte{0xa2}
+	TxGTIDsKeyPrefix     = []byte{0xa0}
+	LastGasTankIDKey     = []byte{0xa1}
+	GasTankKeyPrefix     = []byte{0xa2}
 	GasConsumerKeyPrefix = []byte{0xa3}
 )
 
-func GetTxGPIDSKey(txPathOrContractAddress string) []byte {
-	return append(TxGPIDSKeyPrefix, LengthPrefixString(txPathOrContractAddress)...)
+func GetTxGTIDsKey(txPathOrContractAddress string) []byte {
+	return append(TxGTIDsKeyPrefix, LengthPrefixString(txPathOrContractAddress)...)
 }
 
-func GetAllTxGPIDSKey() []byte {
-	return TxGPIDSKeyPrefix
+func GetAllTxGTIDsKey() []byte {
+	return TxGTIDsKeyPrefix
 }
 
-func GetLastGasProviderIDKey() []byte {
-	return LastGasProviderIDKey
+func GetLastGasTankIDKey() []byte {
+	return LastGasTankIDKey
 }
 
-func GetGasProviderKey(gasProvierID uint64) []byte {
-	return append(GasProviderKeyPrefix, sdk.Uint64ToBigEndian(gasProvierID)...)
+func GetGasTankKey(gasTankID uint64) []byte {
+	return append(GasTankKeyPrefix, sdk.Uint64ToBigEndian(gasTankID)...)
 }
 
-func GetAllGasProvidersKey() []byte {
-	return GasProviderKeyPrefix
+func GetAllGasTanksKey() []byte {
+	return GasTankKeyPrefix
 }
 
 func GetGasConsumerKey(consumer sdk.AccAddress) []byte {

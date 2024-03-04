@@ -42,29 +42,29 @@ func (k Querier) MessagesAndContracts(c context.Context, _ *types.QueryMessagesA
 	}, nil
 }
 
-func (k Querier) GasProvider(c context.Context, req *types.QueryGasProviderRequest) (*types.QueryGasProviderResponse, error) {
+func (k Querier) GasTank(c context.Context, req *types.QueryGasTankRequest) (*types.QueryGasTankResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	if req.GasProviderId == 0 {
-		return nil, status.Error(codes.InvalidArgument, "gas provider id cannot be 0")
+	if req.GasTankId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "gas tank id cannot be 0")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	gp, found := k.GetGasProvider(ctx, req.GasProviderId)
+	gt, found := k.GetGasTank(ctx, req.GasTankId)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "gas provider with id %d doesn't exist", req.GasProviderId)
+		return nil, status.Errorf(codes.NotFound, "gas tank with id %d doesn't exist", req.GasTankId)
 	}
 
-	gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gp.GasTank))
-	return &types.QueryGasProviderResponse{
-		GasProvider: types.NewGasProviderResponse(gp, gasTankBalances),
+	gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gt.GasTank))
+	return &types.QueryGasTankResponse{
+		GasTank: types.NewGasTankResponse(gt, gasTankBalances),
 	}, nil
 }
 
-func (k Querier) GasProviders(c context.Context, req *types.QueryGasProvidersRequest) (*types.QueryGasProvidersResponse, error) {
+func (k Querier) GasTanks(c context.Context, req *types.QueryGasTanksRequest) (*types.QueryGasTanksResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -72,18 +72,18 @@ func (k Querier) GasProviders(c context.Context, req *types.QueryGasProvidersReq
 	ctx := sdk.UnwrapSDKContext(c)
 	store := ctx.KVStore(k.storeKey)
 
-	keyPrefix := types.GetAllGasProvidersKey()
-	gpGetter := func(_, value []byte) types.GasProvider {
-		return types.MustUnmarshalGasProvider(k.cdc, value)
+	keyPrefix := types.GetAllGasTanksKey()
+	gtGetter := func(_, value []byte) types.GasTank {
+		return types.MustUnmarshalGasTank(k.cdc, value)
 	}
-	gpStore := prefix.NewStore(store, keyPrefix)
-	var gasProviders []types.GasProviderResponse
+	gtStore := prefix.NewStore(store, keyPrefix)
+	var gasTanks []types.GasTankResponse
 
-	pageRes, err := query.FilteredPaginate(gpStore, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
-		gp := gpGetter(key, value)
+	pageRes, err := query.FilteredPaginate(gtStore, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
+		gt := gtGetter(key, value)
 		if accumulate {
-			gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gp.GasTank))
-			gasProviders = append(gasProviders, types.NewGasProviderResponse(gp, gasTankBalances))
+			gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gt.GasTank))
+			gasTanks = append(gasTanks, types.NewGasTankResponse(gt, gasTankBalances))
 		}
 
 		return true, nil
@@ -91,9 +91,9 @@ func (k Querier) GasProviders(c context.Context, req *types.QueryGasProvidersReq
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return &types.QueryGasProvidersResponse{
-		GasProviders: gasProviders,
-		Pagination:   pageRes,
+	return &types.QueryGasTanksResponse{
+		GasTanks:   gasTanks,
+		Pagination: pageRes,
 	}, nil
 }
 
@@ -149,15 +149,15 @@ func (k Querier) GasConsumers(c context.Context, req *types.QueryGasConsumersReq
 	}, nil
 }
 
-func (k Querier) GasProviderIdsForAllTXC(c context.Context, req *types.QueryGasProviderIdsForAllTXC) (*types.QueryGasProviderIdsForAllTXCResponse, error) {
+func (k Querier) GasTankIdsForAllTXC(c context.Context, req *types.QueryGasTankIdsForAllTXC) (*types.QueryGasTankIdsForAllTXCResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	txToGpids := []*types.TxGPIDS{}
-	allTxGpids := k.GetAllTxGPIDS(ctx)
-	for _, val := range allTxGpids {
-		gpids := val
-		txToGpids = append(txToGpids, &gpids)
+	txToGtids := []*types.TxGTIDs{}
+	allTxGtids := k.GetAllTxGTIDs(ctx)
+	for _, val := range allTxGtids {
+		gtids := val
+		txToGtids = append(txToGtids, &gtids)
 	}
-	return &types.QueryGasProviderIdsForAllTXCResponse{
-		TxToGpIds: txToGpids,
+	return &types.QueryGasTankIdsForAllTXCResponse{
+		TxToGtIds: txToGtids,
 	}, nil
 }

@@ -8,17 +8,17 @@ option go_package = "github.com/comdex-official/comdex/x/gasless/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // CreateGasProvider defines a method for creating a new gas provider
-    rpc CreateGasProvider(MsgCreateGasProvider) returns (MsgCreateGasProviderResponse);
+    // CreateGasTank defines a method for creating a new gas tank
+    rpc CreateGasTank(MsgCreateGasTank) returns (MsgCreateGasTankResponse);
 
-    // AuthorizeActors defines a method for authorizing accounts to take actions on creator's behalf
+    // AuthorizeActors defines a method for authorizing accounts to take actions on provider's behalf
     rpc AuthorizeActors(MsgAuthorizeActors) returns (MsgAuthorizeActorsResponse);
 
-    // UpdateGasProviderStatus defines a method for marking gas tank as active or inactive
-    rpc UpdateGasProviderStatus(MsgUpdateGasProviderStatus) returns (MsgUpdateGasProviderStatusResponse);
+    // UpdateGasTankStatus defines a method for marking gas tank as active or inactive
+    rpc UpdateGasTankStatus(MsgUpdateGasTankStatus) returns (MsgUpdateGasTankStatusResponse);
 
-    // UpdateGasProviderConfigs defines a method for updating the configs of gas provider
-    rpc UpdateGasProviderConfigs(MsgUpdateGasProviderConfig) returns (MsgUpdateGasProviderConfigResponse);
+    // UpdateGasTankConfigs defines a method for updating the configs of gas tank
+    rpc UpdateGasTankConfigs(MsgUpdateGasTankConfig) returns (MsgUpdateGasTankConfigResponse);
 
     // BlockConsumer defines a method for blocking a suspected malicious consumer
     rpc BlockConsumer(MsgBlockConsumer) returns (MsgBlockConsumerResponse);
@@ -31,10 +31,10 @@ service Msg {
 }
 
 
-// MsgCreateGasProvider defines an SDK message for creating a new GasProvider.
-message MsgCreateGasProvider {
-    // creator specifies the bech32-encoded address that is the gas provider.
-    string creator = 1;
+// MsgCreateGasTank defines an SDK message for creating a new GasTank.
+message MsgCreateGasTank {
+    // provider specifies the bech32-encoded address that is the gas provider.
+    string provider = 1;
 
     // fee_denom specifies the denom of the gas deposit coin 
     string fee_denom = 2;
@@ -58,12 +58,12 @@ message MsgCreateGasProvider {
     cosmos.base.v1beta1.Coin gas_deposit = 8 [(gogoproto.nullable) = false];
 }
 
-message MsgCreateGasProviderResponse {}
+message MsgCreateGasTankResponse {}
 
 // MsgAuthorizeActors defines the SDK message for authorizing accounts to take actions on provider's behalf
 message MsgAuthorizeActors {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // provider specifies the bech32-encoded address that is the gas provider.
     string provider = 2;
@@ -74,21 +74,21 @@ message MsgAuthorizeActors {
 
 message MsgAuthorizeActorsResponse {}
 
-// MsgUpdateGasProviderStatus defines an SDK message for updating the status of gas tank.
-message MsgUpdateGasProviderStatus {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+// MsgUpdateGasTankStatus defines an SDK message for updating the status of gas tank.
+message MsgUpdateGasTankStatus {
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // provider specifies the bech32-encoded address that is the gas provider.
     string provider = 2;
 }
 
-message MsgUpdateGasProviderStatusResponse{}
+message MsgUpdateGasTankStatusResponse{}
 
-// MsgUpdateGasProviderConfig defines an SDK message for updating the configs of gas provider.
-message MsgUpdateGasProviderConfig {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+// MsgUpdateGasTankConfig defines an SDK message for updating the configs of gas tank.
+message MsgUpdateGasTankConfig {
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // provider specifies the bech32-encoded address that is the gas provider.
     string provider = 2;
@@ -109,12 +109,12 @@ message MsgUpdateGasProviderConfig {
     repeated string contracts_allowed = 7;
 }
 
-message MsgUpdateGasProviderConfigResponse {}
+message MsgUpdateGasTankConfigResponse {}
 
 // MsgBlockConsumer defines an SDK message for blocking the  suspected malicious consumer.
 message MsgBlockConsumer {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // actor specifies the bech32-encoded address that is the gas provider or authorized actor.
     string actor = 2;
@@ -127,8 +127,8 @@ message MsgBlockConsumerResponse {}
 
 // MsgUnblockConsumer defines an SDK message for unblocking consumer.
 message MsgUnblockConsumer {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // actor specifies the bech32-encoded address that is the gas provider or authorized actor.
     string actor = 2;
@@ -141,8 +141,8 @@ message MsgUnblockConsumerResponse {}
 
 // MsgUpdateGasConsumerLimit defines an SDK message for updating the consumption limits of gas consumer.
 message MsgUpdateGasConsumerLimit {
-    // gas_provider_id specifies the id of the gas provider
-    uint64 gas_provider_id = 1;
+    // gas_tank_id specifies the id of the gas tank
+    uint64 gas_tank_id = 1;
 
     // provider specifies the bech32-encoded address that is the gas provider.
     string provider = 2;

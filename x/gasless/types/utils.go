@@ -80,20 +80,20 @@ func ShiftToEndUint64(list []uint64, x uint64) []uint64 {
 	return list
 }
 
-func NewGasProviderResponse(gasProvider GasProvider, balances sdk.Coins) GasProviderResponse {
-	return GasProviderResponse{
-		Id:                     gasProvider.Id,
-		Creator:                gasProvider.Creator,
-		GasTankAddress:         gasProvider.GasTank,
+func NewGasTankResponse(gasTank GasTank, balances sdk.Coins) GasTankResponse {
+	return GasTankResponse{
+		Id:                     gasTank.Id,
+		Provider:               gasTank.Provider,
+		GasTankAddress:         gasTank.GasTank,
 		GasTankBalances:        balances,
-		IsActive:               gasProvider.IsActive,
-		MaxTxsCountPerConsumer: gasProvider.MaxTxsCountPerConsumer,
-		MaxFeeUsagePerConsumer: gasProvider.MaxFeeUsagePerConsumer,
-		MaxFeeUsagePerTx:       gasProvider.MaxFeeUsagePerTx,
-		TxsAllowed:             gasProvider.TxsAllowed,
-		ContractsAllowed:       gasProvider.ContractsAllowed,
-		AuthorizedActors:       gasProvider.AuthorizedActors,
-		FeeDenom:               gasProvider.FeeDenom,
+		IsActive:               gasTank.IsActive,
+		MaxTxsCountPerConsumer: gasTank.MaxTxsCountPerConsumer,
+		MaxFeeUsagePerConsumer: gasTank.MaxFeeUsagePerConsumer,
+		MaxFeeUsagePerTx:       gasTank.MaxFeeUsagePerTx,
+		TxsAllowed:             gasTank.TxsAllowed,
+		ContractsAllowed:       gasTank.ContractsAllowed,
+		AuthorizedActors:       gasTank.AuthorizedActors,
+		FeeDenom:               gasTank.FeeDenom,
 	}
 }
 
@@ -114,9 +114,9 @@ func NewConsumptionDetail(
 	}
 }
 
-func NewTxGPIDS(tpoc string) TxGPIDS {
-	return TxGPIDS{
+func NewTxGTIDs(tpoc string) TxGTIDs {
+	return TxGTIDs{
 		TxPathOrContractAddress: tpoc,
-		GasProviderIds:          []uint64{},
+		GasTankIds:              []uint64{},
 	}
 }

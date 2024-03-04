@@ -19,18 +19,18 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
-// CreateGasProvider defines a method to create a new gas provider
-func (m msgServer) CreateGasProvider(goCtx context.Context, msg *types.MsgCreateGasProvider) (*types.MsgCreateGasProviderResponse, error) {
+// CreateGasTank defines a method to create a new gas tank
+func (m msgServer) CreateGasTank(goCtx context.Context, msg *types.MsgCreateGasTank) (*types.MsgCreateGasTankResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if _, err := m.Keeper.CreateGasProvider(ctx, msg); err != nil {
+	if _, err := m.Keeper.CreateGasTank(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgCreateGasProviderResponse{}, nil
+	return &types.MsgCreateGasTankResponse{}, nil
 }
 
-// AuthorizeActors defines a method to update the actors in gas provider
+// AuthorizeActors defines a method to update the actors in gas tank
 func (m msgServer) AuthorizeActors(goCtx context.Context, msg *types.MsgAuthorizeActors) (*types.MsgAuthorizeActorsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -41,26 +41,26 @@ func (m msgServer) AuthorizeActors(goCtx context.Context, msg *types.MsgAuthoriz
 	return &types.MsgAuthorizeActorsResponse{}, nil
 }
 
-// UpdateGasProviderStatus defines a method to update the active status of gas provider
-func (m msgServer) UpdateGasProviderStatus(goCtx context.Context, msg *types.MsgUpdateGasProviderStatus) (*types.MsgUpdateGasProviderStatusResponse, error) {
+// UpdateGasTankStatus defines a method to update the active status of gas tank
+func (m msgServer) UpdateGasTankStatus(goCtx context.Context, msg *types.MsgUpdateGasTankStatus) (*types.MsgUpdateGasTankStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if _, err := m.Keeper.UpdateGasProviderStatus(ctx, msg); err != nil {
+	if _, err := m.Keeper.UpdateGasTankStatus(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgUpdateGasProviderStatusResponse{}, nil
+	return &types.MsgUpdateGasTankStatusResponse{}, nil
 }
 
-// UpdateGasProviderConfigs defines a method to update a gas provider
-func (m msgServer) UpdateGasProviderConfigs(goCtx context.Context, msg *types.MsgUpdateGasProviderConfig) (*types.MsgUpdateGasProviderConfigResponse, error) {
+// UpdateGasTankConfigs defines a method to update a gas tank
+func (m msgServer) UpdateGasTankConfigs(goCtx context.Context, msg *types.MsgUpdateGasTankConfig) (*types.MsgUpdateGasTankConfigResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if _, err := m.Keeper.UpdateGasProviderConfig(ctx, msg); err != nil {
+	if _, err := m.Keeper.UpdateGasTankConfig(ctx, msg); err != nil {
 		return nil, err
 	}
 
-	return &types.MsgUpdateGasProviderConfigResponse{}, nil
+	return &types.MsgUpdateGasTankConfigResponse{}, nil
 }
 
 // BlockConsumer defines a method to block a gas consumer

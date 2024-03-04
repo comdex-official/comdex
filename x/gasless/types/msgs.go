@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgCreateGasProvider)(nil)
+	_ sdk.Msg = (*MsgCreateGasTank)(nil)
 	_ sdk.Msg = (*MsgAuthorizeActors)(nil)
-	_ sdk.Msg = (*MsgUpdateGasProviderStatus)(nil)
-	_ sdk.Msg = (*MsgUpdateGasProviderConfig)(nil)
+	_ sdk.Msg = (*MsgUpdateGasTankStatus)(nil)
+	_ sdk.Msg = (*MsgUpdateGasTankConfig)(nil)
 	_ sdk.Msg = (*MsgBlockConsumer)(nil)
 	_ sdk.Msg = (*MsgUnblockConsumer)(nil)
 	_ sdk.Msg = (*MsgUpdateGasConsumerLimit)(nil)
@@ -19,18 +19,18 @@ var (
 
 // Message types for the gasless module.
 const (
-	TypeMsgCreateGasProvider       = "create_gas_provider"
-	TypeMsgAuthorizeActors         = "authorize_actors"
-	TypeMsgUpdateGasProviderStatus = "update_gas_provider_status"
-	TypeMsgUpdateGasProviderConfig = "update_gas_provider_config"
-	TypeMsgBlockConsumer           = "block_consumer"
-	TypeMsgUnblockConsumer         = "unblock_consumer"
-	TypeMsgUpdateGasConsumerLimit  = "update_gas_consumer_limit"
+	TypeMsgCreateGasTank          = "create_gas_tank"
+	TypeMsgAuthorizeActors        = "authorize_actors"
+	TypeMsgUpdateGasTankStatus    = "update_gas_tank_status"
+	TypeMsgUpdateGasTankConfig    = "update_gas_tank_config"
+	TypeMsgBlockConsumer          = "block_consumer"
+	TypeMsgUnblockConsumer        = "unblock_consumer"
+	TypeMsgUpdateGasConsumerLimit = "update_gas_consumer_limit"
 )
 
-// NewMsgCreateGasProvider returns a new MsgCreateGasProvider.
-func NewMsgCreateGasProvider(
-	creator sdk.AccAddress,
+// NewMsgCreateGasTank returns a new MsgCreateGasTank.
+func NewMsgCreateGasTank(
+	provider sdk.AccAddress,
 	feeDenom string,
 	maxFeeUsagePerTx sdkmath.Int,
 	maxTxsCountPerConsumer uint64,
@@ -38,9 +38,9 @@ func NewMsgCreateGasProvider(
 	txsAllowed []string,
 	contractsAllowed []string,
 	gasDeposit sdk.Coin,
-) *MsgCreateGasProvider {
-	return &MsgCreateGasProvider{
-		Creator:                creator.String(),
+) *MsgCreateGasTank {
+	return &MsgCreateGasTank{
+		Provider:               provider.String(),
 		FeeDenom:               feeDenom,
 		MaxFeeUsagePerTx:       maxFeeUsagePerTx,
 		MaxTxsCountPerConsumer: maxTxsCountPerConsumer,
@@ -51,13 +51,13 @@ func NewMsgCreateGasProvider(
 	}
 }
 
-func (msg MsgCreateGasProvider) Route() string { return RouterKey }
+func (msg MsgCreateGasTank) Route() string { return RouterKey }
 
-func (msg MsgCreateGasProvider) Type() string { return TypeMsgCreateGasProvider }
+func (msg MsgCreateGasTank) Type() string { return TypeMsgCreateGasTank }
 
-func (msg MsgCreateGasProvider) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
-		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid creator address: %v", err)
+func (msg MsgCreateGasTank) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
 	if err := sdk.ValidateDenom(msg.FeeDenom); err != nil {
 		return sdkerrors.Wrap(errors.ErrInvalidRequest, err.Error())
@@ -80,12 +80,12 @@ func (msg MsgCreateGasProvider) ValidateBasic() error {
 	return nil
 }
 
-func (msg MsgCreateGasProvider) GetSignBytes() []byte {
+func (msg MsgCreateGasTank) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgCreateGasProvider) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.Creator)
+func (msg MsgCreateGasTank) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(msg.Provider)
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ func (msg MsgCreateGasProvider) GetSigners() []sdk.AccAddress {
 
 // NewMsgAuthorizeActors returns a new MsgAuthorizeActors.
 func NewMsgAuthorizeActors(
-	gasProviderID uint64,
+	gasTankID uint64,
 	provider sdk.AccAddress,
 	actors []sdk.AccAddress,
 ) *MsgAuthorizeActors {
@@ -103,9 +103,9 @@ func NewMsgAuthorizeActors(
 		authorizedActors = append(authorizedActors, actor.String())
 	}
 	return &MsgAuthorizeActors{
-		GasProviderId: gasProviderID,
-		Provider:      provider.String(),
-		Actors:        authorizedActors,
+		GasTankId: gasTankID,
+		Provider:  provider.String(),
+		Actors:    authorizedActors,
 	}
 }
 
@@ -117,8 +117,8 @@ func (msg MsgAuthorizeActors) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 
 	if len(msg.Actors) > 5 {
@@ -145,36 +145,36 @@ func (msg MsgAuthorizeActors) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// NewMsgUpdateGasProviderStatus returns a new MsgUpdateGasProviderStatus.
-func NewMsgUpdateGasProviderStatus(
-	gasProviderID uint64,
+// NewMsgUpdateGasTankStatus returns a new MsgUpdateGasTankStatus.
+func NewMsgUpdateGasTankStatus(
+	gasTankID uint64,
 	provider sdk.AccAddress,
-) *MsgUpdateGasProviderStatus {
-	return &MsgUpdateGasProviderStatus{
-		GasProviderId: gasProviderID,
-		Provider:      provider.String(),
+) *MsgUpdateGasTankStatus {
+	return &MsgUpdateGasTankStatus{
+		GasTankId: gasTankID,
+		Provider:  provider.String(),
 	}
 }
 
-func (msg MsgUpdateGasProviderStatus) Route() string { return RouterKey }
+func (msg MsgUpdateGasTankStatus) Route() string { return RouterKey }
 
-func (msg MsgUpdateGasProviderStatus) Type() string { return TypeMsgUpdateGasProviderStatus }
+func (msg MsgUpdateGasTankStatus) Type() string { return TypeMsgUpdateGasTankStatus }
 
-func (msg MsgUpdateGasProviderStatus) ValidateBasic() error {
+func (msg MsgUpdateGasTankStatus) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 	return nil
 }
 
-func (msg MsgUpdateGasProviderStatus) GetSignBytes() []byte {
+func (msg MsgUpdateGasTankStatus) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgUpdateGasProviderStatus) GetSigners() []sdk.AccAddress {
+func (msg MsgUpdateGasTankStatus) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Provider)
 	if err != nil {
 		panic(err)
@@ -182,18 +182,18 @@ func (msg MsgUpdateGasProviderStatus) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// NewMsgUpdateGasProviderConfig returns a new MsgUpdateGasProviderConfig.
-func NewMsgUpdateGasProviderConfig(
-	gasProviderID uint64,
+// NewMsgUpdateGasTankConfig returns a new MsgUpdateGasTankConfig.
+func NewMsgUpdateGasTankConfig(
+	gasTankID uint64,
 	provider sdk.AccAddress,
 	maxFeeUsagePerTx sdkmath.Int,
 	maxTxsCountPerConsumer uint64,
 	maxFeeUsagePerConsumer sdkmath.Int,
 	txsAllowed []string,
 	contractsAllowed []string,
-) *MsgUpdateGasProviderConfig {
-	return &MsgUpdateGasProviderConfig{
-		GasProviderId:          gasProviderID,
+) *MsgUpdateGasTankConfig {
+	return &MsgUpdateGasTankConfig{
+		GasTankId:              gasTankID,
 		Provider:               provider.String(),
 		MaxFeeUsagePerTx:       maxFeeUsagePerTx,
 		MaxTxsCountPerConsumer: maxTxsCountPerConsumer,
@@ -203,16 +203,16 @@ func NewMsgUpdateGasProviderConfig(
 	}
 }
 
-func (msg MsgUpdateGasProviderConfig) Route() string { return RouterKey }
+func (msg MsgUpdateGasTankConfig) Route() string { return RouterKey }
 
-func (msg MsgUpdateGasProviderConfig) Type() string { return TypeMsgUpdateGasProviderConfig }
+func (msg MsgUpdateGasTankConfig) Type() string { return TypeMsgUpdateGasTankConfig }
 
-func (msg MsgUpdateGasProviderConfig) ValidateBasic() error {
+func (msg MsgUpdateGasTankConfig) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 	if msg.MaxTxsCountPerConsumer == 0 {
 		return sdkerrors.Wrap(errors.ErrInvalidRequest, "max tx count per consumer must not be 0")
@@ -229,11 +229,11 @@ func (msg MsgUpdateGasProviderConfig) ValidateBasic() error {
 	return nil
 }
 
-func (msg MsgUpdateGasProviderConfig) GetSignBytes() []byte {
+func (msg MsgUpdateGasTankConfig) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&msg))
 }
 
-func (msg MsgUpdateGasProviderConfig) GetSigners() []sdk.AccAddress {
+func (msg MsgUpdateGasTankConfig) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(msg.Provider)
 	if err != nil {
 		panic(err)
@@ -243,13 +243,13 @@ func (msg MsgUpdateGasProviderConfig) GetSigners() []sdk.AccAddress {
 
 // NewMsgBlockConsumer returns a new MsgBlockConsumer.
 func NewMsgBlockConsumer(
-	gasProviderID uint64,
+	gasTankID uint64,
 	actor, consumer sdk.AccAddress,
 ) *MsgBlockConsumer {
 	return &MsgBlockConsumer{
-		GasProviderId: gasProviderID,
-		Actor:         actor.String(),
-		Consumer:      consumer.String(),
+		GasTankId: gasTankID,
+		Actor:     actor.String(),
+		Consumer:  consumer.String(),
 	}
 }
 
@@ -258,11 +258,11 @@ func (msg MsgBlockConsumer) Route() string { return RouterKey }
 func (msg MsgBlockConsumer) Type() string { return TypeMsgBlockConsumer }
 
 func (msg MsgBlockConsumer) ValidateBasic() error {
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
-		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
+		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid actor address: %v", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Consumer); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
@@ -284,13 +284,13 @@ func (msg MsgBlockConsumer) GetSigners() []sdk.AccAddress {
 
 // NewMsgUnblockConsumer returns a new MsgUnblockConsumer.
 func NewMsgUnblockConsumer(
-	gasProviderID uint64,
+	gasTankID uint64,
 	actor, consumer sdk.AccAddress,
 ) *MsgUnblockConsumer {
 	return &MsgUnblockConsumer{
-		GasProviderId: gasProviderID,
-		Actor:         actor.String(),
-		Consumer:      consumer.String(),
+		GasTankId: gasTankID,
+		Actor:     actor.String(),
+		Consumer:  consumer.String(),
 	}
 }
 
@@ -299,8 +299,8 @@ func (msg MsgUnblockConsumer) Route() string { return RouterKey }
 func (msg MsgUnblockConsumer) Type() string { return TypeMsgUnblockConsumer }
 
 func (msg MsgUnblockConsumer) ValidateBasic() error {
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
@@ -325,13 +325,13 @@ func (msg MsgUnblockConsumer) GetSigners() []sdk.AccAddress {
 
 // NewMsgUpdateGasConsumerLimit returns a new MsgUpdateGasConsumerLimit.
 func NewMsgUpdateGasConsumerLimit(
-	gasProviderID uint64,
+	gasTankID uint64,
 	provider, consumer sdk.AccAddress,
 	totalTxsAllowed uint64,
 	totalFeeConsumptionAllowed sdkmath.Int,
 ) *MsgUpdateGasConsumerLimit {
 	return &MsgUpdateGasConsumerLimit{
-		GasProviderId:              gasProviderID,
+		GasTankId:                  gasTankID,
 		Provider:                   provider.String(),
 		Consumer:                   consumer.String(),
 		TotalTxsAllowed:            totalTxsAllowed,
@@ -344,8 +344,8 @@ func (msg MsgUpdateGasConsumerLimit) Route() string { return RouterKey }
 func (msg MsgUpdateGasConsumerLimit) Type() string { return TypeMsgUpdateGasConsumerLimit }
 
 func (msg MsgUpdateGasConsumerLimit) ValidateBasic() error {
-	if msg.GasProviderId == 0 {
-		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas provider id must not be 0")
+	if msg.GasTankId == 0 {
+		return sdkerrors.Wrap(errors.ErrInvalidRequest, "gas tank id must not be 0")
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)

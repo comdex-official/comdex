@@ -19,14 +19,14 @@ enum AddressType {
     ADDRESS_TYPE_20_BYTES = 1 [(gogoproto.enumvalue_customname) = "AddressType20Bytes"];
   }
 
-message TxGPIDS {
+message TxGTIDs {
     string tx_path_or_contract_address = 1;
-    repeated uint64 gas_provider_ids = 2;
+    repeated uint64 gas_tank_ids = 2;
 }
 
-message GasProvider {
+message GasTank {
     uint64 id = 1;
-    string creator = 2;
+    string provider = 2;
     string gas_tank = 3;
     bool is_active = 4;
     uint64 max_txs_count_per_consumer = 5;

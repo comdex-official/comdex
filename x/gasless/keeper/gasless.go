@@ -49,16 +49,16 @@ func (k Keeper) GetAllAvailableContracts(ctx sdk.Context) (contractsDetails []ty
 	return contractsDetails
 }
 
-func (k Keeper) ValidateMsgCreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvider) error {
-	allGasProviders := k.GetAllGasProviders(ctx)
+func (k Keeper) ValidateMsgCreateGasTank(ctx sdk.Context, msg *types.MsgCreateGasTank) error {
+	allGasTanks := k.GetAllGasTanks(ctx)
 	gasTanks := 0
-	for _, gp := range allGasProviders {
-		if gp.Creator == msg.Creator {
+	for _, gt := range allGasTanks {
+		if gt.Provider == msg.Provider {
 			gasTanks++
 		}
 	}
 	if gasTanks >= 10 {
-		return sdkerrors.Wrapf(types.ErrorMaxLimitReachedByCreator, " %d gas tanks already created by the creator", 10)
+		return sdkerrors.Wrapf(types.ErrorMaxLimitReachedByProvider, " %d gas tanks already created by the provider", 10)
 	}
 
 	if msg.FeeDenom != msg.GasDeposit.Denom {
@@ -109,14 +109,14 @@ func (k Keeper) ValidateMsgCreateGasProvider(ctx sdk.Context, msg *types.MsgCrea
 	return nil
 }
 
-func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvider) (types.GasProvider, error) {
-	if err := k.ValidateMsgCreateGasProvider(ctx, msg); err != nil {
-		return types.GasProvider{}, err
+func (k Keeper) CreateGasTank(ctx sdk.Context, msg *types.MsgCreateGasTank) (types.GasTank, error) {
+	if err := k.ValidateMsgCreateGasTank(ctx, msg); err != nil {
+		return types.GasTank{}, err
 	}
-	id := k.GetNextGasProviderIDWithUpdate(ctx)
-	gasProvider := types.NewGasProvider(
+	id := k.GetNextGasTankIDWithUpdate(ctx)
+	gasTank := types.NewGasTank(
 		id,
-		sdk.MustAccAddressFromBech32(msg.GetCreator()),
+		sdk.MustAccAddressFromBech32(msg.GetProvider()),
 		msg.MaxTxsCountPerConsumer,
 		msg.MaxFeeUsagePerConsumer,
 		msg.MaxFeeUsagePerTx,
@@ -126,49 +126,49 @@ func (k Keeper) CreateGasProvider(ctx sdk.Context, msg *types.MsgCreateGasProvid
 	)
 
 	// Send gas deposit coins to the gas tank's reserve account.
-	creator, err := sdk.AccAddressFromBech32(msg.GetCreator())
+	provider, err := sdk.AccAddressFromBech32(msg.GetProvider())
 	if err != nil {
-		return types.GasProvider{}, err
+		return types.GasTank{}, err
 	}
-	if err := k.bankKeeper.SendCoins(ctx, creator, gasProvider.GetGasTankReserveAddress(), sdk.NewCoins(msg.GasDeposit)); err != nil {
-		return types.GasProvider{}, err
+	if err := k.bankKeeper.SendCoins(ctx, provider, gasTank.GetGasTankReserveAddress(), sdk.NewCoins(msg.GasDeposit)); err != nil {
+		return types.GasTank{}, err
 	}
 
-	k.AddToTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
-	k.SetGasProvider(ctx, gasProvider)
+	k.AddToTxGtids(ctx, gasTank.TxsAllowed, gasTank.ContractsAllowed, gasTank.Id)
+	k.SetGasTank(ctx, gasTank)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeCreateGasProvider,
-			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
+			types.EventTypeCreateGasTank,
+			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(gasTank.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyFeeDenom, msg.FeeDenom),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerTx, msg.MaxFeeUsagePerTx.String()),
 			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.MaxTxsCountPerConsumer, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerConsumer, msg.MaxFeeUsagePerConsumer.String()),
-			sdk.NewAttribute(types.AttributeKeyTxsAllowed, strings.Join(gasProvider.TxsAllowed, ",")),
-			sdk.NewAttribute(types.AttributeKeyContractsAllowed, strings.Join(gasProvider.ContractsAllowed, ",")),
+			sdk.NewAttribute(types.AttributeKeyTxsAllowed, strings.Join(gasTank.TxsAllowed, ",")),
+			sdk.NewAttribute(types.AttributeKeyContractsAllowed, strings.Join(gasTank.ContractsAllowed, ",")),
 		),
 	})
 
-	return gasProvider, nil
+	return gasTank, nil
 }
 
 func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthorizeActors) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
-	if !gasProvider.IsActive {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	if !gasTank.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
 
-	if gasProvider.Creator != msg.Provider {
+	if gasTank.Provider != msg.Provider {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
@@ -185,80 +185,80 @@ func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthor
 	return nil
 }
 
-func (k Keeper) AuthorizeActors(ctx sdk.Context, msg *types.MsgAuthorizeActors) (types.GasProvider, error) {
+func (k Keeper) AuthorizeActors(ctx sdk.Context, msg *types.MsgAuthorizeActors) (types.GasTank, error) {
 	if err := k.ValidateMsgAuthorizeActors(ctx, msg); err != nil {
-		return types.GasProvider{}, err
+		return types.GasTank{}, err
 	}
 
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
-	gasProvider.AuthorizedActors = types.RemoveDuplicates(msg.Actors)
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
+	gasTank.AuthorizedActors = types.RemoveDuplicates(msg.Actors)
 
-	k.SetGasProvider(ctx, gasProvider)
+	k.SetGasTank(ctx, gasTank)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeAuthorizeActors,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(gasTank.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyAuthorizedActors, strings.Join(msg.Actors, ",")),
 		),
 	})
 
-	return gasProvider, nil
+	return gasTank, nil
 }
 
-func (k Keeper) ValidatMsgUpdateGasProviderStatus(ctx sdk.Context, msg *types.MsgUpdateGasProviderStatus) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+func (k Keeper) ValidatMsgUpdateGasTankStatus(ctx sdk.Context, msg *types.MsgUpdateGasTankStatus) error {
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
 
-	if gasProvider.Creator != msg.Provider {
+	if gasTank.Provider != msg.Provider {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 	return nil
 }
 
-func (k Keeper) UpdateGasProviderStatus(ctx sdk.Context, msg *types.MsgUpdateGasProviderStatus) (types.GasProvider, error) {
-	if err := k.ValidatMsgUpdateGasProviderStatus(ctx, msg); err != nil {
-		return types.GasProvider{}, err
+func (k Keeper) UpdateGasTankStatus(ctx sdk.Context, msg *types.MsgUpdateGasTankStatus) (types.GasTank, error) {
+	if err := k.ValidatMsgUpdateGasTankStatus(ctx, msg); err != nil {
+		return types.GasTank{}, err
 	}
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
-	gasProvider.IsActive = !gasProvider.IsActive
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
+	gasTank.IsActive = !gasTank.IsActive
 
-	k.SetGasProvider(ctx, gasProvider)
+	k.SetGasTank(ctx, gasTank)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeUpdateGasProviderStatus,
+			types.EventTypeUpdateGasTankStatus,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
-			sdk.NewAttribute(types.AttributeKeyGasProviderStatus, strconv.FormatBool(gasProvider.IsActive)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(gasTank.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankStatus, strconv.FormatBool(gasTank.IsActive)),
 		),
 	})
 
-	return gasProvider, nil
+	return gasTank, nil
 }
 
-func (k Keeper) ValidateMsgUpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGasProviderConfig) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+func (k Keeper) ValidateMsgUpdateGasTankConfig(ctx sdk.Context, msg *types.MsgUpdateGasTankConfig) error {
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
-	if !gasProvider.IsActive {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	if !gasTank.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid provider address: %v", err)
 	}
 
-	if gasProvider.Creator != msg.Provider {
+	if gasTank.Provider != msg.Provider {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
@@ -302,57 +302,57 @@ func (k Keeper) ValidateMsgUpdateGasProviderConfig(ctx sdk.Context, msg *types.M
 	return nil
 }
 
-func (k Keeper) UpdateGasProviderConfig(ctx sdk.Context, msg *types.MsgUpdateGasProviderConfig) (types.GasProvider, error) {
-	if err := k.ValidateMsgUpdateGasProviderConfig(ctx, msg); err != nil {
-		return types.GasProvider{}, err
+func (k Keeper) UpdateGasTankConfig(ctx sdk.Context, msg *types.MsgUpdateGasTankConfig) (types.GasTank, error) {
+	if err := k.ValidateMsgUpdateGasTankConfig(ctx, msg); err != nil {
+		return types.GasTank{}, err
 	}
 
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
 
 	consumerUpdateRequire := false
-	if gasProvider.MaxTxsCountPerConsumer != msg.MaxTxsCountPerConsumer || !gasProvider.MaxFeeUsagePerConsumer.Equal(msg.MaxFeeUsagePerConsumer) {
+	if gasTank.MaxTxsCountPerConsumer != msg.MaxTxsCountPerConsumer || !gasTank.MaxFeeUsagePerConsumer.Equal(msg.MaxFeeUsagePerConsumer) {
 		consumerUpdateRequire = true
 	}
-	k.RemoveFromTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
+	k.RemoveFromTxGtids(ctx, gasTank.TxsAllowed, gasTank.ContractsAllowed, gasTank.Id)
 
-	gasProvider.MaxFeeUsagePerTx = msg.MaxFeeUsagePerTx
-	gasProvider.MaxTxsCountPerConsumer = msg.MaxTxsCountPerConsumer
-	gasProvider.MaxFeeUsagePerConsumer = msg.MaxFeeUsagePerConsumer
+	gasTank.MaxFeeUsagePerTx = msg.MaxFeeUsagePerTx
+	gasTank.MaxTxsCountPerConsumer = msg.MaxTxsCountPerConsumer
+	gasTank.MaxFeeUsagePerConsumer = msg.MaxFeeUsagePerConsumer
 
-	gasProvider.TxsAllowed = types.RemoveDuplicates(msg.TxsAllowed)
-	gasProvider.ContractsAllowed = types.RemoveDuplicates(msg.ContractsAllowed)
+	gasTank.TxsAllowed = types.RemoveDuplicates(msg.TxsAllowed)
+	gasTank.ContractsAllowed = types.RemoveDuplicates(msg.ContractsAllowed)
 
 	if consumerUpdateRequire {
-		k.UpdateConsumerAllowance(ctx, gasProvider)
+		k.UpdateConsumerAllowance(ctx, gasTank)
 	}
-	k.AddToTxGpids(ctx, gasProvider.TxsAllowed, gasProvider.ContractsAllowed, gasProvider.Id)
+	k.AddToTxGtids(ctx, gasTank.TxsAllowed, gasTank.ContractsAllowed, gasTank.Id)
 
-	k.SetGasProvider(ctx, gasProvider)
+	k.SetGasTank(ctx, gasTank)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeUpdateGasProviderConfig,
+			types.EventTypeUpdateGasTankConfig,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(gasProvider.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(gasTank.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerTx, msg.MaxFeeUsagePerTx.String()),
 			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.MaxTxsCountPerConsumer, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerConsumer, msg.MaxFeeUsagePerConsumer.String()),
-			sdk.NewAttribute(types.AttributeKeyTxsAllowed, strings.Join(gasProvider.TxsAllowed, ",")),
-			sdk.NewAttribute(types.AttributeKeyContractsAllowed, strings.Join(gasProvider.ContractsAllowed, ",")),
+			sdk.NewAttribute(types.AttributeKeyTxsAllowed, strings.Join(gasTank.TxsAllowed, ",")),
+			sdk.NewAttribute(types.AttributeKeyContractsAllowed, strings.Join(gasTank.ContractsAllowed, ",")),
 		),
 	})
 
-	return gasProvider, nil
+	return gasTank, nil
 }
 
 func (k Keeper) ValidateMsgBlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
-	if !gasProvider.IsActive {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	if !gasTank.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
@@ -363,8 +363,8 @@ func (k Keeper) ValidateMsgBlockConsumer(ctx sdk.Context, msg *types.MsgBlockCon
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
 	}
 
-	authorizedActors := gasProvider.AuthorizedActors
-	authorizedActors = append(authorizedActors, gasProvider.Creator)
+	authorizedActors := gasTank.AuthorizedActors
+	authorizedActors = append(authorizedActors, gasTank.Provider)
 
 	if !types.ItemExists(authorizedActors, msg.Actor) {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor")
@@ -377,9 +377,9 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 		return types.GasConsumer{}, err
 	}
 
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
-	gasConsumer.Consumption[msg.GasProviderId].IsBlocked = true
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	gasConsumer.Consumption[msg.GasTankId].IsBlocked = true
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -387,7 +387,7 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 			types.EventTypeBlockConsumer,
 			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
 			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(msg.GasTankId, 10)),
 		),
 	})
 
@@ -395,13 +395,13 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 }
 
 func (k Keeper) ValidateMsgUnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
-	if !gasProvider.IsActive {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	if !gasTank.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Actor); err != nil {
@@ -412,8 +412,8 @@ func (k Keeper) ValidateMsgUnblockConsumer(ctx sdk.Context, msg *types.MsgUnbloc
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
 	}
 
-	authorizedActors := gasProvider.AuthorizedActors
-	authorizedActors = append(authorizedActors, gasProvider.Creator)
+	authorizedActors := gasTank.AuthorizedActors
+	authorizedActors = append(authorizedActors, gasTank.Provider)
 
 	if !types.ItemExists(authorizedActors, msg.Actor) {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor")
@@ -426,9 +426,9 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 		return types.GasConsumer{}, err
 	}
 
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
-	gasConsumer.Consumption[msg.GasProviderId].IsBlocked = false
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	gasConsumer.Consumption[msg.GasTankId].IsBlocked = false
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -436,7 +436,7 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 			types.EventTypeUnblockConsumer,
 			sdk.NewAttribute(types.AttributeKeyActor, msg.Actor),
 			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(msg.GasTankId, 10)),
 		),
 	})
 
@@ -444,13 +444,13 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 }
 
 func (k Keeper) ValidateMsgUpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasConsumerLimit) error {
-	gasProvider, found := k.GetGasProvider(ctx, msg.GasProviderId)
+	gasTank, found := k.GetGasTank(ctx, msg.GasTankId)
 	if !found {
-		return sdkerrors.Wrapf(errors.ErrNotFound, "gas provider with id %d not found", msg.GasProviderId)
+		return sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", msg.GasTankId)
 	}
 
-	if !gasProvider.IsActive {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas provider inactive")
+	if !gasTank.IsActive {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Provider); err != nil {
@@ -461,7 +461,7 @@ func (k Keeper) ValidateMsgUpdateGasConsumerLimit(ctx sdk.Context, msg *types.Ms
 		return sdkerrors.Wrapf(errors.ErrInvalidAddress, "invalid consumer address: %v", err)
 	}
 
-	if gasProvider.Creator != msg.Provider {
+	if gasTank.Provider != msg.Provider {
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
@@ -481,12 +481,12 @@ func (k Keeper) UpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasC
 		return types.GasConsumer{}, err
 	}
 
-	gasProvider, _ := k.GetGasProvider(ctx, msg.GasProviderId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasProvider)
-	if !gasConsumer.Consumption[msg.GasProviderId].TotalFeeConsumptionAllowed.Amount.Equal(msg.TotalFeeConsumptionAllowed) ||
-		gasConsumer.Consumption[msg.GasProviderId].TotalTxsAllowed != msg.TotalTxsAllowed {
-		gasConsumer.Consumption[msg.GasProviderId].TotalFeeConsumptionAllowed.Amount = msg.TotalFeeConsumptionAllowed
-		gasConsumer.Consumption[msg.GasProviderId].TotalTxsAllowed = msg.TotalTxsAllowed
+	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
+	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	if !gasConsumer.Consumption[msg.GasTankId].TotalFeeConsumptionAllowed.Amount.Equal(msg.TotalFeeConsumptionAllowed) ||
+		gasConsumer.Consumption[msg.GasTankId].TotalTxsAllowed != msg.TotalTxsAllowed {
+		gasConsumer.Consumption[msg.GasTankId].TotalFeeConsumptionAllowed.Amount = msg.TotalFeeConsumptionAllowed
+		gasConsumer.Consumption[msg.GasTankId].TotalTxsAllowed = msg.TotalTxsAllowed
 		k.SetGasConsumer(ctx, gasConsumer)
 	}
 
@@ -495,7 +495,7 @@ func (k Keeper) UpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasC
 			types.EventTypeBlockConsumer,
 			sdk.NewAttribute(types.AttributeKeyProvider, msg.Provider),
 			sdk.NewAttribute(types.AttributeKeyConsumer, msg.Consumer),
-			sdk.NewAttribute(types.AttributeKeyGasProviderID, strconv.FormatUint(msg.GasProviderId, 10)),
+			sdk.NewAttribute(types.AttributeKeyGasTankID, strconv.FormatUint(msg.GasTankId, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxTxsCountPerConsumer, strconv.FormatUint(msg.TotalTxsAllowed, 10)),
 			sdk.NewAttribute(types.AttributeKeyMaxFeeUsagePerConsumer, msg.TotalFeeConsumptionAllowed.String()),
 		),

@@ -26,10 +26,10 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		NewCreateGasProviderCmd(),
+		NewCreateGasTankCmd(),
 		NewAuthorizeActorsCmd(),
-		NewUpdateGasProviderStatusCmd(),
-		NewUpdateGasProviderConfigsCmd(),
+		NewUpdateGasTankStatusCmd(),
+		NewUpdateGasTankConfigsCmd(),
 		NewBlockConsumerCmd(),
 		NewUnblockConsumerCmd(),
 		NewUpdateGasConsumerLimitCmd(),
@@ -38,17 +38,17 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-func NewCreateGasProviderCmd() *cobra.Command {
+func NewCreateGasTankCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-gas-provider [fee-denom] [max-fee-usage-per-tx] [max-txs-count-per-consumer] [max-fee-usage-per-consumer] [txs-allowed] [contracts-allowed] [gas-deposit]",
+		Use:   "create-gas-tank [fee-denom] [max-fee-usage-per-tx] [max-txs-count-per-consumer] [max-fee-usage-per-consumer] [txs-allowed] [contracts-allowed] [gas-deposit]",
 		Args:  cobra.ExactArgs(7),
-		Short: "Create a gas provider",
+		Short: "Create a gas tank",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Create a gas provider.
+			fmt.Sprintf(`Create a gas tank.
 Example:
-$ %s tx %s create-gas-provider ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder,/comdex.liquidity.v1beta1.MsgMarketOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3,comdex1zh9gzcw3j5jd53ulfjx9lj4088plur7xy3jayndwr7jxrdqhg7jqqsfqzx 10000000000ucmdx --from mykey
-$ %s tx %s create-gas-provider ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3 10000000000ucmdx --from mykey
-$ %s tx %s create-gas-provider ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder "" 10000000000ucmdx --from mykey
+$ %s tx %s create-gas-tank ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder,/comdex.liquidity.v1beta1.MsgMarketOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3,comdex1zh9gzcw3j5jd53ulfjx9lj4088plur7xy3jayndwr7jxrdqhg7jqqsfqzx 10000000000ucmdx --from mykey
+$ %s tx %s create-gas-tank ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3 10000000000ucmdx --from mykey
+$ %s tx %s create-gas-tank ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder "" 10000000000ucmdx --from mykey
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -95,7 +95,7 @@ $ %s tx %s create-gas-provider ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1
 				return fmt.Errorf("invalid gas-deposit: %w", err)
 			}
 
-			msg := types.NewMsgCreateGasProvider(
+			msg := types.NewMsgCreateGasTank(
 				clientCtx.GetFromAddress(),
 				feeDenom,
 				maxFeeUsagePerTx,
@@ -120,11 +120,11 @@ $ %s tx %s create-gas-provider ucmdx 25000 200 5000000 /comdex.liquidity.v1beta1
 
 func NewAuthorizeActorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-authorized-actors [gas-provider-id] [actors]",
+		Use:   "update-authorized-actors [gas-tank-id] [actors]",
 		Args:  cobra.ExactArgs(2),
-		Short: "Update authorized actors of the gas provider",
+		Short: "Update authorized actors of the gas tank",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Update authorized actors of the gas provider.
+			fmt.Sprintf(`Update authorized actors of the gas tank.
 Example:
 $ %s tx %s update-authorized-actors 1 comdex1...,comdex2... --from mykey
 `,
@@ -137,9 +137,9 @@ $ %s tx %s update-authorized-actors 1 comdex1...,comdex2... --from mykey
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
 			actors, err := ParseStringSliceFromString(args[1], ",")
@@ -157,7 +157,7 @@ $ %s tx %s update-authorized-actors 1 comdex1...,comdex2... --from mykey
 			}
 
 			msg := types.NewMsgAuthorizeActors(
-				gasProviderID,
+				gasTankID,
 				clientCtx.GetFromAddress(),
 				sanitizedActors,
 			)
@@ -174,15 +174,15 @@ $ %s tx %s update-authorized-actors 1 comdex1...,comdex2... --from mykey
 	return cmd
 }
 
-func NewUpdateGasProviderStatusCmd() *cobra.Command {
+func NewUpdateGasTankStatusCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-gas-provider-status [gas-provider-id]",
+		Use:   "update-gas-tank-status [gas-tank-id]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Update status of the gas provider",
+		Short: "Update status of the gas tank",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Update status of the gas provider.
+			fmt.Sprintf(`Update status of the gas tank.
 Example:
-$ %s tx %s update-gas-provider-status 32 --from mykey
+$ %s tx %s update-gas-tank-status 32 --from mykey
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -193,13 +193,13 @@ $ %s tx %s update-gas-provider-status 32 --from mykey
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
-			msg := types.NewMsgUpdateGasProviderStatus(
-				gasProviderID,
+			msg := types.NewMsgUpdateGasTankStatus(
+				gasTankID,
 				clientCtx.GetFromAddress(),
 			)
 			if err = msg.ValidateBasic(); err != nil {
@@ -215,17 +215,17 @@ $ %s tx %s update-gas-provider-status 32 --from mykey
 	return cmd
 }
 
-func NewUpdateGasProviderConfigsCmd() *cobra.Command {
+func NewUpdateGasTankConfigsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-gas-provider-config [gas-provider-id] [max-fee-usage-per-tx] [max-txs-count-per-consumer] [max-fee-usage-per-consumer] [txs-allowed] [contracts-allowed]",
+		Use:   "update-gas-tank-config [gas-tank-id] [max-fee-usage-per-tx] [max-txs-count-per-consumer] [max-fee-usage-per-consumer] [txs-allowed] [contracts-allowed]",
 		Args:  cobra.ExactArgs(6),
-		Short: "Update configs of the gas provider",
+		Short: "Update configs of the gas tank",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Update configs of the gas provider.
+			fmt.Sprintf(`Update configs of the gas tank.
 Example:
-$ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder,/comdex.liquidity.v1beta1.MsgMarketOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3,comdex1zh9gzcw3j5jd53ulfjx9lj4088plur7xy3jayndwr7jxrdqhg7jqqsfqzx --from mykey
-$ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3 --from mykey
-$ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder "" --from mykey
+$ %s tx %s update-gas-tank-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder,/comdex.liquidity.v1beta1.MsgMarketOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3,comdex1zh9gzcw3j5jd53ulfjx9lj4088plur7xy3jayndwr7jxrdqhg7jqqsfqzx --from mykey
+$ %s tx %s update-gas-tank-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder comdex1qa4hswlcjmttulj0q9qa46jf64f93pecl6tydcsjldfe0hy5ju0s7r3hn3 --from mykey
+$ %s tx %s update-gas-tank-config 1 25000 200 5000000 /comdex.liquidity.v1beta1.MsgLimitOrder "" --from mykey
 `,
 				version.AppName, types.ModuleName,
 				version.AppName, types.ModuleName,
@@ -238,9 +238,9 @@ $ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1be
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
 			maxFeeUsagePerTx, ok := sdk.NewIntFromString(args[1])
@@ -268,8 +268,8 @@ $ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1be
 				return err
 			}
 
-			msg := types.NewMsgUpdateGasProviderConfig(
-				gasProviderID,
+			msg := types.NewMsgUpdateGasTankConfig(
+				gasTankID,
 				clientCtx.GetFromAddress(),
 				maxFeeUsagePerTx,
 				maxTxsCountPerConsumer,
@@ -292,7 +292,7 @@ $ %s tx %s update-gas-provider-config 1 25000 200 5000000 /comdex.liquidity.v1be
 
 func NewBlockConsumerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "block-consumer [gas-provider-id] [consumer]",
+		Use:   "block-consumer [gas-tank-id] [consumer]",
 		Args:  cobra.ExactArgs(2),
 		Short: "Block consumer",
 		Long: strings.TrimSpace(
@@ -309,9 +309,9 @@ $ %s tx %s block-consumer 1 comdex1.. --from mykey
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
 			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
@@ -320,7 +320,7 @@ $ %s tx %s block-consumer 1 comdex1.. --from mykey
 			}
 
 			msg := types.NewMsgBlockConsumer(
-				gasProviderID,
+				gasTankID,
 				clientCtx.GetFromAddress(),
 				sanitizedConsumer,
 			)
@@ -339,7 +339,7 @@ $ %s tx %s block-consumer 1 comdex1.. --from mykey
 
 func NewUnblockConsumerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "unblock-consumer [gas-provider-id] [consumer]",
+		Use:   "unblock-consumer [gas-tank-id] [consumer]",
 		Args:  cobra.ExactArgs(2),
 		Short: "Unblock consumer",
 		Long: strings.TrimSpace(
@@ -356,9 +356,9 @@ $ %s tx %s unblock-consumer 1 comdex1.. --from mykey
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
 			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
@@ -367,7 +367,7 @@ $ %s tx %s unblock-consumer 1 comdex1.. --from mykey
 			}
 
 			msg := types.NewMsgUnblockConsumer(
-				gasProviderID,
+				gasTankID,
 				clientCtx.GetFromAddress(),
 				sanitizedConsumer,
 			)
@@ -386,7 +386,7 @@ $ %s tx %s unblock-consumer 1 comdex1.. --from mykey
 
 func NewUpdateGasConsumerLimitCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-consumer-limit [gas-provider-id] [consumer] [total-txs-allowed] [total-fee-consumption-allowed]",
+		Use:   "update-consumer-limit [gas-tank-id] [consumer] [total-txs-allowed] [total-fee-consumption-allowed]",
 		Args:  cobra.ExactArgs(4),
 		Short: "Update consumer consumption limit",
 		Long: strings.TrimSpace(
@@ -403,9 +403,9 @@ $ %s tx %s update-consumer-limit 1 comdex1.. 200 5000000 --from mykey
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas-provider-id: %w", err)
+				return fmt.Errorf("parse gas-tank-id: %w", err)
 			}
 
 			sanitizedConsumer, err := sdk.AccAddressFromBech32(args[1])
@@ -424,7 +424,7 @@ $ %s tx %s update-consumer-limit 1 comdex1.. 200 5000000 --from mykey
 			}
 
 			msg := types.NewMsgUpdateGasConsumerLimit(
-				gasProviderID,
+				gasTankID,
 				clientCtx.GetFromAddress(),
 				sanitizedConsumer,
 				totalTxsAllowed,

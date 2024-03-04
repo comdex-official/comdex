@@ -30,10 +30,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateGasProvider defines an SDK message for creating a new GasProvider.
-type MsgCreateGasProvider struct {
-	// creator specifies the bech32-encoded address that is the gas provider.
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+// MsgCreateGasTank defines an SDK message for creating a new GasTank.
+type MsgCreateGasTank struct {
+	// provider specifies the bech32-encoded address that is the gas provider.
+	Provider string `protobuf:"bytes,1,opt,name=provider,proto3" json:"provider,omitempty"`
 	// fee_denom specifies the denom of the gas deposit coin
 	FeeDenom string `protobuf:"bytes,2,opt,name=fee_denom,json=feeDenom,proto3" json:"fee_denom,omitempty"`
 	// max_fee_usage_per_tx specifies the maximum fee allowed for each tx
@@ -50,18 +50,18 @@ type MsgCreateGasProvider struct {
 	GasDeposit types.Coin `protobuf:"bytes,8,opt,name=gas_deposit,json=gasDeposit,proto3" json:"gas_deposit"`
 }
 
-func (m *MsgCreateGasProvider) Reset()         { *m = MsgCreateGasProvider{} }
-func (m *MsgCreateGasProvider) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateGasProvider) ProtoMessage()    {}
-func (*MsgCreateGasProvider) Descriptor() ([]byte, []int) {
+func (m *MsgCreateGasTank) Reset()         { *m = MsgCreateGasTank{} }
+func (m *MsgCreateGasTank) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGasTank) ProtoMessage()    {}
+func (*MsgCreateGasTank) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{0}
 }
-func (m *MsgCreateGasProvider) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateGasTank) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateGasProvider) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateGasTank) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateGasProvider.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateGasTank.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -71,75 +71,75 @@ func (m *MsgCreateGasProvider) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateGasProvider) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateGasProvider.Merge(m, src)
+func (m *MsgCreateGasTank) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGasTank.Merge(m, src)
 }
-func (m *MsgCreateGasProvider) XXX_Size() int {
+func (m *MsgCreateGasTank) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateGasProvider) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateGasProvider.DiscardUnknown(m)
+func (m *MsgCreateGasTank) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGasTank.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateGasProvider proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateGasTank proto.InternalMessageInfo
 
-func (m *MsgCreateGasProvider) GetCreator() string {
+func (m *MsgCreateGasTank) GetProvider() string {
 	if m != nil {
-		return m.Creator
+		return m.Provider
 	}
 	return ""
 }
 
-func (m *MsgCreateGasProvider) GetFeeDenom() string {
+func (m *MsgCreateGasTank) GetFeeDenom() string {
 	if m != nil {
 		return m.FeeDenom
 	}
 	return ""
 }
 
-func (m *MsgCreateGasProvider) GetMaxTxsCountPerConsumer() uint64 {
+func (m *MsgCreateGasTank) GetMaxTxsCountPerConsumer() uint64 {
 	if m != nil {
 		return m.MaxTxsCountPerConsumer
 	}
 	return 0
 }
 
-func (m *MsgCreateGasProvider) GetTxsAllowed() []string {
+func (m *MsgCreateGasTank) GetTxsAllowed() []string {
 	if m != nil {
 		return m.TxsAllowed
 	}
 	return nil
 }
 
-func (m *MsgCreateGasProvider) GetContractsAllowed() []string {
+func (m *MsgCreateGasTank) GetContractsAllowed() []string {
 	if m != nil {
 		return m.ContractsAllowed
 	}
 	return nil
 }
 
-func (m *MsgCreateGasProvider) GetGasDeposit() types.Coin {
+func (m *MsgCreateGasTank) GetGasDeposit() types.Coin {
 	if m != nil {
 		return m.GasDeposit
 	}
 	return types.Coin{}
 }
 
-type MsgCreateGasProviderResponse struct {
+type MsgCreateGasTankResponse struct {
 }
 
-func (m *MsgCreateGasProviderResponse) Reset()         { *m = MsgCreateGasProviderResponse{} }
-func (m *MsgCreateGasProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateGasProviderResponse) ProtoMessage()    {}
-func (*MsgCreateGasProviderResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateGasTankResponse) Reset()         { *m = MsgCreateGasTankResponse{} }
+func (m *MsgCreateGasTankResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGasTankResponse) ProtoMessage()    {}
+func (*MsgCreateGasTankResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{1}
 }
-func (m *MsgCreateGasProviderResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateGasTankResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateGasProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateGasTankResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateGasProviderResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateGasTankResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -149,22 +149,22 @@ func (m *MsgCreateGasProviderResponse) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateGasProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateGasProviderResponse.Merge(m, src)
+func (m *MsgCreateGasTankResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGasTankResponse.Merge(m, src)
 }
-func (m *MsgCreateGasProviderResponse) XXX_Size() int {
+func (m *MsgCreateGasTankResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateGasProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateGasProviderResponse.DiscardUnknown(m)
+func (m *MsgCreateGasTankResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGasTankResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateGasProviderResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateGasTankResponse proto.InternalMessageInfo
 
 // MsgAuthorizeActors defines the SDK message for authorizing accounts to take actions on provider's behalf
 type MsgAuthorizeActors struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// provider specifies the bech32-encoded address that is the gas provider.
 	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
 	// actors specifies the list of bech32-encoded address allowed to take actions
@@ -204,9 +204,9 @@ func (m *MsgAuthorizeActors) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAuthorizeActors proto.InternalMessageInfo
 
-func (m *MsgAuthorizeActors) GetGasProviderId() uint64 {
+func (m *MsgAuthorizeActors) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
@@ -261,26 +261,26 @@ func (m *MsgAuthorizeActorsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAuthorizeActorsResponse proto.InternalMessageInfo
 
-// MsgUpdateGasProviderStatus defines an SDK message for updating the status of gas tank.
-type MsgUpdateGasProviderStatus struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+// MsgUpdateGasTankStatus defines an SDK message for updating the status of gas tank.
+type MsgUpdateGasTankStatus struct {
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// provider specifies the bech32-encoded address that is the gas provider.
 	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
 }
 
-func (m *MsgUpdateGasProviderStatus) Reset()         { *m = MsgUpdateGasProviderStatus{} }
-func (m *MsgUpdateGasProviderStatus) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGasProviderStatus) ProtoMessage()    {}
-func (*MsgUpdateGasProviderStatus) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGasTankStatus) Reset()         { *m = MsgUpdateGasTankStatus{} }
+func (m *MsgUpdateGasTankStatus) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGasTankStatus) ProtoMessage()    {}
+func (*MsgUpdateGasTankStatus) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{4}
 }
-func (m *MsgUpdateGasProviderStatus) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGasTankStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGasProviderStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGasTankStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGasProviderStatus.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGasTankStatus.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -290,47 +290,47 @@ func (m *MsgUpdateGasProviderStatus) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGasProviderStatus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGasProviderStatus.Merge(m, src)
+func (m *MsgUpdateGasTankStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGasTankStatus.Merge(m, src)
 }
-func (m *MsgUpdateGasProviderStatus) XXX_Size() int {
+func (m *MsgUpdateGasTankStatus) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGasProviderStatus) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGasProviderStatus.DiscardUnknown(m)
+func (m *MsgUpdateGasTankStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGasTankStatus.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGasProviderStatus proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGasTankStatus proto.InternalMessageInfo
 
-func (m *MsgUpdateGasProviderStatus) GetGasProviderId() uint64 {
+func (m *MsgUpdateGasTankStatus) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGasProviderStatus) GetProvider() string {
+func (m *MsgUpdateGasTankStatus) GetProvider() string {
 	if m != nil {
 		return m.Provider
 	}
 	return ""
 }
 
-type MsgUpdateGasProviderStatusResponse struct {
+type MsgUpdateGasTankStatusResponse struct {
 }
 
-func (m *MsgUpdateGasProviderStatusResponse) Reset()         { *m = MsgUpdateGasProviderStatusResponse{} }
-func (m *MsgUpdateGasProviderStatusResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGasProviderStatusResponse) ProtoMessage()    {}
-func (*MsgUpdateGasProviderStatusResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGasTankStatusResponse) Reset()         { *m = MsgUpdateGasTankStatusResponse{} }
+func (m *MsgUpdateGasTankStatusResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGasTankStatusResponse) ProtoMessage()    {}
+func (*MsgUpdateGasTankStatusResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{5}
 }
-func (m *MsgUpdateGasProviderStatusResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGasTankStatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGasProviderStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGasTankStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGasProviderStatusResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGasTankStatusResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -340,22 +340,22 @@ func (m *MsgUpdateGasProviderStatusResponse) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGasProviderStatusResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGasProviderStatusResponse.Merge(m, src)
+func (m *MsgUpdateGasTankStatusResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGasTankStatusResponse.Merge(m, src)
 }
-func (m *MsgUpdateGasProviderStatusResponse) XXX_Size() int {
+func (m *MsgUpdateGasTankStatusResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGasProviderStatusResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGasProviderStatusResponse.DiscardUnknown(m)
+func (m *MsgUpdateGasTankStatusResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGasTankStatusResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGasProviderStatusResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGasTankStatusResponse proto.InternalMessageInfo
 
-// MsgUpdateGasProviderConfig defines an SDK message for updating the configs of gas provider.
-type MsgUpdateGasProviderConfig struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+// MsgUpdateGasTankConfig defines an SDK message for updating the configs of gas tank.
+type MsgUpdateGasTankConfig struct {
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// provider specifies the bech32-encoded address that is the gas provider.
 	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
 	// max_fee_usage_per_tx specifies the maximum fee allowed for each tx
@@ -370,18 +370,18 @@ type MsgUpdateGasProviderConfig struct {
 	ContractsAllowed []string `protobuf:"bytes,7,rep,name=contracts_allowed,json=contractsAllowed,proto3" json:"contracts_allowed,omitempty"`
 }
 
-func (m *MsgUpdateGasProviderConfig) Reset()         { *m = MsgUpdateGasProviderConfig{} }
-func (m *MsgUpdateGasProviderConfig) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGasProviderConfig) ProtoMessage()    {}
-func (*MsgUpdateGasProviderConfig) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGasTankConfig) Reset()         { *m = MsgUpdateGasTankConfig{} }
+func (m *MsgUpdateGasTankConfig) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGasTankConfig) ProtoMessage()    {}
+func (*MsgUpdateGasTankConfig) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{6}
 }
-func (m *MsgUpdateGasProviderConfig) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGasTankConfig) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGasProviderConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGasTankConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGasProviderConfig.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGasTankConfig.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -391,68 +391,68 @@ func (m *MsgUpdateGasProviderConfig) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGasProviderConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGasProviderConfig.Merge(m, src)
+func (m *MsgUpdateGasTankConfig) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGasTankConfig.Merge(m, src)
 }
-func (m *MsgUpdateGasProviderConfig) XXX_Size() int {
+func (m *MsgUpdateGasTankConfig) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGasProviderConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGasProviderConfig.DiscardUnknown(m)
+func (m *MsgUpdateGasTankConfig) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGasTankConfig.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGasProviderConfig proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGasTankConfig proto.InternalMessageInfo
 
-func (m *MsgUpdateGasProviderConfig) GetGasProviderId() uint64 {
+func (m *MsgUpdateGasTankConfig) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGasProviderConfig) GetProvider() string {
+func (m *MsgUpdateGasTankConfig) GetProvider() string {
 	if m != nil {
 		return m.Provider
 	}
 	return ""
 }
 
-func (m *MsgUpdateGasProviderConfig) GetMaxTxsCountPerConsumer() uint64 {
+func (m *MsgUpdateGasTankConfig) GetMaxTxsCountPerConsumer() uint64 {
 	if m != nil {
 		return m.MaxTxsCountPerConsumer
 	}
 	return 0
 }
 
-func (m *MsgUpdateGasProviderConfig) GetTxsAllowed() []string {
+func (m *MsgUpdateGasTankConfig) GetTxsAllowed() []string {
 	if m != nil {
 		return m.TxsAllowed
 	}
 	return nil
 }
 
-func (m *MsgUpdateGasProviderConfig) GetContractsAllowed() []string {
+func (m *MsgUpdateGasTankConfig) GetContractsAllowed() []string {
 	if m != nil {
 		return m.ContractsAllowed
 	}
 	return nil
 }
 
-type MsgUpdateGasProviderConfigResponse struct {
+type MsgUpdateGasTankConfigResponse struct {
 }
 
-func (m *MsgUpdateGasProviderConfigResponse) Reset()         { *m = MsgUpdateGasProviderConfigResponse{} }
-func (m *MsgUpdateGasProviderConfigResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGasProviderConfigResponse) ProtoMessage()    {}
-func (*MsgUpdateGasProviderConfigResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGasTankConfigResponse) Reset()         { *m = MsgUpdateGasTankConfigResponse{} }
+func (m *MsgUpdateGasTankConfigResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGasTankConfigResponse) ProtoMessage()    {}
+func (*MsgUpdateGasTankConfigResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_58c8d01c81a883a9, []int{7}
 }
-func (m *MsgUpdateGasProviderConfigResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGasTankConfigResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGasProviderConfigResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGasTankConfigResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGasProviderConfigResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGasTankConfigResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -462,22 +462,22 @@ func (m *MsgUpdateGasProviderConfigResponse) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGasProviderConfigResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGasProviderConfigResponse.Merge(m, src)
+func (m *MsgUpdateGasTankConfigResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGasTankConfigResponse.Merge(m, src)
 }
-func (m *MsgUpdateGasProviderConfigResponse) XXX_Size() int {
+func (m *MsgUpdateGasTankConfigResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGasProviderConfigResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGasProviderConfigResponse.DiscardUnknown(m)
+func (m *MsgUpdateGasTankConfigResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGasTankConfigResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGasProviderConfigResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGasTankConfigResponse proto.InternalMessageInfo
 
 // MsgBlockConsumer defines an SDK message for blocking the  suspected malicious consumer.
 type MsgBlockConsumer struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// actor specifies the bech32-encoded address that is the gas provider or authorized actor.
 	Actor string `protobuf:"bytes,2,opt,name=actor,proto3" json:"actor,omitempty"`
 	// consumer specifies the bech32-encoded address of a consumer.
@@ -517,9 +517,9 @@ func (m *MsgBlockConsumer) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgBlockConsumer proto.InternalMessageInfo
 
-func (m *MsgBlockConsumer) GetGasProviderId() uint64 {
+func (m *MsgBlockConsumer) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
@@ -576,8 +576,8 @@ var xxx_messageInfo_MsgBlockConsumerResponse proto.InternalMessageInfo
 
 // MsgUnblockConsumer defines an SDK message for unblocking consumer.
 type MsgUnblockConsumer struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// actor specifies the bech32-encoded address that is the gas provider or authorized actor.
 	Actor string `protobuf:"bytes,2,opt,name=actor,proto3" json:"actor,omitempty"`
 	// consumer specifies the bech32-encoded address of a consumer.
@@ -617,9 +617,9 @@ func (m *MsgUnblockConsumer) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUnblockConsumer proto.InternalMessageInfo
 
-func (m *MsgUnblockConsumer) GetGasProviderId() uint64 {
+func (m *MsgUnblockConsumer) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
@@ -676,8 +676,8 @@ var xxx_messageInfo_MsgUnblockConsumerResponse proto.InternalMessageInfo
 
 // MsgUpdateGasConsumerLimit defines an SDK message for updating the consumption limits of gas consumer.
 type MsgUpdateGasConsumerLimit struct {
-	// gas_provider_id specifies the id of the gas provider
-	GasProviderId uint64 `protobuf:"varint,1,opt,name=gas_provider_id,json=gasProviderId,proto3" json:"gas_provider_id,omitempty"`
+	// gas_tank_id specifies the id of the gas tank
+	GasTankId uint64 `protobuf:"varint,1,opt,name=gas_tank_id,json=gasTankId,proto3" json:"gas_tank_id,omitempty"`
 	// provider specifies the bech32-encoded address that is the gas provider.
 	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
 	// consumer specifies the bech32-encoded address of a consumer.
@@ -721,9 +721,9 @@ func (m *MsgUpdateGasConsumerLimit) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGasConsumerLimit proto.InternalMessageInfo
 
-func (m *MsgUpdateGasConsumerLimit) GetGasProviderId() uint64 {
+func (m *MsgUpdateGasConsumerLimit) GetGasTankId() uint64 {
 	if m != nil {
-		return m.GasProviderId
+		return m.GasTankId
 	}
 	return 0
 }
@@ -786,14 +786,14 @@ func (m *MsgUpdateGasConsumerLimitResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgUpdateGasConsumerLimitResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgCreateGasProvider)(nil), "comdex.gasless.v1beta1.MsgCreateGasProvider")
-	proto.RegisterType((*MsgCreateGasProviderResponse)(nil), "comdex.gasless.v1beta1.MsgCreateGasProviderResponse")
+	proto.RegisterType((*MsgCreateGasTank)(nil), "comdex.gasless.v1beta1.MsgCreateGasTank")
+	proto.RegisterType((*MsgCreateGasTankResponse)(nil), "comdex.gasless.v1beta1.MsgCreateGasTankResponse")
 	proto.RegisterType((*MsgAuthorizeActors)(nil), "comdex.gasless.v1beta1.MsgAuthorizeActors")
 	proto.RegisterType((*MsgAuthorizeActorsResponse)(nil), "comdex.gasless.v1beta1.MsgAuthorizeActorsResponse")
-	proto.RegisterType((*MsgUpdateGasProviderStatus)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderStatus")
-	proto.RegisterType((*MsgUpdateGasProviderStatusResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderStatusResponse")
-	proto.RegisterType((*MsgUpdateGasProviderConfig)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderConfig")
-	proto.RegisterType((*MsgUpdateGasProviderConfigResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasProviderConfigResponse")
+	proto.RegisterType((*MsgUpdateGasTankStatus)(nil), "comdex.gasless.v1beta1.MsgUpdateGasTankStatus")
+	proto.RegisterType((*MsgUpdateGasTankStatusResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasTankStatusResponse")
+	proto.RegisterType((*MsgUpdateGasTankConfig)(nil), "comdex.gasless.v1beta1.MsgUpdateGasTankConfig")
+	proto.RegisterType((*MsgUpdateGasTankConfigResponse)(nil), "comdex.gasless.v1beta1.MsgUpdateGasTankConfigResponse")
 	proto.RegisterType((*MsgBlockConsumer)(nil), "comdex.gasless.v1beta1.MsgBlockConsumer")
 	proto.RegisterType((*MsgBlockConsumerResponse)(nil), "comdex.gasless.v1beta1.MsgBlockConsumerResponse")
 	proto.RegisterType((*MsgUnblockConsumer)(nil), "comdex.gasless.v1beta1.MsgUnblockConsumer")
@@ -805,59 +805,58 @@ func init() {
 func init() { proto.RegisterFile("comdex/gasless/v1beta1/tx.proto", fileDescriptor_58c8d01c81a883a9) }
 
 var fileDescriptor_58c8d01c81a883a9 = []byte{
-	// 822 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0x51, 0x4f, 0xc3, 0x54,
-	0x14, 0x5e, 0xd9, 0x18, 0x70, 0x08, 0x01, 0x6e, 0xe6, 0x2c, 0x15, 0xba, 0x39, 0x8d, 0x59, 0x50,
-	0x5b, 0x87, 0xbe, 0xc8, 0x93, 0x6c, 0x04, 0x43, 0x74, 0x09, 0x99, 0xf0, 0xa0, 0x2f, 0xe5, 0xae,
-	0xbd, 0x2b, 0x0d, 0x6b, 0x6f, 0xed, 0xbd, 0x83, 0xea, 0x0f, 0x30, 0xc1, 0x27, 0x1f, 0xfc, 0x47,
-	0xbe, 0xf0, 0xc8, 0xa3, 0xf1, 0x81, 0x18, 0xf8, 0x09, 0xfe, 0x01, 0xd3, 0xde, 0xb5, 0x63, 0x63,
-	0x5d, 0xb6, 0x84, 0xf8, 0xe4, 0xdb, 0x4e, 0xcf, 0x77, 0xbe, 0xfb, 0xed, 0x7c, 0xe7, 0x9e, 0x16,
-	0x2a, 0x26, 0x75, 0x2d, 0x12, 0xea, 0x36, 0x66, 0x7d, 0xc2, 0x98, 0x7e, 0xd3, 0xe8, 0x12, 0x8e,
-	0x1b, 0x3a, 0x0f, 0x35, 0x3f, 0xa0, 0x9c, 0xa2, 0xb2, 0x00, 0x68, 0x43, 0x80, 0x36, 0x04, 0x28,
-	0x25, 0x9b, 0xda, 0x34, 0x86, 0xe8, 0xd1, 0x2f, 0x81, 0x56, 0x54, 0x93, 0x32, 0x97, 0x32, 0xbd,
-	0x8b, 0x19, 0x49, 0xb9, 0x4c, 0xea, 0x78, 0x22, 0x5f, 0xfb, 0x23, 0x0f, 0xa5, 0x36, 0xb3, 0x5b,
-	0x01, 0xc1, 0x9c, 0x7c, 0x8d, 0xd9, 0x59, 0x40, 0x6f, 0x1c, 0x8b, 0x04, 0x48, 0x86, 0x15, 0x33,
-	0x7a, 0x48, 0x03, 0x59, 0xaa, 0x4a, 0xf5, 0xb5, 0x4e, 0x12, 0xa2, 0xf7, 0x60, 0xad, 0x47, 0x88,
-	0x61, 0x11, 0x8f, 0xba, 0xf2, 0x52, 0x9c, 0x5b, 0xed, 0x11, 0x72, 0x1c, 0xc5, 0xa8, 0x0d, 0x25,
-	0x17, 0x87, 0x46, 0x04, 0x18, 0x30, 0x6c, 0x13, 0xc3, 0x27, 0x81, 0xc1, 0x43, 0x39, 0x1f, 0xe1,
-	0x9a, 0x7b, 0xf7, 0x8f, 0x95, 0xdc, 0x5f, 0x8f, 0x95, 0x77, 0x84, 0x2a, 0x66, 0x5d, 0x6b, 0x0e,
-	0xd5, 0x5d, 0xcc, 0xaf, 0xb4, 0x53, 0x8f, 0x77, 0xb6, 0x5c, 0x1c, 0x9e, 0x10, 0x72, 0x11, 0x15,
-	0x9e, 0x91, 0xe0, 0x3c, 0x44, 0x87, 0xa0, 0x44, 0x74, 0x3c, 0x64, 0x86, 0x49, 0x07, 0x1e, 0x8f,
-	0xe9, 0x4c, 0xea, 0xb1, 0x81, 0x4b, 0x02, 0xb9, 0x50, 0x95, 0xea, 0x85, 0x4e, 0xd9, 0xc5, 0xe1,
-	0x79, 0xc8, 0x5a, 0x51, 0xfe, 0x8c, 0x04, 0xad, 0x61, 0x16, 0x7d, 0x2f, 0x6a, 0xc7, 0xa5, 0xa4,
-	0xb5, 0xcb, 0xf3, 0x08, 0x2a, 0x8f, 0x0b, 0x4a, 0xa9, 0x2b, 0xb0, 0x1e, 0x49, 0xc2, 0xfd, 0x3e,
-	0xbd, 0x25, 0x96, 0x5c, 0xac, 0xe6, 0xeb, 0x6b, 0x1d, 0xe0, 0x21, 0x3b, 0x12, 0x4f, 0xd0, 0xc7,
-	0xb0, 0x6d, 0x52, 0x8f, 0x07, 0xd8, 0xe4, 0x23, 0xd8, 0x4a, 0x0c, 0xdb, 0x4a, 0x13, 0x09, 0xf8,
-	0x2b, 0x58, 0xb7, 0x31, 0x33, 0x2c, 0xe2, 0x53, 0xe6, 0x70, 0x79, 0xb5, 0x2a, 0xd5, 0xd7, 0x0f,
-	0x76, 0x34, 0x21, 0x49, 0x8b, 0x9c, 0x4b, 0x4c, 0xd6, 0x5a, 0xd4, 0xf1, 0x9a, 0x85, 0x48, 0x74,
-	0x07, 0x6c, 0xcc, 0x8e, 0x45, 0x49, 0x4d, 0x85, 0xdd, 0x69, 0x26, 0x76, 0x08, 0xf3, 0xa9, 0xc7,
-	0x48, 0xcd, 0x07, 0xd4, 0x66, 0xf6, 0xd1, 0x80, 0x5f, 0xd1, 0xc0, 0xf9, 0x99, 0x1c, 0x99, 0x9c,
-	0x06, 0x0c, 0x7d, 0x04, 0x9b, 0xd1, 0xb9, 0xfe, 0x10, 0x6d, 0x38, 0x56, 0x6c, 0x75, 0xa1, 0xb3,
-	0x61, 0x8f, 0x38, 0x4e, 0x2d, 0xa4, 0xc0, 0x6a, 0x82, 0x49, 0xfc, 0x4e, 0x62, 0x54, 0x86, 0x22,
-	0x8e, 0xd9, 0xe4, 0x7c, 0xfc, 0xef, 0x86, 0x51, 0x6d, 0x17, 0x94, 0xd7, 0x27, 0xa6, 0x7a, 0x2e,
-	0xe3, 0xec, 0x85, 0x6f, 0x8d, 0xeb, 0xfd, 0x8e, 0x63, 0x3e, 0x78, 0x13, 0x5d, 0xb5, 0x0f, 0xa1,
-	0x96, 0x7d, 0x42, 0xaa, 0xe3, 0xf7, 0xfc, 0x74, 0x21, 0x2d, 0xea, 0xf5, 0x1c, 0xfb, 0x4d, 0x1a,
-	0xf4, 0xff, 0x85, 0x58, 0xf8, 0x42, 0x64, 0x99, 0x27, 0x5c, 0x49, 0xcd, 0xeb, 0xc3, 0x56, 0x9b,
-	0xd9, 0xcd, 0x3e, 0x35, 0xaf, 0x53, 0x1d, 0xf3, 0x3a, 0x56, 0x82, 0xe5, 0x78, 0x50, 0x87, 0x76,
-	0x89, 0x20, 0xf2, 0x31, 0x6d, 0x47, 0x5e, 0xf8, 0x98, 0xc4, 0x35, 0x05, 0xe4, 0xc9, 0xd3, 0x52,
-	0x25, 0x5e, 0x7c, 0xbd, 0x2e, 0xbc, 0xee, 0x7f, 0xa4, 0x45, 0x5c, 0xae, 0x89, 0xf3, 0x52, 0x35,
-	0x77, 0x4b, 0xb0, 0xf3, 0xb2, 0x7d, 0x09, 0xe0, 0x5b, 0xc7, 0x75, 0xf8, 0x9b, 0xcc, 0xf4, 0x0c,
-	0x6d, 0x68, 0x1f, 0xb6, 0x39, 0xe5, 0xb8, 0x6f, 0xbc, 0x9c, 0x07, 0x31, 0x97, 0x9b, 0x71, 0xe2,
-	0x7c, 0x34, 0x14, 0x97, 0xb0, 0x27, 0xb0, 0xd1, 0x48, 0x0a, 0x06, 0x9f, 0x3b, 0xd4, 0x4b, 0xeb,
-	0xe6, 0x9a, 0x49, 0x25, 0xe6, 0x38, 0x21, 0xa4, 0x35, 0x62, 0x48, 0x26, 0xe9, 0x03, 0x78, 0x3f,
-	0xb3, 0x15, 0x49, 0xc3, 0x0e, 0xfe, 0x29, 0x42, 0xbe, 0xcd, 0x6c, 0x74, 0x0b, 0xdb, 0xaf, 0xdf,
-	0x83, 0x9f, 0x68, 0xd3, 0xdf, 0xb7, 0xda, 0xb4, 0x85, 0xab, 0x7c, 0xb1, 0x08, 0x3a, 0x11, 0x80,
-	0x7e, 0x84, 0xcd, 0xc9, 0xdd, 0xbc, 0x3f, 0x83, 0x68, 0x02, 0xab, 0x1c, 0xcc, 0x8f, 0x4d, 0x8f,
-	0xbc, 0x93, 0xe0, 0xdd, 0xac, 0xfd, 0x3b, 0x8b, 0x2f, 0xa3, 0x46, 0x39, 0x5c, 0xbc, 0x26, 0xd5,
-	0xf2, 0xab, 0x04, 0x72, 0xc6, 0x65, 0x5f, 0x50, 0x8c, 0x28, 0x5a, 0x4c, 0xcc, 0xf8, 0x56, 0x41,
-	0xd7, 0xb0, 0x31, 0xbe, 0x52, 0xea, 0x33, 0xc8, 0xc6, 0x90, 0xca, 0x67, 0xf3, 0x22, 0x5f, 0x1a,
-	0x3f, 0xb9, 0x35, 0x66, 0x19, 0x3f, 0x81, 0x9d, 0x69, 0x7c, 0xc6, 0x76, 0x40, 0xbf, 0x48, 0x50,
-	0xce, 0x58, 0x0d, 0x8d, 0x79, 0xda, 0x36, 0x56, 0xa2, 0x7c, 0xb9, 0x70, 0x49, 0x22, 0xa4, 0xf9,
-	0xcd, 0xfd, 0x93, 0x2a, 0x3d, 0x3c, 0xa9, 0xd2, 0xdf, 0x4f, 0xaa, 0xf4, 0xdb, 0xb3, 0x9a, 0x7b,
-	0x78, 0x56, 0x73, 0x7f, 0x3e, 0xab, 0xb9, 0x1f, 0x1a, 0xb6, 0xc3, 0xaf, 0x06, 0xdd, 0x88, 0x5a,
-	0x17, 0xf4, 0x9f, 0xd2, 0x5e, 0xcf, 0x31, 0x1d, 0xdc, 0x1f, 0xc6, 0xfa, 0xe8, 0xfb, 0x98, 0xff,
-	0xe4, 0x13, 0xd6, 0x2d, 0xc6, 0x5f, 0xb3, 0x9f, 0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0x1c, 0x93,
-	0x35, 0xbd, 0x3e, 0x0b, 0x00, 0x00,
+	// 812 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x56, 0x41, 0x6f, 0xd3, 0x48,
+	0x14, 0x8e, 0x9b, 0x34, 0xdb, 0x4c, 0xb5, 0x6a, 0xeb, 0xcd, 0x46, 0xae, 0x77, 0xeb, 0x64, 0xb3,
+	0x97, 0xa8, 0x08, 0x9b, 0x14, 0x09, 0x09, 0x4e, 0x34, 0xa9, 0x8a, 0x2a, 0x88, 0x54, 0x85, 0xf4,
+	0x00, 0x17, 0x33, 0xb1, 0x27, 0x8e, 0x95, 0xd8, 0x63, 0x3c, 0x93, 0x62, 0x90, 0x40, 0xe2, 0x82,
+	0x38, 0xf2, 0x97, 0xb8, 0xf5, 0x82, 0xd4, 0x23, 0xe2, 0x50, 0xa1, 0xf6, 0x8f, 0x20, 0x7b, 0xe2,
+	0x49, 0xed, 0xa6, 0x21, 0x51, 0xc5, 0x8d, 0x5b, 0x26, 0xf3, 0xbd, 0xef, 0x7d, 0x7e, 0xdf, 0x7b,
+	0xcf, 0x06, 0x65, 0x03, 0x3b, 0x26, 0x0a, 0x34, 0x0b, 0x92, 0x21, 0x22, 0x44, 0x3b, 0xae, 0x77,
+	0x11, 0x85, 0x75, 0x8d, 0x06, 0xaa, 0xe7, 0x63, 0x8a, 0xc5, 0x12, 0x03, 0xa8, 0x63, 0x80, 0x3a,
+	0x06, 0xc8, 0x45, 0x0b, 0x5b, 0x38, 0x82, 0x68, 0xe1, 0x2f, 0x86, 0x96, 0x15, 0x03, 0x13, 0x07,
+	0x13, 0xad, 0x0b, 0x09, 0xe2, 0x5c, 0x06, 0xb6, 0x5d, 0x76, 0x5f, 0xfd, 0x9c, 0x05, 0xeb, 0x2d,
+	0x62, 0x35, 0x7d, 0x04, 0x29, 0x7a, 0x04, 0x49, 0x07, 0xba, 0x03, 0x51, 0x06, 0x2b, 0x9e, 0x8f,
+	0x8f, 0x6d, 0x13, 0xf9, 0x92, 0x50, 0x11, 0x6a, 0x85, 0x36, 0x3f, 0x8b, 0xff, 0x80, 0x42, 0x0f,
+	0x21, 0xdd, 0x44, 0x2e, 0x76, 0xa4, 0x25, 0x76, 0xd9, 0x43, 0x68, 0x2f, 0x3c, 0x8b, 0x2d, 0x50,
+	0x74, 0x60, 0xa0, 0x87, 0x80, 0x11, 0x81, 0x16, 0xd2, 0x3d, 0xe4, 0xeb, 0x34, 0x90, 0xb2, 0x21,
+	0xae, 0xb1, 0x75, 0x72, 0x56, 0xce, 0x7c, 0x3b, 0x2b, 0xff, 0xcd, 0x34, 0x11, 0x73, 0xa0, 0xda,
+	0x58, 0x73, 0x20, 0xed, 0xab, 0x07, 0x2e, 0x6d, 0xaf, 0x3b, 0x30, 0xd8, 0x47, 0xe8, 0x28, 0x0c,
+	0x3c, 0x44, 0x7e, 0x27, 0x10, 0x1f, 0x00, 0x39, 0xa4, 0xa3, 0x01, 0xd1, 0x0d, 0x3c, 0x72, 0x69,
+	0x44, 0x67, 0x60, 0x97, 0x8c, 0x1c, 0xe4, 0x4b, 0xb9, 0x8a, 0x50, 0xcb, 0xb5, 0x4b, 0x0e, 0x0c,
+	0x3a, 0x01, 0x69, 0x86, 0xf7, 0x87, 0xc8, 0x6f, 0x8e, 0x6f, 0xc5, 0x67, 0x2c, 0x36, 0x29, 0x85,
+	0xc7, 0x2e, 0xcf, 0x23, 0xa8, 0x94, 0x14, 0xc4, 0xa9, 0xcb, 0x60, 0x35, 0x94, 0x04, 0x87, 0x43,
+	0xfc, 0x0a, 0x99, 0x52, 0xbe, 0x92, 0xad, 0x15, 0xda, 0x80, 0x06, 0x64, 0x97, 0xfd, 0x23, 0xde,
+	0x02, 0x1b, 0x06, 0x76, 0xa9, 0x0f, 0x0d, 0x3a, 0x81, 0xfd, 0x11, 0xc1, 0xd6, 0xf9, 0x45, 0x0c,
+	0x7e, 0x08, 0x56, 0x2d, 0x48, 0x74, 0x13, 0x79, 0x98, 0xd8, 0x54, 0x5a, 0xa9, 0x08, 0xb5, 0xd5,
+	0x9d, 0x4d, 0x95, 0x49, 0x52, 0x43, 0xdf, 0x62, 0x8b, 0xd5, 0x26, 0xb6, 0xdd, 0x46, 0x2e, 0x14,
+	0xdd, 0x06, 0x16, 0x24, 0x7b, 0x2c, 0xa4, 0x2a, 0x03, 0x29, 0x6d, 0x61, 0x1b, 0x11, 0x0f, 0xbb,
+	0x04, 0x55, 0xfb, 0x40, 0x6c, 0x11, 0x6b, 0x77, 0x44, 0xfb, 0xd8, 0xb7, 0xdf, 0xa0, 0x5d, 0x83,
+	0x62, 0x9f, 0x88, 0x0a, 0xcb, 0x49, 0xa1, 0x3b, 0xd0, 0x6d, 0x33, 0xf2, 0x38, 0xd7, 0x2e, 0x58,
+	0x2c, 0xf6, 0xc0, 0x4c, 0x34, 0xc0, 0x52, 0xaa, 0x01, 0x4a, 0x20, 0x0f, 0x23, 0x16, 0x29, 0x1b,
+	0x3d, 0xd1, 0xf8, 0x54, 0xfd, 0x17, 0xc8, 0x57, 0x33, 0x71, 0x1d, 0x1d, 0x50, 0x6a, 0x11, 0xeb,
+	0xc8, 0x33, 0x27, 0x1a, 0x9f, 0x52, 0x48, 0x47, 0x37, 0xd2, 0x52, 0xad, 0x00, 0x65, 0x3a, 0x2b,
+	0xcf, 0xfb, 0x31, 0x7b, 0x35, 0x71, 0x13, 0xbb, 0x3d, 0xdb, 0xba, 0x51, 0x11, 0x7e, 0x37, 0xfa,
+	0xc2, 0x8d, 0x3e, 0xcd, 0x2c, 0xe6, 0x04, 0x37, 0xcb, 0x8c, 0x76, 0x51, 0x63, 0x88, 0x8d, 0x01,
+	0xd7, 0xf0, 0x33, 0x97, 0x8a, 0x60, 0x39, 0x6a, 0xc0, 0xb1, 0x45, 0xec, 0x10, 0x7a, 0xc7, 0x4b,
+	0x90, 0x65, 0xde, 0xc5, 0xe7, 0xf1, 0xb8, 0x24, 0xb2, 0x70, 0x05, 0xbd, 0x68, 0x5c, 0x8e, 0xdc,
+	0xee, 0x2f, 0xd6, 0xc0, 0x86, 0x25, 0x95, 0x87, 0xab, 0x78, 0xbf, 0x04, 0x36, 0x2f, 0x97, 0x2a,
+	0x06, 0x3c, 0xb1, 0x1d, 0x9b, 0xde, 0xa8, 0x6f, 0x67, 0x68, 0x12, 0xb7, 0xc1, 0x06, 0xc5, 0x14,
+	0x0e, 0xf5, 0xcb, 0x9e, 0xb3, 0xde, 0x5b, 0x8b, 0x2e, 0x3a, 0x13, 0xe3, 0x5f, 0x80, 0x2d, 0x86,
+	0x0d, 0xdb, 0x8e, 0x31, 0x78, 0xd4, 0xc6, 0x2e, 0x8f, 0x9b, 0xab, 0xef, 0xe4, 0x88, 0x63, 0x1f,
+	0xa1, 0xe6, 0x84, 0x21, 0xee, 0x96, 0xff, 0xc1, 0x7f, 0xd7, 0x96, 0x20, 0x2e, 0xd4, 0xce, 0x97,
+	0x3c, 0xc8, 0xb6, 0x88, 0x25, 0x0e, 0xc0, 0x9f, 0xc9, 0x37, 0x58, 0x4d, 0x9d, 0xfe, 0x96, 0x54,
+	0xd3, 0x8b, 0x52, 0xbe, 0x33, 0x2f, 0x32, 0x4e, 0x2a, 0xbe, 0x04, 0x6b, 0xe9, 0x7d, 0xba, 0x3d,
+	0x83, 0x24, 0x85, 0x95, 0x77, 0xe6, 0xc7, 0xf2, 0x94, 0x6f, 0xc1, 0x5f, 0xd3, 0x56, 0xa7, 0x3a,
+	0x83, 0x6a, 0x0a, 0x5e, 0xbe, 0xb7, 0x18, 0x9e, 0xa7, 0x7f, 0x07, 0x8a, 0x53, 0xc6, 0x76, 0x81,
+	0xfc, 0x2c, 0x60, 0xfe, 0xfc, 0xc9, 0xbd, 0x10, 0xda, 0x9b, 0x5c, 0x0a, 0xb3, 0xec, 0x4d, 0x20,
+	0x67, 0xda, 0x3b, 0x75, 0x05, 0x84, 0xf6, 0xa6, 0xe7, 0x7f, 0x96, 0xbd, 0x29, 0xec, 0x4c, 0x7b,
+	0xaf, 0x99, 0x77, 0xf1, 0x83, 0x00, 0x4a, 0xd7, 0x0c, 0x7b, 0x7d, 0x9e, 0x92, 0x25, 0x42, 0xe4,
+	0xfb, 0x0b, 0x87, 0xc4, 0x42, 0x1a, 0x8f, 0x4f, 0xce, 0x15, 0xe1, 0xf4, 0x5c, 0x11, 0xbe, 0x9f,
+	0x2b, 0xc2, 0xa7, 0x0b, 0x25, 0x73, 0x7a, 0xa1, 0x64, 0xbe, 0x5e, 0x28, 0x99, 0xe7, 0x75, 0xcb,
+	0xa6, 0xfd, 0x51, 0x37, 0xa4, 0xd6, 0x18, 0xfd, 0x6d, 0xdc, 0xeb, 0xd9, 0x86, 0x0d, 0x87, 0xe3,
+	0xb3, 0x36, 0xf9, 0x66, 0xa5, 0xaf, 0x3d, 0x44, 0xba, 0xf9, 0xe8, 0x0b, 0xf3, 0xee, 0x8f, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x99, 0x5c, 0xa0, 0x4c, 0xd2, 0x0a, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -872,14 +871,14 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateGasProvider defines a method for creating a new gas provider
-	CreateGasProvider(ctx context.Context, in *MsgCreateGasProvider, opts ...grpc.CallOption) (*MsgCreateGasProviderResponse, error)
-	// AuthorizeActors defines a method for authorizing accounts to take actions on creator's behalf
+	// CreateGasTank defines a method for creating a new gas tank
+	CreateGasTank(ctx context.Context, in *MsgCreateGasTank, opts ...grpc.CallOption) (*MsgCreateGasTankResponse, error)
+	// AuthorizeActors defines a method for authorizing accounts to take actions on provider's behalf
 	AuthorizeActors(ctx context.Context, in *MsgAuthorizeActors, opts ...grpc.CallOption) (*MsgAuthorizeActorsResponse, error)
-	// UpdateGasProviderStatus defines a method for marking gas tank as active or inactive
-	UpdateGasProviderStatus(ctx context.Context, in *MsgUpdateGasProviderStatus, opts ...grpc.CallOption) (*MsgUpdateGasProviderStatusResponse, error)
-	// UpdateGasProviderConfigs defines a method for updating the configs of gas provider
-	UpdateGasProviderConfigs(ctx context.Context, in *MsgUpdateGasProviderConfig, opts ...grpc.CallOption) (*MsgUpdateGasProviderConfigResponse, error)
+	// UpdateGasTankStatus defines a method for marking gas tank as active or inactive
+	UpdateGasTankStatus(ctx context.Context, in *MsgUpdateGasTankStatus, opts ...grpc.CallOption) (*MsgUpdateGasTankStatusResponse, error)
+	// UpdateGasTankConfigs defines a method for updating the configs of gas tank
+	UpdateGasTankConfigs(ctx context.Context, in *MsgUpdateGasTankConfig, opts ...grpc.CallOption) (*MsgUpdateGasTankConfigResponse, error)
 	// BlockConsumer defines a method for blocking a suspected malicious consumer
 	BlockConsumer(ctx context.Context, in *MsgBlockConsumer, opts ...grpc.CallOption) (*MsgBlockConsumerResponse, error)
 	// UnblockConsumer defines a method for unblocking consumer
@@ -896,9 +895,9 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateGasProvider(ctx context.Context, in *MsgCreateGasProvider, opts ...grpc.CallOption) (*MsgCreateGasProviderResponse, error) {
-	out := new(MsgCreateGasProviderResponse)
-	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/CreateGasProvider", in, out, opts...)
+func (c *msgClient) CreateGasTank(ctx context.Context, in *MsgCreateGasTank, opts ...grpc.CallOption) (*MsgCreateGasTankResponse, error) {
+	out := new(MsgCreateGasTankResponse)
+	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/CreateGasTank", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -914,18 +913,18 @@ func (c *msgClient) AuthorizeActors(ctx context.Context, in *MsgAuthorizeActors,
 	return out, nil
 }
 
-func (c *msgClient) UpdateGasProviderStatus(ctx context.Context, in *MsgUpdateGasProviderStatus, opts ...grpc.CallOption) (*MsgUpdateGasProviderStatusResponse, error) {
-	out := new(MsgUpdateGasProviderStatusResponse)
-	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/UpdateGasProviderStatus", in, out, opts...)
+func (c *msgClient) UpdateGasTankStatus(ctx context.Context, in *MsgUpdateGasTankStatus, opts ...grpc.CallOption) (*MsgUpdateGasTankStatusResponse, error) {
+	out := new(MsgUpdateGasTankStatusResponse)
+	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/UpdateGasTankStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateGasProviderConfigs(ctx context.Context, in *MsgUpdateGasProviderConfig, opts ...grpc.CallOption) (*MsgUpdateGasProviderConfigResponse, error) {
-	out := new(MsgUpdateGasProviderConfigResponse)
-	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/UpdateGasProviderConfigs", in, out, opts...)
+func (c *msgClient) UpdateGasTankConfigs(ctx context.Context, in *MsgUpdateGasTankConfig, opts ...grpc.CallOption) (*MsgUpdateGasTankConfigResponse, error) {
+	out := new(MsgUpdateGasTankConfigResponse)
+	err := c.cc.Invoke(ctx, "/comdex.gasless.v1beta1.Msg/UpdateGasTankConfigs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -961,14 +960,14 @@ func (c *msgClient) UpdateGasConsumerLimit(ctx context.Context, in *MsgUpdateGas
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateGasProvider defines a method for creating a new gas provider
-	CreateGasProvider(context.Context, *MsgCreateGasProvider) (*MsgCreateGasProviderResponse, error)
-	// AuthorizeActors defines a method for authorizing accounts to take actions on creator's behalf
+	// CreateGasTank defines a method for creating a new gas tank
+	CreateGasTank(context.Context, *MsgCreateGasTank) (*MsgCreateGasTankResponse, error)
+	// AuthorizeActors defines a method for authorizing accounts to take actions on provider's behalf
 	AuthorizeActors(context.Context, *MsgAuthorizeActors) (*MsgAuthorizeActorsResponse, error)
-	// UpdateGasProviderStatus defines a method for marking gas tank as active or inactive
-	UpdateGasProviderStatus(context.Context, *MsgUpdateGasProviderStatus) (*MsgUpdateGasProviderStatusResponse, error)
-	// UpdateGasProviderConfigs defines a method for updating the configs of gas provider
-	UpdateGasProviderConfigs(context.Context, *MsgUpdateGasProviderConfig) (*MsgUpdateGasProviderConfigResponse, error)
+	// UpdateGasTankStatus defines a method for marking gas tank as active or inactive
+	UpdateGasTankStatus(context.Context, *MsgUpdateGasTankStatus) (*MsgUpdateGasTankStatusResponse, error)
+	// UpdateGasTankConfigs defines a method for updating the configs of gas tank
+	UpdateGasTankConfigs(context.Context, *MsgUpdateGasTankConfig) (*MsgUpdateGasTankConfigResponse, error)
 	// BlockConsumer defines a method for blocking a suspected malicious consumer
 	BlockConsumer(context.Context, *MsgBlockConsumer) (*MsgBlockConsumerResponse, error)
 	// UnblockConsumer defines a method for unblocking consumer
@@ -981,17 +980,17 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) CreateGasProvider(ctx context.Context, req *MsgCreateGasProvider) (*MsgCreateGasProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateGasProvider not implemented")
+func (*UnimplementedMsgServer) CreateGasTank(ctx context.Context, req *MsgCreateGasTank) (*MsgCreateGasTankResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGasTank not implemented")
 }
 func (*UnimplementedMsgServer) AuthorizeActors(ctx context.Context, req *MsgAuthorizeActors) (*MsgAuthorizeActorsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthorizeActors not implemented")
 }
-func (*UnimplementedMsgServer) UpdateGasProviderStatus(ctx context.Context, req *MsgUpdateGasProviderStatus) (*MsgUpdateGasProviderStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateGasProviderStatus not implemented")
+func (*UnimplementedMsgServer) UpdateGasTankStatus(ctx context.Context, req *MsgUpdateGasTankStatus) (*MsgUpdateGasTankStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGasTankStatus not implemented")
 }
-func (*UnimplementedMsgServer) UpdateGasProviderConfigs(ctx context.Context, req *MsgUpdateGasProviderConfig) (*MsgUpdateGasProviderConfigResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateGasProviderConfigs not implemented")
+func (*UnimplementedMsgServer) UpdateGasTankConfigs(ctx context.Context, req *MsgUpdateGasTankConfig) (*MsgUpdateGasTankConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGasTankConfigs not implemented")
 }
 func (*UnimplementedMsgServer) BlockConsumer(ctx context.Context, req *MsgBlockConsumer) (*MsgBlockConsumerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BlockConsumer not implemented")
@@ -1007,20 +1006,20 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_CreateGasProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateGasProvider)
+func _Msg_CreateGasTank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGasTank)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateGasProvider(ctx, in)
+		return srv.(MsgServer).CreateGasTank(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.gasless.v1beta1.Msg/CreateGasProvider",
+		FullMethod: "/comdex.gasless.v1beta1.Msg/CreateGasTank",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateGasProvider(ctx, req.(*MsgCreateGasProvider))
+		return srv.(MsgServer).CreateGasTank(ctx, req.(*MsgCreateGasTank))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1043,38 +1042,38 @@ func _Msg_AuthorizeActors_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateGasProviderStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateGasProviderStatus)
+func _Msg_UpdateGasTankStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGasTankStatus)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateGasProviderStatus(ctx, in)
+		return srv.(MsgServer).UpdateGasTankStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.gasless.v1beta1.Msg/UpdateGasProviderStatus",
+		FullMethod: "/comdex.gasless.v1beta1.Msg/UpdateGasTankStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateGasProviderStatus(ctx, req.(*MsgUpdateGasProviderStatus))
+		return srv.(MsgServer).UpdateGasTankStatus(ctx, req.(*MsgUpdateGasTankStatus))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateGasProviderConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateGasProviderConfig)
+func _Msg_UpdateGasTankConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGasTankConfig)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateGasProviderConfigs(ctx, in)
+		return srv.(MsgServer).UpdateGasTankConfigs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/comdex.gasless.v1beta1.Msg/UpdateGasProviderConfigs",
+		FullMethod: "/comdex.gasless.v1beta1.Msg/UpdateGasTankConfigs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateGasProviderConfigs(ctx, req.(*MsgUpdateGasProviderConfig))
+		return srv.(MsgServer).UpdateGasTankConfigs(ctx, req.(*MsgUpdateGasTankConfig))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1138,20 +1137,20 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateGasProvider",
-			Handler:    _Msg_CreateGasProvider_Handler,
+			MethodName: "CreateGasTank",
+			Handler:    _Msg_CreateGasTank_Handler,
 		},
 		{
 			MethodName: "AuthorizeActors",
 			Handler:    _Msg_AuthorizeActors_Handler,
 		},
 		{
-			MethodName: "UpdateGasProviderStatus",
-			Handler:    _Msg_UpdateGasProviderStatus_Handler,
+			MethodName: "UpdateGasTankStatus",
+			Handler:    _Msg_UpdateGasTankStatus_Handler,
 		},
 		{
-			MethodName: "UpdateGasProviderConfigs",
-			Handler:    _Msg_UpdateGasProviderConfigs_Handler,
+			MethodName: "UpdateGasTankConfigs",
+			Handler:    _Msg_UpdateGasTankConfigs_Handler,
 		},
 		{
 			MethodName: "BlockConsumer",
@@ -1170,7 +1169,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "comdex/gasless/v1beta1/tx.proto",
 }
 
-func (m *MsgCreateGasProvider) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateGasTank) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1180,12 +1179,12 @@ func (m *MsgCreateGasProvider) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateGasProvider) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateGasTank) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateGasProvider) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateGasTank) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1250,17 +1249,17 @@ func (m *MsgCreateGasProvider) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+	if len(m.Provider) > 0 {
+		i -= len(m.Provider)
+		copy(dAtA[i:], m.Provider)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Provider)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateGasProviderResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateGasTankResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1270,12 +1269,12 @@ func (m *MsgCreateGasProviderResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateGasProviderResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateGasTankResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateGasProviderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateGasTankResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1319,8 +1318,8 @@ func (m *MsgAuthorizeActors) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1350,7 +1349,7 @@ func (m *MsgAuthorizeActorsResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGasProviderStatus) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGasTankStatus) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1360,12 +1359,12 @@ func (m *MsgUpdateGasProviderStatus) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGasProviderStatus) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankStatus) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGasProviderStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1377,15 +1376,15 @@ func (m *MsgUpdateGasProviderStatus) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGasProviderStatusResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGasTankStatusResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1395,12 +1394,12 @@ func (m *MsgUpdateGasProviderStatusResponse) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGasProviderStatusResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankStatusResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGasProviderStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1408,7 +1407,7 @@ func (m *MsgUpdateGasProviderStatusResponse) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGasProviderConfig) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGasTankConfig) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1418,12 +1417,12 @@ func (m *MsgUpdateGasProviderConfig) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGasProviderConfig) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankConfig) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGasProviderConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankConfig) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1478,15 +1477,15 @@ func (m *MsgUpdateGasProviderConfig) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGasProviderConfigResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGasTankConfigResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1496,12 +1495,12 @@ func (m *MsgUpdateGasProviderConfigResponse) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGasProviderConfigResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankConfigResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGasProviderConfigResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGasTankConfigResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1543,8 +1542,8 @@ func (m *MsgBlockConsumer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1608,8 +1607,8 @@ func (m *MsgUnblockConsumer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1688,8 +1687,8 @@ func (m *MsgUpdateGasConsumerLimit) MarshalToSizedBuffer(dAtA []byte) (int, erro
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.GasProviderId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.GasTankId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -1730,13 +1729,13 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgCreateGasProvider) Size() (n int) {
+func (m *MsgCreateGasTank) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Creator)
+	l = len(m.Provider)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1768,7 +1767,7 @@ func (m *MsgCreateGasProvider) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateGasProviderResponse) Size() (n int) {
+func (m *MsgCreateGasTankResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1783,8 +1782,8 @@ func (m *MsgAuthorizeActors) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Provider)
 	if l > 0 {
@@ -1808,14 +1807,14 @@ func (m *MsgAuthorizeActorsResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGasProviderStatus) Size() (n int) {
+func (m *MsgUpdateGasTankStatus) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Provider)
 	if l > 0 {
@@ -1824,7 +1823,7 @@ func (m *MsgUpdateGasProviderStatus) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGasProviderStatusResponse) Size() (n int) {
+func (m *MsgUpdateGasTankStatusResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1833,14 +1832,14 @@ func (m *MsgUpdateGasProviderStatusResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGasProviderConfig) Size() (n int) {
+func (m *MsgUpdateGasTankConfig) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Provider)
 	if l > 0 {
@@ -1868,7 +1867,7 @@ func (m *MsgUpdateGasProviderConfig) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGasProviderConfigResponse) Size() (n int) {
+func (m *MsgUpdateGasTankConfigResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1883,8 +1882,8 @@ func (m *MsgBlockConsumer) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Actor)
 	if l > 0 {
@@ -1912,8 +1911,8 @@ func (m *MsgUnblockConsumer) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Actor)
 	if l > 0 {
@@ -1941,8 +1940,8 @@ func (m *MsgUpdateGasConsumerLimit) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.GasProviderId != 0 {
-		n += 1 + sovTx(uint64(m.GasProviderId))
+	if m.GasTankId != 0 {
+		n += 1 + sovTx(uint64(m.GasTankId))
 	}
 	l = len(m.Provider)
 	if l > 0 {
@@ -1975,7 +1974,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgCreateGasProvider) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateGasTank) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1998,15 +1997,15 @@ func (m *MsgCreateGasProvider) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateGasProvider: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateGasTank: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateGasProvider: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateGasTank: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Provider", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2034,7 +2033,7 @@ func (m *MsgCreateGasProvider) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
+			m.Provider = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2273,7 +2272,7 @@ func (m *MsgCreateGasProvider) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateGasProviderResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateGasTankResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2296,10 +2295,10 @@ func (m *MsgCreateGasProviderResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateGasProviderResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateGasTankResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateGasProviderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateGasTankResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2354,9 +2353,9 @@ func (m *MsgAuthorizeActors) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2366,7 +2365,7 @@ func (m *MsgAuthorizeActors) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2506,7 +2505,7 @@ func (m *MsgAuthorizeActorsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGasProviderStatus) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGasTankStatus) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2529,17 +2528,17 @@ func (m *MsgUpdateGasProviderStatus) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderStatus: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGasTankStatus: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderStatus: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGasTankStatus: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2549,7 +2548,7 @@ func (m *MsgUpdateGasProviderStatus) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2607,7 +2606,7 @@ func (m *MsgUpdateGasProviderStatus) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGasProviderStatusResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGasTankStatusResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2630,10 +2629,10 @@ func (m *MsgUpdateGasProviderStatusResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderStatusResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGasTankStatusResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGasTankStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2657,7 +2656,7 @@ func (m *MsgUpdateGasProviderStatusResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGasProviderConfig) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGasTankConfig) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2680,17 +2679,17 @@ func (m *MsgUpdateGasProviderConfig) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderConfig: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGasTankConfig: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderConfig: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGasTankConfig: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2700,7 +2699,7 @@ func (m *MsgUpdateGasProviderConfig) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2909,7 +2908,7 @@ func (m *MsgUpdateGasProviderConfig) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGasProviderConfigResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGasTankConfigResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2932,10 +2931,10 @@ func (m *MsgUpdateGasProviderConfigResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderConfigResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGasTankConfigResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGasProviderConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGasTankConfigResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2990,9 +2989,9 @@ func (m *MsgBlockConsumer) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3002,7 +3001,7 @@ func (m *MsgBlockConsumer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3173,9 +3172,9 @@ func (m *MsgUnblockConsumer) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3185,7 +3184,7 @@ func (m *MsgUnblockConsumer) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3356,9 +3355,9 @@ func (m *MsgUpdateGasConsumerLimit) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GasProviderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GasTankId", wireType)
 			}
-			m.GasProviderId = 0
+			m.GasTankId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3368,7 +3367,7 @@ func (m *MsgUpdateGasConsumerLimit) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GasProviderId |= uint64(b&0x7F) << shift
+				m.GasTankId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

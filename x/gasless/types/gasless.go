@@ -10,50 +10,50 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// MustMarshalTxGPIDS returns the TxGPIDS bytes.
+// MustMarshalTxGTIDs returns the TxGTIDs bytes.
 // It throws panic if it fails.
-func MustMarshalTxGPIDS(cdc codec.BinaryCodec, txGPIDS TxGPIDS) []byte {
-	return cdc.MustMarshal(&txGPIDS)
+func MustMarshalTxGTIDs(cdc codec.BinaryCodec, txGTIDs TxGTIDs) []byte {
+	return cdc.MustMarshal(&txGTIDs)
 }
 
-// MustUnmarshalTxGPIDS return the unmarshalled TxGPIDS from bytes.
+// MustUnmarshalTxGTIDs return the unmarshalled TxGTIDs from bytes.
 // It throws panic if it fails.
-func MustUnmarshalTxGPIDS(cdc codec.BinaryCodec, value []byte) TxGPIDS {
-	txGPIDS, err := UnmarshalTxGPIDS(cdc, value)
+func MustUnmarshalTxGTIDs(cdc codec.BinaryCodec, value []byte) TxGTIDs {
+	txGTIDs, err := UnmarshalTxGTIDs(cdc, value)
 	if err != nil {
 		panic(err)
 	}
 
-	return txGPIDS
+	return txGTIDs
 }
 
-// UnmarshalTxGPIDS returns the TxGPIDS from bytes.
-func UnmarshalTxGPIDS(cdc codec.BinaryCodec, value []byte) (txGPIDS TxGPIDS, err error) {
-	err = cdc.Unmarshal(value, &txGPIDS)
-	return txGPIDS, err
+// UnmarshalTxGTIDs returns the TxGTIDs from bytes.
+func UnmarshalTxGTIDs(cdc codec.BinaryCodec, value []byte) (txGTIDs TxGTIDs, err error) {
+	err = cdc.Unmarshal(value, &txGTIDs)
+	return txGTIDs, err
 }
 
-// MustMarshalGasProvider returns the GasProvider bytes.
+// MustMarshalGasTank returns the GasTank bytes.
 // It throws panic if it fails.
-func MustMarshalGasProvider(cdc codec.BinaryCodec, gasProvider GasProvider) []byte {
-	return cdc.MustMarshal(&gasProvider)
+func MustMarshalGasTank(cdc codec.BinaryCodec, gasTank GasTank) []byte {
+	return cdc.MustMarshal(&gasTank)
 }
 
-// MustUnmarshalGasProvider return the unmarshalled GasProvider from bytes.
+// MustUnmarshalGasTank return the unmarshalled GasTank from bytes.
 // It throws panic if it fails.
-func MustUnmarshalGasProvider(cdc codec.BinaryCodec, value []byte) GasProvider {
-	gasProvider, err := UnmarshalGasProvider(cdc, value)
+func MustUnmarshalGasTank(cdc codec.BinaryCodec, value []byte) GasTank {
+	gasTank, err := UnmarshalGasTank(cdc, value)
 	if err != nil {
 		panic(err)
 	}
 
-	return gasProvider
+	return gasTank
 }
 
-// UnmarshalGasProvider returns the GasProvider from bytes.
-func UnmarshalGasProvider(cdc codec.BinaryCodec, value []byte) (gasProvider GasProvider, err error) {
-	err = cdc.Unmarshal(value, &gasProvider)
-	return gasProvider, err
+// UnmarshalGasTank returns the GasTank from bytes.
+func UnmarshalGasTank(cdc codec.BinaryCodec, value []byte) (gasTank GasTank, err error) {
+	err = cdc.Unmarshal(value, &gasTank)
+	return gasTank, err
 }
 
 // MustMarshalGasConsumer returns the GasConsumer bytes.
@@ -79,26 +79,26 @@ func UnmarshalGasConsumer(cdc codec.BinaryCodec, value []byte) (gasConsumer GasC
 	return gasConsumer, err
 }
 
-func GasTankAddress(gasProviderID uint64) sdk.AccAddress {
+func GasTankAddress(gasTankID uint64) sdk.AccAddress {
 	return DeriveAddress(
 		AddressType32Bytes,
 		ModuleName,
-		strings.Join([]string{GasTankAddressPrefix, strconv.FormatUint(gasProviderID, 10)}, ModuleAddressNameSplitter))
+		strings.Join([]string{GasTankAddressPrefix, strconv.FormatUint(gasTankID, 10)}, ModuleAddressNameSplitter))
 }
 
-func NewGasProvider(
+func NewGasTank(
 	id uint64,
-	creator sdk.AccAddress,
+	provider sdk.AccAddress,
 	maxTxsCountPerConsumer uint64,
 	maxFeeUsagePerConsumer sdkmath.Int,
 	maxFeeUsagePerTx sdkmath.Int,
 	txsAllowed []string,
 	contractsAllowed []string,
 	feeDenom string,
-) GasProvider {
-	return GasProvider{
+) GasTank {
+	return GasTank{
 		Id:                     id,
-		Creator:                creator.String(),
+		Provider:               provider.String(),
 		GasTank:                GasTankAddress(id).String(),
 		IsActive:               true,
 		MaxTxsCountPerConsumer: maxTxsCountPerConsumer,
@@ -111,34 +111,34 @@ func NewGasProvider(
 	}
 }
 
-func (gasProvider GasProvider) GetGasTankReserveAddress() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(gasProvider.GasTank)
+func (gasTank GasTank) GetGasTankReserveAddress() sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(gasTank.GasTank)
 	if err != nil {
 		panic(err)
 	}
 	return addr
 }
 
-func (gasProvider GasProvider) Validate() error {
-	if gasProvider.Id == 0 {
+func (gasTank GasTank) Validate() error {
+	if gasTank.Id == 0 {
 		return fmt.Errorf("pair id must not be 0")
 	}
-	if _, err := sdk.AccAddressFromBech32(gasProvider.Creator); err != nil {
-		return fmt.Errorf("invalid creator address: %v", err)
+	if _, err := sdk.AccAddressFromBech32(gasTank.Provider); err != nil {
+		return fmt.Errorf("invalid provider address: %v", err)
 	}
-	if err := sdk.ValidateDenom(gasProvider.FeeDenom); err != nil {
+	if err := sdk.ValidateDenom(gasTank.FeeDenom); err != nil {
 		return fmt.Errorf("invalid fee denom: %w", err)
 	}
-	if gasProvider.MaxTxsCountPerConsumer == 0 {
+	if gasTank.MaxTxsCountPerConsumer == 0 {
 		return fmt.Errorf("max tx count per consumer must not be 0")
 	}
-	if !gasProvider.MaxFeeUsagePerTx.IsPositive() {
+	if !gasTank.MaxFeeUsagePerTx.IsPositive() {
 		return fmt.Errorf("max_fee_usage_per_tx should be positive")
 	}
-	if !gasProvider.MaxFeeUsagePerConsumer.IsPositive() {
+	if !gasTank.MaxFeeUsagePerConsumer.IsPositive() {
 		return fmt.Errorf("max_fee_usage_per_consumer should be positive")
 	}
-	if len(gasProvider.TxsAllowed) == 0 && len(gasProvider.ContractsAllowed) == 0 {
+	if len(gasTank.TxsAllowed) == 0 && len(gasTank.ContractsAllowed) == 0 {
 		return fmt.Errorf("atleast one tx or contract is required to initialize")
 	}
 

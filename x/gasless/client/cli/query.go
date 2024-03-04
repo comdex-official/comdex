@@ -28,11 +28,11 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		NewQueryParamsCmd(),
 		NewQueryMessagesAndContractsCmd(),
-		NewQueryGasProviderCmd(),
-		NewQueryGasProvidersCmd(),
+		NewQueryGasTankCmd(),
+		NewQueryGasTanksCmd(),
 		NewQueryGasConsumerCmd(),
 		NewQueryGasConsumersCmd(),
-		NewQueryTxGpidsCmd(),
+		NewQueryTxGtidsCmd(),
 	)
 
 	return cmd
@@ -113,15 +113,15 @@ $ %s query %s mac
 	return cmd
 }
 
-func NewQueryGasProviderCmd() *cobra.Command {
+func NewQueryGasTankCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gasprovider [gas-provider-id]",
+		Use:   "gastank [gas-tank-id]",
 		Args:  cobra.MinimumNArgs(1),
-		Short: "Query details of the gas provider",
+		Short: "Query details of the gas tank",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query details of the gas provider
+			fmt.Sprintf(`Query details of the gas tank
 Example:
-$ %s query %s gasprovider
+$ %s query %s gastank 1
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -132,16 +132,16 @@ $ %s query %s gasprovider
 				return err
 			}
 
-			gasProviderID, err := strconv.ParseUint(args[0], 10, 64)
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return fmt.Errorf("parse gas_provider_id: %w", err)
+				return fmt.Errorf("parse gas_tank_id: %w", err)
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.GasProvider(
+			resp, err := queryClient.GasTank(
 				cmd.Context(),
-				&types.QueryGasProviderRequest{
-					GasProviderId: gasProviderID,
+				&types.QueryGasTankRequest{
+					GasTankId: gasTankID,
 				},
 			)
 
@@ -158,15 +158,15 @@ $ %s query %s gasprovider
 	return cmd
 }
 
-func NewQueryGasProvidersCmd() *cobra.Command {
+func NewQueryGasTanksCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gasproviders ",
+		Use:   "gastanks ",
 		Args:  cobra.MinimumNArgs(0),
-		Short: "Query details of all the gas providers",
+		Short: "Query details of all the gas tanks",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query details of all the gas providers
+			fmt.Sprintf(`Query details of all the gas tanks
 Example:
-$ %s query %s gasproviders
+$ %s query %s gastanks
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -183,9 +183,9 @@ $ %s query %s gasproviders
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.GasProviders(
+			resp, err := queryClient.GasTanks(
 				cmd.Context(),
-				&types.QueryGasProvidersRequest{
+				&types.QueryGasTanksRequest{
 					Pagination: pageReq,
 				},
 			)
@@ -293,16 +293,16 @@ $ %s query %s gasconsumers
 	return cmd
 }
 
-// NewQueryTxGpidsCmd implements the tx-gpids query command.
-func NewQueryTxGpidsCmd() *cobra.Command {
+// NewQueryTxGtidsCmd implements the tx-gtids query command.
+func NewQueryTxGtidsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "tx-gpids",
 		Args:  cobra.NoArgs,
-		Short: "Query all the tx type url and contract address along with associcated gas provider ids",
+		Use:   "tx-gtids",
+		Short: "Query all the tx type url and contract address along with associcated gas tank ids",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query all the tx type url and contract address along with associcated gas provider ids
+			fmt.Sprintf(`Query all the tx type url and contract address along with associcated gas tank ids
 Example:
-$ %s query %s tx-gpids
+$ %s query %s tx-gtids
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -315,7 +315,7 @@ $ %s query %s tx-gpids
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			resp, err := queryClient.GasProviderIdsForAllTXC(cmd.Context(), &types.QueryGasProviderIdsForAllTXC{})
+			resp, err := queryClient.GasTankIdsForAllTXC(cmd.Context(), &types.QueryGasTankIdsForAllTXC{})
 			if err != nil {
 				return err
 			}

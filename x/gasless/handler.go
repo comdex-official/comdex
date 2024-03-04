@@ -18,17 +18,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgCreateGasProvider:
-			res, err := msgServer.CreateGasProvider(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgCreateGasTank:
+			res, err := msgServer.CreateGasTank(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgAuthorizeActors:
 			res, err := msgServer.AuthorizeActors(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateGasProviderStatus:
-			res, err := msgServer.UpdateGasProviderStatus(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateGasTankStatus:
+			res, err := msgServer.UpdateGasTankStatus(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgUpdateGasProviderConfig:
-			res, err := msgServer.UpdateGasProviderConfigs(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgUpdateGasTankConfig:
+			res, err := msgServer.UpdateGasTankConfigs(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgBlockConsumer:
 			res, err := msgServer.BlockConsumer(sdk.WrapSDKContext(ctx), msg)
