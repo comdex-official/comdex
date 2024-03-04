@@ -79,7 +79,7 @@ func UnmarshalGasConsumer(cdc codec.BinaryCodec, value []byte) (gasConsumer GasC
 	return gasConsumer, err
 }
 
-func GasTankAddress(gasTankID uint64) sdk.AccAddress {
+func DeriveGasTankReserveAddress(gasTankID uint64) sdk.AccAddress {
 	return DeriveAddress(
 		AddressType32Bytes,
 		ModuleName,
@@ -99,7 +99,7 @@ func NewGasTank(
 	return GasTank{
 		Id:                     id,
 		Provider:               provider.String(),
-		GasTank:                GasTankAddress(id).String(),
+		Reserve:                DeriveGasTankReserveAddress(id).String(),
 		IsActive:               true,
 		MaxTxsCountPerConsumer: maxTxsCountPerConsumer,
 		MaxFeeUsagePerConsumer: maxFeeUsagePerConsumer,
@@ -112,7 +112,7 @@ func NewGasTank(
 }
 
 func (gasTank GasTank) GetGasTankReserveAddress() sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(gasTank.GasTank)
+	addr, err := sdk.AccAddressFromBech32(gasTank.Reserve)
 	if err != nil {
 		panic(err)
 	}

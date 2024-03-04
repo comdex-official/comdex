@@ -58,9 +58,9 @@ func (k Querier) GasTank(c context.Context, req *types.QueryGasTankRequest) (*ty
 		return nil, status.Errorf(codes.NotFound, "gas tank with id %d doesn't exist", req.GasTankId)
 	}
 
-	gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gt.GasTank))
+	gasTankBalance := k.bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(gt.Reserve), gt.FeeDenom)
 	return &types.QueryGasTankResponse{
-		GasTank: types.NewGasTankResponse(gt, gasTankBalances),
+		GasTank: types.NewGasTankResponse(gt, gasTankBalance),
 	}, nil
 }
 
@@ -82,8 +82,8 @@ func (k Querier) GasTanks(c context.Context, req *types.QueryGasTanksRequest) (*
 	pageRes, err := query.FilteredPaginate(gtStore, req.Pagination, func(key, value []byte, accumulate bool) (bool, error) {
 		gt := gtGetter(key, value)
 		if accumulate {
-			gasTankBalances := k.bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(gt.GasTank))
-			gasTanks = append(gasTanks, types.NewGasTankResponse(gt, gasTankBalances))
+			gasTankBalance := k.bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(gt.Reserve), gt.FeeDenom)
+			gasTanks = append(gasTanks, types.NewGasTankResponse(gt, gasTankBalance))
 		}
 
 		return true, nil

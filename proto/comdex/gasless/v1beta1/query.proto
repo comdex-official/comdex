@@ -36,8 +36,8 @@ message QueryMessagesAndContractsResponse {
 message GasTankResponse {
   uint64 id = 1;
   string provider = 2;
-  string gas_tank_address = 3;
-  repeated cosmos.base.v1beta1.Coin gas_tank_balances = 4 [(gogoproto.nullable) = false];
+  string reserve = 3;
+  cosmos.base.v1beta1.Coin gas_tank_balance = 4 [(gogoproto.nullable) = false];
   bool is_active = 5;
   uint64 max_txs_count_per_consumer = 6;
   string max_fee_usage_per_consumer = 7 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];

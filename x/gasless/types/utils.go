@@ -80,12 +80,12 @@ func ShiftToEndUint64(list []uint64, x uint64) []uint64 {
 	return list
 }
 
-func NewGasTankResponse(gasTank GasTank, balances sdk.Coins) GasTankResponse {
+func NewGasTankResponse(gasTank GasTank, balance sdk.Coin) GasTankResponse {
 	return GasTankResponse{
 		Id:                     gasTank.Id,
 		Provider:               gasTank.Provider,
-		GasTankAddress:         gasTank.GasTank,
-		GasTankBalances:        balances,
+		Reserve:                gasTank.Reserve,
+		GasTankBalance:         balance,
 		IsActive:               gasTank.IsActive,
 		MaxTxsCountPerConsumer: gasTank.MaxTxsCountPerConsumer,
 		MaxFeeUsagePerConsumer: gasTank.MaxFeeUsagePerConsumer,

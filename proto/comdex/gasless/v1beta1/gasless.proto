@@ -27,7 +27,7 @@ message TxGTIDs {
 message GasTank {
     uint64 id = 1;
     string provider = 2;
-    string gas_tank = 3;
+    string reserve = 3;
     bool is_active = 4;
     uint64 max_txs_count_per_consumer = 5;
     string max_fee_usage_per_consumer = 6 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
