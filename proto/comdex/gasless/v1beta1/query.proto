@@ -69,6 +69,16 @@ message QueryGasTanksResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryGasTanksByProviderRequest is a request type for the Query/GasTanksByProvider RPC method.
+message QueryGasTanksByProviderRequest {
+  string provider = 1;
+}
+
+// QueryGasTanksByProviderResponse is a response type for the Query/GasTanksByProvider RPC method.
+message QueryGasTanksByProviderResponse {
+  repeated GasTankResponse gas_tanks = 1 [(gogoproto.nullable) = false];
+}
+
 // QueryGasConsumerRequest is a request type for the Query/GasConsumer RPC method.
 message QueryGasConsumerRequest {
   string consumer = 1;
@@ -116,6 +126,11 @@ service Query {
   // GasTanks return details of all the gas tanks
   rpc GasTanks(QueryGasTanksRequest) returns (QueryGasTanksResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/tanks";
+  }
+
+  // GasTanksByProvider return details of all the gas tanks for the given provider
+  rpc GasTanksByProvider(QueryGasTanksByProviderRequest) returns (QueryGasTanksByProviderResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/provider/tanks/{provider}";
   }
 
   // GasConsumer returns gas consumer details 

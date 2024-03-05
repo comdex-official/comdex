@@ -97,6 +97,31 @@ func (k Querier) GasTanks(c context.Context, req *types.QueryGasTanksRequest) (*
 	}, nil
 }
 
+func (k Querier) GasTanksByProvider(c context.Context, req *types.QueryGasTanksByProviderRequest) (*types.QueryGasTanksByProviderResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(req.Provider); err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid provider address")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	allGasTanks := k.GetAllGasTanks(ctx)
+
+	providerGasTanks := []types.GasTankResponse{}
+	for _, tank := range allGasTanks {
+		if tank.Provider == req.Provider {
+			tankBalance := k.bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(tank.Reserve), tank.FeeDenom)
+			providerGasTanks = append(providerGasTanks, types.NewGasTankResponse(tank, tankBalance))
+		}
+	}
+	return &types.QueryGasTanksByProviderResponse{
+		GasTanks: providerGasTanks,
+	}, nil
+}
+
 func (k Querier) GasConsumer(c context.Context, req *types.QueryGasConsumerRequest) (*types.QueryGasConsumerResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")

@@ -30,6 +30,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryMessagesAndContractsCmd(),
 		NewQueryGasTankCmd(),
 		NewQueryGasTanksCmd(),
+		NewQueryGasTanksByProviderCmd(),
 		NewQueryGasConsumerCmd(),
 		NewQueryGasConsumersCmd(),
 		NewQueryTxGtidsCmd(),
@@ -161,7 +162,7 @@ $ %s query %s gastank 1
 func NewQueryGasTanksCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gastanks ",
-		Args:  cobra.MinimumNArgs(0),
+		Args:  cobra.NoArgs,
 		Short: "Query details of all the gas tanks",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of all the gas tanks
@@ -203,6 +204,51 @@ $ %s query %s gastanks
 	return cmd
 }
 
+func NewQueryGasTanksByProviderCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gas-tanks-by-provider [provider]",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Query details of all the gas tanks for the given provider",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query details of all the gas tanks for the given provider
+Example:
+$ %s query %s gas-tanks-by-provider comdex1y755txyzr5n5yy956ydkjttmj8jhwdljawwve8
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			sanitizedProvider, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasTanksByProvider(
+				cmd.Context(),
+				&types.QueryGasTanksByProviderRequest{
+					Provider: sanitizedProvider.String(),
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func NewQueryGasConsumerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gasconsumer [consumer]",
@@ -211,7 +257,7 @@ func NewQueryGasConsumerCmd() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of the gas consumer
 Example:
-$ %s query %s gasconsumer
+$ %s query %s gasconsumer comdex1y755txyzr5n5yy956ydkjttmj8jhwdljawwve8
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -250,8 +296,8 @@ $ %s query %s gasconsumer
 
 func NewQueryGasConsumersCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gasconsumers ",
-		Args:  cobra.MinimumNArgs(0),
+		Use:   "gasconsumers",
+		Args:  cobra.NoArgs,
 		Short: "Query details of all the gas consumers",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query details of all the gas consumers
@@ -296,8 +342,8 @@ $ %s query %s gasconsumers
 // NewQueryTxGtidsCmd implements the tx-gtids query command.
 func NewQueryTxGtidsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Args:  cobra.NoArgs,
 		Use:   "tx-gtids",
+		Args:  cobra.NoArgs,
 		Short: "Query all the tx type url and contract address along with associcated gas tank ids",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Query all the tx type url and contract address along with associcated gas tank ids
