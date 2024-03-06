@@ -100,6 +100,28 @@ message QueryGasConsumersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message GasConsumersByGasTankIDResponse {
+  string consumer = 1;
+  bool is_blocked = 2;
+  uint64 total_txs_allowed = 3;
+  uint64 total_txs_made = 4;
+  cosmos.base.v1beta1.Coin total_fee_consumption_allowed = 5 [(gogoproto.nullable) = false];
+  cosmos.base.v1beta1.Coin total_fees_consumed = 6 [(gogoproto.nullable) = false];
+  Usage usage = 7;
+}
+
+// QueryGasConsumersByGasTankIDRequest is a request type for the Query/GasConsumersByGasTankID RPC method.
+message QueryGasConsumersByGasTankIDRequest {
+  uint64 gas_tank_id = 1;
+}
+
+// QueryGasConsumersByGasTankIDResponse is a response type for the Query/GasConsumersByGasTankID RPC method.
+message QueryGasConsumersByGasTankIDResponse {
+  uint64 gas_tank_id = 1;
+  cosmos.base.v1beta1.Coin overall_fees_consumed = 2 [(gogoproto.nullable) = false];
+  repeated GasConsumersByGasTankIDResponse gas_consumers = 3 [(gogoproto.nullable) = false];
+}
+
 message QueryGasTankIdsForAllTXC {}
 
 message QueryGasTankIdsForAllTXCResponse {
@@ -141,6 +163,11 @@ service Query {
   // GasConsumers return details of all the gas consumers
   rpc GasConsumers(QueryGasConsumersRequest) returns (QueryGasConsumersResponse) {
     option (google.api.http).get = "/comdex/gasless/v1beta1/consumers";
+  }
+
+  // GasConsumersByGasTankID return details of all the gas consumers for the given tank ID
+  rpc GasConsumersByGasTankID(QueryGasConsumersByGasTankIDRequest) returns (QueryGasConsumersByGasTankIDResponse) {
+    option (google.api.http).get = "/comdex/gasless/v1beta1/tank/consumers/{gas_tank_id}";
   }
 
   // GasTankIdsForAllTXC returns gas tanks ids with all available tx or contracts

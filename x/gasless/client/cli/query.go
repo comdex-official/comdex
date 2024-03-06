@@ -33,6 +33,7 @@ func GetQueryCmd() *cobra.Command {
 		NewQueryGasTanksByProviderCmd(),
 		NewQueryGasConsumerCmd(),
 		NewQueryGasConsumersCmd(),
+		NewQueryGasConsumersByGasTankIDCmd(),
 		NewQueryTxGtidsCmd(),
 	)
 
@@ -323,6 +324,51 @@ $ %s query %s gasconsumers
 				cmd.Context(),
 				&types.QueryGasConsumersRequest{
 					Pagination: pageReq,
+				},
+			)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(resp)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func NewQueryGasConsumersByGasTankIDCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gas-consumers-by-tank-id [gas-tank-id]",
+		Args:  cobra.MinimumNArgs(1),
+		Short: "Query all gas consumers for given gas tank id",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query all gas consumers for given gas tank id
+Example:
+$ %s query %s gas-consumers-by-tank-id 1
+`,
+				version.AppName, types.ModuleName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			gasTankID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("parse gas_tank_id: %w", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GasConsumersByGasTankID(
+				cmd.Context(),
+				&types.QueryGasConsumersByGasTankIDRequest{
+					GasTankId: gasTankID,
 				},
 			)
 

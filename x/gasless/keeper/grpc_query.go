@@ -174,6 +174,54 @@ func (k Querier) GasConsumers(c context.Context, req *types.QueryGasConsumersReq
 	}, nil
 }
 
+func (k Querier) GasConsumersByGasTankID(c context.Context, req *types.QueryGasConsumersByGasTankIDRequest) (*types.QueryGasConsumersByGasTankIDResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if req.GasTankId == 0 {
+		return nil, status.Error(codes.InvalidArgument, "gas tank id cannot be 0")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	gt, found := k.GetGasTank(ctx, req.GasTankId)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "gas tank with id %d doesn't exist", req.GasTankId)
+	}
+
+	tankConsumers := []types.GasConsumersByGasTankIDResponse{}
+	overallFeesConsumed := sdk.NewCoin(gt.FeeDenom, sdk.ZeroInt())
+
+	allConsumers := k.GetAllGasConsumers(ctx)
+	for _, consumer := range allConsumers {
+		if consumer.Consumption == nil {
+			continue
+		}
+		if _, ok := consumer.Consumption[req.GasTankId]; !ok {
+			continue
+		}
+
+		overallFeesConsumed.Amount = overallFeesConsumed.Amount.Add(consumer.Consumption[req.GasTankId].TotalFeesConsumed.Amount)
+
+		tankConsumers = append(tankConsumers, types.GasConsumersByGasTankIDResponse{
+			Consumer:                   consumer.Consumer,
+			IsBlocked:                  consumer.Consumption[req.GasTankId].IsBlocked,
+			TotalTxsAllowed:            consumer.Consumption[req.GasTankId].TotalTxsAllowed,
+			TotalTxsMade:               consumer.Consumption[req.GasTankId].TotalTxsMade,
+			TotalFeeConsumptionAllowed: consumer.Consumption[req.GasTankId].TotalFeeConsumptionAllowed,
+			TotalFeesConsumed:          consumer.Consumption[req.GasTankId].TotalFeesConsumed,
+			Usage:                      consumer.Consumption[req.GasTankId].Usage,
+		})
+	}
+
+	return &types.QueryGasConsumersByGasTankIDResponse{
+		GasTankId:           req.GasTankId,
+		OverallFeesConsumed: overallFeesConsumed,
+		GasConsumers:        tankConsumers,
+	}, nil
+}
+
 func (k Querier) GasTankIdsForAllTXC(c context.Context, req *types.QueryGasTankIdsForAllTXC) (*types.QueryGasTankIdsForAllTXCResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	txToGtids := []*types.TxGTIDs{}
