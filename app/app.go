@@ -210,6 +210,10 @@ import (
 	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
 	auctionmoduleskiptypes "github.com/skip-mev/block-sdk/x/auction/types"
 
+	"github.com/comdex-official/comdex/x/tokenfactory"
+	tokenfactorykeeper "github.com/comdex-official/comdex/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
+
 	cwasm "github.com/comdex-official/comdex/app/wasm"
 
 	mv13 "github.com/comdex-official/comdex/app/upgrades/mainnet/v13"
@@ -321,6 +325,7 @@ var (
 		liquidationsV2.AppModuleBasic{},
 		auctionsV2.AppModuleBasic{},
 		common.AppModuleBasic{},
+		tokenfactory.AppModuleBasic{},
 		icq.AppModuleBasic{},
 		ibchooks.AppModuleBasic{},
 		packetforward.AppModuleBasic{},
@@ -407,7 +412,8 @@ type App struct {
 	NewaucKeeper      auctionsV2keeper.Keeper
 	CommonKeeper      commonkeeper.Keeper
 	// auctionKeeper is the keeper that handles processing auction transactions
-	AuctionKeeperSkip auctionkeeperskip.Keeper
+	AuctionKeeperSkip  auctionkeeperskip.Keeper
+	TokenFactoryKeeper tokenfactorykeeper.Keeper
 
 	// IBC modules
 	// transfer module
@@ -456,7 +462,7 @@ func New(
 			markettypes.StoreKey, bandoraclemoduletypes.StoreKey, lockertypes.StoreKey,
 			wasm.StoreKey, authzkeeper.StoreKey, auctiontypes.StoreKey, tokenminttypes.StoreKey,
 			rewardstypes.StoreKey, feegrant.StoreKey, liquiditytypes.StoreKey, esmtypes.ModuleName, lendtypes.StoreKey,
-			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, commontypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, auctionmoduleskiptypes.StoreKey,
+			liquidationsV2types.StoreKey, auctionsV2types.StoreKey, commontypes.StoreKey, tokenfactorytypes.StoreKey, ibchookstypes.StoreKey, packetforwardtypes.StoreKey, icqtypes.StoreKey, consensusparamtypes.StoreKey, crisistypes.StoreKey, auctionmoduleskiptypes.StoreKey,
 		)
 	)
 
@@ -512,6 +518,7 @@ func New(
 	app.ParamsKeeper.Subspace(liquiditytypes.ModuleName)
 	app.ParamsKeeper.Subspace(rewardstypes.ModuleName)
 	app.ParamsKeeper.Subspace(liquidationsV2types.ModuleName)
+	app.ParamsKeeper.Subspace(tokenfactorytypes.ModuleName)
 	app.ParamsKeeper.Subspace(auctionsV2types.ModuleName)
 	app.ParamsKeeper.Subspace(commontypes.ModuleName)
 	app.ParamsKeeper.Subspace(icqtypes.ModuleName)
@@ -533,6 +540,12 @@ func New(
 		app.keys[capabilitytypes.StoreKey],
 		app.mkeys[capabilitytypes.MemStoreKey],
 	)
+
+	var tokenFactoryCapabilities = []string{
+		tokenfactorytypes.EnableBurnFrom,
+		tokenfactorytypes.EnableForceTransfer,
+		tokenfactorytypes.EnableSetMetadata,
+	}
 
 	// grant capabilities for the ibc and ibc-transfer modules
 	var (
@@ -919,6 +932,17 @@ func New(
 		govModAddress,
 	)
 
+	// Create the TokenFactory Keeper
+	app.TokenFactoryKeeper = tokenfactorykeeper.NewKeeper(
+		appCodec,
+		app.keys[tokenfactorytypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DistrKeeper,
+		tokenFactoryCapabilities,
+		govModAddress,
+	)
+
 	app.AuctionKeeperSkip = auctionkeeperskip.NewKeeper(
 		appCodec,
 		keys[auctionmoduleskiptypes.StoreKey],
@@ -953,9 +977,9 @@ func New(
 	if err != nil {
 		panic(fmt.Sprintf("error while reading wasm config: %s", err))
 	}
-	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3"
+	supportedFeatures := "iterator,staking,stargate,comdex,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3,token_factory"
 
-	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper), wasmOpts...)
+	wasmOpts = append(cwasm.RegisterCustomPlugins(&app.LockerKeeper, &app.TokenmintKeeper, &app.AssetKeeper, &app.Rewardskeeper, &app.CollectorKeeper, &app.LiquidationKeeper, &app.AuctionKeeper, &app.EsmKeeper, &app.VaultKeeper, &app.LendKeeper, &app.LiquidityKeeper, &app.MarketKeeper, app.BankKeeper, &app.TokenFactoryKeeper), wasmOpts...)
 
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
@@ -1102,6 +1126,7 @@ func New(
 		liquidationsV2.NewAppModule(app.cdc, app.NewliqKeeper, app.AccountKeeper, app.BankKeeper),
 		common.NewAppModule(app.cdc, app.CommonKeeper, app.AccountKeeper, app.BankKeeper, app.WasmKeeper),
 		auctionsV2.NewAppModule(app.cdc, app.NewaucKeeper, app.BankKeeper),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
 		packetforward.NewAppModule(app.PacketForwardKeeper),
@@ -1149,6 +1174,7 @@ func New(
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
 		commontypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1194,6 +1220,7 @@ func New(
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
 		commontypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1243,6 +1270,7 @@ func New(
 		liquidationsV2types.ModuleName,
 		auctionsV2types.ModuleName,
 		commontypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		ibchookstypes.ModuleName,
 		icqtypes.ModuleName,
 		packetforwardtypes.ModuleName,
@@ -1582,6 +1610,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		rewardstypes.ModuleName:           {authtypes.Minter, authtypes.Burner},
 		liquidationsV2types.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		auctionsV2types.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		tokenfactorytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		commontypes.ModuleName:            nil,
 		icatypes.ModuleName:               nil,
 		ibcfeetypes.ModuleName:            nil,
@@ -1594,7 +1623,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 func (a *App) registerUpgradeHandlers() {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		tv14.UpgradeName,
-		tv14.CreateUpgradeHandlerV14(a.mm, a.configurator, a.CommonKeeper, a.AuctionKeeperSkip, a.LendKeeper),
+		tv14.CreateUpgradeHandlerV14(a.mm, a.configurator, a.CommonKeeper, a.AuctionKeeperSkip, a.LendKeeper, a.TokenFactoryKeeper),
 	)
 	// When a planned update height is reached, the old binary will panic
 	// writing on disk the height and name of the update that triggered it
@@ -1633,6 +1662,7 @@ func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *store
 			Added: []string{
 				commontypes.StoreKey,
 				auctionmoduleskiptypes.StoreKey,
+				tokenfactorytypes.ModuleName,
 			},
 		}
 	}

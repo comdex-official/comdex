@@ -1,9 +1,12 @@
 package v14
 
 import (
+	"fmt"
 	commonkeeper "github.com/comdex-official/comdex/x/common/keeper"
 	commontypes "github.com/comdex-official/comdex/x/common/types"
 	lendkeeper "github.com/comdex-official/comdex/x/lend/keeper"
+	tokenfactorykeeper "github.com/comdex-official/comdex/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -13,12 +16,16 @@ import (
 	"strings"
 )
 
+// We now charge 2 million gas * gas price to create a denom.
+const NewDenomCreationGasConsume uint64 = 2_000_000
+
 func CreateUpgradeHandlerV14(
 	mm *module.Manager,
 	configurator module.Configurator,
 	commonkeeper commonkeeper.Keeper,
 	auctionkeeperskip auctionkeeperskip.Keeper,
 	lendKeeper lendkeeper.Keeper,
+	tokenfactorykeeper tokenfactorykeeper.Keeper,
 
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
@@ -36,6 +43,19 @@ func CreateUpgradeHandlerV14(
 		if err = setDefaultMEVParams(ctx, auctionkeeperskip); err != nil {
 			return nil, err
 		}
+
+		// x/TokenFactory
+		// Use denom creation gas consumption instead of fee for contract developers
+		ctx.Logger().Info("setting params for Tokenfactory module (x/tokenfactory)")
+		updatedTf := tokenfactorytypes.Params{
+			DenomCreationFee:        nil,
+			DenomCreationGasConsume: NewDenomCreationGasConsume,
+		}
+
+		if err := tokenfactorykeeper.SetParams(ctx, updatedTf); err != nil {
+			return vm, err
+		}
+		ctx.Logger().Info(fmt.Sprintf("updated tokenfactory params to %v", updatedTf))
 
 		//TODO: uncomment this before mainnet upgrade
 		//UpdateLendParams(ctx, lendKeeper)
