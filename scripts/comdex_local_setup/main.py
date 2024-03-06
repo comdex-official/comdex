@@ -422,7 +422,76 @@ def CreateState():
             time.sleep(APPS[0][3]) # waiting for proposal duration
             ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
 
+def limitOrderHelper(fromAcc, appID, pairID, direction, offerCoin, demandCoinDenom, price, amount):
+    print(fromAcc)
+    command = f"comdex tx liquidity limit-order {appID} {pairID} {direction} {offerCoin} {demandCoinDenom} {price} {amount} --from {fromAcc} --chain-id test-3 --node https://dev3.rpc.comdex.one:443 --fees 1000000ucmdx --keyring-backend test --output json -y"
+    output = subprocess.getstatusoutput(command)[1]
+    print(output)
+    try:
+        output = json.loads(output)
+    except Exception as e:
+        exit(f"{fromAcc} - error while limit order... {output}")
+    if int(output["code"]) != 0:
+        print(fromAcc, " - ", output["raw_log"])
+    else:
+        print(f"limit order placed successfully : from - {fromAcc}, appID - {appID}, pairID - {pairID}, -direction - {direction}, -offerCoin {offerCoin}, -demandCoinDenom {demandCoinDenom}, price {price}, amount {amount} ✔️")
 
+def thread(
+    fromAcc,
+    appID,
+    pairID,
+    direction,
+    offerCoin,
+    demandCoinDenom,
+    price,
+    amount,
+):
+    
+    start = datetime.datetime.now()
+    limitOrderHelper(fromAcc, appID, pairID, direction, offerCoin, demandCoinDenom, price, amount)
+    end = datetime.datetime.now()
+    print("time taken - ", (end-start).seconds, "s")
+
+def limitOrder():
+    chunks = [
+        {
+            "fromAcc" : "hotuser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        },
+        {
+            "fromAcc" : "cooluser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        },
+        {
+            "fromAcc" : "chilluser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        }
+    ]
+    threads = []
+    for data in chunks:
+        threads.append(threading.Thread(target=thread, args=(data["fromAcc"], data["appID"], data["pairID"], data["direction"], data["offerCoin"], data["demandCoinDenom"], data["price"], data["amount"])))
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
 def main():
     if not os.path.exists(HOME_DIR):
@@ -434,6 +503,13 @@ def main():
     thr.start()
     StartChainIndicator()
     CreateState()
-    print("Press Ctr+C to stop the chain")
+    # while True:
+    #     try:
+    #         limitOrder()
+    #         time.sleep(3)  # Replace with your actual task or wait logic
+    #     except KeyboardInterrupt:
+    #         print("Keyboard interrupt received. Exiting...")
+    #         break
+    # print("Press Ctr+C to stop the chain")
 
 main()
