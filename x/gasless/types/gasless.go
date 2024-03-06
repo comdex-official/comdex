@@ -160,3 +160,14 @@ func (gasConsumer GasConsumer) Validate() error {
 	}
 	return nil
 }
+
+func NewTxGTIDs(tpoc string) TxGTIDs {
+	return TxGTIDs{
+		TxPathOrContractAddress: tpoc,
+		GasTankIds:              []uint64{},
+	}
+}
+
+func (txGTIDs TxGTIDs) Validate() error {
+	return nil
+}

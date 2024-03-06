@@ -122,10 +122,3 @@ func NewConsumptionDetail(
 		},
 	}
 }
-
-func NewTxGTIDs(tpoc string) TxGTIDs {
-	return TxGTIDs{
-		TxPathOrContractAddress: tpoc,
-		GasTankIds:              []uint64{},
-	}
-}
