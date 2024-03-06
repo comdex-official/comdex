@@ -59,7 +59,7 @@ func (k Keeper) ValidateMsgCreateGasTank(ctx sdk.Context, msg *types.MsgCreateGa
 		}
 	}
 	if gasTanks >= params.TankCreationLimit {
-		return sdkerrors.Wrapf(types.ErrorMaxLimitReachedByProvider, " %d gas tanks already created by the provider", 10)
+		return sdkerrors.Wrapf(types.ErrorMaxLimitReachedByProvider, " %d gas tanks already created by the provider", params.TankCreationLimit)
 	}
 
 	if msg.FeeDenom != msg.GasDeposit.Denom {
