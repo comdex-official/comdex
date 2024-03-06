@@ -19,6 +19,15 @@ func DeriveAddress(addressType AddressType, moduleName, name string) sdk.AccAddr
 	}
 }
 
+func GetCoinByDenomFromCoins(denom string, coins sdk.Coins) (sdk.Coin, bool) {
+	for _, coin := range coins {
+		if coin.Denom == denom {
+			return coin, true
+		}
+	}
+	return sdk.Coin{}, false
+}
+
 // ItemExists returns true if item exists in array else false .
 func ItemExists(array []string, item string) bool {
 	for _, v := range array {

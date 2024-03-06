@@ -50,14 +50,15 @@ func (k Keeper) GetAllAvailableContracts(ctx sdk.Context) (contractsDetails []ty
 }
 
 func (k Keeper) ValidateMsgCreateGasTank(ctx sdk.Context, msg *types.MsgCreateGasTank) error {
+	params := k.GetParams(ctx)
 	allGasTanks := k.GetAllGasTanks(ctx)
-	gasTanks := 0
+	gasTanks := uint64(0)
 	for _, gt := range allGasTanks {
 		if gt.Provider == msg.Provider {
 			gasTanks++
 		}
 	}
-	if gasTanks >= 10 {
+	if gasTanks >= params.TankCreationLimit {
 		return sdkerrors.Wrapf(types.ErrorMaxLimitReachedByProvider, " %d gas tanks already created by the provider", 10)
 	}
 
@@ -102,8 +103,13 @@ func (k Keeper) ValidateMsgCreateGasTank(ctx sdk.Context, msg *types.MsgCreateGa
 		}
 	}
 
-	if !msg.GasDeposit.IsPositive() {
-		return sdkerrors.Wrapf(types.ErrorInvalidrequest, "deposit amount should be positive")
+	minDepositRequired, found := types.GetCoinByDenomFromCoins(msg.FeeDenom, params.MinimumGasDeposit)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrorInvalidrequest, " fee denom %s not allowed ", msg.FeeDenom)
+	}
+
+	if msg.GasDeposit.IsLT(minDepositRequired) {
+		return sdkerrors.Wrapf(types.ErrorInvalidrequest, "minimum required deposit is %s", minDepositRequired.String())
 	}
 
 	return nil
@@ -172,8 +178,8 @@ func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthor
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
-	if len(msg.Actors) > 5 {
-		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "only 5 actors can be authorized")
+	if len(msg.Actors) > types.MaximumAuthorizedActorsLimit {
+		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "maximum %d actors can be authorized", types.MaximumAuthorizedActorsLimit)
 	}
 
 	for _, actor := range msg.Actors {
