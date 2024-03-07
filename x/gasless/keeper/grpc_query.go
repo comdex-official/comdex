@@ -222,7 +222,7 @@ func (k Querier) GasConsumersByGasTankID(c context.Context, req *types.QueryGasC
 	}, nil
 }
 
-func (k Querier) GasTankIdsForAllTXC(c context.Context, req *types.QueryGasTankIdsForAllTXC) (*types.QueryGasTankIdsForAllTXCResponse, error) {
+func (k Querier) GasTankIdsForAllTXC(c context.Context, _ *types.QueryGasTankIdsForAllTXC) (*types.QueryGasTankIdsForAllTXCResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	txToGtids := []*types.TxGTIDs{}
 	allTxGtids := k.GetAllTxGTIDs(ctx)
