@@ -108,7 +108,7 @@ func (s *KeeperTestSuite) CreateNewGasTank(
 	maxFeeUsagePerConsumer sdkmath.Int,
 	txsAllowed, contractsAllowed []string,
 	deposit string,
-) uint64 {
+) types.GasTank {
 	parsedDepositCoin := utils.ParseCoin(deposit)
 	s.fundAddr(provider, sdk.NewCoins(parsedDepositCoin))
 
@@ -152,5 +152,5 @@ func (s *KeeperTestSuite) CreateNewGasTank(
 		s.Require().Equal(tank.Id, txGtids.GasTankIds[len(txGtids.GasTankIds)-1])
 	}
 
-	return tank.Id
+	return tank
 }

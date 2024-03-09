@@ -178,6 +178,7 @@ func (k Keeper) ValidateMsgAuthorizeActors(ctx sdk.Context, msg *types.MsgAuthor
 		return sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider")
 	}
 
+	msg.Actors = types.RemoveDuplicates(msg.Actors)
 	if len(msg.Actors) > types.MaximumAuthorizedActorsLimit {
 		return sdkerrors.Wrapf(errors.ErrInvalidRequest, "maximum %d actors can be authorized", types.MaximumAuthorizedActorsLimit)
 	}
