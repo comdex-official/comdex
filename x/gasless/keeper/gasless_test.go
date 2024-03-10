@@ -791,3 +791,113 @@ func (s *KeeperTestSuite) TestUpdateGasConsumerLimit() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestConsumerUpdateWhenGasTankUpdate() {
+	provider1 := s.addr(1)
+	tank1 := s.CreateNewGasTank(provider1, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{}, "100000000ucmdx")
+
+	// unblocking consumer, so that a new consumer can be created with default values
+	consumer1 := s.addr(11)
+	c, err := s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer1))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer2 := s.addr(12)
+	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer2))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer3 := s.addr(13)
+	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer3))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	_, err = s.keeper.UpdateGasTankConfig(s.ctx, types.NewMsgUpdateGasTankConfig(
+		tank1.Id, provider1, sdk.NewInt(33000), 250, sdk.NewInt(120000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{},
+	))
+	s.Require().NoError(err)
+
+	tank1, found := s.keeper.GetGasTank(s.ctx, tank1.Id)
+	s.Require().True(found)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer2)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer3)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	_, err = s.keeper.UpdateGasConsumerLimit(s.ctx, types.NewMsgUpdateGasConsumerLimit(
+		tank1.Id, provider1, consumer1, 57, sdk.NewInt(9075412),
+	))
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
+	s.Require().True(found)
+
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+
+	tank1, found = s.keeper.GetGasTank(s.ctx, tank1.Id)
+	s.Require().True(found)
+
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().NotEqual(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(57), c.Consumption[tank1.Id].TotalTxsAllowed)
+
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().NotEqual(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.NewInt(9075412)), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	_, err = s.keeper.UpdateGasTankConfig(s.ctx, types.NewMsgUpdateGasTankConfig(
+		tank1.Id, provider1, sdk.NewInt(34000), 150, sdk.NewInt(110000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{},
+	))
+	s.Require().NoError(err)
+
+	tank1, found = s.keeper.GetGasTank(s.ctx, tank1.Id)
+	s.Require().True(found)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer2)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+
+	c, found = s.keeper.GetGasConsumer(s.ctx, consumer3)
+	s.Require().True(found)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+}
