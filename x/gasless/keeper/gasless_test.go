@@ -650,3 +650,144 @@ func (s *KeeperTestSuite) TestUnblockConsumer() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestUpdateGasConsumerLimit() {
+	provider1 := s.addr(1)
+	tank1 := s.CreateNewGasTank(provider1, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{}, "100000000ucmdx")
+	actors := []sdk.AccAddress{s.addr(2), s.addr(3), s.addr(4)}
+	s.keeper.AuthorizeActors(s.ctx, types.NewMsgAuthorizeActors(tank1.Id, provider1, actors))
+
+	provider2 := s.addr(5)
+	inactiveTank := s.CreateNewGasTank(provider2, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgCreatePool"}, []string{}, "100000000ucmdx")
+	inactiveTank.IsActive = false
+	s.keeper.SetGasTank(s.ctx, inactiveTank)
+
+	// unblocking consumer, so that a new consumer can be created with default values
+	consumer1 := s.addr(6)
+	c, err := s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[0], consumer1))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer2 := s.addr(7)
+	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[1], consumer2))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer3 := s.addr(8)
+	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[2], consumer3))
+	s.Require().NoError(err)
+	s.Require().False(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	testCases := []struct {
+		Name   string
+		Msg    types.MsgUpdateGasConsumerLimit
+		ExpErr error
+	}{
+		{
+			Name: "error invalid gas tank ID",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				12, provider1, consumer1, 12, sdk.NewInt(1234),
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", 12),
+		},
+		{
+			Name: "error inactive tank",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				inactiveTank.Id, provider1, consumer1, 12, sdk.NewInt(1234),
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive"),
+		},
+		{
+			Name: "error unauthorized provider",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider2, consumer1, 12, sdk.NewInt(1234),
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized provider"),
+		},
+		{
+			Name: "error total txs allowed should be positive",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer1, 0, sdk.NewInt(1234),
+			),
+			ExpErr: sdkerrors.Wrap(types.ErrorInvalidrequest, "total txs allowed must not be 0"),
+		},
+		{
+			Name: "error total fee consumption allowed should be positive",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer1, 69, sdk.NewInt(0),
+			),
+			ExpErr: sdkerrors.Wrapf(types.ErrorInvalidrequest, "total fee consumption allowed should be positive"),
+		},
+		{
+			Name: "success consumer limit update 1",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer1, 16, sdk.NewInt(9876),
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success consumer limit update 2",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer1, 23, sdk.NewInt(45687),
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success consumer limit update 3",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer2, 57, sdk.NewInt(9075412),
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success consumer limit update 4",
+			Msg: *types.NewMsgUpdateGasConsumerLimit(
+				tank1.Id, provider1, consumer3, 57, sdk.NewInt(9075412),
+			),
+			ExpErr: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			resp, err := s.keeper.UpdateGasConsumerLimit(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+
+				s.Require().IsType(types.GasConsumer{}, resp)
+
+				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
+				s.Require().True(found)
+
+				s.Require().False(consumer.Consumption[tc.Msg.GasTankId].IsBlocked)
+
+				tank, found := s.keeper.GetGasTank(s.ctx, tc.Msg.GasTankId)
+				s.Require().True(found)
+
+				s.Require().Equal(uint64(0), consumer.Consumption[tc.Msg.GasTankId].TotalTxsMade)
+				s.Require().NotEqual(tank.MaxTxsCountPerConsumer, consumer.Consumption[tc.Msg.GasTankId].TotalTxsAllowed)
+				s.Require().Equal(tc.Msg.TotalTxsAllowed, consumer.Consumption[tc.Msg.GasTankId].TotalTxsAllowed)
+
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, sdk.ZeroInt()), consumer.Consumption[tc.Msg.GasTankId].TotalFeesConsumed)
+				s.Require().NotEqual(sdk.NewCoin(tank.FeeDenom, tank.MaxFeeUsagePerConsumer), consumer.Consumption[tc.Msg.GasTankId].TotalFeeConsumptionAllowed)
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, tc.Msg.TotalFeeConsumptionAllowed), consumer.Consumption[tc.Msg.GasTankId].TotalFeeConsumptionAllowed)
+			}
+		})
+	}
+}
