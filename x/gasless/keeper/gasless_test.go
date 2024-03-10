@@ -426,3 +426,227 @@ func (s *KeeperTestSuite) TestUpdateGasTankConfig() {
 		})
 	}
 }
+
+func (s *KeeperTestSuite) TestBlockConsumer() {
+	provider1 := s.addr(1)
+	tank1 := s.CreateNewGasTank(provider1, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{}, "100000000ucmdx")
+	actors := []sdk.AccAddress{s.addr(2), s.addr(3), s.addr(4)}
+	s.keeper.AuthorizeActors(s.ctx, types.NewMsgAuthorizeActors(tank1.Id, provider1, actors))
+
+	provider2 := s.addr(5)
+	inactiveTank := s.CreateNewGasTank(provider2, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgCreatePool"}, []string{}, "100000000ucmdx")
+	inactiveTank.IsActive = false
+	s.keeper.SetGasTank(s.ctx, inactiveTank)
+
+	consumer1 := s.addr(6)
+	consumer2 := s.addr(7)
+	consumer3 := s.addr(8)
+
+	testCases := []struct {
+		Name   string
+		Msg    types.MsgBlockConsumer
+		ExpErr error
+	}{
+		{
+			Name: "error invalid gas tank ID",
+			Msg: *types.NewMsgBlockConsumer(
+				12, provider1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", 12),
+		},
+		{
+			Name: "error inactive tank",
+			Msg: *types.NewMsgBlockConsumer(
+				inactiveTank.Id, provider1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive"),
+		},
+		{
+			Name: "error unauthorized actor",
+			Msg: *types.NewMsgBlockConsumer(
+				tank1.Id, consumer1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor"),
+		},
+		{
+			Name: "success provider consumer block",
+			Msg: *types.NewMsgBlockConsumer(
+				tank1.Id, provider1, consumer1,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer block 1",
+			Msg: *types.NewMsgBlockConsumer(
+				tank1.Id, actors[0], consumer1,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer block 2",
+			Msg: *types.NewMsgBlockConsumer(
+				tank1.Id, actors[1], consumer2,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer block 3",
+			Msg: *types.NewMsgBlockConsumer(
+				tank1.Id, actors[2], consumer3,
+			),
+			ExpErr: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			resp, err := s.keeper.BlockConsumer(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+
+				s.Require().IsType(types.GasConsumer{}, resp)
+
+				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
+				s.Require().True(found)
+
+				s.Require().True(consumer.Consumption[tc.Msg.GasTankId].IsBlocked)
+
+				tank, found := s.keeper.GetGasTank(s.ctx, tc.Msg.GasTankId)
+				s.Require().True(found)
+
+				s.Require().Equal(tank.MaxTxsCountPerConsumer, consumer.Consumption[tc.Msg.GasTankId].TotalTxsAllowed)
+				s.Require().Equal(uint64(0), consumer.Consumption[tc.Msg.GasTankId].TotalTxsMade)
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, tank.MaxFeeUsagePerConsumer), consumer.Consumption[tc.Msg.GasTankId].TotalFeeConsumptionAllowed)
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, sdk.ZeroInt()), consumer.Consumption[tc.Msg.GasTankId].TotalFeesConsumed)
+			}
+		})
+	}
+
+}
+
+func (s *KeeperTestSuite) TestUnblockConsumer() {
+	provider1 := s.addr(1)
+	tank1 := s.CreateNewGasTank(provider1, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{}, "100000000ucmdx")
+	actors := []sdk.AccAddress{s.addr(2), s.addr(3), s.addr(4)}
+	s.keeper.AuthorizeActors(s.ctx, types.NewMsgAuthorizeActors(tank1.Id, provider1, actors))
+
+	provider2 := s.addr(5)
+	inactiveTank := s.CreateNewGasTank(provider2, "ucmdx", sdkmath.NewInt(1000), 10, sdkmath.NewInt(1000000), []string{"/comdex.liquidity.v1beta1.MsgCreatePool"}, []string{}, "100000000ucmdx")
+	inactiveTank.IsActive = false
+	s.keeper.SetGasTank(s.ctx, inactiveTank)
+
+	consumer1 := s.addr(6)
+	c, err := s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[0], consumer1))
+	s.Require().NoError(err)
+	s.Require().True(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer2 := s.addr(7)
+	c, err = s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[1], consumer2))
+	s.Require().NoError(err)
+	s.Require().True(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	consumer3 := s.addr(8)
+	c, err = s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[2], consumer3))
+	s.Require().NoError(err)
+	s.Require().True(c.Consumption[tank1.Id].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[tank1.Id].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumption[tank1.Id].TotalTxsMade)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, tank1.MaxFeeUsagePerConsumer), c.Consumption[tank1.Id].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewCoin(tank1.FeeDenom, sdk.ZeroInt()), c.Consumption[tank1.Id].TotalFeesConsumed)
+
+	testCases := []struct {
+		Name   string
+		Msg    types.MsgUnblockConsumer
+		ExpErr error
+	}{
+		{
+			Name: "error invalid gas tank ID",
+			Msg: *types.NewMsgUnblockConsumer(
+				12, provider1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrNotFound, "gas tank with id %d not found", 12),
+		},
+		{
+			Name: "error inactive tank",
+			Msg: *types.NewMsgUnblockConsumer(
+				inactiveTank.Id, provider1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrInvalidRequest, "gas tank inactive"),
+		},
+		{
+			Name: "error unauthorized actor",
+			Msg: *types.NewMsgUnblockConsumer(
+				tank1.Id, consumer1, consumer1,
+			),
+			ExpErr: sdkerrors.Wrapf(errors.ErrUnauthorized, "unauthorized actor"),
+		},
+		{
+			Name: "success provider consumer unblock",
+			Msg: *types.NewMsgUnblockConsumer(
+				tank1.Id, provider1, consumer1,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer unblock 1",
+			Msg: *types.NewMsgUnblockConsumer(
+				tank1.Id, actors[0], consumer1,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer unblock 2",
+			Msg: *types.NewMsgUnblockConsumer(
+				tank1.Id, actors[0], consumer2,
+			),
+			ExpErr: nil,
+		},
+		{
+			Name: "success authorized consumer unblock 3",
+			Msg: *types.NewMsgUnblockConsumer(
+				tank1.Id, actors[0], consumer3,
+			),
+			ExpErr: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.Name, func() {
+			resp, err := s.keeper.UnblockConsumer(s.ctx, &tc.Msg)
+			if tc.ExpErr != nil {
+				s.Require().Error(err)
+				s.Require().EqualError(err, tc.ExpErr.Error())
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(resp)
+
+				s.Require().IsType(types.GasConsumer{}, resp)
+
+				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
+				s.Require().True(found)
+
+				s.Require().False(consumer.Consumption[tc.Msg.GasTankId].IsBlocked)
+
+				tank, found := s.keeper.GetGasTank(s.ctx, tc.Msg.GasTankId)
+				s.Require().True(found)
+
+				s.Require().Equal(tank.MaxTxsCountPerConsumer, consumer.Consumption[tc.Msg.GasTankId].TotalTxsAllowed)
+				s.Require().Equal(uint64(0), consumer.Consumption[tc.Msg.GasTankId].TotalTxsMade)
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, tank.MaxFeeUsagePerConsumer), consumer.Consumption[tc.Msg.GasTankId].TotalFeeConsumptionAllowed)
+				s.Require().Equal(sdk.NewCoin(tank.FeeDenom, sdk.ZeroInt()), consumer.Consumption[tc.Msg.GasTankId].TotalFeesConsumed)
+			}
+		})
+	}
+}
