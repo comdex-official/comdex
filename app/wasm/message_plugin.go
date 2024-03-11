@@ -2,6 +2,7 @@ package wasm
 
 import (
 	"encoding/json"
+
 	errorsmod "cosmossdk.io/errors"
 
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
@@ -19,21 +20,22 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	gaslessKeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	tokenfactorykeeper "github.com/comdex-official/comdex/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
-	tokenfactorykeeper "github.com/comdex-official/comdex/x/tokenfactory/keeper"
 )
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper,
-	bankkeeper bankkeeper.Keeper, tokenfactorykeeper tokenfactorykeeper.Keeper,
+	bankkeeper bankkeeper.Keeper, tokenfactorykeeper tokenfactorykeeper.Keeper, gaslesskeeper gaslessKeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
@@ -50,6 +52,7 @@ func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewa
 			liquiditykeeper:    liquiditykeeper,
 			bankkeeper:         bankkeeper,
 			tokenfactorykeeper: tokenfactorykeeper,
+			gaslesskeeper:      gaslesskeeper,
 		}
 	}
 }
@@ -68,6 +71,7 @@ type CustomMessenger struct {
 	liquiditykeeper    liquidityKeeper.Keeper
 	bankkeeper         bankkeeper.Keeper
 	tokenfactorykeeper tokenfactorykeeper.Keeper
+	gaslesskeeper      gaslessKeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -773,7 +777,6 @@ func PerformCreateDenom(f tokenfactorykeeper.Keeper, b bankkeeper.Keeper, ctx sd
 
 	return resp.Marshal()
 }
-
 
 // mintTokens mints tokens of a specified denom to an address.
 func (m *CustomMessenger) mintTokens(ctx sdk.Context, contractAddr sdk.AccAddress, mint *bindings.MintTokens) ([]sdk.Event, [][]byte, error) {

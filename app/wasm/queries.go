@@ -2,9 +2,11 @@ package wasm
 
 import (
 	"fmt"
+
 	assetKeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
 	esmKeeper "github.com/comdex-official/comdex/x/esm/keeper"
+	gaslessKeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	lendKeeper "github.com/comdex-official/comdex/x/lend/keeper"
 	liquidationKeeper "github.com/comdex-official/comdex/x/liquidation/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
@@ -35,6 +37,7 @@ type QueryPlugin struct {
 	marketKeeper       *marketKeeper.Keeper
 	bankKeeper         bankkeeper.Keeper
 	tokenFactoryKeeper *tokenfactorykeeper.Keeper
+	gaslessKeeper      *gaslessKeeper.Keeper
 }
 
 func NewQueryPlugin(
@@ -51,6 +54,7 @@ func NewQueryPlugin(
 	marketKeeper *marketKeeper.Keeper,
 	bankkeeper bankkeeper.Keeper,
 	tokenfactorykeeper *tokenfactorykeeper.Keeper,
+	gaslessKeeper *gaslessKeeper.Keeper,
 ) *QueryPlugin {
 	return &QueryPlugin{
 		assetKeeper:        assetKeeper,
@@ -66,6 +70,7 @@ func NewQueryPlugin(
 		marketKeeper:       marketKeeper,
 		bankKeeper:         bankkeeper,
 		tokenFactoryKeeper: tokenfactorykeeper,
+		gaslessKeeper:      gaslessKeeper,
 	}
 }
 
