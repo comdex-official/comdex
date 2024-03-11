@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -19,6 +20,8 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgBlockConsumer{}, "comdex/gasless/MsgBlockConsumer", nil)
 	cdc.RegisterConcrete(&MsgUnblockConsumer{}, "comdex/gasless/MsgUnblockConsumer", nil)
 	cdc.RegisterConcrete(&MsgUpdateGasConsumerLimit{}, "comdex/gasless/MsgUpdateGasConsumerLimit", nil)
+	cdc.RegisterConcrete(&Params{}, "comdex/gasless/Params", nil)
+	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "comdex/gasless/MsgUpdateParams")
 }
 
 // RegisterInterfaces registers the x/gasless interfaces types with the
@@ -37,6 +40,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgBlockConsumer{},
 		&MsgUnblockConsumer{},
 		&MsgUpdateGasConsumerLimit{},
+		&MsgUpdateParams{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

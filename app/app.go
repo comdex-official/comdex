@@ -971,6 +971,7 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		&app.WasmKeeper,
+		govModAddress,
 	)
 
 	// ICQ Keeper

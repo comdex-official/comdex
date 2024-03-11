@@ -25,6 +25,7 @@ type Keeper struct {
 	accountKeeper expected.AccountKeeper
 	bankKeeper    expected.BankKeeper
 	wasmKeeper    *wasmkeeper.Keeper
+	authority     string
 }
 
 // NewKeeper creates a new gasless Keeper instance.
@@ -36,6 +37,7 @@ func NewKeeper(
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
 	wasmKeeper *wasmkeeper.Keeper,
+	authority string,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
@@ -49,6 +51,7 @@ func NewKeeper(
 		accountKeeper:     accountKeeper,
 		bankKeeper:        bankKeeper,
 		wasmKeeper:        wasmKeeper,
+		authority:         authority,
 	}
 }
 
