@@ -91,7 +91,8 @@ func TestDenomAdmin(t *testing.T) {
 		&app.LiquidityKeeper,
 		&app.MarketKeeper,
 		app.BankKeeper,
-		&app.TokenFactoryKeeper)
+		&app.TokenFactoryKeeper,
+		&app.GaslessKeeper)
 
 	testCases := []struct {
 		name        string
