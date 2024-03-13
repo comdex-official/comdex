@@ -493,17 +493,20 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
 	// for debt Auction
-	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
-		// net = 200 debtThreshold = 500 , lotSize = 100
+	// code update for v14 upgrade
+	// implement logic for multiple lots of debt auction at once
+	// previous code:
+	// if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction
+	// net = 200 debtThreshold = 500 , lotSize = 100
+
+	lots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
+	if lots >= 1 {
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
-		if err != nil {
-			return err
-		}
-		auctionLookupTable.IsAuctionActive = true
-		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
-		if err1 != nil {
-			return err1
+		for i := int64(1); i <= lots; i++ {
+			err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

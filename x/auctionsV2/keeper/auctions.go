@@ -431,7 +431,8 @@ func (k Keeper) CloseEnglishAuction(ctx sdk.Context, englishAuction types.Auctio
 			return types.ErrAuctionLookupTableNotFound
 		}
 
-		auctionLookupTable.IsAuctionActive = false
+		// for v14 upgrade
+		// auctionLookupTable.IsAuctionActive = false
 		err = k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
 		if err != nil {
 			return err
