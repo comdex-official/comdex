@@ -16,4 +16,5 @@ var (
 	ErrorInvalidAppID                         = errors.Register(ModuleName, 1207, "app id can not be zero")
 	ErrorInvalidAssetID                       = errors.Register(ModuleName, 1208, "asset id can not be zero")
 	ErrorInvalidFrom                          = errors.Register(ModuleName, 1209, "invalid from")
+	ErrorInvalidDenom                         = errors.Register(ModuleName, 1210, "invalid denom, should be uharbor")
 )

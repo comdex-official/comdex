@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/tokenmint/types"
 )
@@ -25,6 +26,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		txMint(),
+		txBurn(),
 	)
 
 	return cmd
@@ -50,6 +52,34 @@ func txMint() *cobra.Command {
 				return err
 			}
 			msg := types.NewMsgMintNewTokensRequest(ctx.GetFromAddress().String(), appID, assetID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+// Token burn txs cmd.
+func txBurn() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "tokenburn [app_id] [coins]",
+		Short: "burn harbor token",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+			burnCoins, err := sdk.ParseCoinNormalized(args[1])
+			if err != nil {
+				return fmt.Errorf("invalid burn coins: %w", err)
+			}
+			msg := types.NewMsgBurnHarborTokensRequest(ctx.GetFromAddress().String(), appID, burnCoins)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
