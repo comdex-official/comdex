@@ -499,10 +499,10 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	// if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction
 	// net = 200 debtThreshold = 500 , lotSize = 100
 
-	lots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
-	if lots >= 1 {
+	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
+		lots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		for i := int64(1); i <= lots; i++ {
+		for i := int64(0); i <= lots; i++ {
 			err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
 			if err != nil {
 				return err
