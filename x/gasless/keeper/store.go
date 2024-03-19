@@ -179,22 +179,28 @@ func (k Keeper) SetGasConsumer(ctx sdk.Context, gasConsumer types.GasConsumer) {
 	store.Set(types.GetGasConsumerKey(sdk.MustAccAddressFromBech32(gasConsumer.Consumer)), bz)
 }
 
-func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress, gasTank types.GasTank) types.GasConsumer {
+func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress, gasTank types.GasTank) (gasConsumer types.GasConsumer, consumptionIndex uint64) {
 	gasConsumer, found := k.GetGasConsumer(ctx, consumer)
 	if !found {
 		gasConsumer = types.NewGasConsumer(consumer)
 	}
-	if gasConsumer.Consumption == nil {
-		gasConsumer.Consumption = make(map[uint64]*types.ConsumptionDetail)
+
+	consumptionLength := uint64(0)
+	for consumptionIndex, consumption := range gasConsumer.Consumption {
+		if consumption.GasTankId == gasTank.Id {
+			return gasConsumer, uint64(consumptionIndex)
+		}
+		consumptionLength++
 	}
-	if _, ok := gasConsumer.Consumption[gasTank.Id]; !ok {
-		gasConsumer.Consumption[gasTank.Id] = types.NewConsumptionDetail(
-			gasTank.MaxTxsCountPerConsumer,
-			sdk.NewCoin(gasTank.FeeDenom, gasTank.MaxFeeUsagePerConsumer),
-		)
-		k.SetGasConsumer(ctx, gasConsumer)
-	}
-	return gasConsumer
+
+	gasConsumer.Consumption = append(gasConsumer.Consumption, types.NewConsumptionDetail(
+		gasTank.Id,
+		gasTank.MaxTxsCountPerConsumer,
+		gasTank.MaxFeeUsagePerConsumer,
+	))
+	k.SetGasConsumer(ctx, gasConsumer)
+	// eg. if length of existing consumption is 2, so after adding new consumption the index of appended consuption will also be 2 since sequence begins from 0
+	return gasConsumer, consumptionLength
 }
 
 func (k Keeper) AddToTxGtids(ctx sdk.Context, txs, contracts []string, gtid uint64) {
@@ -250,14 +256,13 @@ func (k Keeper) RemoveFromTxGtids(ctx sdk.Context, txs, contracts []string, gtid
 func (k Keeper) UpdateConsumerAllowance(ctx sdk.Context, gasTank types.GasTank) {
 	allConsumers := k.GetAllGasConsumers(ctx)
 	for _, consumer := range allConsumers {
-		if consumer.Consumption == nil {
-			continue
+		for index, consumption := range consumer.Consumption {
+			if consumption.GasTankId == gasTank.Id {
+				consumer.Consumption[index].TotalTxsAllowed = gasTank.MaxTxsCountPerConsumer
+				consumer.Consumption[index].TotalFeeConsumptionAllowed = gasTank.MaxFeeUsagePerConsumer
+				k.SetGasConsumer(ctx, consumer)
+				break
+			}
 		}
-		if _, ok := consumer.Consumption[gasTank.Id]; !ok {
-			continue
-		}
-		consumer.Consumption[gasTank.Id].TotalTxsAllowed = gasTank.MaxTxsCountPerConsumer
-		consumer.Consumption[gasTank.Id].TotalFeeConsumptionAllowed = sdk.NewCoin(gasTank.FeeDenom, gasTank.MaxFeeUsagePerConsumer)
-		k.SetGasConsumer(ctx, consumer)
 	}
 }

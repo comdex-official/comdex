@@ -65,19 +65,21 @@ func (k Keeper) CanGasTankBeUsedAsSource(ctx sdk.Context, gtid uint64, consumer 
 		return gasTank, false, sdkerrors.Wrapf(types.ErrorFeeConsumptionFailure, "funds insufficient in gas reserve tank")
 	}
 
-	// if there is no consumption for the consumer, indicates that consumer is new and 1st time visitor
-	// and the consumer is considered as valid and gas tank can be used as fee source
-	if consumer.Consumption == nil {
-		return gasTank, true, nil
+	found = false
+	consumptionIndex := 0
+	for index, consumption := range consumer.Consumption {
+		if consumption.GasTankId == gasTank.Id {
+			consumptionIndex = index
+			found = true
+		}
 	}
-
 	// no need to check the consumption usage since there is no key available with given gas tank id
 	// i.e the consumer has never used this gas reserve before and the first time visitor for the given gas tank
-	if _, ok := consumer.Consumption[gasTank.Id]; !ok {
+	if !found {
 		return gasTank, true, nil
 	}
 
-	consumptionDetails := consumer.Consumption[gasTank.Id]
+	consumptionDetails := consumer.Consumption[consumptionIndex]
 
 	// consumer is blocked by the gas tank
 	if consumptionDetails.IsBlocked {
@@ -91,8 +93,8 @@ func (k Keeper) CanGasTankBeUsedAsSource(ctx sdk.Context, gtid uint64, consumer 
 
 	// if total fees consumed by the consumer is more than or equal to the allowed consumption
 	// i.e consumer has exhausted its fee limit and hence is not eligible for the given tank
-	totalFeeConsumption := consumptionDetails.TotalFeesConsumed.Add(fee)
-	if totalFeeConsumption.IsGTE(consumptionDetails.TotalFeeConsumptionAllowed) {
+	totalFeeConsumption := consumptionDetails.TotalFeesConsumed.Add(fee.Amount)
+	if totalFeeConsumption.GTE(consumptionDetails.TotalFeeConsumptionAllowed) {
 		return gasTank, false, sdkerrors.Wrapf(types.ErrorFeeConsumptionFailure, "exhausted total fee usage or pending fee limit insufficient for tx")
 	}
 
@@ -164,36 +166,62 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 	}
 
 	// update the consumption and usage details of the consumer
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, originalFeePayer, gasTank)
-	gasConsumer.Consumption[gasTank.Id].TotalTxsMade = gasConsumer.Consumption[gasTank.Id].TotalTxsMade + 1
-	gasConsumer.Consumption[gasTank.Id].TotalFeesConsumed = gasConsumer.Consumption[gasTank.Id].TotalFeesConsumed.Add(fee)
+	gasConsumer, consumptionIndex := k.GetOrCreateGasConsumer(ctx, originalFeePayer, gasTank)
+	gasConsumer.Consumption[consumptionIndex].TotalTxsMade = gasConsumer.Consumption[consumptionIndex].TotalTxsMade + 1
+	gasConsumer.Consumption[consumptionIndex].TotalFeesConsumed = gasConsumer.Consumption[consumptionIndex].TotalFeesConsumed.Add(fee.Amount)
 
-	usage := gasConsumer.Consumption[gasTank.Id].Usage
+	usage := gasConsumer.Consumption[consumptionIndex].Usage
 	if isContract {
-		if usage.Contracts == nil {
-			usage.Contracts = make(map[string]*types.UsageDetails)
+		found := false
+		contractUsageIdentifierIndex := 0
+
+		for index, contractUsage := range usage.Contracts {
+			if contractUsage.UsageIdentifier == contractAddress {
+				found = true
+				contractUsageIdentifierIndex = index
+				break
+			}
 		}
-		if _, ok := usage.Contracts[contractAddress]; !ok {
-			usage.Contracts[contractAddress] = &types.UsageDetails{}
-		}
-		usage.Contracts[contractAddress].Details = append(usage.Contracts[contractAddress].Details, &types.UsageDetail{
+
+		usageDetail := types.UsageDetail{
 			Timestamp:   ctx.BlockTime(),
-			GasConsumed: fee,
-		})
+			GasConsumed: fee.Amount,
+		}
+
+		if !found {
+			usage.Contracts = append(usage.Contracts, &types.UsageDetails{
+				UsageIdentifier: contractAddress,
+				Details:         []*types.UsageDetail{},
+			})
+		}
+		usage.Contracts[contractUsageIdentifierIndex].Details = append(usage.Contracts[contractUsageIdentifierIndex].Details, &usageDetail)
 	} else {
-		if usage.Txs == nil {
-			usage.Txs = make(map[string]*types.UsageDetails)
+		found := false
+		messageTypeURLUsageIdentifierIndex := 0
+
+		for index, txType := range usage.Txs {
+			if txType.UsageIdentifier == msgTypeURL {
+				found = true
+				messageTypeURLUsageIdentifierIndex = index
+				break
+			}
 		}
-		if _, ok := usage.Txs[msgTypeURL]; !ok {
-			usage.Txs[msgTypeURL] = &types.UsageDetails{}
-		}
-		usage.Txs[msgTypeURL].Details = append(usage.Txs[msgTypeURL].Details, &types.UsageDetail{
+
+		usageDetail := types.UsageDetail{
 			Timestamp:   ctx.BlockTime(),
-			GasConsumed: fee,
-		})
+			GasConsumed: fee.Amount,
+		}
+
+		if !found {
+			usage.Txs = append(usage.Txs, &types.UsageDetails{
+				UsageIdentifier: msgTypeURL,
+				Details:         []*types.UsageDetail{},
+			})
+		}
+		usage.Txs[messageTypeURLUsageIdentifierIndex].Details = append(usage.Txs[messageTypeURLUsageIdentifierIndex].Details, &usageDetail)
 	}
 	// assign the updated usage and set it to the store
-	gasConsumer.Consumption[gasTank.Id].Usage = usage
+	gasConsumer.Consumption[consumptionIndex].Usage = usage
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	// shift the used gas tank at the end of all tanks, so that a different gas tank can be picked

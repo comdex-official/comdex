@@ -150,7 +150,7 @@ func NewGasConsumer(
 ) GasConsumer {
 	return GasConsumer{
 		Consumer:    consumer.String(),
-		Consumption: make(map[uint64]*ConsumptionDetail),
+		Consumption: []*ConsumptionDetail{},
 	}
 }
 

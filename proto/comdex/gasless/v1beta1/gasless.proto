@@ -2,7 +2,6 @@ syntax = "proto3";
 package comdex.gasless.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/comdex-official/comdex/x/gasless/types";
@@ -40,30 +39,32 @@ message GasTank {
 
 message UsageDetail {
     google.protobuf.Timestamp timestamp = 1 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
-    cosmos.base.v1beta1.Coin gas_consumed = 2 [(gogoproto.nullable) = false];
+    string gas_consumed = 2 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
 }
 
 message UsageDetails {
-    repeated UsageDetail details = 1;
+    string usage_identifier = 1;
+    repeated UsageDetail details = 2;
 }
 
 message Usage {
-    map<string, UsageDetails> txs = 1;
-    map<string, UsageDetails> contracts = 2;
+    repeated UsageDetails txs = 1;
+    repeated UsageDetails contracts = 2;
 }
 
 message ConsumptionDetail {
-    bool is_blocked = 1;
-    uint64 total_txs_allowed = 2;
-    uint64 total_txs_made = 3;
-    cosmos.base.v1beta1.Coin total_fee_consumption_allowed = 4 [(gogoproto.nullable) = false];
-    cosmos.base.v1beta1.Coin total_fees_consumed = 5 [(gogoproto.nullable) = false];
-    Usage usage = 6;
+    uint64 gas_tank_id = 1;
+    bool is_blocked = 2;
+    uint64 total_txs_allowed = 3;
+    uint64 total_txs_made = 4;
+    string total_fee_consumption_allowed = 5 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    string total_fees_consumed = 6 [(gogoproto.customtype) = "cosmossdk.io/math.Int", (gogoproto.nullable) = false];
+    Usage usage = 7;
 }
 
 message GasConsumer {
     string consumer = 1;
-    map<uint64, ConsumptionDetail> consumption = 2;
+    repeated ConsumptionDetail consumption = 2;
 }
 
 

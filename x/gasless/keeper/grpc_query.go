@@ -195,24 +195,21 @@ func (k Querier) GasConsumersByGasTankID(c context.Context, req *types.QueryGasC
 
 	allConsumers := k.GetAllGasConsumers(ctx)
 	for _, consumer := range allConsumers {
-		if consumer.Consumption == nil {
-			continue
+		for _, consumption := range consumer.Consumption {
+			if consumption.GasTankId == req.GasTankId {
+				overallFeesConsumed.Amount = overallFeesConsumed.Amount.Add(consumption.TotalFeesConsumed)
+				tankConsumers = append(tankConsumers, types.GasConsumersByGasTankIDResponse{
+					Consumer:                   consumer.Consumer,
+					IsBlocked:                  consumption.IsBlocked,
+					TotalTxsAllowed:            consumption.TotalTxsAllowed,
+					TotalTxsMade:               consumption.TotalTxsMade,
+					TotalFeeConsumptionAllowed: sdk.NewCoin(gt.FeeDenom, consumption.TotalFeeConsumptionAllowed),
+					TotalFeesConsumed:          sdk.NewCoin(gt.FeeDenom, consumption.TotalFeesConsumed),
+					Usage:                      consumption.Usage,
+				})
+				break
+			}
 		}
-		if _, ok := consumer.Consumption[req.GasTankId]; !ok {
-			continue
-		}
-
-		overallFeesConsumed.Amount = overallFeesConsumed.Amount.Add(consumer.Consumption[req.GasTankId].TotalFeesConsumed.Amount)
-
-		tankConsumers = append(tankConsumers, types.GasConsumersByGasTankIDResponse{
-			Consumer:                   consumer.Consumer,
-			IsBlocked:                  consumer.Consumption[req.GasTankId].IsBlocked,
-			TotalTxsAllowed:            consumer.Consumption[req.GasTankId].TotalTxsAllowed,
-			TotalTxsMade:               consumer.Consumption[req.GasTankId].TotalTxsMade,
-			TotalFeeConsumptionAllowed: consumer.Consumption[req.GasTankId].TotalFeeConsumptionAllowed,
-			TotalFeesConsumed:          consumer.Consumption[req.GasTankId].TotalFeesConsumed,
-			Usage:                      consumer.Consumption[req.GasTankId].Usage,
-		})
 	}
 
 	return &types.QueryGasConsumersByGasTankIDResponse{

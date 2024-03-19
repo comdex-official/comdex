@@ -385,8 +385,8 @@ func (k Keeper) BlockConsumer(ctx sdk.Context, msg *types.MsgBlockConsumer) (typ
 	}
 
 	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
-	gasConsumer.Consumption[msg.GasTankId].IsBlocked = true
+	gasConsumer, consumptionIndex := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	gasConsumer.Consumption[consumptionIndex].IsBlocked = true
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -434,8 +434,8 @@ func (k Keeper) UnblockConsumer(ctx sdk.Context, msg *types.MsgUnblockConsumer) 
 	}
 
 	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
-	gasConsumer.Consumption[msg.GasTankId].IsBlocked = false
+	gasConsumer, consumptionIndex := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	gasConsumer.Consumption[consumptionIndex].IsBlocked = false
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
@@ -489,11 +489,11 @@ func (k Keeper) UpdateGasConsumerLimit(ctx sdk.Context, msg *types.MsgUpdateGasC
 	}
 
 	gasTank, _ := k.GetGasTank(ctx, msg.GasTankId)
-	gasConsumer := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
-	if !gasConsumer.Consumption[msg.GasTankId].TotalFeeConsumptionAllowed.Amount.Equal(msg.TotalFeeConsumptionAllowed) ||
-		gasConsumer.Consumption[msg.GasTankId].TotalTxsAllowed != msg.TotalTxsAllowed {
-		gasConsumer.Consumption[msg.GasTankId].TotalFeeConsumptionAllowed.Amount = msg.TotalFeeConsumptionAllowed
-		gasConsumer.Consumption[msg.GasTankId].TotalTxsAllowed = msg.TotalTxsAllowed
+	gasConsumer, consumptionIndex := k.GetOrCreateGasConsumer(ctx, sdk.MustAccAddressFromBech32(msg.Consumer), gasTank)
+	if !gasConsumer.Consumption[consumptionIndex].TotalFeeConsumptionAllowed.Equal(msg.TotalFeeConsumptionAllowed) ||
+		gasConsumer.Consumption[consumptionIndex].TotalTxsAllowed != msg.TotalTxsAllowed {
+		gasConsumer.Consumption[consumptionIndex].TotalFeeConsumptionAllowed = msg.TotalFeeConsumptionAllowed
+		gasConsumer.Consumption[consumptionIndex].TotalTxsAllowed = msg.TotalTxsAllowed
 		k.SetGasConsumer(ctx, gasConsumer)
 	}
 

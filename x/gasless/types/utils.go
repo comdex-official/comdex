@@ -1,6 +1,7 @@
 package types
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"github.com/cometbft/cometbft/crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
@@ -107,18 +108,20 @@ func NewGasTankResponse(gasTank GasTank, balance sdk.Coin) GasTankResponse {
 }
 
 func NewConsumptionDetail(
-	txsAllowed uint64,
-	feeConsumptionAllowed sdk.Coin,
+	gasTankID uint64,
+	totalTxsAllowed uint64,
+	totalFeeConsumptionAllowed sdkmath.Int,
 ) *ConsumptionDetail {
 	return &ConsumptionDetail{
+		GasTankId:                  gasTankID,
 		IsBlocked:                  false,
-		TotalTxsAllowed:            txsAllowed,
+		TotalTxsAllowed:            totalTxsAllowed,
 		TotalTxsMade:               0,
-		TotalFeeConsumptionAllowed: feeConsumptionAllowed,
-		TotalFeesConsumed:          sdk.NewCoin(feeConsumptionAllowed.Denom, sdk.ZeroInt()),
+		TotalFeeConsumptionAllowed: totalFeeConsumptionAllowed,
+		TotalFeesConsumed:          sdk.ZeroInt(),
 		Usage: &Usage{
-			Txs:       make(map[string]*UsageDetails),
-			Contracts: make(map[string]*UsageDetails),
+			Txs:       []*UsageDetails{},
+			Contracts: []*UsageDetails{},
 		},
 	}
 }
