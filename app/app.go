@@ -1691,7 +1691,6 @@ func upgradeHandlers(upgradeInfo upgradetypes.Plan, a *App, storeUpgrades *store
 				commontypes.StoreKey,
 				auctionmoduleskiptypes.StoreKey,
 				tokenfactorytypes.ModuleName,
-				authtypes.FeeCollectorName,
 				gaslesstypes.ModuleName,
 			},
 		}
