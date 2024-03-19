@@ -191,10 +191,11 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 		if !found {
 			usage.Contracts = append(usage.Contracts, &types.UsageDetails{
 				UsageIdentifier: contractAddress,
-				Details:         []*types.UsageDetail{},
+				Details:         []*types.UsageDetail{&usageDetail},
 			})
+		} else {
+			usage.Contracts[contractUsageIdentifierIndex].Details = append(usage.Contracts[contractUsageIdentifierIndex].Details, &usageDetail)
 		}
-		usage.Contracts[contractUsageIdentifierIndex].Details = append(usage.Contracts[contractUsageIdentifierIndex].Details, &usageDetail)
 	} else {
 		found := false
 		messageTypeURLUsageIdentifierIndex := 0
@@ -215,10 +216,11 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 		if !found {
 			usage.Txs = append(usage.Txs, &types.UsageDetails{
 				UsageIdentifier: msgTypeURL,
-				Details:         []*types.UsageDetail{},
+				Details:         []*types.UsageDetail{&usageDetail},
 			})
+		} else {
+			usage.Txs[messageTypeURLUsageIdentifierIndex].Details = append(usage.Txs[messageTypeURLUsageIdentifierIndex].Details, &usageDetail)
 		}
-		usage.Txs[messageTypeURLUsageIdentifierIndex].Details = append(usage.Txs[messageTypeURLUsageIdentifierIndex].Details, &usageDetail)
 	}
 	// assign the updated usage and set it to the store
 	gasConsumer.Consumption[consumptionIndex].Usage = usage
