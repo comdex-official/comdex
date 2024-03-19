@@ -9,6 +9,7 @@ import (
 	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
@@ -26,6 +27,7 @@ func CreateUpgradeHandlerV14(
 	auctionkeeperskip auctionkeeperskip.Keeper,
 	lendKeeper lendkeeper.Keeper,
 	tokenfactorykeeper tokenfactorykeeper.Keeper,
+	accountKeeper authkeeper.AccountKeeper,
 
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
@@ -36,6 +38,11 @@ func CreateUpgradeHandlerV14(
 		if err != nil {
 			return vm, err
 		}
+		moduleAccI := accountKeeper.GetModuleAccount(ctx, authtypes.FeeCollectorName)
+		moduleAcc := moduleAccI.(*authtypes.ModuleAccount)
+		moduleAcc.Permissions = []string{authtypes.Burner}
+		accountKeeper.SetModuleAccount(ctx, moduleAcc)
+
 		ctx.Logger().Info("set common module params")
 		commonkeeper.SetParams(ctx, commontypes.DefaultParams())
 
