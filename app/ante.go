@@ -34,6 +34,7 @@ type HandlerOptions struct {
 	auctionkeeperskip auctionkeeperskip.Keeper
 
 	GaslessKeeper gaslesskeeper.Keeper
+	BankKeeper    gasless.BankKeeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {

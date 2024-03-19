@@ -1346,7 +1346,6 @@ func New(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeegrantKeeper,
 				SignModeHandler: encoding.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
@@ -1361,6 +1360,7 @@ func New(
 			TxEncoder:         encoding.TxConfig.TxEncoder(),
 			auctionkeeperskip: app.AuctionKeeperSkip,
 			GaslessKeeper:     app.GaslessKeeper,
+			BankKeeper:        app.BankKeeper,
 		},
 	)
 	if err != nil {
@@ -1606,7 +1606,7 @@ func (a *App) RegisterNodeService(clientCtx client.Context) {
 
 func (a *App) ModuleAccountsPermissions() map[string][]string {
 	return map[string][]string{
-		authtypes.FeeCollectorName:        nil,
+		authtypes.FeeCollectorName:        {authtypes.Burner},
 		distrtypes.ModuleName:             nil,
 		govtypes.ModuleName:               {authtypes.Burner},
 		ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
