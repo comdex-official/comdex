@@ -122,7 +122,6 @@ func (dfd DeductFeeDecorator) checkDeductFee(ctx sdk.Context, sdkTx sdk.Tx, fee 
 
 	// deduct the fees
 	if !fee.IsZero() {
-		fmt.Println(dfd.accountKeeper.GetModuleAddress(types.FeeCollectorName).String())
 		err := DeductFees(dfd.bankKeeper, ctx, deductFeesFromAcc, fee, dfd.gaslessKeeper.GetParams(ctx).FeeBurningPercentage)
 		if err != nil {
 			return err
@@ -159,7 +158,6 @@ func DeductFees(bankKeeper BankKeeper, ctx sdk.Context, acc types.AccountI, fees
 		return sdkerrors.Wrapf(errortypes.ErrInsufficientFunds, err.Error())
 	}
 
-	fmt.Println("burningFees - ", burningFees)
 	err = bankKeeper.BurnCoins(ctx, types.FeeCollectorName, burningFees)
 	if err != nil {
 		return sdkerrors.Wrapf(errortypes.ErrInsufficientFunds, err.Error())
