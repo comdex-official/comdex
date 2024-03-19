@@ -64,7 +64,7 @@ message ConsumptionDetail {
 
 message GasConsumer {
     string consumer = 1;
-    repeated ConsumptionDetail consumption = 2;
+    repeated ConsumptionDetail consumptions = 2;
 }
 
 

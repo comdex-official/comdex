@@ -513,7 +513,7 @@ func (s *KeeperTestSuite) TestBlockConsumer() {
 				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
 				s.Require().True(found)
 
-				for _, consumption := range consumer.Consumption {
+				for _, consumption := range consumer.Consumptions {
 					if consumption.GasTankId == tc.Msg.GasTankId {
 						s.Require().True(consumption.IsBlocked)
 
@@ -547,29 +547,29 @@ func (s *KeeperTestSuite) TestUnblockConsumer() {
 	consumer1 := s.addr(6)
 	c, err := s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[0], consumer1))
 	s.Require().NoError(err)
-	s.Require().True(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().True(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer2 := s.addr(7)
 	c, err = s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[1], consumer2))
 	s.Require().NoError(err)
-	s.Require().True(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().True(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer3 := s.addr(8)
 	c, err = s.keeper.BlockConsumer(s.ctx, types.NewMsgBlockConsumer(tank1.Id, actors[2], consumer3))
 	s.Require().NoError(err)
-	s.Require().True(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().True(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	testCases := []struct {
 		Name   string
@@ -642,7 +642,7 @@ func (s *KeeperTestSuite) TestUnblockConsumer() {
 				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
 				s.Require().True(found)
 
-				for _, consumption := range consumer.Consumption {
+				for _, consumption := range consumer.Consumptions {
 					if consumption.GasTankId == tc.Msg.GasTankId {
 						s.Require().False(consumption.IsBlocked)
 
@@ -675,29 +675,29 @@ func (s *KeeperTestSuite) TestUpdateGasConsumerLimit() {
 	consumer1 := s.addr(6)
 	c, err := s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[0], consumer1))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer2 := s.addr(7)
 	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[1], consumer2))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer3 := s.addr(8)
 	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, actors[2], consumer3))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	testCases := []struct {
 		Name   string
@@ -784,7 +784,7 @@ func (s *KeeperTestSuite) TestUpdateGasConsumerLimit() {
 				consumer, found := s.keeper.GetGasConsumer(s.ctx, sdk.MustAccAddressFromBech32(tc.Msg.Consumer))
 				s.Require().True(found)
 
-				for _, consumption := range consumer.Consumption {
+				for _, consumption := range consumer.Consumptions {
 					if consumption.GasTankId == tc.Msg.GasTankId {
 						s.Require().False(consumption.IsBlocked)
 
@@ -813,29 +813,29 @@ func (s *KeeperTestSuite) TestConsumerUpdateWhenGasTankUpdate() {
 	consumer1 := s.addr(11)
 	c, err := s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer1))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer2 := s.addr(12)
 	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer2))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	consumer3 := s.addr(13)
 	c, err = s.keeper.UnblockConsumer(s.ctx, types.NewMsgUnblockConsumer(tank1.Id, provider1, consumer3))
 	s.Require().NoError(err)
-	s.Require().False(c.Consumption[0].IsBlocked)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
+	s.Require().False(c.Consumptions[0].IsBlocked)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
 
 	_, err = s.keeper.UpdateGasTankConfig(s.ctx, types.NewMsgUpdateGasTankConfig(
 		tank1.Id, provider1, sdk.NewInt(33000), 250, sdk.NewInt(120000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{},
@@ -847,24 +847,24 @@ func (s *KeeperTestSuite) TestConsumerUpdateWhenGasTankUpdate() {
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer2)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer3)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	_, err = s.keeper.UpdateGasConsumerLimit(s.ctx, types.NewMsgUpdateGasConsumerLimit(
 		tank1.Id, provider1, consumer1, 57, sdk.NewInt(9075412),
@@ -872,18 +872,18 @@ func (s *KeeperTestSuite) TestConsumerUpdateWhenGasTankUpdate() {
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
 	s.Require().True(found)
 
-	s.Require().False(c.Consumption[0].IsBlocked)
+	s.Require().False(c.Consumptions[0].IsBlocked)
 
 	tank1, found = s.keeper.GetGasTank(s.ctx, tank1.Id)
 	s.Require().True(found)
 
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().NotEqual(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(uint64(57), c.Consumption[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().NotEqual(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(uint64(57), c.Consumptions[0].TotalTxsAllowed)
 
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().NotEqual(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
-	s.Require().Equal(sdk.NewInt(9075412), c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().NotEqual(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(sdk.NewInt(9075412), c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	_, err = s.keeper.UpdateGasTankConfig(s.ctx, types.NewMsgUpdateGasTankConfig(
 		tank1.Id, provider1, sdk.NewInt(34000), 150, sdk.NewInt(110000000), []string{"/comdex.liquidity.v1beta1.MsgLimitOrder"}, []string{},
@@ -895,22 +895,22 @@ func (s *KeeperTestSuite) TestConsumerUpdateWhenGasTankUpdate() {
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer1)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer2)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 
 	c, found = s.keeper.GetGasConsumer(s.ctx, consumer3)
 	s.Require().True(found)
-	s.Require().Equal(uint64(0), c.Consumption[0].TotalTxsMade)
-	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumption[0].TotalTxsAllowed)
-	s.Require().Equal(sdk.ZeroInt(), c.Consumption[0].TotalFeesConsumed)
-	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumption[0].TotalFeeConsumptionAllowed)
+	s.Require().Equal(uint64(0), c.Consumptions[0].TotalTxsMade)
+	s.Require().Equal(tank1.MaxTxsCountPerConsumer, c.Consumptions[0].TotalTxsAllowed)
+	s.Require().Equal(sdk.ZeroInt(), c.Consumptions[0].TotalFeesConsumed)
+	s.Require().Equal(tank1.MaxFeeUsagePerConsumer, c.Consumptions[0].TotalFeeConsumptionAllowed)
 }

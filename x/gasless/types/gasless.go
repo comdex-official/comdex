@@ -149,8 +149,8 @@ func NewGasConsumer(
 	consumer sdk.AccAddress,
 ) GasConsumer {
 	return GasConsumer{
-		Consumer:    consumer.String(),
-		Consumption: []*ConsumptionDetail{},
+		Consumer:     consumer.String(),
+		Consumptions: []*ConsumptionDetail{},
 	}
 }
 

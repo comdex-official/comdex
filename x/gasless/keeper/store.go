@@ -186,14 +186,14 @@ func (k Keeper) GetOrCreateGasConsumer(ctx sdk.Context, consumer sdk.AccAddress,
 	}
 
 	consumptionLength := uint64(0)
-	for consumptionIndex, consumption := range gasConsumer.Consumption {
+	for consumptionIndex, consumption := range gasConsumer.Consumptions {
 		if consumption.GasTankId == gasTank.Id {
 			return gasConsumer, uint64(consumptionIndex)
 		}
 		consumptionLength++
 	}
 
-	gasConsumer.Consumption = append(gasConsumer.Consumption, types.NewConsumptionDetail(
+	gasConsumer.Consumptions = append(gasConsumer.Consumptions, types.NewConsumptionDetail(
 		gasTank.Id,
 		gasTank.MaxTxsCountPerConsumer,
 		gasTank.MaxFeeUsagePerConsumer,
@@ -256,10 +256,10 @@ func (k Keeper) RemoveFromTxGtids(ctx sdk.Context, txs, contracts []string, gtid
 func (k Keeper) UpdateConsumerAllowance(ctx sdk.Context, gasTank types.GasTank) {
 	allConsumers := k.GetAllGasConsumers(ctx)
 	for _, consumer := range allConsumers {
-		for index, consumption := range consumer.Consumption {
+		for index, consumption := range consumer.Consumptions {
 			if consumption.GasTankId == gasTank.Id {
-				consumer.Consumption[index].TotalTxsAllowed = gasTank.MaxTxsCountPerConsumer
-				consumer.Consumption[index].TotalFeeConsumptionAllowed = gasTank.MaxFeeUsagePerConsumer
+				consumer.Consumptions[index].TotalTxsAllowed = gasTank.MaxTxsCountPerConsumer
+				consumer.Consumptions[index].TotalFeeConsumptionAllowed = gasTank.MaxFeeUsagePerConsumer
 				k.SetGasConsumer(ctx, consumer)
 				break
 			}

@@ -67,7 +67,7 @@ func (k Keeper) CanGasTankBeUsedAsSource(ctx sdk.Context, gtid uint64, consumer 
 
 	found = false
 	consumptionIndex := 0
-	for index, consumption := range consumer.Consumption {
+	for index, consumption := range consumer.Consumptions {
 		if consumption.GasTankId == gasTank.Id {
 			consumptionIndex = index
 			found = true
@@ -79,7 +79,7 @@ func (k Keeper) CanGasTankBeUsedAsSource(ctx sdk.Context, gtid uint64, consumer 
 		return gasTank, true, nil
 	}
 
-	consumptionDetails := consumer.Consumption[consumptionIndex]
+	consumptionDetails := consumer.Consumptions[consumptionIndex]
 
 	// consumer is blocked by the gas tank
 	if consumptionDetails.IsBlocked {
@@ -167,10 +167,10 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 
 	// update the consumption and usage details of the consumer
 	gasConsumer, consumptionIndex := k.GetOrCreateGasConsumer(ctx, originalFeePayer, gasTank)
-	gasConsumer.Consumption[consumptionIndex].TotalTxsMade = gasConsumer.Consumption[consumptionIndex].TotalTxsMade + 1
-	gasConsumer.Consumption[consumptionIndex].TotalFeesConsumed = gasConsumer.Consumption[consumptionIndex].TotalFeesConsumed.Add(fee.Amount)
+	gasConsumer.Consumptions[consumptionIndex].TotalTxsMade = gasConsumer.Consumptions[consumptionIndex].TotalTxsMade + 1
+	gasConsumer.Consumptions[consumptionIndex].TotalFeesConsumed = gasConsumer.Consumptions[consumptionIndex].TotalFeesConsumed.Add(fee.Amount)
 
-	usage := gasConsumer.Consumption[consumptionIndex].Usage
+	usage := gasConsumer.Consumptions[consumptionIndex].Usage
 	if isContract {
 		found := false
 		contractUsageIdentifierIndex := 0
@@ -223,7 +223,7 @@ func (k Keeper) GetFeeSource(ctx sdk.Context, sdkTx sdk.Tx, originalFeePayer sdk
 		}
 	}
 	// assign the updated usage and set it to the store
-	gasConsumer.Consumption[consumptionIndex].Usage = usage
+	gasConsumer.Consumptions[consumptionIndex].Usage = usage
 	k.SetGasConsumer(ctx, gasConsumer)
 
 	// shift the used gas tank at the end of all tanks, so that a different gas tank can be picked

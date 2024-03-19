@@ -195,7 +195,7 @@ func (k Querier) GasConsumersByGasTankID(c context.Context, req *types.QueryGasC
 
 	allConsumers := k.GetAllGasConsumers(ctx)
 	for _, consumer := range allConsumers {
-		for _, consumption := range consumer.Consumption {
+		for _, consumption := range consumer.Consumptions {
 			if consumption.GasTankId == req.GasTankId {
 				overallFeesConsumed.Amount = overallFeesConsumed.Amount.Add(consumption.TotalFeesConsumed)
 				tankConsumers = append(tankConsumers, types.GasConsumersByGasTankIDResponse{
