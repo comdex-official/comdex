@@ -23,6 +23,7 @@ const (
 
 var (
 	TypeDepositRequest                 = ModuleName + ":deposit"
+	TypeRefundRequest                  = ModuleName + ":refund"
 	AddCollectorLookupKey              = []byte{0x01}
 	AppIDToAssetCollectorMappingPrefix = []byte{0x03}
 	AppIDToAuctionMappingPrefix        = []byte{0x05}

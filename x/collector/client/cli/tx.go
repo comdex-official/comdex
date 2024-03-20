@@ -24,6 +24,7 @@ func GetTxCmd() *cobra.Command {
 	}
 	cmd.AddCommand(
 		txDeposit(),
+		txRefund(),
 	)
 	return cmd
 }
@@ -51,6 +52,28 @@ func txDeposit() *cobra.Command {
 			}
 
 			msg := types.NewMsgDeposit(ctx.GetFromAddress().String(), asset, appID)
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txRefund() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "refund",
+		Short: "refund cmst from collector to stAtom vault owners",
+		Long:  `This transaction is exclusively designed for refunding CMST tokens from the collector module. Its sole purpose is to facilitate refunds to stAtom vault owners`,
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgRefund(ctx.GetFromAddress().String())
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

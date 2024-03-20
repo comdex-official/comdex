@@ -41,3 +41,30 @@ func (msg *MsgDeposit) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
+
+func NewMsgRefund(addr string) *MsgRefund {
+	return &MsgRefund{
+		Addr: addr,
+	}
+}
+
+func (msg MsgRefund) Route() string { return ModuleName }
+func (msg MsgRefund) Type() string  { return TypeRefundRequest }
+
+func (msg *MsgRefund) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.GetAddr())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (msg *MsgRefund) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(msg.GetAddr())
+	return []sdk.AccAddress{addr}
+}
+
+func (msg *MsgRefund) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(msg)
+	return sdk.MustSortJSON(bz)
+}

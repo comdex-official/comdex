@@ -27,3 +27,20 @@ func (m msgServer) Deposit(goCtx context.Context, deposit *types.MsgDeposit) (*t
 
 	return &types.MsgDepositResponse{}, nil
 }
+
+func (m msgServer) Refund(goCtx context.Context, refund *types.MsgRefund) (*types.MsgRefundResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	counter := m.keeper.GetRefundCounterStatus(ctx)
+	if counter != 0 {
+		return nil, types.ErrorRefundCompleted
+	}
+
+	if err := m.keeper.Refund(ctx); err != nil {
+		return nil, err
+	}
+
+	m.keeper.SetRefundCounterStatus(ctx, counter+1)
+
+	return &types.MsgRefundResponse{}, nil
+}

@@ -9,6 +9,7 @@ option go_package = "github.com/comdex-official/comdex/x/collector/types";
 // Msg defines the Msg service.
 service Msg {
   rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+  rpc Refund(MsgRefund) returns (MsgRefundResponse);
 }
 
 message MsgDeposit {
@@ -18,3 +19,9 @@ message MsgDeposit {
 }
 
 message MsgDepositResponse {}
+
+message MsgRefund {
+  string                   addr = 1;
+}
+
+message MsgRefundResponse {}
