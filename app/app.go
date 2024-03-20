@@ -694,12 +694,12 @@ func New(
 	app.PacketForwardKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
 		app.keys[packetforwardtypes.StoreKey],
-		app.GetSubspace(packetforwardtypes.ModuleName),
 		app.IbcTransferKeeper, // Will be zero-value here. Reference is set later on with SetTransferKeeper.
 		app.IbcKeeper.ChannelKeeper,
 		app.DistrKeeper,
 		app.BankKeeper,
 		app.IbcKeeper.ChannelKeeper,
+		govModAddress,
 	)
 
 	app.IbcTransferKeeper = ibctransferkeeper.NewKeeper(
@@ -1152,7 +1152,7 @@ func New(
 		gasless.NewAppModule(app.cdc, app.GaslessKeeper, app.AccountKeeper, app.BankKeeper),
 		ibchooks.NewAppModule(app.AccountKeeper),
 		icq.NewAppModule(*app.ICQKeeper),
-		packetforward.NewAppModule(app.PacketForwardKeeper),
+		packetforward.NewAppModule(app.PacketForwardKeeper, app.GetSubspace(packetforwardtypes.ModuleName)),
 		auctionmoduleskip.NewAppModule(app.cdc, app.AuctionKeeperSkip),
 	)
 

@@ -32,7 +32,7 @@ require (
 )
 
 require (
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.0.1
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3-0.20240228213828-cce7f56d000b
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/golangci/golangci-lint v1.55.3-0.20231203192459-84442f26446b
