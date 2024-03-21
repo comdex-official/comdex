@@ -12,17 +12,18 @@ const (
 )
 
 var (
-	TypeMsgCreateRequest             = ModuleName + ":create"
-	TypeMsgDepositRequest            = ModuleName + ":deposit"
-	TypeMsgWithdrawRequest           = ModuleName + ":withdraw"
-	TypeMsgDrawRequest               = ModuleName + ":draw"
-	TypeMsgRepayRequest              = ModuleName + ":repay"
-	TypeMsgLiquidateRequest          = ModuleName + ":liquidate"
-	TypeMsgDepositDrawRequest        = ModuleName + ":deposit_draw"
-	TypeMsgCreateStableMintRequest   = ModuleName + ":create_stablemint"
-	TypeMsgDepositStableMintRequest  = ModuleName + ":deposit_stablemint"
-	TypeMsgWithdrawStableMintRequest = ModuleName + ":withdraw_stablemint"
-	TypeMsgVaultInterestCalcRequest  = ModuleName + ":calculate_interest"
+	TypeMsgCreateRequest                    = ModuleName + ":create"
+	TypeMsgDepositRequest                   = ModuleName + ":deposit"
+	TypeMsgWithdrawRequest                  = ModuleName + ":withdraw"
+	TypeMsgDrawRequest                      = ModuleName + ":draw"
+	TypeMsgRepayRequest                     = ModuleName + ":repay"
+	TypeMsgLiquidateRequest                 = ModuleName + ":liquidate"
+	TypeMsgDepositDrawRequest               = ModuleName + ":deposit_draw"
+	TypeMsgCreateStableMintRequest          = ModuleName + ":create_stablemint"
+	TypeMsgDepositStableMintRequest         = ModuleName + ":deposit_stablemint"
+	TypeMsgWithdrawStableMintRequest        = ModuleName + ":withdraw_stablemint"
+	TypeMsgVaultInterestCalcRequest         = ModuleName + ":calculate_interest"
+	TypeMsgWithdrawStableMintControlRequest = ModuleName + ":withdraw_stablemint_control"
 )
 
 var (
@@ -34,6 +35,7 @@ var (
 	StableVaultIDPrefix                   = []byte{0x16}
 	VaultLengthPrefix                     = []byte{0x17}
 	StableVaultRewardsKeyPrefix           = []byte{0x18}
+	StableVaultControlKeyPrefix           = []byte{0x19}
 )
 
 func VaultKey(vaultID uint64) []byte {

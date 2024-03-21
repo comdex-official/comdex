@@ -48,6 +48,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgVaultInterestCalcRequest:
 			res, err := server.MsgVaultInterestCalc(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgWithdrawStableMintControlRequest:
+			res, err := server.MsgWithdrawStableMintControl(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%T", msg)
 		}

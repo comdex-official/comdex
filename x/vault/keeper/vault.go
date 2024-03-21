@@ -823,3 +823,34 @@ func (k Keeper) GetStableMintVaultRewardsOfAllApps(ctx sdk.Context) (mappingData
 
 	return mappingData
 }
+
+func (k Keeper) SetWithdrawStableMintControl(ctx sdk.Context, control bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableVaultControlKeyPrefix
+		value = k.cdc.MustMarshal(
+			&protobuftypes.BoolValue{
+				Value: control,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetWithdrawStableMintControl(ctx sdk.Context) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableVaultControlKeyPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return false
+	}
+
+	var id protobuftypes.BoolValue
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
+}
