@@ -2,11 +2,11 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 	"github.com/comdex-official/comdex/x/collector/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"strconv"
 
 	"github.com/spf13/cobra"
 
@@ -25,6 +25,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(
 		txDeposit(),
 		txRefund(),
+		txUpdateDebtParams(),
 	)
 	return cmd
 }
@@ -74,6 +75,62 @@ func txRefund() *cobra.Command {
 			}
 
 			msg := types.NewMsgRefund(ctx.GetFromAddress().String())
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
+func txUpdateDebtParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-debt-params [app_id] [asset_id] [slots] [debt_threshold] [lot_size] [debt_lot_size] [is_debt_auction]",
+		Short: "update debt params",
+		Long:  `This transaction is exclusively designed for updating debt params`,
+		Args:  cobra.ExactArgs(7),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			appID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			assetID, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			slots, err := strconv.ParseUint(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			debtThreshold, ok := sdk.NewIntFromString(args[3])
+			if !ok {
+				return fmt.Errorf("invalid debt threshold")
+			}
+
+			lotSize, ok := sdk.NewIntFromString(args[4])
+			if !ok {
+				return fmt.Errorf("invalid lot size")
+			}
+
+			debtLotSize, ok := sdk.NewIntFromString(args[5])
+			if !ok {
+				return fmt.Errorf("invalid debt lot size")
+			}
+
+			isDebtAuction, err := strconv.ParseBool(args[6])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUpdateDebtparams(ctx.GetFromAddress().String(), appID, assetID, slots, debtThreshold, lotSize, debtLotSize, isDebtAuction)
 
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},

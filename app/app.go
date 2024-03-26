@@ -857,6 +857,7 @@ func New(
 		&app.AuctionKeeper,
 		&app.LockerKeeper,
 		&app.Rewardskeeper,
+		&app.EsmKeeper,
 		app.GetSubspace(collectortypes.ModuleName),
 		app.BankKeeper,
 	)

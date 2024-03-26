@@ -23,4 +23,5 @@ var (
 	ErrorSurplusDebtrCantbeTrueSameTime  = sdkerrors.Register(ModuleName, 415, "Surplus and debt can't be true at same time")
 	ErrorInsufficientBalance             = sdkerrors.Register(ModuleName, 416, "collector module account does not have enough balance to refund")
 	ErrorRefundCompleted                 = sdkerrors.Register(ModuleName, 417, "refund already processed")
+	ErrorAmountCanNotBeZero              = sdkerrors.Register(ModuleName, 418, "amount cannot be zero")
 )

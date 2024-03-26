@@ -129,43 +129,6 @@ func (k Keeper) Refund(ctx sdk.Context) error {
 	return nil
 }
 
-func (k Keeper) Deposit(ctx sdk.Context, Amount sdk.Coin, AppID uint64, addr string) error {
-
-	asset, found := k.asset.GetAssetForDenom(ctx, Amount.Denom)
-	if !found {
-		return types.ErrorAssetDoesNotExist
-	}
-	// check if denom is cmst
-	if asset.Denom != "ucmst" {
-		return types.ErrorAssetDoesNotExist
-	}
-	// check if app id exists and app name is harbor
-	app, found := k.asset.GetApp(ctx, AppID)
-	if !found {
-		return types.ErrorAppDoesNotExist
-	}
-	if app.Name != "harbor" {
-		return types.ErrorAppDoesNotExist
-	}
-
-	address, err := sdk.AccAddressFromBech32(addr)
-	if err != nil {
-		return err
-	}
-
-	err = k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, sdk.NewCoins(Amount))
-	if err != nil {
-		return err
-	}
-
-	err = k.SetNetFeeCollectedData(ctx, AppID, asset.Id, Amount.Amount)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (k Keeper) SetRefundCounterStatus(ctx sdk.Context, id uint64) {
 	var (
 		store = ctx.KVStore(k.storeKey)

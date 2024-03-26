@@ -44,3 +44,13 @@ func (m msgServer) Refund(goCtx context.Context, refund *types.MsgRefund) (*type
 
 	return &types.MsgRefundResponse{}, nil
 }
+
+func (m msgServer) UpdateDebtParams(goCtx context.Context, msg *types.MsgUpdateDebtParams) (*types.MsgUpdateDebtParamsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.keeper.UpdateDebtParams(ctx, msg.AppId, msg.AssetId, msg.Slots, msg.DebtThreshold, msg.LotSize, msg.DebtLotSize, msg.IsDebtAuction, msg.Addr); err != nil {
+		return nil, err
+	}
+
+	return &types.MsgUpdateDebtParamsResponse{}, nil
+}
