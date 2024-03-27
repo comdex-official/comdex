@@ -24,6 +24,13 @@ func (k Keeper) Liquidate(ctx sdk.Context) error {
 		return err
 	}
 
+	// as soon as admin makes the debt auction true, then first check for all debt auctions that will be revoked
+	// so the previous slots with no bids will be revoked.
+	err = k.RevokeDebtAuction(ctx)
+	if err != nil {
+		return err
+	}
+
 	err = k.LiquidateForSurplusAndDebt(ctx)
 	if err != nil {
 		return err
@@ -498,15 +505,24 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	// previous code:
 	// if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction
 	// net = 200 debtThreshold = 500 , lotSize = 100
+	// debt_lot_size = how much debt we want to recover from a single auction
+	// lot_size = check param
 
 	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
-		lots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
+		//slots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
+		slots := k.collector.GetSlots(ctx)
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		for i := int64(0); i <= lots; i++ {
+		for i := uint64(0); i <= slots; i++ {
 			err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
 			if err != nil {
 				return err
 			}
+		}
+		// Now setting the flog for auctionLookupTable.IsDebtAuction to false
+		auctionLookupTable.IsDebtAuction = false
+		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
+		if err1 != nil {
+			return err1
 		}
 	}
 
@@ -820,5 +836,32 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	k.lend.DeleteBorrowIDFromUserMapping(ctx, liquidationData.Owner, borrowPos.LendingID, liquidationData.OriginalVaultId)
 	k.lend.DeleteBorrow(ctx, liquidationData.OriginalVaultId)
 	k.lend.DeleteBorrowInterestTracker(ctx, liquidationData.OriginalVaultId)
+	return nil
+}
+
+func (k Keeper) RevokeDebtAuction(ctx sdk.Context) error {
+	// check if IsDebtAuction is true
+	// Get all debt auctions.
+	// now, auctions with no bids to be deleted
+	auctionLookupTable, _ := k.collector.GetAuctionMappingForApp(ctx, 2, 3)
+	if auctionLookupTable.IsDebtAuction {
+		auctions := k.auctionsV2.GetAuctions(ctx)
+		for _, auction := range auctions {
+			if !auction.AuctionType {
+				// get the locked vault for that auction and check initiator type = "debt"
+				lockedVault, _ := k.GetLockedVault(ctx, 2, auction.LockedVaultId)
+				if lockedVault.InitiatorType == "debt" {
+					// delete auction and the associated locked vault if no bids
+					if auction.ActiveBiddingId == 0 {
+						err := k.auctionsV2.DeleteAuction(ctx, auction)
+						if err != nil {
+							return err
+						}
+						k.DeleteLockedVault(ctx, 3, auction.LockedVaultId)
+					}
+				}
+			}
+		}
+	}
 	return nil
 }

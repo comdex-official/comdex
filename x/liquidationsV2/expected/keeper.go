@@ -104,6 +104,8 @@ type RewardsKeeper interface {
 type AuctionsV2Keeper interface {
 	AuctionActivator(ctx sdk.Context, lockedVault liquidationtypes.LockedVault) error
 	GetAuctionParams(ctx sdk.Context) (auctionParams auctiontypes.AuctionParams, found bool)
+	GetAuctions(ctx sdk.Context) (auctions []auctiontypes.Auction)
+	DeleteAuction(ctx sdk.Context, auction auctiontypes.Auction) error
 }
 
 type CollectorKeeper interface {
@@ -116,4 +118,5 @@ type CollectorKeeper interface {
 	SetNetFeeCollectedData(ctx sdk.Context, appID, assetID uint64, fee sdk.Int) error
 	SetAuctionMappingForApp(ctx sdk.Context, records collectortypes.AppAssetIdToAuctionLookupTable) error
 	GetAllAuctionMappingForApp(ctx sdk.Context) (collectorAuctionLookupTable []collectortypes.AppAssetIdToAuctionLookupTable, found bool)
+	GetSlots(ctx sdk.Context) uint64
 }
