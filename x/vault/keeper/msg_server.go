@@ -164,7 +164,7 @@ func (k msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*t
 	newVault.AmountIn = msg.AmountIn
 
 	// closingFeeVal := msg.AmountOut.Mul(sdk.Int(extendedPairVault.ClosingFee)).Quo(sdk.Int(sdk.OneDec()))
-	closingFeeVal := sdk.NewDec(msg.AmountOut.Int64()).Mul(extendedPairVault.ClosingFee).TruncateInt()
+	closingFeeVal := sdk.NewDecFromInt(msg.AmountOut).Mul(extendedPairVault.ClosingFee).TruncateInt()
 
 	newVault.ClosingFeeAccumulated = closingFeeVal
 	newVault.AmountOut = msg.AmountOut
@@ -1267,6 +1267,10 @@ func (k msgServer) MsgDepositStableMint(c context.Context, msg *types.MsgDeposit
 
 func (k msgServer) MsgWithdrawStableMint(c context.Context, msg *types.MsgWithdrawStableMintRequest) (*types.MsgWithdrawStableMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	getControl := k.GetWithdrawStableMintControl(ctx)
+	if getControl {
+		return nil, types.ErrorWithdrawStableMintVault
+	}
 	esmStatus, found := k.esm.GetESMStatus(ctx, msg.AppId)
 	status := false
 	if found {
@@ -1450,4 +1454,36 @@ func (k msgServer) MsgVaultInterestCalc(c context.Context, msg *types.MsgVaultIn
 	}
 
 	return &types.MsgVaultInterestCalcResponse{}, nil
+}
+
+func (k msgServer) MsgWithdrawStableMintControl(c context.Context, msg *types.MsgWithdrawStableMintControlRequest) (*types.MsgWithdrawStableMintControlResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	// check if address is admin
+	getAdmin := k.esm.GetParams(ctx).Admin
+
+	// check if address is admin in getAdmin array
+	if getAdmin[0] != msg.From {
+		return nil, esmtypes.ErrorUnauthorized
+	}
+
+	appMapping, found := k.asset.GetApp(ctx, msg.AppId)
+	if !found {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+	// check app name is harbor
+	if appMapping.Name != "harbor" {
+		return nil, types.ErrorAppMappingDoesNotExist
+	}
+
+	// check GetWithdrawStableMintControl value
+	control := k.GetWithdrawStableMintControl(ctx)
+
+	if control {
+		k.SetWithdrawStableMintControl(ctx, false)
+	} else {
+		k.SetWithdrawStableMintControl(ctx, true)
+	}
+
+	return &types.MsgWithdrawStableMintControlResponse{}, nil
 }

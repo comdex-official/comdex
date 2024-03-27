@@ -190,6 +190,13 @@ message MsgVaultInterestCalcRequest {
 
 message  MsgVaultInterestCalcResponse{}
 
+message MsgWithdrawStableMintControlRequest {
+  string from    = 1 [ (gogoproto.moretags) = "yaml:\"from\"" ];
+  uint64 app_id   = 2 [(gogoproto.moretags) = "yaml:\"app_id\""];
+}
+
+message  MsgWithdrawStableMintControlResponse{}
+
 service Msg {
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
   rpc MsgDeposit(MsgDepositRequest) returns (MsgDepositResponse);
@@ -202,4 +209,5 @@ service Msg {
   rpc MsgDepositStableMint(MsgDepositStableMintRequest) returns (MsgDepositStableMintResponse);
   rpc MsgWithdrawStableMint(MsgWithdrawStableMintRequest) returns (MsgWithdrawStableMintResponse);
   rpc MsgVaultInterestCalc(MsgVaultInterestCalcRequest) returns (MsgVaultInterestCalcResponse);
+  rpc MsgWithdrawStableMintControl(MsgWithdrawStableMintControlRequest) returns (MsgWithdrawStableMintControlResponse);
 }

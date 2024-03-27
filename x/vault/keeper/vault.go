@@ -652,12 +652,12 @@ func (k Keeper) WasmMsgAddEmissionRewards(ctx sdk.Context, appID uint64, amount 
 	for j, extP := range extPair {
 		extPairVaultMappingData, found := k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 		individualVote := votingRatio[j]
-		votingR := sdk.NewDec(individualVote.Int64()).Quo(sdk.NewDec(totalVote.Int64()))
-		shareByExtPair := votingR.Mul(sdk.NewDec(amount.Int64()))
+		votingR := sdk.NewDecFromInt(individualVote).Quo(sdk.NewDecFromInt(totalVote))
+		shareByExtPair := votingR.Mul(sdk.NewDecFromInt(amount))
 		if !found || extPairVaultMappingData.TokenMintedAmount.IsZero() {
 			continue
 		}
-		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDec(extPairVaultMappingData.TokenMintedAmount.Int64()))
+		perUserShareByAmtDec := shareByExtPair.Quo(sdk.NewDecFromInt(extPairVaultMappingData.TokenMintedAmount))
 		vaultsData, _ = k.GetAppExtendedPairVaultMappingData(ctx, appID, extP)
 
 		for _, vaultID := range vaultsData.VaultIds {
@@ -822,4 +822,35 @@ func (k Keeper) GetStableMintVaultRewardsOfAllApps(ctx sdk.Context) (mappingData
 	}
 
 	return mappingData
+}
+
+func (k Keeper) SetWithdrawStableMintControl(ctx sdk.Context, control bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableVaultControlKeyPrefix
+		value = k.cdc.MustMarshal(
+			&protobuftypes.BoolValue{
+				Value: control,
+			},
+		)
+	)
+
+	store.Set(key, value)
+}
+
+func (k Keeper) GetWithdrawStableMintControl(ctx sdk.Context) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.StableVaultControlKeyPrefix
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return false
+	}
+
+	var id protobuftypes.BoolValue
+	k.cdc.MustUnmarshal(value, &id)
+
+	return id.GetValue()
 }

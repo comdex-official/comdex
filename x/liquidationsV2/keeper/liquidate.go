@@ -24,6 +24,13 @@ func (k Keeper) Liquidate(ctx sdk.Context) error {
 		return err
 	}
 
+	// as soon as admin makes the debt auction true, then first check for all debt auctions that will be revoked
+	// so the previous slots with no bids will be revoked.
+	err = k.RevokeDebtAuction(ctx)
+	if err != nil {
+		return err
+	}
+
 	err = k.LiquidateForSurplusAndDebt(ctx)
 	if err != nil {
 		return err
@@ -370,8 +377,17 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 	//Calculating Liquidation Fees
 	feesToBeCollected := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationPenalty).TruncateInt()
 
+	// for upgrade: v14
+	// this code is to deduct the bonus amount from amount in of lend position of the user
+
+	debtToken, _ := k.market.GetTwa(ctx, pair.AssetOut)
+	debtPrice := sdk.NewDecFromInt(sdk.NewInt(int64(debtToken.Twa)))
+
+	collateralToken, _ := k.market.GetTwa(ctx, pair.AssetIn)
+	collateralPrice := sdk.NewDecFromInt(sdk.NewInt(int64(collateralToken.Twa)))
 	//Calculating auction bonus to be given
 	auctionBonusToBeGiven := sdk.NewDecFromInt(borrow.AmountOut.Amount).Mul(assetRatesStats.LiquidationBonus).TruncateInt()
+	_, bonusTokenQuantity, _ := k.vault.GetAmountOfOtherToken(ctx, pair.AssetOut, debtPrice, auctionBonusToBeGiven, pair.AssetIn, collateralPrice)
 
 	err := k.bank.SendCoinsFromModuleToModule(ctx, pool.ModuleName, auctionsV2types.ModuleName, sdk.NewCoins(sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount)))
 	if err != nil {
@@ -383,7 +399,7 @@ func (k Keeper) UpdateLockedBorrows(ctx sdk.Context, borrow lendtypes.BorrowAsse
 		return err
 	}
 
-	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
+	err = k.CreateLockedVault(ctx, borrow.ID, borrow.PairID, owner, sdk.NewCoin(assetIn.Denom, borrow.AmountIn.Amount.Sub(bonusTokenQuantity)), borrow.AmountOut, borrow.AmountIn, borrow.AmountOut, currentCollateralizationRatio, appID, isInternalkeeper, liquidator, "", feesToBeCollected, auctionBonusToBeGiven, "lend", whitelistingData.IsDutchActivated, false, pair.AssetIn, pair.AssetOut)
 	if err != nil {
 		return err
 	}
@@ -484,14 +500,26 @@ func (k Keeper) CheckStatsForSurplusAndDebt(ctx sdk.Context, appID, assetID uint
 	debtAssetID := collector.SecondaryAssetId       //harbor
 
 	// for debt Auction
+	// code update for v14 upgrade
+	// implement logic for multiple lots of debt auction at once
+	// previous code:
+	// if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction
+	// net = 200 debtThreshold = 500 , lotSize = 100
+	// debt_lot_size = how much debt we want to recover from a single auction
+	// lot_size = check param
+
 	if netFeeCollectedData.NetFeesCollected.LTE(collector.DebtThreshold.Sub(collector.LotSize)) && auctionLookupTable.IsDebtAuction {
-		// net = 200 debtThreshold = 500 , lotSize = 100
+		//slots := ((collector.DebtThreshold).Sub(netFeeCollectedData.NetFeesCollected.Add(collector.LotSize))).Quo(collector.LotSize).Int64()
+		slots := k.collector.GetSlots(ctx)
 		collateralToken, debtToken := k.DebtTokenAmount(ctx, collateralAssetID, debtAssetID, collector.LotSize, collector.DebtLotSize)
-		err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
-		if err != nil {
-			return err
+		for i := uint64(0); i <= slots; i++ {
+			err := k.CreateLockedVault(ctx, 0, 0, "", collateralToken, debtToken, collateralToken, debtToken, sdk.ZeroDec(), appID, false, "", "", sdk.ZeroInt(), sdk.ZeroInt(), "debt", false, true, collateralAssetID, debtAssetID)
+			if err != nil {
+				return err
+			}
 		}
-		auctionLookupTable.IsAuctionActive = true
+		// Now setting the flog for auctionLookupTable.IsDebtAuction to false
+		auctionLookupTable.IsDebtAuction = false
 		err1 := k.collector.SetAuctionMappingForApp(ctx, auctionLookupTable)
 		if err1 != nil {
 			return err1
@@ -721,8 +749,7 @@ func (k Keeper) MsgLiquidateExternal(ctx sdk.Context, from string, appID uint64,
 func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData types.LockedVault, auctionData auctionsV2types.Auction) error {
 	// send money back to the debt pool (assetOut pool)
 	// liquidation penalty to the reserve and interest to the pool
-	// send token to the bidder
-	// if cross pool borrow, settle the transit asset to it's native pool
+	// if cross pool borrow, settle the transit asset to its native pool
 	// close the borrow and update the stats
 
 	borrowPos, _ := k.lend.GetBorrow(ctx, liquidationData.OriginalVaultId)
@@ -809,5 +836,32 @@ func (k Keeper) MsgCloseDutchAuctionForBorrow(ctx sdk.Context, liquidationData t
 	k.lend.DeleteBorrowIDFromUserMapping(ctx, liquidationData.Owner, borrowPos.LendingID, liquidationData.OriginalVaultId)
 	k.lend.DeleteBorrow(ctx, liquidationData.OriginalVaultId)
 	k.lend.DeleteBorrowInterestTracker(ctx, liquidationData.OriginalVaultId)
+	return nil
+}
+
+func (k Keeper) RevokeDebtAuction(ctx sdk.Context) error {
+	// check if IsDebtAuction is true
+	// Get all debt auctions.
+	// now, auctions with no bids to be deleted
+	auctionLookupTable, _ := k.collector.GetAuctionMappingForApp(ctx, 2, 3)
+	if auctionLookupTable.IsDebtAuction {
+		auctions := k.auctionsV2.GetAuctions(ctx)
+		for _, auction := range auctions {
+			if !auction.AuctionType {
+				// get the locked vault for that auction and check initiator type = "debt"
+				lockedVault, _ := k.GetLockedVault(ctx, 2, auction.LockedVaultId)
+				if lockedVault.InitiatorType == "debt" {
+					// delete auction and the associated locked vault if no bids
+					if auction.ActiveBiddingId == 0 {
+						err := k.auctionsV2.DeleteAuction(ctx, auction)
+						if err != nil {
+							return err
+						}
+						k.DeleteLockedVault(ctx, 2, auction.LockedVaultId)
+					}
+				}
+			}
+		}
+	}
 	return nil
 }

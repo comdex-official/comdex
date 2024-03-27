@@ -5,6 +5,7 @@ import (
 
 	"github.com/comdex-official/comdex/x/asset/types"
 	auctiontypes "github.com/comdex-official/comdex/x/auction/types"
+	esmtypes "github.com/comdex-official/comdex/x/esm/types"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
 )
@@ -44,4 +45,8 @@ type RewardsKeeper interface {
 	CalculationOfRewards(ctx sdk.Context, amount sdk.Int, lsr sdk.Dec, bTime int64) (sdk.Dec, error)
 	SetLockerRewardTracker(ctx sdk.Context, rewards rewardstypes.LockerRewardsTracker)
 	GetLockerRewardTracker(ctx sdk.Context, id, appID uint64) (rewards rewardstypes.LockerRewardsTracker, found bool)
+}
+
+type EsmKeeper interface {
+	GetParams(ctx sdk.Context) esmtypes.Params
 }

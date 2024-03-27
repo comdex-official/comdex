@@ -11,7 +11,7 @@ import (
 
 func TestWhitelistAssetLocker(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddAppAsset(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -23,7 +23,10 @@ func TestWhitelistAssetLocker(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhiteListAssetLocker
@@ -55,7 +58,7 @@ func TestWhitelistAssetLocker(t *testing.T) {
 
 func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -67,7 +70,10 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddExtendedPairsVault
@@ -113,7 +119,7 @@ func TestAddMsgAddExtendedPairsVault(t *testing.T) {
 
 func TestMsgSetCollectorLookupTable(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -125,7 +131,10 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetCollectorLookupTable
@@ -165,7 +174,7 @@ func TestMsgSetCollectorLookupTable(t *testing.T) {
 
 func TestMsgSetAuctionMappingForApp(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -177,7 +186,10 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgSetAuctionMappingForApp
@@ -215,7 +227,7 @@ func TestMsgSetAuctionMappingForApp(t *testing.T) {
 
 func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	AddCollectorLookuptable(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
@@ -228,7 +240,10 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdateCollectorLookupTable
@@ -267,7 +282,7 @@ func TestMsgUpdateCollectorLookupTable(t *testing.T) {
 
 func TestMsgUpdatePairsVault(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	AddExtendedPairVault(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
@@ -280,7 +295,10 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgUpdatePairsVault
@@ -324,7 +342,7 @@ func TestMsgUpdatePairsVault(t *testing.T) {
 
 func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -336,7 +354,10 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgWhitelistAppIDLiquidation
@@ -371,7 +392,7 @@ func TestMsgWhitelistAppIDLiquidation(t *testing.T) {
 
 func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	WhitelistAppIDLiquidation(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
@@ -384,7 +405,10 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgRemoveWhitelistAppIDLiquidation
@@ -416,7 +440,7 @@ func TestMsgRemoveWhitelistAppIDLiquidation(t *testing.T) {
 
 func TestMsgAddAuctionParams(t *testing.T) {
 	actor := RandomAccountAddress()
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	AddPair(comdex, *ctx)
 	querier := wasm.NewQueryPlugin(&comdex.AssetKeeper,
 		&comdex.LockerKeeper,
@@ -428,7 +452,10 @@ func TestMsgAddAuctionParams(t *testing.T) {
 		&comdex.VaultKeeper,
 		&comdex.LendKeeper,
 		&comdex.LiquidityKeeper,
-		&comdex.MarketKeeper)
+		&comdex.MarketKeeper,
+		comdex.BankKeeper,
+		&comdex.TokenFactoryKeeper,
+		&comdex.GaslessKeeper)
 	for _, tc := range []struct {
 		name            string
 		msg             *bindings.MsgAddAuctionParams
@@ -474,7 +501,7 @@ func TestMsgBurnGovTokensForApp(t *testing.T) {
 	actor := RandomAccountAddress()
 	userAddress := "cosmos1q7q90qsl9g0gl2zz0njxwv2a649yqrtyxtnv3v"
 	addr, _ := sdk.AccAddressFromBech32(userAddress)
-	comdex, ctx := SetupCustomApp(t)
+	comdex, ctx := SetupCustomApp(t, actor)
 	MsgMintNewTokens(comdex, *ctx)
 
 	for _, tc := range []struct {

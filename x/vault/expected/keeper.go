@@ -41,6 +41,7 @@ type EsmKeeper interface {
 	GetESMStatus(ctx sdk.Context, id uint64) (esmStatus esmtypes.ESMStatus, found bool)
 	GetSnapshotOfPrices(ctx sdk.Context, appID, assetID uint64) (price uint64, found bool)
 	GetESMTriggerParams(ctx sdk.Context, id uint64) (esmTriggerParams esmtypes.ESMTriggerParams, found bool)
+	GetParams(ctx sdk.Context) esmtypes.Params
 }
 
 type TokenMintKeeper interface {

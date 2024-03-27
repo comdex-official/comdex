@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
@@ -104,36 +105,121 @@ func (m *MsgMintNewTokensResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgMintNewTokensResponse proto.InternalMessageInfo
 
+type MsgBurnHarborTokensRequest struct {
+	From      string     `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty" yaml:"from"`
+	AppId     uint64     `protobuf:"varint,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty" yaml:"app_id"`
+	BurnCoins types.Coin `protobuf:"bytes,3,opt,name=burn_coins,json=burnCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"burn_coins"`
+}
+
+func (m *MsgBurnHarborTokensRequest) Reset()         { *m = MsgBurnHarborTokensRequest{} }
+func (m *MsgBurnHarborTokensRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgBurnHarborTokensRequest) ProtoMessage()    {}
+func (*MsgBurnHarborTokensRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_877e0eff92180c18, []int{2}
+}
+func (m *MsgBurnHarborTokensRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBurnHarborTokensRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBurnHarborTokensRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBurnHarborTokensRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBurnHarborTokensRequest.Merge(m, src)
+}
+func (m *MsgBurnHarborTokensRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBurnHarborTokensRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBurnHarborTokensRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBurnHarborTokensRequest proto.InternalMessageInfo
+
+type MsgBurnHarborTokensResponse struct {
+}
+
+func (m *MsgBurnHarborTokensResponse) Reset()         { *m = MsgBurnHarborTokensResponse{} }
+func (m *MsgBurnHarborTokensResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgBurnHarborTokensResponse) ProtoMessage()    {}
+func (*MsgBurnHarborTokensResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_877e0eff92180c18, []int{3}
+}
+func (m *MsgBurnHarborTokensResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgBurnHarborTokensResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgBurnHarborTokensResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgBurnHarborTokensResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgBurnHarborTokensResponse.Merge(m, src)
+}
+func (m *MsgBurnHarborTokensResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgBurnHarborTokensResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgBurnHarborTokensResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgBurnHarborTokensResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgMintNewTokensRequest)(nil), "comdex.tokenmint.v1beta1.MsgMintNewTokensRequest")
 	proto.RegisterType((*MsgMintNewTokensResponse)(nil), "comdex.tokenmint.v1beta1.MsgMintNewTokensResponse")
+	proto.RegisterType((*MsgBurnHarborTokensRequest)(nil), "comdex.tokenmint.v1beta1.MsgBurnHarborTokensRequest")
+	proto.RegisterType((*MsgBurnHarborTokensResponse)(nil), "comdex.tokenmint.v1beta1.MsgBurnHarborTokensResponse")
 }
 
 func init() { proto.RegisterFile("comdex/tokenmint/v1beta1/tx.proto", fileDescriptor_877e0eff92180c18) }
 
 var fileDescriptor_877e0eff92180c18 = []byte{
-	// 327 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4c, 0xce, 0xcf, 0x4d,
-	0x49, 0xad, 0xd0, 0x2f, 0xc9, 0xcf, 0x4e, 0xcd, 0xcb, 0xcd, 0xcc, 0x2b, 0xd1, 0x2f, 0x33, 0x4c,
-	0x4a, 0x2d, 0x49, 0x34, 0xd4, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x92, 0x80,
-	0x28, 0xd1, 0x83, 0x2b, 0xd1, 0x83, 0x2a, 0x91, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b, 0xd2,
-	0x07, 0xb1, 0x20, 0xea, 0x95, 0x16, 0x32, 0x72, 0x89, 0xfb, 0x16, 0xa7, 0xfb, 0x66, 0xe6, 0x95,
-	0xf8, 0xa5, 0x96, 0x87, 0x80, 0x74, 0x15, 0x07, 0xa5, 0x16, 0x96, 0xa6, 0x16, 0x97, 0x08, 0x29,
-	0x73, 0xb1, 0xa4, 0x15, 0xe5, 0xe7, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x3a, 0xf1, 0x7f, 0xba,
-	0x27, 0xcf, 0x5d, 0x99, 0x98, 0x9b, 0x63, 0xa5, 0x04, 0x12, 0x55, 0x0a, 0x02, 0x4b, 0x0a, 0x19,
-	0x72, 0xb1, 0x25, 0x16, 0x14, 0xc4, 0x67, 0xa6, 0x48, 0x30, 0x29, 0x30, 0x6a, 0xb0, 0x38, 0x49,
-	0x3d, 0xba, 0x27, 0xcf, 0xea, 0x58, 0x50, 0xe0, 0x99, 0xf2, 0xe9, 0x9e, 0x3c, 0x2f, 0x44, 0x3d,
-	0x44, 0x81, 0x52, 0x10, 0x6b, 0x22, 0x48, 0x5c, 0x48, 0x8f, 0x8b, 0x23, 0xb1, 0xb8, 0x38, 0xb5,
-	0x04, 0xa4, 0x89, 0x19, 0xac, 0x49, 0xf8, 0xd3, 0x3d, 0x79, 0x7e, 0xa8, 0x5a, 0xa8, 0x8c, 0x52,
-	0x10, 0x3b, 0x98, 0xe9, 0x99, 0xa2, 0x24, 0xc5, 0x25, 0x81, 0xe9, 0xc4, 0xe2, 0x82, 0xfc, 0xbc,
-	0xe2, 0x54, 0xa3, 0x06, 0x46, 0x2e, 0x66, 0xdf, 0xe2, 0x74, 0xa1, 0x4a, 0x2e, 0x01, 0x74, 0x35,
-	0x42, 0x86, 0x7a, 0xb8, 0x02, 0x43, 0x0f, 0x87, 0x97, 0xa5, 0x8c, 0x48, 0xd1, 0x02, 0x71, 0x82,
-	0x53, 0xe8, 0x89, 0x87, 0x72, 0x0c, 0x2b, 0x1e, 0xc9, 0x31, 0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1,
-	0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70,
-	0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x71, 0x7a, 0x66, 0x49, 0x46, 0x69, 0x12, 0xc8, 0x6c, 0x7d, 0x88,
-	0xf9, 0xba, 0xf9, 0x69, 0x69, 0x99, 0xc9, 0x99, 0x89, 0x39, 0x50, 0xbe, 0x3e, 0x72, 0xa4, 0x96,
-	0x54, 0x16, 0xa4, 0x16, 0x27, 0xb1, 0x81, 0x23, 0xc8, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x9d,
-	0xb1, 0xb2, 0x47, 0xf5, 0x01, 0x00, 0x00,
+	// 456 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x53, 0xbb, 0x6e, 0xd4, 0x40,
+	0x14, 0xf5, 0xe4, 0x05, 0x99, 0x08, 0x05, 0x39, 0x48, 0x2c, 0x46, 0x8c, 0x83, 0x69, 0xb6, 0xc9,
+	0x98, 0xdd, 0x40, 0x43, 0x87, 0x69, 0x48, 0xb1, 0x14, 0x16, 0x34, 0x34, 0x91, 0x1f, 0xb3, 0x66,
+	0x48, 0x3c, 0x63, 0x7c, 0x67, 0x21, 0xdb, 0x22, 0xd1, 0xf3, 0x0b, 0x74, 0x88, 0x2f, 0xd9, 0x32,
+	0x25, 0x95, 0x09, 0xde, 0x3f, 0xd8, 0x2f, 0x40, 0x33, 0x63, 0x22, 0x1e, 0x59, 0xa4, 0x34, 0x54,
+	0xbe, 0x9e, 0x7b, 0xce, 0xf5, 0xb9, 0xe7, 0x78, 0xf0, 0xdd, 0x4c, 0x96, 0x39, 0x3b, 0x09, 0x95,
+	0x3c, 0x62, 0xa2, 0xe4, 0x42, 0x85, 0x6f, 0x07, 0x29, 0x53, 0xc9, 0x20, 0x54, 0x27, 0xb4, 0xaa,
+	0xa5, 0x92, 0x6e, 0xcf, 0x42, 0xe8, 0x39, 0x84, 0x76, 0x10, 0xef, 0x46, 0x21, 0x0b, 0x69, 0x40,
+	0xa1, 0xae, 0x2c, 0xde, 0x23, 0x99, 0x84, 0x52, 0x42, 0x98, 0x26, 0xc0, 0xce, 0xa7, 0x65, 0x92,
+	0x0b, 0xdb, 0x0f, 0x3e, 0x21, 0x7c, 0x73, 0x04, 0xc5, 0x88, 0x0b, 0xf5, 0x8c, 0xbd, 0x7b, 0xae,
+	0xa7, 0x42, 0xcc, 0xde, 0x4c, 0x18, 0x28, 0xf7, 0x1e, 0x5e, 0x1b, 0xd7, 0xb2, 0xec, 0xa1, 0x5d,
+	0xd4, 0xdf, 0x8c, 0xb6, 0x17, 0x8d, 0xbf, 0x35, 0x4d, 0xca, 0xe3, 0x47, 0x81, 0x3e, 0x0d, 0x62,
+	0xd3, 0x74, 0x07, 0x78, 0x23, 0xa9, 0xaa, 0x43, 0x9e, 0xf7, 0x56, 0x76, 0x51, 0x7f, 0x2d, 0xf2,
+	0xda, 0xc6, 0x5f, 0x7f, 0x5c, 0x55, 0x07, 0xf9, 0xa2, 0xf1, 0xaf, 0x59, 0xbc, 0x05, 0x04, 0xf1,
+	0x7a, 0xa2, 0xcf, 0x5d, 0x8a, 0xaf, 0x26, 0x00, 0x4c, 0x69, 0xd2, 0xaa, 0x21, 0xed, 0x2c, 0x1a,
+	0x7f, 0xbb, 0xc3, 0x76, 0x9d, 0x20, 0xbe, 0x62, 0xca, 0x83, 0x3c, 0xf0, 0x70, 0xef, 0x6f, 0x89,
+	0x50, 0x49, 0x01, 0x2c, 0x38, 0x43, 0xd8, 0x1b, 0x41, 0x11, 0x4d, 0x6a, 0xf1, 0x34, 0xa9, 0x53,
+	0x59, 0xff, 0x9f, 0x15, 0x5e, 0x63, 0x9c, 0x4e, 0x6a, 0x71, 0xa8, 0x9d, 0x04, 0xb3, 0xc4, 0xd6,
+	0xf0, 0x16, 0xb5, 0x5e, 0x53, 0xed, 0xf5, 0xcf, 0x58, 0xe8, 0x13, 0xc9, 0x45, 0x74, 0x7f, 0xd6,
+	0xf8, 0xce, 0x97, 0x6f, 0x7e, 0xbf, 0xe0, 0xea, 0xd5, 0x24, 0xa5, 0x99, 0x2c, 0xc3, 0x2e, 0x18,
+	0xfb, 0xd8, 0x83, 0xfc, 0x28, 0x54, 0xd3, 0x8a, 0x81, 0x21, 0x40, 0xbc, 0xa9, 0xc7, 0x9b, 0x32,
+	0xb8, 0x83, 0x6f, 0x5f, 0xb8, 0xa1, 0x75, 0x60, 0xf8, 0x61, 0x05, 0xaf, 0x8e, 0xa0, 0x70, 0xa7,
+	0xf8, 0xfa, 0x9f, 0x2e, 0xb9, 0x03, 0xba, 0xec, 0x77, 0xa1, 0x4b, 0x42, 0xf7, 0x86, 0x97, 0xa1,
+	0x58, 0x09, 0xee, 0x7b, 0x84, 0x77, 0x2e, 0x90, 0xe8, 0x3e, 0xf8, 0xe7, 0xac, 0x25, 0x99, 0x79,
+	0x0f, 0x2f, 0xc9, 0xb2, 0x22, 0xa2, 0x17, 0xb3, 0xef, 0xc4, 0xf9, 0xdc, 0x12, 0x67, 0xd6, 0x12,
+	0x74, 0xda, 0x12, 0x74, 0xd6, 0x12, 0xf4, 0x71, 0x4e, 0x9c, 0xd3, 0x39, 0x71, 0xbe, 0xce, 0x89,
+	0xf3, 0x72, 0xff, 0x37, 0xf7, 0xf5, 0x27, 0xf6, 0xe4, 0x78, 0xcc, 0x33, 0x9e, 0x1c, 0x77, 0xef,
+	0xe1, 0xaf, 0x77, 0xcf, 0xc4, 0x91, 0x6e, 0x98, 0x7b, 0xb2, 0xff, 0x23, 0x00, 0x00, 0xff, 0xff,
+	0xcb, 0x24, 0x51, 0x74, 0x9c, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -149,6 +235,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	MsgMintNewTokens(ctx context.Context, in *MsgMintNewTokensRequest, opts ...grpc.CallOption) (*MsgMintNewTokensResponse, error)
+	MsgBurnHarborTokens(ctx context.Context, in *MsgBurnHarborTokensRequest, opts ...grpc.CallOption) (*MsgBurnHarborTokensResponse, error)
 }
 
 type msgClient struct {
@@ -168,9 +255,19 @@ func (c *msgClient) MsgMintNewTokens(ctx context.Context, in *MsgMintNewTokensRe
 	return out, nil
 }
 
+func (c *msgClient) MsgBurnHarborTokens(ctx context.Context, in *MsgBurnHarborTokensRequest, opts ...grpc.CallOption) (*MsgBurnHarborTokensResponse, error) {
+	out := new(MsgBurnHarborTokensResponse)
+	err := c.cc.Invoke(ctx, "/comdex.tokenmint.v1beta1.Msg/MsgBurnHarborTokens", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	MsgMintNewTokens(context.Context, *MsgMintNewTokensRequest) (*MsgMintNewTokensResponse, error)
+	MsgBurnHarborTokens(context.Context, *MsgBurnHarborTokensRequest) (*MsgBurnHarborTokensResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -179,6 +276,9 @@ type UnimplementedMsgServer struct {
 
 func (*UnimplementedMsgServer) MsgMintNewTokens(ctx context.Context, req *MsgMintNewTokensRequest) (*MsgMintNewTokensResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgMintNewTokens not implemented")
+}
+func (*UnimplementedMsgServer) MsgBurnHarborTokens(ctx context.Context, req *MsgBurnHarborTokensRequest) (*MsgBurnHarborTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgBurnHarborTokens not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -203,6 +303,24 @@ func _Msg_MsgMintNewTokens_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgBurnHarborTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBurnHarborTokensRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgBurnHarborTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/comdex.tokenmint.v1beta1.Msg/MsgBurnHarborTokens",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgBurnHarborTokens(ctx, req.(*MsgBurnHarborTokensRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "comdex.tokenmint.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -210,6 +328,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MsgMintNewTokens",
 			Handler:    _Msg_MsgMintNewTokens_Handler,
+		},
+		{
+			MethodName: "MsgBurnHarborTokens",
+			Handler:    _Msg_MsgBurnHarborTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -279,6 +401,74 @@ func (m *MsgMintNewTokensResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgBurnHarborTokensRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBurnHarborTokensRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBurnHarborTokensRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.BurnCoins.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	if m.AppId != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.AppId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgBurnHarborTokensResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgBurnHarborTokensResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgBurnHarborTokensResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -310,6 +500,33 @@ func (m *MsgMintNewTokensRequest) Size() (n int) {
 }
 
 func (m *MsgMintNewTokensResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgBurnHarborTokensRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.AppId != 0 {
+		n += 1 + sovTx(uint64(m.AppId))
+	}
+	l = m.BurnCoins.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgBurnHarborTokensResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -471,6 +688,190 @@ func (m *MsgMintNewTokensResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgMintNewTokensResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBurnHarborTokensRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBurnHarborTokensRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBurnHarborTokensRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AppId", wireType)
+			}
+			m.AppId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AppId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BurnCoins", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.BurnCoins.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgBurnHarborTokensResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgBurnHarborTokensResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgBurnHarborTokensResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

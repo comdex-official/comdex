@@ -2,10 +2,12 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/comdex-official/comdex/x/esm/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
@@ -80,4 +82,15 @@ func (m msgServer) MsgCollateralRedemption(c context.Context, req *types.MsgColl
 	ctx.GasMeter().ConsumeGas(types.MsgCollateralRedemptionGas, "MsgCollateralRedemptionGas")
 
 	return nil, nil
+}
+
+func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if m.keeper.authority != req.Authority {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", m.keeper.authority, req.Authority)
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	m.keeper.SetParams(ctx, req.Params)
+
+	return &types.MsgUpdateParamsResponse{}, nil
 }

@@ -23,12 +23,15 @@ const (
 
 var (
 	TypeDepositRequest                 = ModuleName + ":deposit"
+	TypeRefundRequest                  = ModuleName + ":refund"
+	TypeUpdateDebtParamsRequest        = ModuleName + ":update"
 	AddCollectorLookupKey              = []byte{0x01}
 	AppIDToAssetCollectorMappingPrefix = []byte{0x03}
 	AppIDToAuctionMappingPrefix        = []byte{0x05}
 	CollectorForDenomKeyPrefix         = []byte{0x07}
 	NetFeeCollectedDataPrefix          = []byte{0x08}
 	RefundCounterStatusPrefix          = []byte{0x09}
+	SlotsKeyPrefix                     = []byte{0x10}
 )
 
 func CollectorLookupTableMappingKey(appID, assetID uint64) []byte {

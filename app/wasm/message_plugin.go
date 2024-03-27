@@ -3,6 +3,8 @@ package wasm
 import (
 	"encoding/json"
 
+	errorsmod "cosmossdk.io/errors"
+
 	esmkeeper "github.com/comdex-official/comdex/x/esm/keeper"
 	vaultkeeper "github.com/comdex-official/comdex/x/vault/keeper"
 
@@ -18,46 +20,58 @@ import (
 	"github.com/comdex-official/comdex/app/wasm/bindings"
 	assetkeeper "github.com/comdex-official/comdex/x/asset/keeper"
 	collectorkeeper "github.com/comdex-official/comdex/x/collector/keeper"
+	gaslessKeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	liquidityKeeper "github.com/comdex-official/comdex/x/liquidity/keeper"
 	lockerkeeper "github.com/comdex-official/comdex/x/locker/keeper"
 	lockertypes "github.com/comdex-official/comdex/x/locker/types"
 	rewardskeeper "github.com/comdex-official/comdex/x/rewards/keeper"
 	rewardstypes "github.com/comdex-official/comdex/x/rewards/types"
+	tokenfactorykeeper "github.com/comdex-official/comdex/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/comdex-official/comdex/x/tokenfactory/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 func CustomMessageDecorator(lockerKeeper lockerkeeper.Keeper, rewardsKeeper rewardskeeper.Keeper,
 	assetKeeper assetkeeper.Keeper, collectorKeeper collectorkeeper.Keeper, liquidationKeeper liquidationkeeper.Keeper,
 	auctionKeeper auctionkeeper.Keeper, tokenMintKeeper tokenmintkeeper.Keeper, esmKeeper esmkeeper.Keeper, vaultKeeper vaultkeeper.Keeper, liquiditykeeper liquidityKeeper.Keeper,
+	bankkeeper bankkeeper.Keeper, tokenfactorykeeper tokenfactorykeeper.Keeper, gaslesskeeper gaslessKeeper.Keeper,
 ) func(wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
-			wrapped:           old,
-			lockerKeeper:      lockerKeeper,
-			rewardsKeeper:     rewardsKeeper,
-			assetKeeper:       assetKeeper,
-			collectorKeeper:   collectorKeeper,
-			liquidationKeeper: liquidationKeeper,
-			auctionKeeper:     auctionKeeper,
-			tokenMintKeeper:   tokenMintKeeper,
-			esmKeeper:         esmKeeper,
-			vaultKeeper:       vaultKeeper,
-			liquiditykeeper:   liquiditykeeper,
+			wrapped:            old,
+			lockerKeeper:       lockerKeeper,
+			rewardsKeeper:      rewardsKeeper,
+			assetKeeper:        assetKeeper,
+			collectorKeeper:    collectorKeeper,
+			liquidationKeeper:  liquidationKeeper,
+			auctionKeeper:      auctionKeeper,
+			tokenMintKeeper:    tokenMintKeeper,
+			esmKeeper:          esmKeeper,
+			vaultKeeper:        vaultKeeper,
+			liquiditykeeper:    liquiditykeeper,
+			bankkeeper:         bankkeeper,
+			tokenfactorykeeper: tokenfactorykeeper,
+			gaslesskeeper:      gaslesskeeper,
 		}
 	}
 }
 
 type CustomMessenger struct {
-	wrapped           wasmkeeper.Messenger
-	lockerKeeper      lockerkeeper.Keeper
-	rewardsKeeper     rewardskeeper.Keeper
-	assetKeeper       assetkeeper.Keeper
-	collectorKeeper   collectorkeeper.Keeper
-	liquidationKeeper liquidationkeeper.Keeper
-	auctionKeeper     auctionkeeper.Keeper
-	tokenMintKeeper   tokenmintkeeper.Keeper
-	esmKeeper         esmkeeper.Keeper
-	vaultKeeper       vaultkeeper.Keeper
-	liquiditykeeper   liquidityKeeper.Keeper
+	wrapped            wasmkeeper.Messenger
+	lockerKeeper       lockerkeeper.Keeper
+	rewardsKeeper      rewardskeeper.Keeper
+	assetKeeper        assetkeeper.Keeper
+	collectorKeeper    collectorkeeper.Keeper
+	liquidationKeeper  liquidationkeeper.Keeper
+	auctionKeeper      auctionkeeper.Keeper
+	tokenMintKeeper    tokenmintkeeper.Keeper
+	esmKeeper          esmkeeper.Keeper
+	vaultKeeper        vaultkeeper.Keeper
+	liquiditykeeper    liquidityKeeper.Keeper
+	bankkeeper         bankkeeper.Keeper
+	tokenfactorykeeper tokenfactorykeeper.Keeper
+	gaslesskeeper      gaslessKeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -71,7 +85,7 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		// leave everything else for the wrapped version
 		var comdexMsg bindings.ComdexMessages
 		if err := json.Unmarshal(msg.Custom, &comdexMsg); err != nil {
-			return nil, nil, sdkerrors.Wrap(err, "comdex msg error")
+			return nil, nil, errorsmod.Wrap(err, "comdex msg error")
 		}
 		if comdexMsg.MsgWhiteListAssetLocker != nil {
 			return m.whitelistAssetLocker(ctx, contractAddr, comdexMsg.MsgWhiteListAssetLocker)
@@ -132,6 +146,32 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if comdexMsg.MsgEmissionPoolRewards != nil {
 			return m.ExecuteAddEmissionPoolRewards(ctx, contractAddr, comdexMsg.MsgEmissionPoolRewards)
+		}
+
+		// only handle the happy path where this is really creating / minting / swapping ...
+		// leave everything else for the wrapped version
+		var contractMsg bindings.TokenFactoryMsg
+		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
+			return nil, nil, errorsmod.Wrap(err, "token factory msg")
+		}
+
+		if contractMsg.CreateDenom != nil {
+			return m.createDenom(ctx, contractAddr, contractMsg.CreateDenom)
+		}
+		if contractMsg.MintTokens != nil {
+			return m.mintTokens(ctx, contractAddr, contractMsg.MintTokens)
+		}
+		if contractMsg.ChangeAdmin != nil {
+			return m.changeAdmin(ctx, contractAddr, contractMsg.ChangeAdmin)
+		}
+		if contractMsg.BurnTokens != nil {
+			return m.burnTokens(ctx, contractAddr, contractMsg.BurnTokens)
+		}
+		if contractMsg.SetMetadata != nil {
+			return m.setMetadata(ctx, contractAddr, contractMsg.SetMetadata)
+		}
+		if contractMsg.ForceTransfer != nil {
+			return m.forceTransfer(ctx, contractAddr, contractMsg.ForceTransfer)
 		}
 	}
 	return m.wrapped.DispatchMsg(ctx, contractAddr, contractIBCPortID, msg)
@@ -564,7 +604,7 @@ func (m *CustomMessenger) ExecuteAddEmissionRewards(ctx sdk.Context, contractAdd
 		if contractAddr.String() != comdex1[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}
-	}else if ctx.ChainID() == "comdex-test3" {
+	} else if ctx.ChainID() == "comdex-test3" {
 		if contractAddr.String() != testnet3[1] {
 			return nil, nil, sdkerrors.ErrInvalidAddress
 		}
@@ -692,4 +732,303 @@ func MsgGetSurplusFund(collectorKeeper collectorkeeper.Keeper, ctx sdk.Context,
 		return err
 	}
 	return nil
+}
+
+// createDenom creates a new token denom
+func (m *CustomMessenger) createDenom(ctx sdk.Context, contractAddr sdk.AccAddress, createDenom *bindings.CreateDenom) ([]sdk.Event, [][]byte, error) {
+	bz, err := PerformCreateDenom(m.tokenfactorykeeper, m.bankkeeper, ctx, contractAddr, createDenom)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "perform create denom")
+	}
+	// TODO: double check how this is all encoded to the contract
+	return nil, [][]byte{bz}, nil
+}
+
+// PerformCreateDenom is used with createDenom to create a token denom; validates the msgCreateDenom.
+func PerformCreateDenom(f tokenfactorykeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, createDenom *bindings.CreateDenom) ([]byte, error) {
+	if createDenom == nil {
+		return nil, wasmvmtypes.InvalidRequest{Err: "create denom null create denom"}
+	}
+
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f)
+
+	msgCreateDenom := tokenfactorytypes.NewMsgCreateDenom(contractAddr.String(), createDenom.Subdenom)
+
+	if err := msgCreateDenom.ValidateBasic(); err != nil {
+		return nil, errorsmod.Wrap(err, "failed validating MsgCreateDenom")
+	}
+
+	// Create denom
+	resp, err := msgServer.CreateDenom(
+		sdk.WrapSDKContext(ctx),
+		msgCreateDenom,
+	)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "creating denom")
+	}
+
+	if createDenom.Metadata != nil {
+		newDenom := resp.NewTokenDenom
+		err := PerformSetMetadata(f, b, ctx, contractAddr, newDenom, *createDenom.Metadata)
+		if err != nil {
+			return nil, errorsmod.Wrap(err, "setting metadata")
+		}
+	}
+
+	return resp.Marshal()
+}
+
+// mintTokens mints tokens of a specified denom to an address.
+func (m *CustomMessenger) mintTokens(ctx sdk.Context, contractAddr sdk.AccAddress, mint *bindings.MintTokens) ([]sdk.Event, [][]byte, error) {
+	err := PerformMint(m.tokenfactorykeeper, m.bankkeeper, ctx, contractAddr, mint)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "perform mint")
+	}
+	return nil, nil, nil
+}
+
+// PerformMint used with mintTokens to validate the mint message and mint through token factory.
+func PerformMint(f tokenfactorykeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, mint *bindings.MintTokens) error {
+	if mint == nil {
+		return wasmvmtypes.InvalidRequest{Err: "mint token null mint"}
+	}
+	rcpt, err := parseAddress(mint.MintToAddress)
+	if err != nil {
+		return err
+	}
+
+	coin := sdk.Coin{Denom: mint.Denom, Amount: mint.Amount}
+	sdkMsg := tokenfactorytypes.NewMsgMint(contractAddr.String(), coin)
+
+	if err = sdkMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	// Mint through token factory / message server
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f)
+	_, err = msgServer.Mint(sdk.WrapSDKContext(ctx), sdkMsg)
+	if err != nil {
+		return errorsmod.Wrap(err, "minting coins from message")
+	}
+
+	if b.BlockedAddr(rcpt) {
+		return errorsmod.Wrapf(err, "minting coins to blocked address %s", rcpt.String())
+	}
+
+	err = b.SendCoins(ctx, contractAddr, rcpt, sdk.NewCoins(coin))
+	if err != nil {
+		return errorsmod.Wrap(err, "sending newly minted coins from message")
+	}
+	return nil
+}
+
+// changeAdmin changes the admin.
+func (m *CustomMessenger) changeAdmin(ctx sdk.Context, contractAddr sdk.AccAddress, changeAdmin *bindings.ChangeAdmin) ([]sdk.Event, [][]byte, error) {
+	err := ChangeAdmin(m.tokenfactorykeeper, ctx, contractAddr, changeAdmin)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "failed to change admin")
+	}
+	return nil, nil, nil
+}
+
+// ChangeAdmin is used with changeAdmin to validate changeAdmin messages and to dispatch.
+func ChangeAdmin(f tokenfactorykeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, changeAdmin *bindings.ChangeAdmin) error {
+	if changeAdmin == nil {
+		return wasmvmtypes.InvalidRequest{Err: "changeAdmin is nil"}
+	}
+	newAdminAddr, err := parseAddress(changeAdmin.NewAdminAddress)
+	if err != nil {
+		return err
+	}
+
+	changeAdminMsg := tokenfactorytypes.NewMsgChangeAdmin(contractAddr.String(), changeAdmin.Denom, newAdminAddr.String())
+	if err := changeAdminMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f)
+	_, err = msgServer.ChangeAdmin(sdk.WrapSDKContext(ctx), changeAdminMsg)
+	if err != nil {
+		return errorsmod.Wrap(err, "failed changing admin from message")
+	}
+	return nil
+}
+
+// burnTokens burns tokens.
+func (m *CustomMessenger) burnTokens(ctx sdk.Context, contractAddr sdk.AccAddress, burn *bindings.BurnTokens) ([]sdk.Event, [][]byte, error) {
+	err := PerformBurn(m.tokenfactorykeeper, ctx, contractAddr, burn)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "perform burn")
+	}
+	return nil, nil, nil
+}
+
+// PerformBurn performs token burning after validating tokenBurn message.
+func PerformBurn(f tokenfactorykeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, burn *bindings.BurnTokens) error {
+	if burn == nil {
+		return wasmvmtypes.InvalidRequest{Err: "burn token null mint"}
+	}
+
+	coin := sdk.Coin{Denom: burn.Denom, Amount: burn.Amount}
+	sdkMsg := tokenfactorytypes.NewMsgBurn(contractAddr.String(), coin)
+	if burn.BurnFromAddress != "" {
+		sdkMsg = tokenfactorytypes.NewMsgBurnFrom(contractAddr.String(), coin, burn.BurnFromAddress)
+	}
+
+	if err := sdkMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	// Burn through token factory / message server
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f)
+	_, err := msgServer.Burn(sdk.WrapSDKContext(ctx), sdkMsg)
+	if err != nil {
+		return errorsmod.Wrap(err, "burning coins from message")
+	}
+	return nil
+}
+
+// forceTransfer moves tokens.
+func (m *CustomMessenger) forceTransfer(ctx sdk.Context, contractAddr sdk.AccAddress, forcetransfer *bindings.ForceTransfer) ([]sdk.Event, [][]byte, error) {
+	err := PerformForceTransfer(m.tokenfactorykeeper, ctx, contractAddr, forcetransfer)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "perform force transfer")
+	}
+	return nil, nil, nil
+}
+
+// PerformForceTransfer performs token moving after validating tokenForceTransfer message.
+func PerformForceTransfer(f tokenfactorykeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, forcetransfer *bindings.ForceTransfer) error {
+	if forcetransfer == nil {
+		return wasmvmtypes.InvalidRequest{Err: "force transfer null"}
+	}
+
+	_, err := parseAddress(forcetransfer.FromAddress)
+	if err != nil {
+		return err
+	}
+
+	_, err = parseAddress(forcetransfer.ToAddress)
+	if err != nil {
+		return err
+	}
+
+	coin := sdk.Coin{Denom: forcetransfer.Denom, Amount: forcetransfer.Amount}
+	sdkMsg := tokenfactorytypes.NewMsgForceTransfer(contractAddr.String(), coin, forcetransfer.FromAddress, forcetransfer.ToAddress)
+
+	if err := sdkMsg.ValidateBasic(); err != nil {
+		return err
+	}
+
+	// Transfer through token factory / message server
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f)
+	_, err = msgServer.ForceTransfer(sdk.WrapSDKContext(ctx), sdkMsg)
+	if err != nil {
+		return errorsmod.Wrap(err, "force transferring from message")
+	}
+	return nil
+}
+
+// createDenom creates a new token denom
+func (m *CustomMessenger) setMetadata(ctx sdk.Context, contractAddr sdk.AccAddress, setMetadata *bindings.SetMetadata) ([]sdk.Event, [][]byte, error) {
+	err := PerformSetMetadata(m.tokenfactorykeeper, m.bankkeeper, ctx, contractAddr, setMetadata.Denom, setMetadata.Metadata)
+	if err != nil {
+		return nil, nil, errorsmod.Wrap(err, "perform create denom")
+	}
+	return nil, nil, nil
+}
+
+// PerformSetMetadata is used with setMetadata to add new metadata
+// It also is called inside CreateDenom if optional metadata field is set
+func PerformSetMetadata(f tokenfactorykeeper.Keeper, b bankkeeper.Keeper, ctx sdk.Context, contractAddr sdk.AccAddress, denom string, metadata bindings.Metadata) error {
+	// ensure contract address is admin of denom
+	auth, err := f.GetAuthorityMetadata(ctx, denom)
+	if err != nil {
+		return err
+	}
+	if auth.Admin != contractAddr.String() {
+		return wasmvmtypes.InvalidRequest{Err: "only admin can set metadata"}
+	}
+
+	// ensure we are setting proper denom metadata (bank uses Base field, fill it if missing)
+	if metadata.Base == "" {
+		metadata.Base = denom
+	} else if metadata.Base != denom {
+		// this is the key that we set
+		return wasmvmtypes.InvalidRequest{Err: "Base must be the same as denom"}
+	}
+
+	// Create and validate the metadata
+	bankMetadata := WasmMetadataToSdk(metadata)
+	if err := bankMetadata.Validate(); err != nil {
+		return err
+	}
+
+	b.SetDenomMetaData(ctx, bankMetadata)
+	return nil
+}
+
+// GetFullDenom is a function, not method, so the message_plugin can use it
+func GetFullDenom(contract string, subDenom string) (string, error) {
+	// Address validation
+	if _, err := parseAddress(contract); err != nil {
+		return "", err
+	}
+	fullDenom, err := tokenfactorytypes.GetTokenDenom(contract, subDenom)
+	if err != nil {
+		return "", errorsmod.Wrap(err, "validate sub-denom")
+	}
+
+	return fullDenom, nil
+}
+
+// parseAddress parses address from bech32 string and verifies its format.
+func parseAddress(addr string) (sdk.AccAddress, error) {
+	parsed, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "address from bech32")
+	}
+	err = sdk.VerifyAddressFormat(parsed)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "verify address format")
+	}
+	return parsed, nil
+}
+
+func WasmMetadataToSdk(metadata bindings.Metadata) banktypes.Metadata {
+	denoms := []*banktypes.DenomUnit{}
+	for _, unit := range metadata.DenomUnits {
+		denoms = append(denoms, &banktypes.DenomUnit{
+			Denom:    unit.Denom,
+			Exponent: unit.Exponent,
+			Aliases:  unit.Aliases,
+		})
+	}
+	return banktypes.Metadata{
+		Description: metadata.Description,
+		Display:     metadata.Display,
+		Base:        metadata.Base,
+		Name:        metadata.Name,
+		Symbol:      metadata.Symbol,
+		DenomUnits:  denoms,
+	}
+}
+
+func SdkMetadataToWasm(metadata banktypes.Metadata) *bindings.Metadata {
+	denoms := []bindings.DenomUnit{}
+	for _, unit := range metadata.DenomUnits {
+		denoms = append(denoms, bindings.DenomUnit{
+			Denom:    unit.Denom,
+			Exponent: unit.Exponent,
+			Aliases:  unit.Aliases,
+		})
+	}
+	return &bindings.Metadata{
+		Description: metadata.Description,
+		Display:     metadata.Display,
+		Base:        metadata.Base,
+		Name:        metadata.Name,
+		Symbol:      metadata.Symbol,
+		DenomUnits:  denoms,
+	}
 }

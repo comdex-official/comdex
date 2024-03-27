@@ -9,7 +9,7 @@ import (
 
 func getBurnAmount(amount sdk.Int, liqPenalty sdk.Dec) sdk.Int {
 	liqPenalty = liqPenalty.Add(sdk.NewDec(1))
-	result := sdk.NewDec(amount.Int64()).Quo(liqPenalty).Ceil().TruncateInt()
+	result := sdk.NewDecFromInt(amount).Quo(liqPenalty).Ceil().TruncateInt()
 	return result
 }
 

@@ -28,7 +28,7 @@ If you have technical questions or concerns, ask a developer or community member
 
 ### Installation
 
-Requires [Go 1.20+](https://golang.org/dl/)
+Requires [Go 1.21+](https://golang.org/dl/)
 
 ### Linux
 

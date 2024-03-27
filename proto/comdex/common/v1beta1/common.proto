@@ -1,0 +1,15 @@
+syntax = "proto3";
+package comdex.common.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/comdex-official/comdex/x/common/types";
+
+message WhitelistedContract {
+    uint64 game_id = 1;
+    string security_address = 2;
+    string contract_admin = 3;
+    string game_name = 4;
+    string contract_address = 5;
+    uint64 game_type = 6;
+}

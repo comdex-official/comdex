@@ -95,3 +95,27 @@ func (k msgServer) MsgMintNewTokens(c context.Context, msg *types.MsgMintNewToke
 
 	return &types.MsgMintNewTokensResponse{}, nil
 }
+
+func (k msgServer) MsgBurnHarborTokens(c context.Context, msg *types.MsgBurnHarborTokensRequest) (*types.MsgBurnHarborTokensResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	burner, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+	if msg.BurnCoins.Denom != "uharbor" {
+		return &types.MsgBurnHarborTokensResponse{}, types.ErrorInvalidDenom
+	}
+	appData, found := k.asset.GetApp(ctx, msg.AppId)
+	if !found || appData.Name != "harbor" {
+		return &types.MsgBurnHarborTokensResponse{}, types.ErrorAppMappingDoesNotExists
+	}
+	if appData.GenesisToken[0].Recipient != msg.From {
+		return &types.MsgBurnHarborTokensResponse{}, types.ErrorInvalidFrom
+	} 
+	err = k.BurnGovTokensForApp(ctx, msg.AppId, burner, msg.BurnCoins)
+	if err != nil {
+		return &types.MsgBurnHarborTokensResponse{}, err
+	}
+
+	return &types.MsgBurnHarborTokensResponse{}, nil
+}

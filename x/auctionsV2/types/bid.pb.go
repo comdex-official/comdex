@@ -221,7 +221,7 @@ type AuctionParams struct {
 	ClosingFee             github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,4,opt,name=closing_fee,json=closingFee,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"closing_fee" yaml:"closing_fee"`
 	MinUsdValueLeft        uint64                                 `protobuf:"varint,5,opt,name=min_usd_value_left,json=minUsdValueLeft,proto3" json:"min_usd_value_left,omitempty" yaml:"min_usd_value_left"`
 	BidFactor              github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,6,opt,name=bid_factor,json=bidFactor,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"bid_factor" yaml:"bid_factor"`
-	// For external apps
+	//For external apps
 	LiquidationPenalty github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,7,opt,name=liquidation_penalty,json=liquidationPenalty,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"liquidation_penalty" yaml:"liquidation_penalty"`
 	AuctionBonus       github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,8,opt,name=auction_bonus,json=auctionBonus,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"auction_bonus" yaml:"auction_bonus"`
 }

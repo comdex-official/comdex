@@ -17,6 +17,7 @@ func KeyPrefix(p string) []byte {
 }
 
 var TypeMsgMintNewTokensRequest = ModuleName + ":mintnewtokens"
+var TypeMsgBurnHarborTokensRequest = ModuleName + ":burntokens"
 
 var TokenMintKeyPrefix = []byte{0x10}
 

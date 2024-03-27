@@ -32,4 +32,5 @@ var (
 	ErrorAppExtendedPairDataDoesNotExists = errors.Register(ModuleName, 1325, "App ExtendedPair Data Does Not Exists")
 	ErrorUnknownMsgType                   = errors.Register(ModuleName, 1326, "unknown message type")
 	ErrorCannotCreateStableMintVault      = errors.Register(ModuleName, 1327, "Cannot Create Stable Mint Vault, StableMint tx command")
+	ErrorWithdrawStableMintVault          = errors.Register(ModuleName, 1328, "Temporary suspension of withdrawals from the Stable Mint Vault")
 )

@@ -9,6 +9,8 @@ option go_package = "github.com/comdex-official/comdex/x/collector/types";
 // Msg defines the Msg service.
 service Msg {
   rpc Deposit(MsgDeposit) returns (MsgDepositResponse);
+  rpc Refund(MsgRefund) returns (MsgRefundResponse);
+  rpc UpdateDebtParams(MsgUpdateDebtParams) returns (MsgUpdateDebtParamsResponse);
 }
 
 message MsgDeposit {
@@ -18,3 +20,31 @@ message MsgDeposit {
 }
 
 message MsgDepositResponse {}
+
+message MsgRefund {
+  string                   addr = 1;
+}
+
+message MsgRefundResponse {}
+
+message MsgUpdateDebtParams {
+  string                   addr = 1;
+  uint64                   app_id = 2;
+  uint64                   asset_id = 3;
+  uint64                   slots = 4;
+  string debt_threshold = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"debt_threshold\""];
+  string lot_size = 6 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"lot_size\""];
+  string debt_lot_size = 7 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"debt_lot_size\""];
+  bool is_debt_auction = 8 [(gogoproto.moretags) = "yaml:\"is_debt_auction\""];
+}
+
+message MsgUpdateDebtParamsResponse {}

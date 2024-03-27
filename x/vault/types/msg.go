@@ -16,6 +16,7 @@ var (
 	_ sdk.Msg = (*MsgDepositStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgWithdrawStableMintRequest)(nil)
 	_ sdk.Msg = (*MsgVaultInterestCalcRequest)(nil)
+	_ sdk.Msg = (*MsgWithdrawStableMintControlRequest)(nil)
 )
 
 func NewMsgCreateRequest(
@@ -609,6 +610,49 @@ func (m *MsgVaultInterestCalcRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgVaultInterestCalcRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
+}
+
+func NewMsgWithdrawStableMintControlRequest(
+	from sdk.AccAddress,
+	appID uint64,
+) *MsgWithdrawStableMintControlRequest {
+	return &MsgWithdrawStableMintControlRequest{
+		From:        from.String(),
+		AppId:       appID,
+	}
+}
+
+func (m *MsgWithdrawStableMintControlRequest) Route() string {
+	return RouterKey
+}
+
+func (m *MsgWithdrawStableMintControlRequest) Type() string {
+	return TypeMsgWithdrawStableMintControlRequest
+}
+
+func (m *MsgWithdrawStableMintControlRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
+
+	return nil
+}
+
+func (m *MsgWithdrawStableMintControlRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgWithdrawStableMintControlRequest) GetSigners() []sdk.AccAddress {
+
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

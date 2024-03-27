@@ -29,12 +29,12 @@ def SetupNewChain():
     with open(f"{HOME_DIR}/.comdex/config/genesis.json", "r") as jsonFile:
         data = json.load(jsonFile)
 
-    data["app_state"]["gov"]["deposit_params"]["min_deposit"][0]["denom"] = "ucmdx"
-    data["app_state"]["gov"]["deposit_params"]["max_deposit_period"] = str(DEPOSIT_PERIOD_IN_SEC)+"s"
-    data["app_state"]["gov"]["voting_params"]["voting_period"] = str(VOTING_PERIOD_IN_SEC)+"s"
-    data["app_state"]["gov"]["tally_params"]["quorum"] = "0"
-    data["app_state"]["gov"]["tally_params"]["threshold"] = "0"
-    data["app_state"]["gov"]["tally_params"]["veto_threshold"] = "0"
+    data["app_state"]["gov"]["params"]["min_deposit"][0]["denom"] = "ucmdx"
+    data["app_state"]["gov"]["params"]["max_deposit_period"] = str(DEPOSIT_PERIOD_IN_SEC)+"s"
+    data["app_state"]["gov"]["params"]["voting_period"] = str(VOTING_PERIOD_IN_SEC)+"s"
+    data["app_state"]["gov"]["params"]["quorum"] = "0"
+    data["app_state"]["gov"]["params"]["threshold"] = "0"
+    data["app_state"]["gov"]["params"]["veto_threshold"] = "0"
 
     with open(f"{HOME_DIR}/.comdex/config/genesis.json", "w") as jsonFile:
         json.dump(data, jsonFile)
@@ -52,6 +52,7 @@ def SetupNewChain():
     print("RPC configurations done ✔️")
     
     lcdConfig = toml.load(f"{HOME_DIR}/.comdex/config/app.toml")
+    lcdConfig["minimum-gas-prices"]="0ucmdx"
     lcdConfig["api"]["enable"]=True 
     lcdConfig["api"]["enabled-unsafe-cors"]= True
 
@@ -88,20 +89,23 @@ def GetGenesisAccAddress():
 def Vote(option):
     if option not in ["yes", "no"]:
         exit("Invalid voting option")
+    time.sleep(6)
     latestPropID = GetLatestPropID()
     command = f"comdex tx gov vote {latestPropID} {option} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit(f"error while voting on prop {latestPropID}")
+    time.sleep(6)
     print(f"Vote submitted on Prop {latestPropID} ✔️")
 
 def AddApp(name, shortName, minGovDeposit=0, govTimeInSeconds=0):
-    command = f"""comdex tx gov submit-proposal add-app {name} {shortName} {minGovDeposit} {govTimeInSeconds} --title "New App" --description "Adding new app on comdex" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-app {name} {shortName} {minGovDeposit} {govTimeInSeconds} --title "New App" --description "Adding new app on comdex" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
+    if "code: 0" in output:
+        print("success")
+    else:
         print(output)
         exit("error in add app prop")
     print(f"New App {name} Proposal  Submitted ✔️")
@@ -122,10 +126,11 @@ def AddAsset(name, denom, decimals=1, isOnChain=1, assetOraclePriceRequired=1, i
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-assets --add-assets-file "{fileName}" --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-assets --add-assets-file "{fileName}" --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y --gas 303942"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
+    if "code: 0" in output:
+        print("success")
+    else:
         print(output)
         exit("error in add asset prop")
     if os.path.exists(fileName):
@@ -133,10 +138,11 @@ def AddAsset(name, denom, decimals=1, isOnChain=1, assetOraclePriceRequired=1, i
     print(f"New Asset {name} Proposal  Submitted ✔️")
 
 def AddPair(assetID1, assetID2):
-    command = f"""comdex tx gov submit-proposal add-pairs {assetID1} {assetID2}  --title "New Pair" --description "Adding new pair" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-pairs {assetID1} {assetID2}  --title "New Pair" --description "Adding new pair" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
+    if "code: 0" in output:
+        print("success")
+    else:
         print(output)
         exit("error in add pairs prop")
     print(f"New Pair ({assetID1}, {assetID2}) Proposal  Submitted ✔️")
@@ -145,8 +151,9 @@ def MintToken(appID, assetID):
     print("Minting token for previosly added asset in app..")
     command = f"comdex tx tokenmint tokenmint {appID} {assetID} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
+    if "code: 0" in output:
+        print("success")
+    else:
         print(output)
         exit("error whle minting tokens")
     print(f"Token Minting Done For AssetID {assetID} in App {appID} ✔️")
@@ -166,11 +173,11 @@ def AddAssetInAppsAndVote(appID, assetID):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
 
-    command = f"""comdex tx gov submit-proposal add-asset-in-app --add-asset-mapping-file "{fileName}" --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-asset-in-app --add-asset-mapping-file "{fileName}" --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add asset in app prop")
     print(f"New Add Asset In App (appID - {appID}, assetID - {assetID}) Proposal  Submitted ✔️")
     if os.path.exists(fileName):
@@ -181,20 +188,20 @@ def AddAssetInAppsAndVote(appID, assetID):
     MintToken(appID, assetID)
 
 def CreateLiquidityPair(appID, baseCoinDenom, quoteCoinDenom):
-    command = f"""comdex tx gov submit-proposal create-liquidity-pair {appID} {baseCoinDenom} {quoteCoinDenom}  --title "New Liquidity Pair" --description "Adding new liquidity pair" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal create-liquidity-pair {appID} {baseCoinDenom} {quoteCoinDenom}  --title "New Liquidity Pair" --description "Adding new liquidity pair" --deposit 10000000ucmdx --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add pairs prop")
     print(f"New Liquidity Pair ({baseCoinDenom}, {quoteCoinDenom}) Proposal  Submitted ✔️")
 
 def CreateLiquidityPool(appID, pairID, depositCoins):
     command = f"comdex tx liquidity create-pool {appID} {pairID} {depositCoins} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in create pool")
     print(f"New liquidity pool created for pairID {pairID} in app {appID} with initial deposit of {depositCoins} ✔️")
 
@@ -213,7 +220,7 @@ def StoreAndIntantiateWasmContract():
     for index, contractData in enumerate(WASM_CONTRACTS):
         print(f"fetching test {contractData['name']} ....")
         wget.download(contractData['contractLink'], contractData['contractPath'])
-
+        time.sleep(6)
         command = f"comdex tx wasm store {contractData['contractPath']} --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test  -y  --output json"
         output = subprocess.getstatusoutput(command)[1]
         output = json.loads(output)
@@ -225,14 +232,16 @@ def StoreAndIntantiateWasmContract():
         for keys in contractData['formatKeys']:
             contractData['initator'][keys] = contractAddresses[keys]
 
+        time.sleep(6)
         currentCodeID = GetLastContractCodeID()
-        command = f"""comdex tx wasm instantiate {currentCodeID} '{json.dumps(contractData['initator'])}' --label "Instantiate {contractData['name']}" --no-admin --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test -y"""
+        command = f"""comdex tx wasm instantiate {currentCodeID} '{json.dumps(contractData['initator'])}' --label "Instantiate {contractData['name']}" --no-admin --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --gas-adjustment 1.3 --keyring-backend test -y  --output json"""
         output = subprocess.getstatusoutput(command)[1]
         output = json.loads(output)
         if int(output["code"]) != 0:
             print(output)
             exit(f"error in instantiating {contractData['name']}")
         print(f"{contractData['name']} instantiated successfully ✔️")
+        time.sleep(6)
         contractAddresses[contractData['contractAddressKey']] = GetContractAddress(currentCodeID)
         if os.path.exists(contractData['contractPath']):
             os.remove(contractData['contractPath'])
@@ -246,7 +255,8 @@ def ExecuteWasmGovernanceProposal(contractAddress, proposalID):
             "proposal_id":proposalID
         }
     }
-    command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+    time.sleep(3)
+    command = f"""comdex tx wasm execute {contractAddress} '{json.dumps(execute)}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y --output json"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:
@@ -255,7 +265,7 @@ def ExecuteWasmGovernanceProposal(contractAddress, proposalID):
     print(f"Proposal with ID {proposalID} executed successfully ✔️")
 
 def ProposeWasmProposal(contractAddress, proposal, proposlID):
-    command = f"""comdex tx wasm execute {contractAddress}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y"""
+    command = f"""comdex tx wasm execute {contractAddress}  '{json.dumps(proposal)}' --amount 100000000uharbor --from {GENESIS_ACCOUNT_NAME}  --chain-id {CHAIN_ID} --gas 5000000 --keyring-backend test -y --output json"""
     output = subprocess.getstatusoutput(command)[1]
     output = json.loads(output)
     if int(output["code"]) != 0:
@@ -268,11 +278,11 @@ def AddAssetRates(assetName, jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-asset-rates-params --add-asset-rates-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-asset-rates-params --add-asset-rates-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 9000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add asset rate prop")
     if os.path.exists(fileName):
         os.remove(fileName)
@@ -283,11 +293,11 @@ def AddLendPool(jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-lend-pool --add-lend-pool-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-lend-pool --add-lend-pool-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 9000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add lend pool prop")
     if os.path.exists(fileName):
         os.remove(fileName)
@@ -298,22 +308,22 @@ def AddLendPair(pairString, jsonData):
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-lend-pairs --add-lend-pair-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-lend-pairs --add-lend-pair-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add lend pair prop")
     if os.path.exists(fileName):
         os.remove(fileName)
     print(f"Proposal For - Add Lend Pair {pairString}  Submitted ✔️")
 
 def AddLendAssetPairMapping(assetID, poolID, pairIDs):
-    command = f"""comdex tx gov submit-proposal add-asset-to-pair-mapping {assetID} {poolID} {','.join([str(i) for i in pairIDs])} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --title "Lend Asset Pair Mapping" --description "Adding New Lend Asset To Pair Mapping" --deposit 100000000ucmdx --keyring-backend test -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-asset-to-pair-mapping {assetID} {poolID} {','.join([str(i) for i in pairIDs])} --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --title "Lend Asset Pair Mapping" --description "Adding New Lend Asset To Pair Mapping" --deposit 100000000ucmdx --keyring-backend test -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add lend asset pair mapping prop")
     print(f"Proposal For - Add Lend Asset Pair Mapping assetID-{assetID}, poolID-{poolID}, pairIDs-{pairIDs}  Submitted ✔️")
 
@@ -335,11 +345,11 @@ def AddLendAuctionParamsAndVote():
     with open(fileName, "w") as jsonFile:
         json.dump(jsonData, jsonFile)
     
-    command = f"""comdex tx gov submit-proposal add-auction-params --add-auction-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
+    command = f"""comdex tx gov submit-legacy-proposal add-auction-params --add-auction-params-file '{fileName}' --from {GENESIS_ACCOUNT_NAME} --chain-id {CHAIN_ID} --keyring-backend test --gas 5000000 -y"""
     output = subprocess.getstatusoutput(command)[1]
-    output = json.loads(output)
-    if int(output["code"]) != 0:
-        print(output)
+    if "code: 0" in output:
+        print("success")
+    else:
         exit("error in add lend auction params prop")
     if os.path.exists(fileName):
         os.remove(fileName)
@@ -366,6 +376,43 @@ def CreateState():
         Vote("yes")
 
     AddAssetInAppsAndVote(1, 9)
+    time.sleep(6)
+
+    for liquidityPair in LIQUIDITY_PAIRS:
+        if len(liquidityPair) != 3:
+            exit("Invalid liquidity pair configs")
+        CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
+        Vote("yes")
+    time.sleep(20)
+    for liquidityPool in LIQUIDITY_POOLS:
+        if len(liquidityPool) != 3:
+            exit("Invalid liquidity pool configs")
+        CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
+    time.sleep(20)
+    for assetRate in ADD_ASSET_RATES:
+        if len(assetRate) != 2:
+            exit("Invalid add asset rate configs")
+        AddAssetRates(assetRate[0], assetRate[1])
+        Vote("yes")
+    time.sleep(20)
+    for lenPoolData in ADD_LEND_POOL:
+        AddLendPool(lenPoolData)
+        Vote("yes")
+    time.sleep(20)
+    for lendPair in ADD_LEND_PAIR:
+        if len(lendPair) != 2:
+            exit("Invalid lend pair configs")
+        AddLendPair(lendPair[0], lendPair[1])
+        Vote("yes")
+    time.sleep(20)
+    for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
+        if len(lenAssetPairMap) != 3:
+            exit("Invalid lend asset pair map configs")
+        AddLendAssetPairMapping(lenAssetPairMap[0], lenAssetPairMap[1], lenAssetPairMap[2])
+        Vote("yes")
+    
+    AddLendAuctionParamsAndVote()
+
     contractAddresses = StoreAndIntantiateWasmContract()
     for wasmProp in WASM_PROPOSALS:
         contractAddress = contractAddresses[wasmProp['contractAddressKey']]
@@ -375,42 +422,76 @@ def CreateState():
             time.sleep(APPS[0][3]) # waiting for proposal duration
             ExecuteWasmGovernanceProposal(contractAddress, wasmProp['proposalID'])
 
-    for liquidityPair in LIQUIDITY_PAIRS:
-        if len(liquidityPair) != 3:
-            exit("Invalid liquidity pair configs")
-        CreateLiquidityPair(liquidityPair[0], liquidityPair[1], liquidityPair[2])
-        Vote("yes")
+def limitOrderHelper(fromAcc, appID, pairID, direction, offerCoin, demandCoinDenom, price, amount):
+    print(fromAcc)
+    command = f"comdex tx liquidity limit-order {appID} {pairID} {direction} {offerCoin} {demandCoinDenom} {price} {amount} --from {fromAcc} --chain-id test-3 --node https://dev3.rpc.comdex.one:443 --fees 1000000ucmdx --keyring-backend test --output json -y"
+    output = subprocess.getstatusoutput(command)[1]
+    print(output)
+    try:
+        output = json.loads(output)
+    except Exception as e:
+        exit(f"{fromAcc} - error while limit order... {output}")
+    if int(output["code"]) != 0:
+        print(fromAcc, " - ", output["raw_log"])
+    else:
+        print(f"limit order placed successfully : from - {fromAcc}, appID - {appID}, pairID - {pairID}, -direction - {direction}, -offerCoin {offerCoin}, -demandCoinDenom {demandCoinDenom}, price {price}, amount {amount} ✔️")
 
-    for liquidityPool in LIQUIDITY_POOLS:
-        if len(liquidityPool) != 3:
-            exit("Invalid liquidity pool configs")
-        CreateLiquidityPool(liquidityPool[0], liquidityPool[1], liquidityPool[2])
+def thread(
+    fromAcc,
+    appID,
+    pairID,
+    direction,
+    offerCoin,
+    demandCoinDenom,
+    price,
+    amount,
+):
+    
+    start = datetime.datetime.now()
+    limitOrderHelper(fromAcc, appID, pairID, direction, offerCoin, demandCoinDenom, price, amount)
+    end = datetime.datetime.now()
+    print("time taken - ", (end-start).seconds, "s")
 
-    for assetRate in ADD_ASSET_RATES:
-        if len(assetRate) != 2:
-            exit("Invalid add asset rate configs")
-        AddAssetRates(assetRate[0], assetRate[1])
-        Vote("yes")
-    
-    for lenPoolData in ADD_LEND_POOL:
-        AddLendPool(lenPoolData)
-        Vote("yes")
-    
-    for lendPair in ADD_LEND_PAIR:
-        if len(lendPair) != 2:
-            exit("Invalid lend pair configs")
-        AddLendPair(lendPair[0], lendPair[1])
-        Vote("yes")
-    
-    for lenAssetPairMap in LEND_ASSET_PAIR_MAPPING:
-        if len(lenAssetPairMap) != 3:
-            exit("Invalid lend asset pair map configs")
-        AddLendAssetPairMapping(lenAssetPairMap[0], lenAssetPairMap[1], lenAssetPairMap[2])
-        Vote("yes")
-    
-    AddLendAuctionParamsAndVote()
-
-
+def limitOrder():
+    chunks = [
+        {
+            "fromAcc" : "hotuser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        },
+        {
+            "fromAcc" : "cooluser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        },
+        {
+            "fromAcc" : "chilluser",
+            "appID" : 2,
+            "pairID" : 1,
+            "direction" : "sell",
+            "offerCoin" : "20000000ucmdx",
+            "demandCoinDenom" : "uharbor",
+            "price" : 2,
+            "amount" : 10000000
+        }
+    ]
+    threads = []
+    for data in chunks:
+        threads.append(threading.Thread(target=thread, args=(data["fromAcc"], data["appID"], data["pairID"], data["direction"], data["offerCoin"], data["demandCoinDenom"], data["price"], data["amount"])))
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
 def main():
     if not os.path.exists(HOME_DIR):
@@ -422,6 +503,13 @@ def main():
     thr.start()
     StartChainIndicator()
     CreateState()
-    print("Press Ctr+C to stop the chain")
+    # while True:
+    #     try:
+    #         limitOrder()
+    #         time.sleep(3)  # Replace with your actual task or wait logic
+    #     except KeyboardInterrupt:
+    #         print("Keyboard interrupt received. Exiting...")
+    #         break
+    # print("Press Ctr+C to stop the chain")
 
 main()

@@ -4,14 +4,18 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/comdex-official/comdex/app/decorators"
+	"github.com/comdex-official/comdex/x/gasless"
+	gaslesskeeper "github.com/comdex-official/comdex/x/gasless/keeper"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	auctionanteskip "github.com/skip-mev/block-sdk/x/auction/ante"
+	auctionkeeperskip "github.com/skip-mev/block-sdk/x/auction/keeper"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -23,6 +27,14 @@ type HandlerOptions struct {
 	IBCChannelKeeper  *ibckeeper.Keeper
 	GovKeeper         govkeeper.Keeper
 	Cdc               codec.BinaryCodec
+
+	MEVLane           auctionanteskip.MEVLane
+	TxDecoder         sdk.TxDecoder
+	TxEncoder         sdk.TxEncoder
+	auctionkeeperskip auctionkeeperskip.Keeper
+
+	GaslessKeeper gaslesskeeper.Keeper
+	BankKeeper    gasless.BankKeeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -51,7 +63,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
+		gasless.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker, options.GaslessKeeper),
 		// SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewSetPubKeyDecorator(options.AccountKeeper),
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
@@ -59,6 +71,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCChannelKeeper),
+		auctionanteskip.NewAuctionDecorator(options.auctionkeeperskip, options.TxEncoder, options.MEVLane),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

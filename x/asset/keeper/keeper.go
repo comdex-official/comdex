@@ -21,6 +21,7 @@ type Keeper struct {
 	rewards    expected.RewardsKeeper
 	vault      expected.VaultKeeper
 	bandoracle expected.Bandoraclekeeper
+	authority  string
 }
 
 func NewKeeper(
@@ -32,6 +33,7 @@ func NewKeeper(
 	rewards expected.RewardsKeeper,
 	vault expected.VaultKeeper,
 	bandoracle expected.Bandoraclekeeper,
+	authority string,
 ) Keeper {
 	if !params.HasKeyTable() {
 		params = params.WithKeyTable(assettypes.ParamKeyTable())
@@ -46,6 +48,7 @@ func NewKeeper(
 		rewards:    rewards,
 		vault:      vault,
 		bandoracle: bandoracle,
+		authority:  authority,
 	}
 }
 
