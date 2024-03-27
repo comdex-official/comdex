@@ -857,7 +857,7 @@ func (k Keeper) RevokeDebtAuction(ctx sdk.Context) error {
 						if err != nil {
 							return err
 						}
-						k.DeleteLockedVault(ctx, 3, auction.LockedVaultId)
+						k.DeleteLockedVault(ctx, 2, auction.LockedVaultId)
 					}
 				}
 			}
